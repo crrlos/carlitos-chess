@@ -71,7 +71,7 @@ public class Juego {
          if(pieza instanceof Peon){
 
             if(Math.abs(filaInicio - filaFinal) == 2){
-                casillAlPaso = movimiento.substring(2, 3) + (filaFinal + (!pieza.EsBlanca() ? 1 : 0));
+                casillAlPaso = movimiento.substring(2, 3) + (filaFinal + (!pieza.EsBlanca() ? 2 : 0));
                 alPaso = true;
                 this.tablero[filaFinal][colFinal] = pieza;
                 this.tablero[filaInicio][colInicio] = null;
