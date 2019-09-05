@@ -10,28 +10,31 @@ public class Peon implements Pieza {
     }
     @Override
     public List<int[]> ObtenerMovimientos(Pieza[][] tablero, int[] posicion) {
+        int filaOrigen = posicion[0];
+        int columnaOrigen = posicion[1];
+
         var lista = new ArrayList<int[]>();
         if(esBlanco){
-            if(posicion[0] == 1){
-                if(tablero[2][posicion[1]] == null && tablero[3][posicion[1]] == null)
-                        lista.add(new int[]{posicion[0],posicion[1],3,posicion[1]});
-                if(tablero[2][posicion[1]] == null) 
-                        lista.add(new int[]{posicion[0],posicion[1],2,posicion[1]});
+            if(filaOrigen == 1){
+                if(tablero[2][columnaOrigen] == null && tablero[3][columnaOrigen] == null)
+                        lista.add(new int[]{filaOrigen,columnaOrigen,3,columnaOrigen});
+                if(tablero[2][columnaOrigen] == null) 
+                        lista.add(new int[]{filaOrigen,columnaOrigen,2,columnaOrigen});
                 
             }else{
-                if(tablero[posicion[0] + 1][posicion[1]] == null) 
-                    lista.add(new int[]{posicion[0],posicion[1],posicion[0] + 1,posicion[1]});
+                if(tablero[filaOrigen + 1][columnaOrigen] == null) 
+                    lista.add(new int[]{filaOrigen,columnaOrigen,filaOrigen + 1,columnaOrigen});
             }
         }else{
-            if(posicion[0] == 6){
-                if(tablero[5][posicion[1]] == null && tablero[4][posicion[1]] == null)
-                        lista.add(new int[]{posicion[0],posicion[1],4,posicion[1]});
-                if(tablero[5][posicion[1]] == null) 
-                        lista.add(new int[]{posicion[0],posicion[1],5,posicion[1]});
+            if(filaOrigen == 6){
+                if(tablero[5][columnaOrigen] == null && tablero[4][columnaOrigen] == null)
+                        lista.add(new int[]{filaOrigen,columnaOrigen,4,columnaOrigen});
+                if(tablero[5][columnaOrigen] == null) 
+                        lista.add(new int[]{filaOrigen,columnaOrigen,5,columnaOrigen});
                 
             }else{
-                if(tablero[posicion[0] -1 ][posicion[1]] == null) 
-                    lista.add(new int[]{posicion[0],posicion[1],posicion[0] - 1,posicion[1]});
+                if(tablero[filaOrigen -1 ][columnaOrigen] == null) 
+                    lista.add(new int[]{filaOrigen,columnaOrigen,filaOrigen - 1,columnaOrigen});
             }
         }
         return lista;
