@@ -60,6 +60,24 @@ public class Juego {
             ActualizarTablero(movimiento);
         }
     }
+    private String ConvertirANotacion(int f, int c){
+        return columnas.charAt(c) + "" +filas.charAt(f);
+    }
+    public void MovimientosValidos(){
+        for (int i = 7; i >=0 ; i--) {
+            for (int j = 0; j < 8 ; j++) {
+                var pieza = tablero[i][j];
+                if(pieza instanceof Peon){
+                    var movimientos = pieza.ObtenerMovimientos(tablero, new int[]{i,j});
+                    for(var mov : movimientos){
+                      System.out.print(ConvertirANotacion(i, j)+ ConvertirANotacion(mov[0], mov[1]) + " ");
+                    }
+                    System.out.println();
+                }
+            }
+            
+        }
+    }
     private void ActualizarTablero(String movimiento){
         int colInicio = columnas.indexOf(movimiento.substring(0,1));
         int filaInicio = filas.indexOf(movimiento.substring(1, 2));

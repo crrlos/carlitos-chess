@@ -1,5 +1,7 @@
 package app.Piezas;
 
+import java.util.List;
+
 /**
  * Alfil
  */
@@ -9,12 +11,12 @@ public class Alfil implements Pieza{
         this.esBlanco = bando;
     }
     @Override
-    public String[] ObtenerMovimientos(Pieza[][] tablero, String posicion) {
+    public List<int[]> ObtenerMovimientos(Pieza[][] tablero, int[] posicion) {
         return null;
     }
 
     @Override
-    public boolean AtacaCasilla(Pieza[][] tablero, String posicion, String casilla) {
+    public boolean AtacaCasilla(Pieza[][] tablero, int[] posicion, int[] casilla) {
         return false;
     }
 
