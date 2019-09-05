@@ -1,4 +1,8 @@
 package app;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import app.Piezas.Alfil;
 import app.Piezas.Caballo;
 import app.Piezas.Dama;
@@ -15,6 +19,7 @@ public class Juego {
     public boolean enroqueLargoBlanco = true;
     public boolean enroqueCortoNegro = true;
     public boolean enroqueLargoNegro = true;
+    public boolean turnoBlanco = true;
     private String filas = "12345678";
     private String columnas = "abcdefgh";
     
@@ -58,24 +63,34 @@ public class Juego {
     public void EstablecerPosicion(String... movimientos){
         for (var movimiento : movimientos) {
             ActualizarTablero(movimiento);
+            turnoBlanco = !turnoBlanco;
         }
     }
     private String ConvertirANotacion(int f, int c){
         return columnas.charAt(c) + "" +filas.charAt(f);
     }
     public void MovimientosValidos(){
+        List<int[]> movimientos = new ArrayList<int[]>();
         for (int i = 7; i >=0 ; i--) {
             for (int j = 0; j < 8 ; j++) {
                 var pieza = tablero[i][j];
+                
                 if(pieza instanceof Peon){
-                    var movimientos = pieza.ObtenerMovimientos(tablero, new int[]{i,j});
-                    for(var mov : movimientos){
-                      System.out.print(ConvertirANotacion(i, j)+ ConvertirANotacion(mov[0], mov[1]) + " ");
-                    }
-                    System.out.println();
+                     
+                     if(turnoBlanco){
+                         if(pieza.EsBlanca())
+                          movimientos.addAll(pieza.ObtenerMovimientos(tablero, new int[]{i,j}));
+                     }else{
+                        if(!pieza.EsBlanca())
+                        movimientos.addAll(pieza.ObtenerMovimientos(tablero, new int[]{i,j}));
+                     }
+                    
                 }
             }
             
+        }
+        for(var mov : movimientos){
+            System.out.print(ConvertirANotacion(mov[0], mov[1]) + ConvertirANotacion(mov[2], mov[3]) + " ");
         }
     }
     private void ActualizarTablero(String movimiento){

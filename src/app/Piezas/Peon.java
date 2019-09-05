@@ -14,24 +14,24 @@ public class Peon implements Pieza {
         if(esBlanco){
             if(posicion[0] == 1){
                 if(tablero[2][posicion[1]] == null && tablero[3][posicion[1]] == null)
-                        lista.add(new int[]{3,posicion[1]});
+                        lista.add(new int[]{posicion[0],posicion[1],3,posicion[1]});
                 if(tablero[2][posicion[1]] == null) 
-                        lista.add(new int[]{2,posicion[1]});
+                        lista.add(new int[]{posicion[0],posicion[1],2,posicion[1]});
                 
             }else{
                 if(tablero[posicion[0] + 1][posicion[1]] == null) 
-                    lista.add(new int[]{posicion[0] + 1,posicion[1]});
+                    lista.add(new int[]{posicion[0],posicion[1],posicion[0] + 1,posicion[1]});
             }
         }else{
             if(posicion[0] == 6){
                 if(tablero[5][posicion[1]] == null && tablero[4][posicion[1]] == null)
-                        lista.add(new int[]{4,posicion[1]});
+                        lista.add(new int[]{posicion[0],posicion[1],4,posicion[1]});
                 if(tablero[5][posicion[1]] == null) 
-                        lista.add(new int[]{5,posicion[1]});
+                        lista.add(new int[]{posicion[0],posicion[1],5,posicion[1]});
                 
             }else{
                 if(tablero[posicion[0] -1 ][posicion[1]] == null) 
-                    lista.add(new int[]{posicion[0] - 1,posicion[1]});
+                    lista.add(new int[]{posicion[0],posicion[1],posicion[0] - 1,posicion[1]});
             }
         }
         return lista;
