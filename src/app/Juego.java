@@ -85,7 +85,7 @@ public class Juego {
             for (int j = 0; j < 8 ; j++) {
                 var pieza = tablero[i][j];
                 
-                if(pieza instanceof Peon){
+                if(pieza instanceof Peon || pieza instanceof Torre){
                      
                      if(turnoBlanco){
                          if(pieza.EsBlanca())
