@@ -66,8 +66,18 @@ public class Juego {
             turnoBlanco = !turnoBlanco;
         }
     }
-    private String ConvertirANotacion(int f, int c){
-        return columnas.charAt(c) + "" +filas.charAt(f);
+    private String ConvertirANotacion(int[] movimiento){
+        var mov = columnas.charAt(movimiento[1]) + "" + filas.charAt(movimiento[0]) +
+                  columnas.charAt(movimiento[3]) + "" + filas.charAt(movimiento[2]);
+        if(movimiento.length == 5){
+            switch(movimiento[4]){
+                case 1: return mov += "=Q";
+                case 2: return mov += "=T";
+                case 3: return mov += "=C";
+                case 4: return mov += "=A";
+            }
+        }
+        return mov;
     }
     public void MovimientosValidos(){
         List<int[]> movimientos = new ArrayList<int[]>();
@@ -90,7 +100,7 @@ public class Juego {
             
         }
         for(var mov : movimientos){
-            System.out.print(ConvertirANotacion(mov[0], mov[1]) + ConvertirANotacion(mov[2], mov[3]) + " ");
+            System.out.print(ConvertirANotacion(mov) + " ");
         }
     }
     private void ActualizarTablero(String movimiento){

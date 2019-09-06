@@ -22,8 +22,39 @@ public class Peon implements Pieza {
                         lista.add(new int[]{filaOrigen,columnaOrigen,2,columnaOrigen});
                 
             }else{
-                if(tablero[filaOrigen + 1][columnaOrigen] == null) 
-                    lista.add(new int[]{filaOrigen,columnaOrigen,filaOrigen + 1,columnaOrigen});
+                if(tablero[filaOrigen + 1][columnaOrigen] == null) {
+                    if(filaOrigen + 1 == 7){
+                        lista.add(new int[]{filaOrigen,columnaOrigen,filaOrigen + 1,columnaOrigen,1});
+                        lista.add(new int[]{filaOrigen,columnaOrigen,filaOrigen + 1,columnaOrigen,2});
+                        lista.add(new int[]{filaOrigen,columnaOrigen,filaOrigen + 1,columnaOrigen,3});
+                        lista.add(new int[]{filaOrigen,columnaOrigen,filaOrigen + 1,columnaOrigen,4});
+                    }else{
+                        lista.add(new int[]{filaOrigen,columnaOrigen,filaOrigen + 1,columnaOrigen});
+                    }
+                }
+
+                if(columnaOrigen > 0)
+                    if(tablero[filaOrigen + 1][columnaOrigen -1] != null)
+                        if(!tablero[filaOrigen + 1][columnaOrigen -1].EsBlanca())
+                            if(filaOrigen + 1 == 7){
+                                lista.add(new int[]{filaOrigen,columnaOrigen,filaOrigen + 1,columnaOrigen -1,1});
+                                lista.add(new int[]{filaOrigen,columnaOrigen,filaOrigen + 1,columnaOrigen -1,2});
+                                lista.add(new int[]{filaOrigen,columnaOrigen,filaOrigen + 1,columnaOrigen -1,3});
+                                lista.add(new int[]{filaOrigen,columnaOrigen,filaOrigen + 1,columnaOrigen -1,4});
+                            }else{
+                                lista.add(new int[]{filaOrigen,columnaOrigen,filaOrigen + 1,columnaOrigen -1});
+                            }
+                if(columnaOrigen < 7)
+                    if(tablero[filaOrigen + 1][columnaOrigen +1] != null)
+                        if(!tablero[filaOrigen +1][columnaOrigen +1].EsBlanca())
+                            if(filaOrigen + 1 == 7){
+                                lista.add(new int[]{filaOrigen,columnaOrigen,filaOrigen + 1,columnaOrigen +1,1});
+                                lista.add(new int[]{filaOrigen,columnaOrigen,filaOrigen + 1,columnaOrigen +1,2});
+                                lista.add(new int[]{filaOrigen,columnaOrigen,filaOrigen + 1,columnaOrigen +1,3});
+                                lista.add(new int[]{filaOrigen,columnaOrigen,filaOrigen + 1,columnaOrigen +1,4});
+                            }else{
+                                lista.add(new int[]{filaOrigen,columnaOrigen,filaOrigen + 1,columnaOrigen +1});
+                            }
             }
         }else{
             if(filaOrigen == 6){
@@ -34,7 +65,37 @@ public class Peon implements Pieza {
                 
             }else{
                 if(tablero[filaOrigen -1 ][columnaOrigen] == null) 
-                    lista.add(new int[]{filaOrigen,columnaOrigen,filaOrigen - 1,columnaOrigen});
+                    if(filaOrigen -1 == 0){
+                        lista.add(new int[]{filaOrigen,columnaOrigen,filaOrigen - 1,columnaOrigen,1});
+                        lista.add(new int[]{filaOrigen,columnaOrigen,filaOrigen - 1,columnaOrigen,2});
+                        lista.add(new int[]{filaOrigen,columnaOrigen,filaOrigen - 1,columnaOrigen,3});
+                        lista.add(new int[]{filaOrigen,columnaOrigen,filaOrigen - 1,columnaOrigen,4});
+                    }else{
+                        lista.add(new int[]{filaOrigen,columnaOrigen,filaOrigen - 1,columnaOrigen});
+                    }
+
+                    if(columnaOrigen > 0)
+                    if(tablero[filaOrigen -1][columnaOrigen -1] != null)
+                        if(tablero[filaOrigen -1][columnaOrigen -1].EsBlanca())
+                            if(filaOrigen - 1 ==0){
+                                lista.add(new int[]{filaOrigen,columnaOrigen,filaOrigen - 1,columnaOrigen -1,1});
+                                lista.add(new int[]{filaOrigen,columnaOrigen,filaOrigen - 1,columnaOrigen -1,2});
+                                lista.add(new int[]{filaOrigen,columnaOrigen,filaOrigen - 1,columnaOrigen -1,3});
+                                lista.add(new int[]{filaOrigen,columnaOrigen,filaOrigen - 1,columnaOrigen -1,4});
+                            }else{
+                                lista.add(new int[]{filaOrigen,columnaOrigen,filaOrigen - 1,columnaOrigen -1});
+                            }
+                    if(columnaOrigen < 7)
+                    if(tablero[filaOrigen -1][columnaOrigen +1] != null)
+                        if(tablero[filaOrigen -1][columnaOrigen +1].EsBlanca())
+                            if(filaOrigen - 1 == 0){
+                                lista.add(new int[]{filaOrigen,columnaOrigen,filaOrigen - 1,columnaOrigen +1,1});
+                                lista.add(new int[]{filaOrigen,columnaOrigen,filaOrigen - 1,columnaOrigen +1,2});
+                                lista.add(new int[]{filaOrigen,columnaOrigen,filaOrigen - 1,columnaOrigen +1,3});
+                                lista.add(new int[]{filaOrigen,columnaOrigen,filaOrigen - 1,columnaOrigen +1,4});
+                            }else{
+                                lista.add(new int[]{filaOrigen,columnaOrigen,filaOrigen - 1,columnaOrigen +1});
+                            }
             }
         }
         return lista;
