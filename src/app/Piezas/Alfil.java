@@ -1,5 +1,6 @@
 package app.Piezas;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -12,7 +13,68 @@ public class Alfil implements Pieza{
     }
     @Override
     public List<int[]> ObtenerMovimientos(Pieza[][] tablero, int[] posicion) {
-        return null;
+        int filaOrigen = posicion[0];
+        int columnaOrigen = posicion[1];
+
+        var lista = new ArrayList<int[]>();
+
+        var f = filaOrigen + 1;
+        var c = columnaOrigen + 1;
+        while(f < 8 && c < 8){
+            if(tablero[f][c] !=null){
+                if(tablero[f][c].EsBlanca() != this.EsBlanca()){
+                    lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
+                }
+                break;
+            }else{
+                lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
+            }
+            ++f;++c;
+        }
+
+         f = filaOrigen -1;
+         c = columnaOrigen -1;
+        while(f >= 0 && c >=0){
+            if(tablero[f][c] !=null){
+                if(tablero[f][c].EsBlanca() != this.EsBlanca()){
+                    lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
+                }
+                break;
+            }else{
+                lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
+            }
+            --f;--c;
+        }
+
+         f = filaOrigen +1;
+         c = columnaOrigen -1;
+        while(f < 8 && c >=0){
+            if(tablero[f][c] !=null){
+                if(tablero[f][c].EsBlanca() != this.EsBlanca()){
+                    lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
+                }
+                break;
+            }else{
+                lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
+            }
+            ++f;--c;
+        }
+
+         f = filaOrigen -1;
+         c = columnaOrigen +1;
+        while(f >= 0 && c < 8){
+            if(tablero[f][c] !=null){
+                if(tablero[f][c].EsBlanca() != this.EsBlanca()){
+                    lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
+                }
+                break;
+            }else{
+                lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
+            }
+            --f;++c;
+        }
+        
+        return lista;
     }
 
     @Override
