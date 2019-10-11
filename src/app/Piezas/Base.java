@@ -1,5 +1,7 @@
 package app.Piezas;
 
+import java.util.List;
+
 /**
  * Base
  */
@@ -199,5 +201,35 @@ public class Base {
         }
         }
         return false;
+    }
+    public List<int[]> MovimientosValidos(List<int[]> movimientos, Pieza[][] tablero,boolean blanco){
+
+        var iterator = movimientos.iterator();
+        while(iterator.hasNext()){
+            if(!MovimientoValido(iterator.next(),tablero,blanco))
+            {
+                iterator.remove();
+            }
+        }
+        return movimientos; 
+    }
+    private boolean MovimientoValido(int[] movimiento,Pieza [][] tablero,boolean blanco){
+        var fo = movimiento[0];
+        var co = movimiento[1];
+        var fd = movimiento[2];
+        var cd = movimiento[3];
+
+        Pieza piezaActual  = tablero[fo][co];
+        Pieza piezaDestino = tablero[fd][cd];
+
+        tablero[fo][co] = null;
+        tablero[fd][cd] = piezaActual;
+
+        var jaque = ReyEnJaque(tablero,blanco);
+
+        tablero[fd][cd] = piezaDestino;
+        tablero[fo][co] = piezaActual;
+
+        return !jaque;
     }
 }

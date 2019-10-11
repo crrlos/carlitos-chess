@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Caballo
  */
-public class Caballo implements Pieza{
+public class Caballo extends Base implements Pieza{
     public boolean esBlanco;
    public Caballo(boolean bando){
         this.esBlanco = bando;
@@ -101,7 +101,7 @@ public class Caballo implements Pieza{
                 lista.add( new int[]{filaOrigen,columnaOrigen,filaOrigen -1,columnaOrigen +2});
         }
         }
-        return lista;
+        return MovimientosValidos(lista, tablero, esBlanco);
     }
 
 

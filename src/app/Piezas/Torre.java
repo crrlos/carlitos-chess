@@ -82,38 +82,7 @@ public class Torre extends Base implements Pieza{
             i--;
         }
 
-        return MovimientosValidos(lista, tablero);
-    }
-
-    private List<int[]> MovimientosValidos(List<int[]> movimientos, Pieza[][] tablero){
-
-        var iterator = movimientos.iterator();
-        while(iterator.hasNext()){
-            if(!MovimientoValido(iterator.next(),tablero))
-            {
-                iterator.remove();
-            }
-        }
-        return movimientos; 
-    }
-    private boolean MovimientoValido(int[] movimiento,Pieza [][] tablero){
-        var fo = movimiento[0];
-        var co = movimiento[1];
-        var fd = movimiento[2];
-        var cd = movimiento[3];
-
-        Pieza piezaActual  = tablero[fo][co];
-        Pieza piezaDestino = tablero[fd][cd];
-
-        tablero[fo][co] = null;
-        tablero[fd][cd] = piezaActual;
-
-        var jaque = ReyEnJaque(tablero,esBlanco);
-
-        tablero[fd][cd] = piezaDestino;
-        tablero[fo][co] = piezaActual;
-
-        return !jaque;
+        return MovimientosValidos(lista, tablero,esBlanco);
     }
 
     @Override

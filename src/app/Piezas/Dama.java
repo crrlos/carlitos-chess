@@ -24,12 +24,12 @@ public class Dama extends Base  implements Pieza{
 
             if(tablero[f][c] !=null){
                 if(tablero[f][c].EsBlanca() != this.EsBlanca() && !(tablero[f][c] instanceof Rey)){
-                    if(!ReyEnJaque(tablero,esBlanco))
+                    
                         lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
                 }
                 break;
             }else{
-                if(!ReyEnJaque(tablero,esBlanco))
+                
                     lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
             }
             f++; c++;
@@ -41,12 +41,12 @@ public class Dama extends Base  implements Pieza{
             
             if(tablero[f][c] !=null){
                 if(tablero[f][c].EsBlanca() != this.EsBlanca() && !(tablero[f][c] instanceof Rey)){
-                    if(!ReyEnJaque(tablero,esBlanco))
+                    
                     lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
                 }
                 break;
             }else{
-                if(!ReyEnJaque(tablero,esBlanco))
+                
                 lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
             }
             f--;c--;
@@ -58,12 +58,12 @@ public class Dama extends Base  implements Pieza{
             
             if(tablero[f][c] !=null){
                 if(tablero[f][c].EsBlanca() != this.EsBlanca() && !(tablero[f][c] instanceof Rey)){
-                    if(!ReyEnJaque(tablero,esBlanco))
+                    
                     lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
                 }
                 break;
             }else{
-                if(!ReyEnJaque(tablero,esBlanco))
+                
                 lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
             }
             f++;c--;
@@ -74,12 +74,12 @@ public class Dama extends Base  implements Pieza{
         while(f >= 0 && c < 8){
             if(tablero[f][c] !=null){
                 if(tablero[f][c].EsBlanca() != this.EsBlanca() && !(tablero[f][c] instanceof Rey)){
-                    if(!ReyEnJaque(tablero,esBlanco))
+                    
                     lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
                 }
                 break;
             }else{
-                if(!ReyEnJaque(tablero,esBlanco))
+                
                 lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
             }
             f--;c++;
@@ -91,11 +91,11 @@ public class Dama extends Base  implements Pieza{
 
             posicionActual = tablero[i][columnaOrigen];
             if( posicionActual == null){
-                if(!ReyEnJaque(tablero,esBlanco))
+                
                     lista.add( new int[]{filaOrigen,columnaOrigen,i,columnaOrigen});
             }else{
                 if(posicionActual.EsBlanca() != this.EsBlanca() && !(posicionActual instanceof Rey)){
-                    if(!ReyEnJaque(tablero,esBlanco))
+                    
                         lista.add( new int[]{filaOrigen,columnaOrigen,i,columnaOrigen});
                 }
                  break;
@@ -106,11 +106,11 @@ public class Dama extends Base  implements Pieza{
         while(i >= 0 ){
             posicionActual = tablero[i][columnaOrigen];
             if( posicionActual == null){
-                if(!ReyEnJaque(tablero,esBlanco))
+                
                     lista.add( new int[]{filaOrigen,columnaOrigen,i,columnaOrigen});
             }else{
                 if(posicionActual.EsBlanca() != this.EsBlanca() && !(posicionActual instanceof Rey)){
-                    if(!ReyEnJaque(tablero,esBlanco))
+                    
                         lista.add( new int[]{filaOrigen,columnaOrigen,i,columnaOrigen});
                 }
                  break;
@@ -121,11 +121,11 @@ public class Dama extends Base  implements Pieza{
         while(i < 8  ){
             posicionActual = tablero[filaOrigen][i];
             if( posicionActual == null){
-                if(!ReyEnJaque(tablero,esBlanco))
+                
                     lista.add( new int[]{filaOrigen,columnaOrigen,i,columnaOrigen});
             }else{
                 if(posicionActual.EsBlanca() != this.EsBlanca() && !(posicionActual instanceof Rey)){
-                    if(!ReyEnJaque(tablero,esBlanco))
+                    
                         lista.add( new int[]{filaOrigen,columnaOrigen,i,columnaOrigen});
                 }
                  break;
@@ -136,18 +136,18 @@ public class Dama extends Base  implements Pieza{
         while(i >= 0  ){
             posicionActual = tablero[filaOrigen][i];
             if( posicionActual == null){
-                if(!ReyEnJaque(tablero,esBlanco))
+                
                     lista.add( new int[]{filaOrigen,columnaOrigen,i,columnaOrigen});
             }else{
                 if(posicionActual.EsBlanca() != this.EsBlanca() && !(posicionActual instanceof Rey)){
-                    if(!ReyEnJaque(tablero,esBlanco))
+                    
                         lista.add( new int[]{filaOrigen,columnaOrigen,i,columnaOrigen});
                 }
                  break;
             }
             i--;
         }
-        return lista;
+        return MovimientosValidos(lista, tablero, esBlanco);
     }
     @Override
     public boolean EsBlanca() {

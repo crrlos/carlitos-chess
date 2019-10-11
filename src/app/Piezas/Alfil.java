@@ -24,12 +24,12 @@ public class Alfil  extends Base implements Pieza{
 
             if(tablero[f][c] !=null){
                 if(tablero[f][c].EsBlanca() != this.EsBlanca() && !(tablero[f][c] instanceof Rey)){
-                    if(!ReyEnJaque(tablero,esBlanco))
+                    
                         lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
                 }
                 break;
             }else{
-                if(!ReyEnJaque(tablero,esBlanco))
+                
                     lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
             }
             f++; c++;
@@ -41,12 +41,12 @@ public class Alfil  extends Base implements Pieza{
             
             if(tablero[f][c] !=null){
                 if(tablero[f][c].EsBlanca() != this.EsBlanca() && !(tablero[f][c] instanceof Rey)){
-                    if(!ReyEnJaque(tablero,esBlanco))
+                    
                     lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
                 }
                 break;
             }else{
-                if(!ReyEnJaque(tablero,esBlanco))
+                
                 lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
             }
             f--;c--;
@@ -58,12 +58,12 @@ public class Alfil  extends Base implements Pieza{
             
             if(tablero[f][c] !=null){
                 if(tablero[f][c].EsBlanca() != this.EsBlanca() && !(tablero[f][c] instanceof Rey)){
-                    if(!ReyEnJaque(tablero,esBlanco))
+                    
                     lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
                 }
                 break;
             }else{
-                if(!ReyEnJaque(tablero,esBlanco))
+                
                 lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
             }
             f++;c--;
@@ -74,18 +74,18 @@ public class Alfil  extends Base implements Pieza{
         while(f >= 0 && c < 8){
             if(tablero[f][c] !=null){
                 if(tablero[f][c].EsBlanca() != this.EsBlanca() && !(tablero[f][c] instanceof Rey)){
-                    if(!ReyEnJaque(tablero,esBlanco))
+                    
                     lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
                 }
                 break;
             }else{
-                if(!ReyEnJaque(tablero,esBlanco))
+                
                 lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
             }
             f--;c++;
         }
         
-        return lista;
+        return MovimientosValidos(lista, tablero, esBlanco);
     }
 
     
