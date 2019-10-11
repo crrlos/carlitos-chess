@@ -25,11 +25,11 @@ public class Torre extends Base implements Pieza{
 
             posicionActual = tablero[i][columnaOrigen];
             if( posicionActual == null){
-                if(!ReyEnJaque(tablero,esBlanco))
+                
                     lista.add( new int[]{filaOrigen,columnaOrigen,i,columnaOrigen});
             }else{
                 if(posicionActual.EsBlanca() != this.EsBlanca() && !(posicionActual instanceof Rey)){
-                    if(!ReyEnJaque(tablero,esBlanco))
+                    
                         lista.add( new int[]{filaOrigen,columnaOrigen,i,columnaOrigen});
                 }
                  break;
@@ -40,11 +40,11 @@ public class Torre extends Base implements Pieza{
         while(i >= 0 ){
             posicionActual = tablero[i][columnaOrigen];
             if( posicionActual == null){
-                if(!ReyEnJaque(tablero,esBlanco))
+                
                     lista.add( new int[]{filaOrigen,columnaOrigen,i,columnaOrigen});
             }else{
                 if(posicionActual.EsBlanca() != this.EsBlanca() && !(posicionActual instanceof Rey)){
-                    if(!ReyEnJaque(tablero,esBlanco))
+                    
                         lista.add( new int[]{filaOrigen,columnaOrigen,i,columnaOrigen});
                 }
                  break;
@@ -55,11 +55,11 @@ public class Torre extends Base implements Pieza{
         while(i < 8  ){
             posicionActual = tablero[filaOrigen][i];
             if( posicionActual == null){
-                if(!ReyEnJaque(tablero,esBlanco))
+                
                     lista.add( new int[]{filaOrigen,columnaOrigen,i,columnaOrigen});
             }else{
                 if(posicionActual.EsBlanca() != this.EsBlanca() && !(posicionActual instanceof Rey)){
-                    if(!ReyEnJaque(tablero,esBlanco))
+                    
                         lista.add( new int[]{filaOrigen,columnaOrigen,i,columnaOrigen});
                 }
                  break;
@@ -70,18 +70,50 @@ public class Torre extends Base implements Pieza{
         while(i >= 0  ){
             posicionActual = tablero[filaOrigen][i];
             if( posicionActual == null){
-                if(!ReyEnJaque(tablero,esBlanco))
+                
                     lista.add( new int[]{filaOrigen,columnaOrigen,i,columnaOrigen});
             }else{
                 if(posicionActual.EsBlanca() != this.EsBlanca() && !(posicionActual instanceof Rey)){
-                    if(!ReyEnJaque(tablero,esBlanco))
+                    
                         lista.add( new int[]{filaOrigen,columnaOrigen,i,columnaOrigen});
                 }
                  break;
             }
             i--;
         }
-        return lista;
+
+        return MovimientosValidos(lista, tablero);
+    }
+
+    private List<int[]> MovimientosValidos(List<int[]> movimientos, Pieza[][] tablero){
+
+        var iterator = movimientos.iterator();
+        while(iterator.hasNext()){
+            if(!MovimientoValido(iterator.next(),tablero))
+            {
+                iterator.remove();
+            }
+        }
+        return movimientos; 
+    }
+    private boolean MovimientoValido(int[] movimiento,Pieza [][] tablero){
+        var fo = movimiento[0];
+        var co = movimiento[1];
+        var fd = movimiento[2];
+        var cd = movimiento[3];
+
+        Pieza piezaActual  = tablero[fo][co];
+        Pieza piezaDestino = tablero[fd][cd];
+
+        tablero[fo][co] = null;
+        tablero[fd][cd] = piezaActual;
+
+        var jaque = ReyEnJaque(tablero,esBlanco);
+
+        tablero[fd][cd] = piezaDestino;
+        tablero[fo][co] = piezaActual;
+
+        return !jaque;
     }
 
     @Override

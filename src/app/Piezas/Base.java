@@ -4,7 +4,6 @@ package app.Piezas;
  * Base
  */
 public class Base {
-
     public boolean CasillaAtacada(int fila, int columna, Pieza[][] tablero,boolean blanco){
          
         if(AtaqueFilaColumna(fila, columna, tablero, blanco)) return true;
