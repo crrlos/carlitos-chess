@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Dama
  */
-public class Dama  implements Pieza{
+public class Dama extends Base  implements Pieza{
     public boolean esBlanco;
     public Dama(boolean bando){
         this.esBlanco = bando;
@@ -21,43 +21,52 @@ public class Dama  implements Pieza{
         var f = filaOrigen + 1;
         var c = columnaOrigen + 1;
         while(f < 8 && c < 8){
+
             if(tablero[f][c] !=null){
                 if(tablero[f][c].EsBlanca() != this.EsBlanca() && !(tablero[f][c] instanceof Rey)){
-                    lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
+                    if(!ReyEnJaque(tablero,esBlanco))
+                        lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
                 }
                 break;
             }else{
-                lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
+                if(!ReyEnJaque(tablero,esBlanco))
+                    lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
             }
-            ++f;++c;
+            f++; c++;
         }
 
          f = filaOrigen -1;
          c = columnaOrigen -1;
         while(f >= 0 && c >=0){
+            
             if(tablero[f][c] !=null){
                 if(tablero[f][c].EsBlanca() != this.EsBlanca() && !(tablero[f][c] instanceof Rey)){
+                    if(!ReyEnJaque(tablero,esBlanco))
                     lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
                 }
                 break;
             }else{
+                if(!ReyEnJaque(tablero,esBlanco))
                 lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
             }
-            --f;--c;
+            f--;c--;
         }
 
          f = filaOrigen +1;
          c = columnaOrigen -1;
         while(f < 8 && c >=0){
+            
             if(tablero[f][c] !=null){
                 if(tablero[f][c].EsBlanca() != this.EsBlanca() && !(tablero[f][c] instanceof Rey)){
+                    if(!ReyEnJaque(tablero,esBlanco))
                     lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
                 }
                 break;
             }else{
+                if(!ReyEnJaque(tablero,esBlanco))
                 lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
             }
-            ++f;--c;
+            f++;c--;
         }
 
          f = filaOrigen -1;
@@ -65,67 +74,78 @@ public class Dama  implements Pieza{
         while(f >= 0 && c < 8){
             if(tablero[f][c] !=null){
                 if(tablero[f][c].EsBlanca() != this.EsBlanca() && !(tablero[f][c] instanceof Rey)){
+                    if(!ReyEnJaque(tablero,esBlanco))
                     lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
                 }
                 break;
             }else{
+                if(!ReyEnJaque(tablero,esBlanco))
                 lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
             }
-            --f;++c;
+            f--;c++;
         }
 
         var i = filaOrigen +1;
 
         while(i < 8){
+
             posicionActual = tablero[i][columnaOrigen];
             if( posicionActual == null){
-                lista.add( new int[]{filaOrigen,columnaOrigen,i,columnaOrigen});
+                if(!ReyEnJaque(tablero,esBlanco))
+                    lista.add( new int[]{filaOrigen,columnaOrigen,i,columnaOrigen});
             }else{
                 if(posicionActual.EsBlanca() != this.EsBlanca() && !(posicionActual instanceof Rey)){
-                    lista.add( new int[]{filaOrigen,columnaOrigen,i,columnaOrigen});
+                    if(!ReyEnJaque(tablero,esBlanco))
+                        lista.add( new int[]{filaOrigen,columnaOrigen,i,columnaOrigen});
                 }
                  break;
             }
-            ++i;
+            i++;
         }
-        i = filaOrigen -1;
+        i = filaOrigen - 1;
         while(i >= 0 ){
             posicionActual = tablero[i][columnaOrigen];
             if( posicionActual == null){
-                lista.add( new int[]{filaOrigen,columnaOrigen,i,columnaOrigen});
+                if(!ReyEnJaque(tablero,esBlanco))
+                    lista.add( new int[]{filaOrigen,columnaOrigen,i,columnaOrigen});
             }else{
                 if(posicionActual.EsBlanca() != this.EsBlanca() && !(posicionActual instanceof Rey)){
-                    lista.add( new int[]{filaOrigen,columnaOrigen,i,columnaOrigen});
+                    if(!ReyEnJaque(tablero,esBlanco))
+                        lista.add( new int[]{filaOrigen,columnaOrigen,i,columnaOrigen});
                 }
-                break;
+                 break;
             }
-            --i;
+            i--;
         }
         i = columnaOrigen + 1;
         while(i < 8  ){
             posicionActual = tablero[filaOrigen][i];
             if( posicionActual == null){
-                lista.add( new int[]{filaOrigen,columnaOrigen,filaOrigen,i});
+                if(!ReyEnJaque(tablero,esBlanco))
+                    lista.add( new int[]{filaOrigen,columnaOrigen,i,columnaOrigen});
             }else{
                 if(posicionActual.EsBlanca() != this.EsBlanca() && !(posicionActual instanceof Rey)){
-                    lista.add( new int[]{filaOrigen,columnaOrigen,filaOrigen,i});
+                    if(!ReyEnJaque(tablero,esBlanco))
+                        lista.add( new int[]{filaOrigen,columnaOrigen,i,columnaOrigen});
                 }
-                break;
+                 break;
             }
-            ++i;
+            i++;
         }
         i = columnaOrigen - 1;
         while(i >= 0  ){
             posicionActual = tablero[filaOrigen][i];
-            if(posicionActual == null){
-                lista.add( new int[]{filaOrigen,columnaOrigen,filaOrigen,i});
+            if( posicionActual == null){
+                if(!ReyEnJaque(tablero,esBlanco))
+                    lista.add( new int[]{filaOrigen,columnaOrigen,i,columnaOrigen});
             }else{
                 if(posicionActual.EsBlanca() != this.EsBlanca() && !(posicionActual instanceof Rey)){
-                    lista.add( new int[]{filaOrigen,columnaOrigen,filaOrigen,i});
+                    if(!ReyEnJaque(tablero,esBlanco))
+                        lista.add( new int[]{filaOrigen,columnaOrigen,i,columnaOrigen});
                 }
-                break;
+                 break;
             }
-            --i;
+            i--;
         }
         return lista;
     }

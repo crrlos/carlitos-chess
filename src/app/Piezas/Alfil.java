@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Alfil
  */
-public class Alfil implements Pieza{
+public class Alfil  extends Base implements Pieza{
     public boolean esBlanco;
     public Alfil(boolean bando){
         this.esBlanco = bando;
@@ -21,43 +21,52 @@ public class Alfil implements Pieza{
         var f = filaOrigen + 1;
         var c = columnaOrigen + 1;
         while(f < 8 && c < 8){
+
             if(tablero[f][c] !=null){
                 if(tablero[f][c].EsBlanca() != this.EsBlanca() && !(tablero[f][c] instanceof Rey)){
-                    lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
+                    if(!ReyEnJaque(tablero,esBlanco))
+                        lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
                 }
                 break;
             }else{
-                lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
+                if(!ReyEnJaque(tablero,esBlanco))
+                    lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
             }
-            ++f;++c;
+            f++; c++;
         }
 
          f = filaOrigen -1;
          c = columnaOrigen -1;
         while(f >= 0 && c >=0){
+            
             if(tablero[f][c] !=null){
                 if(tablero[f][c].EsBlanca() != this.EsBlanca() && !(tablero[f][c] instanceof Rey)){
+                    if(!ReyEnJaque(tablero,esBlanco))
                     lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
                 }
                 break;
             }else{
+                if(!ReyEnJaque(tablero,esBlanco))
                 lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
             }
-            --f;--c;
+            f--;c--;
         }
 
          f = filaOrigen +1;
          c = columnaOrigen -1;
         while(f < 8 && c >=0){
+            
             if(tablero[f][c] !=null){
                 if(tablero[f][c].EsBlanca() != this.EsBlanca() && !(tablero[f][c] instanceof Rey)){
+                    if(!ReyEnJaque(tablero,esBlanco))
                     lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
                 }
                 break;
             }else{
+                if(!ReyEnJaque(tablero,esBlanco))
                 lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
             }
-            ++f;--c;
+            f++;c--;
         }
 
          f = filaOrigen -1;
@@ -65,13 +74,15 @@ public class Alfil implements Pieza{
         while(f >= 0 && c < 8){
             if(tablero[f][c] !=null){
                 if(tablero[f][c].EsBlanca() != this.EsBlanca() && !(tablero[f][c] instanceof Rey)){
+                    if(!ReyEnJaque(tablero,esBlanco))
                     lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
                 }
                 break;
             }else{
+                if(!ReyEnJaque(tablero,esBlanco))
                 lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
             }
-            --f;++c;
+            f--;c++;
         }
         
         return lista;
