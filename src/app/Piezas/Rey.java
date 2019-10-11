@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Rey
  */
-public class Rey implements Pieza{
+public class Rey extends Base implements Pieza{
     public boolean esBlanco;
     public Rey(boolean bando){
         this.esBlanco = bando;
@@ -78,7 +78,7 @@ public class Rey implements Pieza{
         }
 
 
-        return lista;
+        return MovimientosValidos(lista, tablero, esBlanco);
     }
 
     

@@ -3,7 +3,7 @@ package app.Piezas;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Peon implements Pieza {
+public class Peon extends Base implements Pieza {
     public boolean esBlanco;
     public Peon(boolean bando){
         this.esBlanco = bando;
@@ -106,7 +106,7 @@ public class Peon implements Pieza {
                         }
             }
         }
-        return lista;
+        return MovimientosValidos(lista, tablero, esBlanco);
     }
 
     @Override
