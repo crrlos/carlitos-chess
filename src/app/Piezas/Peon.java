@@ -12,7 +12,7 @@ public class Peon implements Pieza {
     public List<int[]> ObtenerMovimientos(Pieza[][] tablero, int[] posicion) {
         int filaOrigen = posicion[0];
         int columnaOrigen = posicion[1];
-
+        Pieza posicionActual;
         var lista = new ArrayList<int[]>();
         if(esBlanco){
             if(filaOrigen == 1){
@@ -33,9 +33,10 @@ public class Peon implements Pieza {
                     }
                 }
 
-                if(columnaOrigen > 0)
-                    if(tablero[filaOrigen + 1][columnaOrigen -1] != null)
-                        if(!tablero[filaOrigen + 1][columnaOrigen -1].EsBlanca())
+                if(columnaOrigen > 0){
+                    posicionActual = tablero[filaOrigen + 1][columnaOrigen -1];
+                    if( posicionActual != null)
+                        if(!posicionActual.EsBlanca() && !(posicionActual instanceof Rey))
                             if(filaOrigen + 1 == 7){
                                 lista.add(new int[]{filaOrigen,columnaOrigen,filaOrigen + 1,columnaOrigen -1,1});
                                 lista.add(new int[]{filaOrigen,columnaOrigen,filaOrigen + 1,columnaOrigen -1,2});
@@ -44,9 +45,11 @@ public class Peon implements Pieza {
                             }else{
                                 lista.add(new int[]{filaOrigen,columnaOrigen,filaOrigen + 1,columnaOrigen -1});
                             }
-                if(columnaOrigen < 7)
-                    if(tablero[filaOrigen + 1][columnaOrigen +1] != null)
-                        if(!tablero[filaOrigen +1][columnaOrigen +1].EsBlanca())
+                        }
+                if(columnaOrigen < 7){
+                    posicionActual = tablero[filaOrigen + 1][columnaOrigen +1];
+                    if(posicionActual!= null)
+                        if(!posicionActual.EsBlanca() && !(posicionActual instanceof Rey))
                             if(filaOrigen + 1 == 7){
                                 lista.add(new int[]{filaOrigen,columnaOrigen,filaOrigen + 1,columnaOrigen +1,1});
                                 lista.add(new int[]{filaOrigen,columnaOrigen,filaOrigen + 1,columnaOrigen +1,2});
@@ -55,6 +58,7 @@ public class Peon implements Pieza {
                             }else{
                                 lista.add(new int[]{filaOrigen,columnaOrigen,filaOrigen + 1,columnaOrigen +1});
                             }
+                        }
             }
         }else{
             if(filaOrigen == 6){
@@ -74,10 +78,11 @@ public class Peon implements Pieza {
                         lista.add(new int[]{filaOrigen,columnaOrigen,filaOrigen - 1,columnaOrigen});
                     }
 
-                    if(columnaOrigen > 0)
-                    if(tablero[filaOrigen -1][columnaOrigen -1] != null)
-                        if(tablero[filaOrigen -1][columnaOrigen -1].EsBlanca())
-                            if(filaOrigen - 1 ==0){
+                    if(columnaOrigen > 0){
+                        posicionActual = tablero[filaOrigen -1][columnaOrigen -1];
+                    if(posicionActual != null)
+                        if(posicionActual.EsBlanca() && !(posicionActual instanceof Rey))
+                            if(filaOrigen - 1 == 0){
                                 lista.add(new int[]{filaOrigen,columnaOrigen,filaOrigen - 1,columnaOrigen -1,1});
                                 lista.add(new int[]{filaOrigen,columnaOrigen,filaOrigen - 1,columnaOrigen -1,2});
                                 lista.add(new int[]{filaOrigen,columnaOrigen,filaOrigen - 1,columnaOrigen -1,3});
@@ -85,9 +90,11 @@ public class Peon implements Pieza {
                             }else{
                                 lista.add(new int[]{filaOrigen,columnaOrigen,filaOrigen - 1,columnaOrigen -1});
                             }
-                    if(columnaOrigen < 7)
-                    if(tablero[filaOrigen -1][columnaOrigen +1] != null)
-                        if(tablero[filaOrigen -1][columnaOrigen +1].EsBlanca())
+                        }
+                    if(columnaOrigen < 7){
+                        posicionActual = tablero[filaOrigen -1][columnaOrigen +1];
+                    if( posicionActual != null)
+                        if(posicionActual.EsBlanca() && !(posicionActual instanceof Rey))
                             if(filaOrigen - 1 == 0){
                                 lista.add(new int[]{filaOrigen,columnaOrigen,filaOrigen - 1,columnaOrigen +1,1});
                                 lista.add(new int[]{filaOrigen,columnaOrigen,filaOrigen - 1,columnaOrigen +1,2});
@@ -96,6 +103,7 @@ public class Peon implements Pieza {
                             }else{
                                 lista.add(new int[]{filaOrigen,columnaOrigen,filaOrigen - 1,columnaOrigen +1});
                             }
+                        }
             }
         }
         return lista;

@@ -15,14 +15,14 @@ public class Dama  implements Pieza{
     public List<int[]> ObtenerMovimientos(Pieza[][] tablero, int[] posicion) {
         int filaOrigen = posicion[0];
         int columnaOrigen = posicion[1];
-
+        Pieza posicionActual;
         var lista = new ArrayList<int[]>();
         
         var f = filaOrigen + 1;
         var c = columnaOrigen + 1;
         while(f < 8 && c < 8){
             if(tablero[f][c] !=null){
-                if(tablero[f][c].EsBlanca() != this.EsBlanca()){
+                if(tablero[f][c].EsBlanca() != this.EsBlanca() && !(tablero[f][c] instanceof Rey)){
                     lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
                 }
                 break;
@@ -36,7 +36,7 @@ public class Dama  implements Pieza{
          c = columnaOrigen -1;
         while(f >= 0 && c >=0){
             if(tablero[f][c] !=null){
-                if(tablero[f][c].EsBlanca() != this.EsBlanca()){
+                if(tablero[f][c].EsBlanca() != this.EsBlanca() && !(tablero[f][c] instanceof Rey)){
                     lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
                 }
                 break;
@@ -50,7 +50,7 @@ public class Dama  implements Pieza{
          c = columnaOrigen -1;
         while(f < 8 && c >=0){
             if(tablero[f][c] !=null){
-                if(tablero[f][c].EsBlanca() != this.EsBlanca()){
+                if(tablero[f][c].EsBlanca() != this.EsBlanca() && !(tablero[f][c] instanceof Rey)){
                     lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
                 }
                 break;
@@ -64,7 +64,7 @@ public class Dama  implements Pieza{
          c = columnaOrigen +1;
         while(f >= 0 && c < 8){
             if(tablero[f][c] !=null){
-                if(tablero[f][c].EsBlanca() != this.EsBlanca()){
+                if(tablero[f][c].EsBlanca() != this.EsBlanca() && !(tablero[f][c] instanceof Rey)){
                     lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
                 }
                 break;
@@ -77,10 +77,11 @@ public class Dama  implements Pieza{
         var i = filaOrigen +1;
 
         while(i < 8){
-            if(tablero[i][columnaOrigen] == null){
+            posicionActual = tablero[i][columnaOrigen];
+            if( posicionActual == null){
                 lista.add( new int[]{filaOrigen,columnaOrigen,i,columnaOrigen});
             }else{
-                if(tablero[i][columnaOrigen].EsBlanca() != this.EsBlanca()){
+                if(posicionActual.EsBlanca() != this.EsBlanca() && !(posicionActual instanceof Rey)){
                     lista.add( new int[]{filaOrigen,columnaOrigen,i,columnaOrigen});
                 }
                  break;
@@ -88,11 +89,12 @@ public class Dama  implements Pieza{
             ++i;
         }
         i = filaOrigen -1;
-        while(i >=0 ){
-            if(tablero[i][columnaOrigen] == null){
+        while(i >= 0 ){
+            posicionActual = tablero[i][columnaOrigen];
+            if( posicionActual == null){
                 lista.add( new int[]{filaOrigen,columnaOrigen,i,columnaOrigen});
             }else{
-                if(tablero[i][columnaOrigen].EsBlanca() != this.EsBlanca()){
+                if(posicionActual.EsBlanca() != this.EsBlanca() && !(posicionActual instanceof Rey)){
                     lista.add( new int[]{filaOrigen,columnaOrigen,i,columnaOrigen});
                 }
                 break;
@@ -100,11 +102,12 @@ public class Dama  implements Pieza{
             --i;
         }
         i = columnaOrigen + 1;
-        while(i <8  ){
-            if(tablero[filaOrigen][columnaOrigen] == null){
+        while(i < 8  ){
+            posicionActual = tablero[filaOrigen][i];
+            if( posicionActual == null){
                 lista.add( new int[]{filaOrigen,columnaOrigen,filaOrigen,i});
             }else{
-                if(tablero[filaOrigen][columnaOrigen].EsBlanca() != this.EsBlanca()){
+                if(posicionActual.EsBlanca() != this.EsBlanca() && !(posicionActual instanceof Rey)){
                     lista.add( new int[]{filaOrigen,columnaOrigen,filaOrigen,i});
                 }
                 break;
@@ -113,17 +116,17 @@ public class Dama  implements Pieza{
         }
         i = columnaOrigen - 1;
         while(i >= 0  ){
-            if(tablero[filaOrigen][columnaOrigen] == null){
+            posicionActual = tablero[filaOrigen][i];
+            if(posicionActual == null){
                 lista.add( new int[]{filaOrigen,columnaOrigen,filaOrigen,i});
             }else{
-                if(tablero[filaOrigen][columnaOrigen].EsBlanca() != this.EsBlanca()){
+                if(posicionActual.EsBlanca() != this.EsBlanca() && !(posicionActual instanceof Rey)){
                     lista.add( new int[]{filaOrigen,columnaOrigen,filaOrigen,i});
                 }
                 break;
             }
             --i;
         }
-
         return lista;
     }
     @Override

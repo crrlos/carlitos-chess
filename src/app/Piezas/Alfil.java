@@ -22,7 +22,7 @@ public class Alfil implements Pieza{
         var c = columnaOrigen + 1;
         while(f < 8 && c < 8){
             if(tablero[f][c] !=null){
-                if(tablero[f][c].EsBlanca() != this.EsBlanca()){
+                if(tablero[f][c].EsBlanca() != this.EsBlanca() && !(tablero[f][c] instanceof Rey)){
                     lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
                 }
                 break;
@@ -36,7 +36,7 @@ public class Alfil implements Pieza{
          c = columnaOrigen -1;
         while(f >= 0 && c >=0){
             if(tablero[f][c] !=null){
-                if(tablero[f][c].EsBlanca() != this.EsBlanca()){
+                if(tablero[f][c].EsBlanca() != this.EsBlanca() && !(tablero[f][c] instanceof Rey)){
                     lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
                 }
                 break;
@@ -50,7 +50,7 @@ public class Alfil implements Pieza{
          c = columnaOrigen -1;
         while(f < 8 && c >=0){
             if(tablero[f][c] !=null){
-                if(tablero[f][c].EsBlanca() != this.EsBlanca()){
+                if(tablero[f][c].EsBlanca() != this.EsBlanca() && !(tablero[f][c] instanceof Rey)){
                     lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
                 }
                 break;
@@ -64,7 +64,7 @@ public class Alfil implements Pieza{
          c = columnaOrigen +1;
         while(f >= 0 && c < 8){
             if(tablero[f][c] !=null){
-                if(tablero[f][c].EsBlanca() != this.EsBlanca()){
+                if(tablero[f][c].EsBlanca() != this.EsBlanca() && !(tablero[f][c] instanceof Rey)){
                     lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
                 }
                 break;
