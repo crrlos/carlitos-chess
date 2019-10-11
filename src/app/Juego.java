@@ -23,32 +23,43 @@ public class Juego {
     private String filas = "12345678";
     private String columnas = "abcdefgh";
     
+    public Pieza[] piezasBlancas;
+    public Pieza[] piezasNegras;
+    public int[] posicionReyNegro;
+    public int[] posicionReyBlanco;
+
+    
    public Juego(){
-        this.tablero = new Pieza[8][8];
-        for(int i = 0 ; i < 8; i++){
-            tablero[1][i] = new Peon(true);
-            tablero[6][i] = new Peon(false);
-        }
-        tablero[0][0] = new Torre(true);
-        tablero[0][7] = new Torre(true);
+       this.piezasBlancas = new Pieza[16];
+       this.piezasNegras = new Pieza[16];
+       this.tablero = new Pieza[8][8];
+
+        
+        tablero[0][0] = piezasBlancas[0] = new Torre(true);
+        tablero[0][7] = piezasBlancas[1] = new Torre(true);
         tablero[7][0] = new Torre(false);
         tablero[7][7] = new Torre(false);   
-
-        tablero[0][1] = new Caballo(true);
-        tablero[0][6] = new Caballo(true);
+        
+        tablero[0][1] = piezasBlancas[2] = new Caballo(true);
+        tablero[0][6] = piezasBlancas[3] = new Caballo(true);
         tablero[7][1] = new Caballo(false);
         tablero[7][6] = new Caballo(false);   
 
-        tablero[0][2] = new Alfil(true);
-        tablero[0][5] = new Alfil(true);
+        tablero[0][2] = piezasBlancas[4] = new Alfil(true);
+        tablero[0][5] = piezasBlancas[5] = new Alfil(true);
         tablero[7][2] = new Alfil(false);
         tablero[7][5] = new Alfil(false);   
 
-        tablero[0][3] = new Dama(true);
+        tablero[0][3] = piezasBlancas[6] = new Dama(true);
         tablero[7][3] = new Dama(false);   
 
         tablero[0][4] = new Rey(true);
         tablero[7][4] = new Rey(false);   
+
+        for(int i = 0 ; i < 8; i++){
+            tablero[1][i] = new Peon(true);
+            tablero[6][i] = new Peon(false);
+        }
     
     }
     public void ImprimirPosicicion(){

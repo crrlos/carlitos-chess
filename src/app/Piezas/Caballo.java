@@ -95,10 +95,6 @@ public class Caballo implements Pieza{
         return lista;
     }
 
-    @Override
-    public boolean AtacaCasilla(Pieza[][] tablero, int[] posicion, int[] casilla) {
-        return false;
-    }
 
     @Override
     public boolean EsBlanca() {

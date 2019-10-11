@@ -70,11 +70,6 @@ public class Torre implements Pieza{
     }
 
     @Override
-    public boolean AtacaCasilla(Pieza[][] tablero, int[] posicion, int[] casilla) {
-        return false;
-    }
-
-    @Override
     public boolean EsBlanca() {
         return esBlanco;
     }
