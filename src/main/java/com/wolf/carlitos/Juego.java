@@ -115,7 +115,8 @@ public class Juego {
         Random r = new Random();
 int low = 0;
 int high = movimientos.size() - 1;
-int result = r.nextInt(high-low) + low;
+int rango = high -low;
+int result = rango == 0 ? 0 : r.nextInt(rango) + low;
     System.out.println("bestmove " + ConvertirANotacion(movimientos.get(result)));
     }
     private void ActualizarTablero(String movimiento){

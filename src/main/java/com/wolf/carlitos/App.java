@@ -14,7 +14,7 @@ public class App {
                 var movimientos =  linea.replaceAll("position startpos moves ", "").split(" ");
                 juego = new Juego();
                 juego.EstablecerPosicion(movimientos);
-                //juego.ImprimirPosicicion();
+                juego.ImprimirPosicicion();
             }else if(linea.contains("go")){
                 juego.MovimientosValidos();
             }else if(linea.contains("isready"))

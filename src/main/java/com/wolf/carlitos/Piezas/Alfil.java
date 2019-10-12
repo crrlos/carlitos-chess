@@ -15,23 +15,19 @@ public class Alfil  extends Base implements Pieza{
     public List<int[]> ObtenerMovimientos(Pieza[][] tablero, int[] posicion) {
         int filaOrigen = posicion[0];
         int columnaOrigen = posicion[1];
-
+        Pieza posicionActual;
         var lista = new ArrayList<int[]>();
 
         var f = filaOrigen + 1;
         var c = columnaOrigen + 1;
         while(f < 8 && c < 8){
-
-            if(tablero[f][c] !=null){
-                if(tablero[f][c].EsBlanca() != this.EsBlanca() && !(tablero[f][c] instanceof Rey)){
-                    
-                        lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
-                }
-                break;
-            }else{
-                
-                    lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
-            }
+            posicionActual = tablero[f][c];
+            
+            if(posicionActual != null)
+                if(posicionActual.EsBlanca() == this.EsBlanca() || posicionActual instanceof Rey)
+                    break;
+            
+            lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
             f++; c++;
         }
 
@@ -39,49 +35,39 @@ public class Alfil  extends Base implements Pieza{
          c = columnaOrigen -1;
         while(f >= 0 && c >=0){
             
-            if(tablero[f][c] !=null){
-                if(tablero[f][c].EsBlanca() != this.EsBlanca() && !(tablero[f][c] instanceof Rey)){
-                    
-                    lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
-                }
-                break;
-            }else{
-                
-                lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
-            }
+            posicionActual = tablero[f][c];
+            
+            if(posicionActual != null)
+                if(posicionActual.EsBlanca() == this.EsBlanca() || posicionActual instanceof Rey)
+                    break;
+            
+            lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
             f--;c--;
         }
 
          f = filaOrigen +1;
          c = columnaOrigen -1;
         while(f < 8 && c >=0){
+            posicionActual = tablero[f][c];
             
-            if(tablero[f][c] !=null){
-                if(tablero[f][c].EsBlanca() != this.EsBlanca() && !(tablero[f][c] instanceof Rey)){
-                    
-                    lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
-                }
-                break;
-            }else{
-                
-                lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
-            }
+            if(posicionActual != null)
+                if(posicionActual.EsBlanca() == this.EsBlanca() || posicionActual instanceof Rey)
+                    break;
+            
+            lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
             f++;c--;
         }
 
          f = filaOrigen -1;
          c = columnaOrigen +1;
         while(f >= 0 && c < 8){
-            if(tablero[f][c] !=null){
-                if(tablero[f][c].EsBlanca() != this.EsBlanca() && !(tablero[f][c] instanceof Rey)){
-                    
-                    lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
-                }
-                break;
-            }else{
-                
-                lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
-            }
+            posicionActual = tablero[f][c];
+            
+            if(posicionActual != null)
+                if(posicionActual.EsBlanca() == this.EsBlanca() || posicionActual instanceof Rey)
+                    break;
+            
+            lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
             f--;c++;
         }
         

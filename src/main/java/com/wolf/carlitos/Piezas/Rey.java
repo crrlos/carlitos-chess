@@ -54,11 +54,11 @@ public class Rey extends Base implements Pieza{
                     lista.add( new int[]{filaOrigen,columnaOrigen,filaOrigen - 1,columnaOrigen +1});
 
             if(columnaOrigen - 1 >= 0)        
-            if(tablero[filaOrigen - 1][columnaOrigen - 1] == null)
-                lista.add( new int[]{filaOrigen,columnaOrigen,filaOrigen - 1,columnaOrigen - 1});
-            else
-                if(tablero[filaOrigen - 1][columnaOrigen - 1 ].EsBlanca() != this.EsBlanca())
-                    lista.add( new int[]{filaOrigen,columnaOrigen,filaOrigen - 1,columnaOrigen -1});
+                if(tablero[filaOrigen - 1][columnaOrigen - 1] == null)
+                    lista.add( new int[]{filaOrigen,columnaOrigen,filaOrigen - 1,columnaOrigen - 1});
+                else
+                    if(tablero[filaOrigen - 1][columnaOrigen - 1 ].EsBlanca() != this.EsBlanca())
+                        lista.add( new int[]{filaOrigen,columnaOrigen,filaOrigen - 1,columnaOrigen -1});
             
         }
 
