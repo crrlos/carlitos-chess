@@ -1,15 +1,17 @@
-package app;
+package com.wolf.carlitos;
 
+import com.wolf.carlitos.Piezas.Alfil;
+import com.wolf.carlitos.Piezas.Caballo;
+import com.wolf.carlitos.Piezas.Dama;
+import com.wolf.carlitos.Piezas.Peon;
+import com.wolf.carlitos.Piezas.Pieza;
+import com.wolf.carlitos.Piezas.Rey;
+import com.wolf.carlitos.Piezas.Torre;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
-import app.Piezas.Alfil;
-import app.Piezas.Caballo;
-import app.Piezas.Dama;
-import app.Piezas.Peon;
-import app.Piezas.Pieza;
-import app.Piezas.Rey;
-import app.Piezas.Torre;
+
 
 public class Juego {
     public Pieza[][] tablero;
@@ -110,9 +112,11 @@ public class Juego {
             }
             
         }
-        for(var mov : movimientos){
-            System.out.print(ConvertirANotacion(mov) + " ");
-        }
+        Random r = new Random();
+int low = 0;
+int high = movimientos.size() - 1;
+int result = r.nextInt(high-low) + low;
+    System.out.println("bestmove " + ConvertirANotacion(movimientos.get(result)));
     }
     private void ActualizarTablero(String movimiento){
         int colInicio = columnas.indexOf(movimiento.substring(0,1));
@@ -132,12 +136,7 @@ public class Juego {
                 return;
             }
 
-            if(!casillAlPaso.isEmpty()){ 
-                if(movimiento.substring(2, 4).equals(casillAlPaso)){
-                    this.tablero[filaFinal - (pieza.EsBlanca() ? 1 : -1)][colFinal] = null;
-                }
-                
-            }
+            
             // Todo: promoción del peón
          }
 
