@@ -7,11 +7,12 @@ import java.util.List;
  */
 public class Base {
     public boolean CasillaAtacada(int fila, int columna, Pieza[][] tablero,boolean blanco){
-         
+        
         if(AtaqueFilaColumna(fila, columna, tablero, blanco)) return true;
         if(AtaqueDiagonal(fila, columna, tablero, blanco)) return true;
         if(AtaqueCaballo(fila, columna , tablero, blanco)) return true;
-
+        if(AtaquePeon(fila, columna, tablero, blanco)) return true;
+        
         return false;
     }
     public int[] BuscarPosicionRey(boolean blanco, Pieza[][] tablero){
@@ -29,6 +30,28 @@ public class Base {
     public boolean ReyEnJaque(Pieza [][] tablero, boolean blanco){
         var posicionRey = BuscarPosicionRey(blanco,tablero);
         return CasillaAtacada(posicionRey[0], posicionRey[1], tablero,blanco);   
+    }
+    private boolean AtaquePeon(int filaOrigen, int columnaOrigen, Pieza[][] tablero, boolean blanco){
+        Pieza pieza;
+        int fila;
+        boolean condicion;
+        
+         fila = filaOrigen + (blanco ? 1 : -1);
+         condicion = blanco ? fila < 8 :  fila >= 0;
+        
+        if(condicion){
+            if(columnaOrigen + 1 < 8)
+                if((pieza = tablero[fila][columnaOrigen + 1]) != null){
+                    if(pieza.EsBlanca() != blanco && pieza instanceof Peon) return true;
+
+                }
+            if(columnaOrigen - 1 >= 8)
+                if((pieza = tablero[fila][columnaOrigen - 1]) != null){
+                    if(pieza.EsBlanca() != blanco && pieza instanceof Peon) return true;
+                }
+        }
+            
+        return false;
     }
     private boolean AtaqueFilaColumna(int filaOrigen, int columnaOrigen, Pieza[][] tablero, boolean blanco){
 
