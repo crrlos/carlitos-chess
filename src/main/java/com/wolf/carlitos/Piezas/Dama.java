@@ -1,5 +1,6 @@
 package com.wolf.carlitos.Piezas;
 
+import com.wolf.carlitos.Juego;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -102,7 +103,7 @@ public class Dama extends Base  implements Pieza{
                     if(posicionActual.EsBlanca() == this.EsBlanca() || posicionActual instanceof Rey)
                         break;
             
-            lista.add( new int[]{filaOrigen,columnaOrigen,i,columnaOrigen});
+            lista.add( new int[]{filaOrigen,columnaOrigen,filaOrigen,i});
             i++;
         }
         i = columnaOrigen - 1;
@@ -113,9 +114,14 @@ public class Dama extends Base  implements Pieza{
                     if(posicionActual.EsBlanca() == this.EsBlanca() || posicionActual instanceof Rey)
                         break;
             
-            lista.add( new int[]{filaOrigen,columnaOrigen,i,columnaOrigen});
+           lista.add( new int[]{filaOrigen,columnaOrigen,filaOrigen,i});
             i--;
         }
+        System.out.print("Dama " + esBlanco + " genero: ");
+        for(var pos: lista){
+            System.out.print(Juego.juego.ConvertirANotacion(pos));
+        }
+        System.out.println("");
         return MovimientosValidos(lista, tablero, esBlanco);
     }
     @Override

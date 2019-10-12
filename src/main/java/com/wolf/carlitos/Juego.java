@@ -14,6 +14,7 @@ import java.util.Random;
 
 
 public class Juego {
+    public static Juego juego;
     public Pieza[][] tablero;
     public String casillAlPaso;
     public boolean alPaso;
@@ -32,6 +33,7 @@ public class Juego {
 
     
    public Juego(){
+       Juego.juego = this;
        this.piezasBlancas = new Pieza[16];
        this.piezasNegras = new Pieza[16];
        this.tablero = new Pieza[8][8];
@@ -79,7 +81,7 @@ public class Juego {
             turnoBlanco = !turnoBlanco;
         }
     }
-    private String ConvertirANotacion(int[] movimiento){
+    public  String ConvertirANotacion(int[] movimiento){
         var mov = columnas.charAt(movimiento[1]) + "" + filas.charAt(movimiento[0]) +
                   columnas.charAt(movimiento[3]) + "" + filas.charAt(movimiento[2]);
         if(movimiento.length == 5){

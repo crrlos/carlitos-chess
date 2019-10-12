@@ -1,5 +1,6 @@
 package com.wolf.carlitos.Piezas;
 
+import com.wolf.carlitos.Juego;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -70,7 +71,11 @@ public class Alfil  extends Base implements Pieza{
             lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
             f--;c++;
         }
-        
+        System.out.print("Alfil " + esBlanco + " genero: ");
+        for(var pos: lista){
+            System.out.print(Juego.juego.ConvertirANotacion(pos));
+        }
+        System.out.println("");
         return MovimientosValidos(lista, tablero, esBlanco);
     }
 
