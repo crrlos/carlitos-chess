@@ -150,7 +150,6 @@ int result = rango == 0 ? 0 : r.nextInt(rango) + low;
             // en los enroques solo se mueven las torres por ser el movimiento especial
             if(Math.abs(colInicio - colFinal) == 2){
                 if(pieza.EsBlanca()){
-                    EstadoTablero.EnroqueCBlanco = EstadoTablero.EnroqueLBlanco = false;
                     if(colFinal == 6){//enroque corto
                         tablero[0][5] = tablero[0][7];
                         tablero[0][7] = null;
@@ -159,7 +158,6 @@ int result = rango == 0 ? 0 : r.nextInt(rango) + low;
                         tablero[0][0] = null;
                     }
                 }else{
-                    EstadoTablero.EnroqueCNegro = EstadoTablero.EnroqueLNegro = false;
                     if(colFinal == 6){//enroque corto
                         tablero[7][5] = tablero[7][7];
                         tablero[7][7] = null;
@@ -169,8 +167,24 @@ int result = rango == 0 ? 0 : r.nextInt(rango) + low;
                     }
                 }
             }
-
-
+            if(pieza.EsBlanca())
+                EstadoTablero.EnroqueCBlanco = EstadoTablero.EnroqueLBlanco = false;
+            else
+                EstadoTablero.EnroqueCNegro  = EstadoTablero.EnroqueLNegro = false;
+         }
+         
+         if(pieza instanceof Torre){
+             if(colInicio == 7)
+             {
+                 if(pieza.EsBlanca())
+                     EstadoTablero.EnroqueCBlanco = false;
+                 else
+                     EstadoTablero.EnroqueCNegro = false;
+             }else if(colInicio == 0)
+                 if(pieza.EsBlanca())
+                     EstadoTablero.EnroqueLBlanco = false;
+                 else
+                     EstadoTablero.EnroqueLNegro = false;
          }
 
        this.tablero[filaFinal][colFinal] = pieza;
