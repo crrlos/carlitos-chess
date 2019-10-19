@@ -16,15 +16,9 @@ import java.util.Random;
 public class Juego {
     public static Juego juego;
     public Pieza[][] tablero;
-    public String casillAlPaso;
-    public boolean alPaso;
-    public boolean enroqueCortoBlanco = true;
-    public boolean enroqueLargoBlanco = true;
-    public boolean enroqueCortoNegro = true;
-    public boolean enroqueLargoNegro = true;
     public boolean turnoBlanco = true;
-    private String filas = "12345678";
-    private String columnas = "abcdefgh";
+    private final String filas = "12345678";
+    private final String columnas = "abcdefgh";
     
     public Pieza[] piezasBlancas;
     public Pieza[] piezasNegras;
@@ -86,10 +80,10 @@ public class Juego {
                   columnas.charAt(movimiento[3]) + "" + filas.charAt(movimiento[2]);
         if(movimiento.length == 5){
             switch(movimiento[4]){
-                case 1: return mov += "=Q";
-                case 2: return mov += "=T";
-                case 3: return mov += "=C";
-                case 4: return mov += "=A";
+                case 1: return mov + "=Q";
+                case 2: return mov + "=T";
+                case 3: return mov + "=C";
+                case 4: return mov + "=A";
             }
         }
         return mov;
@@ -132,13 +126,22 @@ int result = rango == 0 ? 0 : r.nextInt(rango) + low;
          if(pieza instanceof Peon){
 
             if(Math.abs(filaInicio - filaFinal) == 2){
-                casillAlPaso = movimiento.substring(2, 3) + (filaFinal + (!pieza.EsBlanca() ? 2 : 0));
-                alPaso = true;
+                EstadoTablero.AlPaso = true;
+                EstadoTablero.PiezaALPaso = pieza;
+                
                 this.tablero[filaFinal][colFinal] = pieza;
                 this.tablero[filaInicio][colInicio] = null;
                 return;
             }
-
+            if(EstadoTablero.AlPaso){
+                if(colFinal > colInicio || colFinal < colInicio){
+                    if(tablero[filaInicio][colFinal] == EstadoTablero.PiezaALPaso){
+                        tablero[filaInicio][colFinal] = null;
+                    }
+                }
+                EstadoTablero.AlPaso = false;
+            }
+            
             
             // Todo: promoción del peón
          }
@@ -147,7 +150,7 @@ int result = rango == 0 ? 0 : r.nextInt(rango) + low;
             // en los enroques solo se mueven las torres por ser el movimiento especial
             if(Math.abs(colInicio - colFinal) == 2){
                 if(pieza.EsBlanca()){
-                    enroqueCortoBlanco = enroqueLargoBlanco = false;
+                    EstadoTablero.EnroqueCBlanco = EstadoTablero.EnroqueLBlanco = false;
                     if(colFinal == 6){//enroque corto
                         tablero[0][5] = tablero[0][7];
                         tablero[0][7] = null;
@@ -156,7 +159,7 @@ int result = rango == 0 ? 0 : r.nextInt(rango) + low;
                         tablero[0][0] = null;
                     }
                 }else{
-                    enroqueCortoNegro = enroqueLargoNegro = false;
+                    EstadoTablero.EnroqueCNegro = EstadoTablero.EnroqueLNegro = false;
                     if(colFinal == 6){//enroque corto
                         tablero[7][5] = tablero[7][7];
                         tablero[7][7] = null;
@@ -172,6 +175,6 @@ int result = rango == 0 ? 0 : r.nextInt(rango) + low;
 
        this.tablero[filaFinal][colFinal] = pieza;
        this.tablero[filaInicio][colInicio] = null;
-       alPaso = false;
+       EstadoTablero.AlPaso = false;
     }
 }
