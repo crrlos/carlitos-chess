@@ -29,6 +29,11 @@ public class Alfil  extends Base implements Pieza{
                     break;
             
             lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
+            
+            if(posicionActual != null && posicionActual.EsBlanca() != this.EsBlanca())
+                break;
+            
+            
             f++; c++;
         }
 
@@ -43,6 +48,10 @@ public class Alfil  extends Base implements Pieza{
                     break;
             
             lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
+            
+            if(posicionActual != null && posicionActual.EsBlanca() != this.EsBlanca())
+                break;
+            
             f--;c--;
         }
 
@@ -56,6 +65,10 @@ public class Alfil  extends Base implements Pieza{
                     break;
             
             lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
+            
+            if(posicionActual != null && posicionActual.EsBlanca() != this.EsBlanca())
+                break;
+            
             f++;c--;
         }
 
@@ -69,12 +82,16 @@ public class Alfil  extends Base implements Pieza{
                     break;
             
             lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
+            
+            if(posicionActual != null && posicionActual.EsBlanca() != this.EsBlanca())
+                break;
+            
             f--;c++;
         }
         System.out.print("Alfil " + esBlanco + " genero: ");
-        for(var pos: lista){
-            System.out.print(Juego.juego.ConvertirANotacion(pos));
-        }
+        lista.forEach((pos) -> {
+            System.out.print(Juego.juego.ConvertirANotacion(pos) + " ");
+        });
         System.out.println("");
         return MovimientosValidos(lista, tablero, esBlanco);
     }

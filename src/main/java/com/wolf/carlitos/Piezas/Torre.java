@@ -30,6 +30,10 @@ public class Torre extends Base implements Pieza{
                         break;
             
             lista.add( new int[]{filaOrigen,columnaOrigen,i,columnaOrigen});
+            
+            if(posicionActual != null && posicionActual.EsBlanca() != this.EsBlanca())
+                break;
+            
             i++;
         }
         i = filaOrigen - 1;
@@ -41,6 +45,10 @@ public class Torre extends Base implements Pieza{
                         break;
             
             lista.add( new int[]{filaOrigen,columnaOrigen,i,columnaOrigen});
+            
+            if(posicionActual != null && posicionActual.EsBlanca() != this.EsBlanca())
+                break;
+            
             i--;
         }
         i = columnaOrigen + 1;
@@ -52,6 +60,9 @@ public class Torre extends Base implements Pieza{
                         break;
             
             lista.add( new int[]{filaOrigen,columnaOrigen,filaOrigen,i});
+            
+            if(posicionActual != null && posicionActual.EsBlanca() != this.EsBlanca())
+                break;
             i++;
         }
         i = columnaOrigen - 1;
@@ -62,13 +73,17 @@ public class Torre extends Base implements Pieza{
                     if(posicionActual.EsBlanca() == this.EsBlanca() || posicionActual instanceof Rey)
                         break;
             
-            lista.add( new int[]{filaOrigen,columnaOrigen,filaOrigen,i});
+           lista.add( new int[]{filaOrigen,columnaOrigen,filaOrigen,i});
+           
+           if(posicionActual != null && posicionActual.EsBlanca() != this.EsBlanca())
+                break;
+           
             i--;
         }
         System.out.print("Torre " + esBlanco + " genero: ");
-        for(var pos: lista){
+        lista.forEach((pos) -> {
             System.out.print(Juego.juego.ConvertirANotacion(pos) + " " );
-        }
+        });
         System.out.println("");
         return MovimientosValidos(lista, tablero,esBlanco);
     }
