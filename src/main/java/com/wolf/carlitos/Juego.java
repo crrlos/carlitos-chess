@@ -142,8 +142,23 @@ int result = rango == 0 ? 0 : r.nextInt(rango) + low;
                 EstadoTablero.AlPaso = false;
             }
             
+            if(filaFinal == 7 || filaFinal == 0){
+                switch(movimiento.charAt(4)){
+                    case 'q':
+                        pieza = new Dama(turnoBlanco);
+                        break;
+                     case 'r':
+                        pieza = new Torre(turnoBlanco);
+                        break;
+                     case 'n':
+                        pieza = new Caballo(turnoBlanco);
+                        break;
+                    case 'b':
+                        pieza = new Alfil(turnoBlanco);
+                        break;
+                }
+            }
             
-            // Todo: promoción del peón
          }
 
          if(pieza instanceof Rey){
