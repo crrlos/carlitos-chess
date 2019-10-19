@@ -1,5 +1,6 @@
 package com.wolf.carlitos.Piezas;
 
+import com.wolf.carlitos.Juego;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -106,7 +107,18 @@ public class Peon extends Base implements Pieza {
                         }
             }
         }
-        return MovimientosValidos(lista, tablero, esBlanco);
+        System.out.print("Peon " + esBlanco + " genero: ");
+        lista.forEach((pos) -> {
+            System.out.print(Juego.juego.ConvertirANotacion(pos) + " ");
+        });
+        System.out.println("");
+        var mValidos =  MovimientosValidos(lista, tablero, esBlanco);
+        System.out.print("Peon " + esBlanco + " genero: ");
+        mValidos.forEach((pos) -> {
+            System.out.print(Juego.juego.ConvertirANotacion(pos) + " ");
+        });
+        System.out.println("");
+            return mValidos;
     }
 
     @Override

@@ -45,7 +45,7 @@ public class Base {
                     if(pieza.EsBlanca() != blanco && pieza instanceof Peon) return true;
 
                 }
-            if(columnaOrigen - 1 >= 8)
+            if(columnaOrigen - 1 >= 0)
                 if((pieza = tablero[fila][columnaOrigen - 1]) != null){
                     if(pieza.EsBlanca() != blanco && pieza instanceof Peon) return true;
                 }

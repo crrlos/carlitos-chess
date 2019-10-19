@@ -85,7 +85,13 @@ public class Torre extends Base implements Pieza{
             System.out.print(Juego.juego.ConvertirANotacion(pos) + " " );
         });
         System.out.println("");
-        return MovimientosValidos(lista, tablero,esBlanco);
+        var mValidos =  MovimientosValidos(lista, tablero, esBlanco);
+        System.out.print("Rey " + esBlanco + " genero: ");
+        mValidos.forEach((pos) -> {
+            System.out.print(Juego.juego.ConvertirANotacion(pos) + " ");
+        });
+        System.out.println("");
+            return mValidos;
     }
 
     @Override

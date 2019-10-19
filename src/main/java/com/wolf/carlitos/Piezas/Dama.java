@@ -154,7 +154,13 @@ public class Dama extends Base  implements Pieza{
             System.out.print(Juego.juego.ConvertirANotacion(pos) + " ");
         });
         System.out.println("");
-        return MovimientosValidos(lista, tablero, esBlanco);
+        var mValidos =  MovimientosValidos(lista, tablero, esBlanco);
+        System.out.print("Dama " + esBlanco + " genero: ");
+        mValidos.forEach((pos) -> {
+            System.out.print(Juego.juego.ConvertirANotacion(pos) + " ");
+        });
+        System.out.println("");
+            return mValidos;
     }
     @Override
     public boolean EsBlanca() {

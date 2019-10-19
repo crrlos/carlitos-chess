@@ -1,5 +1,6 @@
 package com.wolf.carlitos.Piezas;
 
+import com.wolf.carlitos.Juego;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,8 +78,18 @@ public class Rey extends Base implements Pieza{
                     lista.add( new int[]{filaOrigen,columnaOrigen,filaOrigen,columnaOrigen -1});
         }
 
-
-        return MovimientosValidos(lista, tablero, esBlanco);
+System.out.print("Rey " + esBlanco + " genero: ");
+        lista.forEach((pos) -> {
+            System.out.print(Juego.juego.ConvertirANotacion(pos) + " ");
+        });
+        System.out.println("");
+        var mValidos =  MovimientosValidos(lista, tablero, esBlanco);
+        System.out.print("Rey " + esBlanco + " genero: ");
+        mValidos.forEach((pos) -> {
+            System.out.print(Juego.juego.ConvertirANotacion(pos) + " ");
+        });
+        System.out.println("");
+            return mValidos;
     }
 
     
