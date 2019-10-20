@@ -1,5 +1,6 @@
 package com.wolf.carlitos.Piezas;
 
+import com.wolf.carlitos.EstadoTablero;
 import com.wolf.carlitos.Juego;
 import java.util.ArrayList;
 import java.util.List;
@@ -77,6 +78,75 @@ public class Rey extends Base implements Pieza{
                 if(tablero[filaOrigen][columnaOrigen -1 ].EsBlanca() != this.EsBlanca())
                     lista.add( new int[]{filaOrigen,columnaOrigen,filaOrigen,columnaOrigen -1});
         }
+        
+        //enroque
+        if(EstadoTablero.EnroqueCBlanco && esBlanco){
+            if(tablero[filaOrigen][columnaOrigen + 1] == null &&  tablero[filaOrigen][columnaOrigen + 2] == null){
+                tablero[filaOrigen][columnaOrigen + 1] = tablero[filaOrigen][columnaOrigen];
+                tablero[filaOrigen][columnaOrigen] = null;
+                if(!ReyEnJaque(tablero, esBlanco)){
+                    tablero[filaOrigen][columnaOrigen + 2] = tablero[filaOrigen][columnaOrigen + 1];
+                    tablero[filaOrigen][columnaOrigen + 1] = null;
+                    if(!ReyEnJaque(tablero, esBlanco))
+                    {
+                        lista.add( new int[]{filaOrigen,columnaOrigen,filaOrigen,columnaOrigen + 2});
+                        tablero[filaOrigen][columnaOrigen] = tablero[filaOrigen][columnaOrigen + 2];
+                        tablero[filaOrigen][columnaOrigen + 2] = null;
+                    }
+                }
+            }
+        }
+        
+        if(EstadoTablero.EnroqueLBlanco && esBlanco){
+            if(tablero[filaOrigen][columnaOrigen - 1] == null &&  tablero[filaOrigen][columnaOrigen -2] == null){
+                tablero[filaOrigen][columnaOrigen - 1] = tablero[filaOrigen][columnaOrigen];
+                tablero[filaOrigen][columnaOrigen] = null;
+                if(!ReyEnJaque(tablero, esBlanco)){
+                    tablero[filaOrigen][columnaOrigen - 2] = tablero[filaOrigen][columnaOrigen - 1];
+                    tablero[filaOrigen][columnaOrigen - 1] = null;
+                    if(!ReyEnJaque(tablero, esBlanco))
+                    {
+                        lista.add( new int[]{filaOrigen,columnaOrigen,filaOrigen,columnaOrigen - 2});
+                        tablero[filaOrigen][columnaOrigen] = tablero[filaOrigen][columnaOrigen - 2];
+                        tablero[filaOrigen][columnaOrigen - 2] = null;
+                    }
+                }
+            }
+        }
+        //enroque
+        if(EstadoTablero.EnroqueCNegro && !esBlanco){
+            if(tablero[filaOrigen][columnaOrigen + 1] == null &&  tablero[filaOrigen][columnaOrigen + 2] == null){
+                tablero[filaOrigen][columnaOrigen + 1] = tablero[filaOrigen][columnaOrigen];
+                tablero[filaOrigen][columnaOrigen] = null;
+                if(!ReyEnJaque(tablero, esBlanco)){
+                    tablero[filaOrigen][columnaOrigen + 2] = tablero[filaOrigen][columnaOrigen + 1];
+                    tablero[filaOrigen][columnaOrigen + 1] = null;
+                    if(!ReyEnJaque(tablero, esBlanco))
+                    {
+                        lista.add( new int[]{filaOrigen,columnaOrigen,filaOrigen,columnaOrigen + 2});
+                        tablero[filaOrigen][columnaOrigen] = tablero[filaOrigen][columnaOrigen + 2];
+                        tablero[filaOrigen][columnaOrigen + 2] = null;
+                    }
+                }
+            }
+        }
+        
+        if(EstadoTablero.EnroqueLNegro && !esBlanco){
+            if(tablero[filaOrigen][columnaOrigen - 1] == null &&  tablero[filaOrigen][columnaOrigen -2] == null){
+                tablero[filaOrigen][columnaOrigen - 1] = tablero[filaOrigen][columnaOrigen];
+                tablero[filaOrigen][columnaOrigen] = null;
+                if(!ReyEnJaque(tablero, esBlanco)){
+                    tablero[filaOrigen][columnaOrigen - 2] = tablero[filaOrigen][columnaOrigen - 1];
+                    tablero[filaOrigen][columnaOrigen - 1] = null;
+                    if(!ReyEnJaque(tablero, esBlanco))
+                    {
+                        lista.add( new int[]{filaOrigen,columnaOrigen,filaOrigen,columnaOrigen - 2});
+                        tablero[filaOrigen][columnaOrigen] = tablero[filaOrigen][columnaOrigen - 2];
+                        tablero[filaOrigen][columnaOrigen - 2] = null;
+                    }
+                }
+            }
+        }
 
 System.out.print("Rey " + esBlanco + " genero: ");
         lista.forEach((pos) -> {
@@ -91,8 +161,6 @@ System.out.print("Rey " + esBlanco + " genero: ");
         System.out.println("");
             return mValidos;
     }
-
-    
 
     @Override
     public boolean EsBlanca() {
