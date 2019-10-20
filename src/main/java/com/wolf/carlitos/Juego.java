@@ -8,7 +8,6 @@ import com.wolf.carlitos.Piezas.Pieza;
 import com.wolf.carlitos.Piezas.Rey;
 import com.wolf.carlitos.Piezas.Torre;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 
@@ -27,11 +26,9 @@ public class Juego {
 
     
    public Juego(){
-       Juego.juego = this;
        this.piezasBlancas = new Pieza[16];
        this.piezasNegras = new Pieza[16];
        this.tablero = new Pieza[8][8];
-
         
         tablero[0][0] = piezasBlancas[0] = new Torre(true);
         tablero[0][7] = piezasBlancas[1] = new Torre(true);
@@ -58,6 +55,8 @@ public class Juego {
             tablero[1][i] = new Peon(true);
             tablero[6][i] = new Peon(false);
         }
+        
+       Juego.juego = this;
     
     }
     public void ImprimirPosicicion(){
@@ -65,6 +64,7 @@ public class Juego {
             for (int j = 0; j < 8 ; j++) {
                 var pieza = tablero[i][j];
                 System.out.print(pieza != null ? pieza.Nombre() : " ");
+                System.out.print("|");
             }
             System.out.println();
         }
@@ -80,16 +80,16 @@ public class Juego {
                   columnas.charAt(movimiento[3]) + "" + filas.charAt(movimiento[2]);
         if(movimiento.length == 5){
             switch(movimiento[4]){
-                case 1: return mov + "=Q";
-                case 2: return mov + "=T";
-                case 3: return mov + "=C";
-                case 4: return mov + "=A";
+                case 1: return mov + "q";
+                case 2: return mov + "r";
+                case 3: return mov + "n";
+                case 4: return mov + "b";
             }
         }
         return mov;
     }
     public void MovimientosValidos(){
-        List<int[]> movimientos = new ArrayList<int[]>();
+        var movimientos = new ArrayList<int[]>();
         for (int i = 7; i >=0 ; i--) {
             for (int j = 0; j < 8 ; j++) {
                 var pieza = tablero[i][j];
