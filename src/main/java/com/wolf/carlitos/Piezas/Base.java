@@ -12,7 +12,7 @@ public class Base {
         if(AtaqueDiagonal(fila, columna, tablero, blanco)) return true;
         if(AtaqueCaballo(fila, columna , tablero, blanco)) return true;
         if(AtaquePeon(fila, columna, tablero, blanco)) return true;
-        
+        if(AtaqueRey(fila, columna, tablero, blanco)) return true;
         return false;
     }
     public int[] BuscarPosicionRey(boolean blanco, Pieza[][] tablero){
@@ -30,6 +30,38 @@ public class Base {
     public boolean ReyEnJaque(Pieza [][] tablero, boolean blanco){
         var posicionRey = BuscarPosicionRey(blanco,tablero);
         return CasillaAtacada(posicionRey[0], posicionRey[1], tablero,blanco);   
+    }
+    private boolean AtaqueRey(int filaOrigen, int columnaOrigen, Pieza[][] tablero, boolean blanco){
+        
+       if(columnaOrigen + 1 < 8)
+           if(tablero[filaOrigen][columnaOrigen + 1] != null && (tablero[filaOrigen][columnaOrigen + 1] instanceof Rey))
+            return true;
+      if(columnaOrigen - 1 > 0)
+           if(tablero[filaOrigen][columnaOrigen - 1] != null && (tablero[filaOrigen][columnaOrigen - 1] instanceof Rey))
+            return true;
+      
+    if(filaOrigen + 1 < 8){
+        if(tablero[filaOrigen + 1][columnaOrigen] != null && (tablero[filaOrigen + 1][columnaOrigen] instanceof Rey))
+            return true;
+        if(columnaOrigen + 1 < 8)
+            if(tablero[filaOrigen + 1][columnaOrigen + 1] != null && (tablero[filaOrigen + 1][columnaOrigen + 1] instanceof Rey))
+            return true;
+        if(columnaOrigen - 1 > 0)
+            if(tablero[filaOrigen + 1][columnaOrigen - 1] != null && (tablero[filaOrigen + 1][columnaOrigen - 1] instanceof Rey))
+            return true; 
+    }
+    if(filaOrigen - 1 > 0){
+            if(tablero[filaOrigen - 1][columnaOrigen] != null && (tablero[filaOrigen - 1][columnaOrigen] instanceof Rey))
+                return true;
+            if(columnaOrigen + 1 < 8)
+                if(tablero[filaOrigen - 1][columnaOrigen + 1] != null && (tablero[filaOrigen - 1][columnaOrigen + 1] instanceof Rey))
+                return true;
+            if(columnaOrigen - 1 > 0)
+                if(tablero[filaOrigen - 1][columnaOrigen - 1] != null && (tablero[filaOrigen - 1][columnaOrigen - 1] instanceof Rey))
+                return true; 
+        }    
+        
+    return false;
     }
     private boolean AtaquePeon(int filaOrigen, int columnaOrigen, Pieza[][] tablero, boolean blanco){
         Pieza pieza;
