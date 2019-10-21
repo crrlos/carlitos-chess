@@ -36,7 +36,7 @@ public class Base {
        if(columnaOrigen + 1 < 8)
            if(tablero[filaOrigen][columnaOrigen + 1] != null && (tablero[filaOrigen][columnaOrigen + 1] instanceof Rey))
             return true;
-      if(columnaOrigen - 1 > 0)
+      if(columnaOrigen - 1 >= 0)
            if(tablero[filaOrigen][columnaOrigen - 1] != null && (tablero[filaOrigen][columnaOrigen - 1] instanceof Rey))
             return true;
       
@@ -46,17 +46,17 @@ public class Base {
         if(columnaOrigen + 1 < 8)
             if(tablero[filaOrigen + 1][columnaOrigen + 1] != null && (tablero[filaOrigen + 1][columnaOrigen + 1] instanceof Rey))
             return true;
-        if(columnaOrigen - 1 > 0)
+        if(columnaOrigen - 1 >= 0)
             if(tablero[filaOrigen + 1][columnaOrigen - 1] != null && (tablero[filaOrigen + 1][columnaOrigen - 1] instanceof Rey))
             return true; 
     }
-    if(filaOrigen - 1 > 0){
+    if(filaOrigen - 1 >= 0){
             if(tablero[filaOrigen - 1][columnaOrigen] != null && (tablero[filaOrigen - 1][columnaOrigen] instanceof Rey))
                 return true;
             if(columnaOrigen + 1 < 8)
                 if(tablero[filaOrigen - 1][columnaOrigen + 1] != null && (tablero[filaOrigen - 1][columnaOrigen + 1] instanceof Rey))
                 return true;
-            if(columnaOrigen - 1 > 0)
+            if(columnaOrigen - 1 >= 0)
                 if(tablero[filaOrigen - 1][columnaOrigen - 1] != null && (tablero[filaOrigen - 1][columnaOrigen - 1] instanceof Rey))
                 return true; 
         }    
