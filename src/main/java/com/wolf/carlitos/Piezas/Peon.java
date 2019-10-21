@@ -39,7 +39,7 @@ public class Peon extends Base implements Pieza {
             if(columnaOrigen > 0){
                 posicionActual = tablero[filaDestino][columnaOrigen -1];
                 if( posicionActual != null)
-                    if(!posicionActual.EsBlanca() && !(posicionActual instanceof Rey))
+                    if(posicionActual.EsBlanca() != esBlanco && !(posicionActual instanceof Rey))
                         if(filaDestino == (esBlanco ? 7 : 0)){
                             lista.add(new int[]{filaOrigen,columnaOrigen,filaDestino,columnaOrigen -1,1});
                             lista.add(new int[]{filaOrigen,columnaOrigen,filaDestino,columnaOrigen -1,2});
@@ -52,7 +52,7 @@ public class Peon extends Base implements Pieza {
                 if(columnaOrigen < 7){
                     posicionActual = tablero[filaDestino][columnaOrigen +1];
                     if(posicionActual!= null)
-                        if(!posicionActual.EsBlanca() && !(posicionActual instanceof Rey))
+                        if(posicionActual.EsBlanca() != esBlanco && !(posicionActual instanceof Rey))
                             if(filaDestino == (esBlanco ? 7 : 0)){
                                 lista.add(new int[]{filaOrigen,columnaOrigen,filaDestino,columnaOrigen +1,1});
                                 lista.add(new int[]{filaOrigen,columnaOrigen,filaDestino,columnaOrigen +1,2});
