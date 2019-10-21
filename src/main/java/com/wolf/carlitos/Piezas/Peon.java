@@ -26,7 +26,7 @@ public class Peon extends Base implements Pieza {
             //avance una casilla
             filaDestino = filaOrigen + (esBlanco ? 1 : -1);
             if(tablero[filaDestino][columnaOrigen] == null) {
-                if(filaDestino == 7){
+                if(filaDestino == (esBlanco ? 7 : 0)){
                     lista.add(new int[]{filaOrigen,columnaOrigen,filaDestino,columnaOrigen,1});
                     lista.add(new int[]{filaOrigen,columnaOrigen,filaDestino,columnaOrigen,2});
                     lista.add(new int[]{filaOrigen,columnaOrigen,filaDestino,columnaOrigen,3});
