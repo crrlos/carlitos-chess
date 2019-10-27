@@ -13,14 +13,13 @@ public class Alfil  extends Base implements Pieza{
         this.esBlanco = bando;
     }
     @Override
-    public List<int[]> ObtenerMovimientos(Pieza[][] tablero, int[] posicion) {
-        int filaOrigen = posicion[0];
-        int columnaOrigen = posicion[1];
+    public List<int[]> ObtenerMovimientos(int fila, int columna) {
         Pieza posicionActual;
         var lista = new ArrayList<int[]>();
-
-        var f = filaOrigen + 1;
-        var c = columnaOrigen + 1;
+        var tablero = Juego.tablero;
+        
+        var f = fila + 1;
+        var c = fila + 1;
         while(f < 8 && c < 8){
             posicionActual = tablero[f][c];
             
@@ -28,7 +27,7 @@ public class Alfil  extends Base implements Pieza{
                 if(posicionActual.EsBlanca() == this.EsBlanca() || posicionActual instanceof Rey)
                     break;
             
-            lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
+            lista.add( new int[]{fila,columna,f,c});
             
             if(posicionActual != null && posicionActual.EsBlanca() != this.EsBlanca())
                 break;
@@ -37,8 +36,8 @@ public class Alfil  extends Base implements Pieza{
             f++; c++;
         }
 
-         f = filaOrigen -1;
-         c = columnaOrigen -1;
+         f = fila -1;
+         c = columna -1;
         while(f >= 0 && c >=0){
             
             posicionActual = tablero[f][c];
@@ -47,7 +46,7 @@ public class Alfil  extends Base implements Pieza{
                 if(posicionActual.EsBlanca() == this.EsBlanca() || posicionActual instanceof Rey)
                     break;
             
-            lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
+            lista.add( new int[]{fila,columna,f,c});
             
             if(posicionActual != null && posicionActual.EsBlanca() != this.EsBlanca())
                 break;
@@ -55,8 +54,8 @@ public class Alfil  extends Base implements Pieza{
             f--;c--;
         }
 
-         f = filaOrigen +1;
-         c = columnaOrigen -1;
+         f = fila +1;
+         c = columna -1;
         while(f < 8 && c >=0){
             posicionActual = tablero[f][c];
             
@@ -64,7 +63,7 @@ public class Alfil  extends Base implements Pieza{
                 if(posicionActual.EsBlanca() == this.EsBlanca() || posicionActual instanceof Rey)
                     break;
             
-            lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
+            lista.add( new int[]{fila,columna,f,c});
             
             if(posicionActual != null && posicionActual.EsBlanca() != this.EsBlanca())
                 break;
@@ -72,8 +71,8 @@ public class Alfil  extends Base implements Pieza{
             f++;c--;
         }
 
-         f = filaOrigen -1;
-         c = columnaOrigen +1;
+         f = fila -1;
+         c = columna +1;
         while(f >= 0 && c < 8){
             posicionActual = tablero[f][c];
             
@@ -81,24 +80,24 @@ public class Alfil  extends Base implements Pieza{
                 if(posicionActual.EsBlanca() == this.EsBlanca() || posicionActual instanceof Rey)
                     break;
             
-            lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
+            lista.add( new int[]{fila,columna,f,c});
             
             if(posicionActual != null && posicionActual.EsBlanca() != this.EsBlanca())
                 break;
             
             f--;c++;
         }
-        System.out.print("Alfil " + esBlanco + " genero: ");
-        lista.forEach((pos) -> {
-            System.out.print(Juego.juego.ConvertirANotacion(pos) + " ");
-        });
-        System.out.println("");
+//        System.out.print("Alfil " + esBlanco + " genero: ");
+//        lista.forEach((pos) -> {
+//            System.out.print(Juego.ConvertirANotacion(pos) + " ");
+//        });
+//        System.out.println("");
         var mValidos =  MovimientosValidos(lista, tablero, esBlanco);
-        System.out.print("Alfil " + esBlanco + " genero: ");
-        mValidos.forEach((pos) -> {
-            System.out.print(Juego.juego.ConvertirANotacion(pos) + " ");
-        });
-        System.out.println("");
+//        System.out.print("Alfil " + esBlanco + " genero: ");
+//        mValidos.forEach((pos) -> {
+//            System.out.print(Juego.ConvertirANotacion(pos) + " ");
+//        });
+//        System.out.println("");
             return mValidos;
     }
 
@@ -112,6 +111,11 @@ public class Alfil  extends Base implements Pieza{
     @Override
     public String Nombre() {
         return esBlanco ? "A" : "a";
+    }
+
+    @Override
+    public int Valor() {
+        return esBlanco ? 3 : -3;
     }
 
 

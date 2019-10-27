@@ -10,71 +10,71 @@ public class Peon extends Base implements Pieza {
         this.esBlanco = bando;
     }
     @Override
-    public List<int[]> ObtenerMovimientos(Pieza[][] tablero, int[] posicion) {
-        int filaOrigen = posicion[0];
-        int columnaOrigen = posicion[1];
+    public List<int[]> ObtenerMovimientos(int fila, int columna) {
+        var tablero = Juego.tablero;
         int filaDestino;
         
         Pieza posicionActual;
         var lista = new ArrayList<int[]>();
         
             //avance dos casillas
-            if(filaOrigen == (esBlanco ? 1 : 7)){
-                if(tablero[esBlanco ? 2 : 5][columnaOrigen] == null && tablero[esBlanco ? 3 : 4][columnaOrigen] == null)
-                        lista.add(new int[]{filaOrigen,columnaOrigen,esBlanco ? 3 : 4,columnaOrigen});
+            if(fila == (esBlanco ? 1 : 6)){
+                if(tablero[esBlanco ? 2 : 5][columna] == null && tablero[esBlanco ? 3 : 4][columna] == null)
+                        lista.add(new int[]{fila,columna,esBlanco ? 3 : 4,columna});
                 }
+            
             //avance una casilla
-            filaDestino = filaOrigen + (esBlanco ? 1 : -1);
-            if(tablero[filaDestino][columnaOrigen] == null) {
+            filaDestino = fila + (esBlanco ? 1 : -1);
+            if(tablero[filaDestino][columna] == null) {
                 if(filaDestino == (esBlanco ? 7 : 0)){
-                    lista.add(new int[]{filaOrigen,columnaOrigen,filaDestino,columnaOrigen,1});
-                    lista.add(new int[]{filaOrigen,columnaOrigen,filaDestino,columnaOrigen,2});
-                    lista.add(new int[]{filaOrigen,columnaOrigen,filaDestino,columnaOrigen,3});
-                    lista.add(new int[]{filaOrigen,columnaOrigen,filaDestino,columnaOrigen,4});
+                    lista.add(new int[]{fila,columna,filaDestino,columna,1});
+                    lista.add(new int[]{fila,columna,filaDestino,columna,2});
+                    lista.add(new int[]{fila,columna,filaDestino,columna,3});
+                    lista.add(new int[]{fila,columna,filaDestino,columna,4});
                 }else{
-                    lista.add(new int[]{filaOrigen,columnaOrigen,filaDestino,columnaOrigen});
+                    lista.add(new int[]{fila,columna,filaDestino,columna});
                 }
             }
             
-            if(columnaOrigen > 0){
-                posicionActual = tablero[filaDestino][columnaOrigen -1];
+            if(columna > 0){
+                posicionActual = tablero[filaDestino][columna -1];
                 if( posicionActual != null)
                     if(posicionActual.EsBlanca() != esBlanco && !(posicionActual instanceof Rey))
                         if(filaDestino == (esBlanco ? 7 : 0)){
-                            lista.add(new int[]{filaOrigen,columnaOrigen,filaDestino,columnaOrigen -1,1});
-                            lista.add(new int[]{filaOrigen,columnaOrigen,filaDestino,columnaOrigen -1,2});
-                            lista.add(new int[]{filaOrigen,columnaOrigen,filaDestino,columnaOrigen -1,3});
-                            lista.add(new int[]{filaOrigen,columnaOrigen,filaDestino,columnaOrigen -1,4});
+                            lista.add(new int[]{fila,columna,filaDestino,columna -1,1});
+                            lista.add(new int[]{fila,columna,filaDestino,columna -1,2});
+                            lista.add(new int[]{fila,columna,filaDestino,columna -1,3});
+                            lista.add(new int[]{fila,columna,filaDestino,columna -1,4});
                         }else{
-                            lista.add(new int[]{filaOrigen,columnaOrigen,filaDestino,columnaOrigen -1});
+                            lista.add(new int[]{fila,columna,filaDestino,columna -1});
                         }
                  }
-                if(columnaOrigen < 7){
-                    posicionActual = tablero[filaDestino][columnaOrigen +1];
+                if(columna < 7){
+                    posicionActual = tablero[filaDestino][columna +1];
                     if(posicionActual!= null)
                         if(posicionActual.EsBlanca() != esBlanco && !(posicionActual instanceof Rey))
                             if(filaDestino == (esBlanco ? 7 : 0)){
-                                lista.add(new int[]{filaOrigen,columnaOrigen,filaDestino,columnaOrigen +1,1});
-                                lista.add(new int[]{filaOrigen,columnaOrigen,filaDestino,columnaOrigen +1,2});
-                                lista.add(new int[]{filaOrigen,columnaOrigen,filaDestino,columnaOrigen +1,3});
-                                lista.add(new int[]{filaOrigen,columnaOrigen,filaDestino,columnaOrigen +1,4});
+                                lista.add(new int[]{fila,columna,filaDestino,columna +1,1});
+                                lista.add(new int[]{fila,columna,filaDestino,columna +1,2});
+                                lista.add(new int[]{fila,columna,filaDestino,columna +1,3});
+                                lista.add(new int[]{fila,columna,filaDestino,columna +1,4});
                             }else{
-                                lista.add(new int[]{filaOrigen,columnaOrigen,filaDestino,columnaOrigen +1});
+                                lista.add(new int[]{fila,columna,filaDestino,columna +1});
                             }
                         }
             
-        System.out.print("Peon " + esBlanco + " genero: ");
-        lista.forEach((pos) -> {
-            System.out.print(Juego.juego.ConvertirANotacion(pos) + " ");
-        });
-        System.out.println("");
-        var mValidos =  MovimientosValidos(lista, tablero, esBlanco);
-        System.out.print("Peon " + esBlanco + " genero: ");
-        mValidos.forEach((pos) -> {
-            System.out.print(Juego.juego.ConvertirANotacion(pos) + " ");
-        });
-        System.out.println("");
-            return mValidos;
+//        System.out.print("Peon " + esBlanco + " genero: ");
+//        lista.forEach((pos) -> {
+//            System.out.print(Juego.ConvertirANotacion(pos) + " ");
+//        });
+//        System.out.println("");
+return MovimientosValidos(lista, tablero, esBlanco);
+//        System.out.print("Peon " + esBlanco + " genero: ");
+//        mValidos.forEach((pos) -> {
+//            System.out.print(Juego.ConvertirANotacion(pos) + " ");
+//        });
+//        System.out.println("");
+//            return mValidos;
     }
 
     @Override
@@ -84,5 +84,9 @@ public class Peon extends Base implements Pieza {
     @Override
     public String Nombre() {
         return esBlanco ? "P" : "p";
+    }
+    @Override
+    public int Valor() {
+        return esBlanco ?1 : -1;
     }
 }

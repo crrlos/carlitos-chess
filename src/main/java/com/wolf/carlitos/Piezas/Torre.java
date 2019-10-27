@@ -13,85 +13,84 @@ public class Torre extends Base implements Pieza{
         this.esBlanco = bando;
     }
     @Override
-    public List<int[]> ObtenerMovimientos(Pieza[][] tablero, int[] posicion) {
-        int filaOrigen = posicion[0];
-        int columnaOrigen = posicion[1];
+    public List<int[]> ObtenerMovimientos(int fila, int columna) {
+        var tablero = Juego.tablero;
         Pieza posicionActual;
         var lista = new ArrayList<int[]>();
 
 
-        var i = filaOrigen + 1;
+        var i = fila + 1;
 
         while(i < 8){
-            posicionActual = tablero[i][columnaOrigen];
+            posicionActual = tablero[i][columna];
             
             if(posicionActual != null)
                     if(posicionActual.EsBlanca() == this.EsBlanca() || posicionActual instanceof Rey)
                         break;
             
-            lista.add( new int[]{filaOrigen,columnaOrigen,i,columnaOrigen});
+            lista.add( new int[]{fila,columna,i,columna});
             
             if(posicionActual != null && posicionActual.EsBlanca() != this.EsBlanca())
                 break;
             
             i++;
         }
-        i = filaOrigen - 1;
+        i = fila - 1;
         while(i >= 0 ){
-            posicionActual = tablero[i][columnaOrigen];
+            posicionActual = tablero[i][columna];
             
             if(posicionActual != null)
                     if(posicionActual.EsBlanca() == this.EsBlanca() || posicionActual instanceof Rey)
                         break;
             
-            lista.add( new int[]{filaOrigen,columnaOrigen,i,columnaOrigen});
+            lista.add( new int[]{fila,columna,i,columna});
             
             if(posicionActual != null && posicionActual.EsBlanca() != this.EsBlanca())
                 break;
             
             i--;
         }
-        i = columnaOrigen + 1;
+        i = columna + 1;
         while(i < 8  ){
-            posicionActual = tablero[filaOrigen][i];
+            posicionActual = tablero[fila][i];
             
             if(posicionActual != null)
                     if(posicionActual.EsBlanca() == this.EsBlanca() || posicionActual instanceof Rey)
                         break;
             
-            lista.add( new int[]{filaOrigen,columnaOrigen,filaOrigen,i});
+            lista.add( new int[]{fila,columna,fila,i});
             
             if(posicionActual != null && posicionActual.EsBlanca() != this.EsBlanca())
                 break;
             i++;
         }
-        i = columnaOrigen - 1;
+        i = columna - 1;
         while(i >= 0  ){
-            posicionActual = tablero[filaOrigen][i];
+            posicionActual = tablero[fila][i];
             
             if(posicionActual != null)
                     if(posicionActual.EsBlanca() == this.EsBlanca() || posicionActual instanceof Rey)
                         break;
             
-           lista.add( new int[]{filaOrigen,columnaOrigen,filaOrigen,i});
+           lista.add( new int[]{fila,columna,fila,i});
            
            if(posicionActual != null && posicionActual.EsBlanca() != this.EsBlanca())
                 break;
            
             i--;
         }
-        System.out.print("Torre " + esBlanco + " genero: ");
-        lista.forEach((pos) -> {
-            System.out.print(Juego.juego.ConvertirANotacion(pos) + " " );
-        });
-        System.out.println("");
-        var mValidos =  MovimientosValidos(lista, tablero, esBlanco);
-        System.out.print("Rey " + esBlanco + " genero: ");
-        mValidos.forEach((pos) -> {
-            System.out.print(Juego.juego.ConvertirANotacion(pos) + " ");
-        });
-        System.out.println("");
-            return mValidos;
+//        System.out.print("Torre " + esBlanco + " genero: ");
+//        lista.forEach((pos) -> {
+//            System.out.print(Juego.ConvertirANotacion(pos) + " " );
+//        });
+//        System.out.println("");
+return MovimientosValidos(lista, tablero, esBlanco);
+//        System.out.print("Torre " + esBlanco + " genero: ");
+//        mValidos.forEach((pos) -> {
+//            System.out.print(Juego.ConvertirANotacion(pos) + " ");
+//        });
+//        System.out.println("");
+//            return mValidos;
     }
 
     @Override
@@ -101,6 +100,10 @@ public class Torre extends Base implements Pieza{
     @Override
     public String Nombre() {
         return esBlanco ? "T" : "t";
+    }
+    @Override
+    public int Valor() {
+        return esBlanco ? 5 : -5;
     }
     
 }

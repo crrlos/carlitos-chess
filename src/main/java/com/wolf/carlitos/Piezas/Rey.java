@@ -14,153 +14,225 @@ public class Rey extends Base implements Pieza{
         this.esBlanco = bando;
     }
     @Override
-    public List<int[]> ObtenerMovimientos(Pieza[][] tablero, int[] posicion) {
-        int filaOrigen = posicion[0];
-        int columnaOrigen = posicion[1];
+    public List<int[]> ObtenerMovimientos(int fila, int columna) {
+        var tablero = Juego.tablero;
 
         var lista = new ArrayList<int[]>();
 
-        if(filaOrigen + 1 < 8){
+        if(fila + 1 < 8){
 
-            if(tablero[filaOrigen + 1][columnaOrigen] == null)
-                lista.add( new int[]{filaOrigen,columnaOrigen,filaOrigen + 1,columnaOrigen});
+            if(tablero[fila + 1][columna] == null)
+                lista.add( new int[]{fila,columna,fila + 1,columna});
             else
-                if(tablero[filaOrigen + 1][columnaOrigen].EsBlanca() != this.EsBlanca())
-                    lista.add( new int[]{filaOrigen,columnaOrigen,filaOrigen + 1,columnaOrigen});
-            if(columnaOrigen + 1 < 8)        
-            if(tablero[filaOrigen + 1][columnaOrigen + 1] == null)
-                lista.add( new int[]{filaOrigen,columnaOrigen,filaOrigen + 1,columnaOrigen + 1});
+                if(tablero[fila + 1][columna].EsBlanca() != this.EsBlanca())
+                    lista.add( new int[]{fila,columna,fila + 1,columna});
+            if(columna + 1 < 8)        
+            if(tablero[fila + 1][columna + 1] == null)
+                lista.add( new int[]{fila,columna,fila + 1,columna + 1});
             else
-                if(tablero[filaOrigen + 1][columnaOrigen + 1 ].EsBlanca() != this.EsBlanca())
-                    lista.add( new int[]{filaOrigen,columnaOrigen,filaOrigen + 1,columnaOrigen +1});
+                if(tablero[fila + 1][columna + 1 ].EsBlanca() != this.EsBlanca())
+                    lista.add( new int[]{fila,columna,fila + 1,columna +1});
 
-            if(columnaOrigen - 1 >= 0)        
-            if(tablero[filaOrigen + 1][columnaOrigen - 1] == null)
-                lista.add( new int[]{filaOrigen,columnaOrigen,filaOrigen + 1,columnaOrigen - 1});
-            else
-                if(tablero[filaOrigen + 1][columnaOrigen - 1 ].EsBlanca() != this.EsBlanca())
-                    lista.add( new int[]{filaOrigen,columnaOrigen,filaOrigen + 1,columnaOrigen -1});
-        }
-        if(filaOrigen - 1 >= 0){
-
-            if(tablero[filaOrigen - 1][columnaOrigen] == null)
-                lista.add( new int[]{filaOrigen,columnaOrigen,filaOrigen - 1,columnaOrigen});
-            else
-                if(tablero[filaOrigen - 1][columnaOrigen].EsBlanca() != this.EsBlanca())
-                    lista.add( new int[]{filaOrigen,columnaOrigen,filaOrigen - 1,columnaOrigen});
-            if(columnaOrigen + 1 < 8)        
-            if(tablero[filaOrigen - 1][columnaOrigen + 1] == null)
-                lista.add( new int[]{filaOrigen,columnaOrigen,filaOrigen - 1,columnaOrigen + 1});
-            else
-                if(tablero[filaOrigen - 1][columnaOrigen + 1 ].EsBlanca() != this.EsBlanca())
-                    lista.add( new int[]{filaOrigen,columnaOrigen,filaOrigen - 1,columnaOrigen +1});
-
-            if(columnaOrigen - 1 >= 0)        
-                if(tablero[filaOrigen - 1][columnaOrigen - 1] == null)
-                    lista.add( new int[]{filaOrigen,columnaOrigen,filaOrigen - 1,columnaOrigen - 1});
+            if(columna - 1 >= 0)        
+                if(tablero[fila + 1][columna - 1] == null)
+                    lista.add( new int[]{fila,columna,fila + 1,columna - 1});
                 else
-                    if(tablero[filaOrigen - 1][columnaOrigen - 1 ].EsBlanca() != this.EsBlanca())
-                        lista.add( new int[]{filaOrigen,columnaOrigen,filaOrigen - 1,columnaOrigen -1});
+                    if(tablero[fila + 1][columna - 1 ].EsBlanca() != this.EsBlanca())
+                        lista.add( new int[]{fila,columna,fila + 1,columna -1});
+        }
+        if(fila - 1 >= 0){
+
+            if(tablero[fila - 1][columna] == null)
+                lista.add( new int[]{fila,columna,fila - 1,columna});
+            else
+                if(tablero[fila - 1][columna].EsBlanca() != this.EsBlanca())
+                    lista.add( new int[]{fila,columna,fila - 1,columna});
+            if(columna + 1 < 8)        
+            if(tablero[fila - 1][columna + 1] == null)
+                lista.add( new int[]{fila,columna,fila - 1,columna + 1});
+            else
+                if(tablero[fila - 1][columna + 1 ].EsBlanca() != this.EsBlanca())
+                    lista.add( new int[]{fila,columna,fila - 1,columna +1});
+
+            if(columna - 1 >= 0)        
+                if(tablero[fila - 1][columna - 1] == null)
+                    lista.add( new int[]{fila,columna,fila - 1,columna - 1});
+                else
+                    if(tablero[fila - 1][columna - 1 ].EsBlanca() != this.EsBlanca())
+                        lista.add( new int[]{fila,columna,fila - 1,columna -1});
             
         }
 
-        if(columnaOrigen + 1 < 8){
-            if(tablero[filaOrigen ][columnaOrigen + 1] == null)
-                lista.add( new int[]{filaOrigen,columnaOrigen,filaOrigen,columnaOrigen + 1});
+        if(columna + 1 < 8){
+            if(tablero[fila ][columna + 1] == null)
+                lista.add( new int[]{fila,columna,fila,columna + 1});
             else
-                if(tablero[filaOrigen][columnaOrigen + 1 ].EsBlanca() != this.EsBlanca())
-                    lista.add( new int[]{filaOrigen,columnaOrigen,filaOrigen,columnaOrigen +1});
+                if(tablero[fila][columna + 1 ].EsBlanca() != this.EsBlanca())
+                    lista.add( new int[]{fila,columna,fila,columna +1});
         }
-        if(columnaOrigen - 1 >= 0){
-            if(tablero[filaOrigen ][columnaOrigen - 1] == null)
-                lista.add( new int[]{filaOrigen,columnaOrigen,filaOrigen,columnaOrigen - 1});
+        if(columna - 1 >= 0){
+            if(tablero[fila ][columna - 1] == null)
+                lista.add( new int[]{fila,columna,fila,columna - 1});
             else
-                if(tablero[filaOrigen][columnaOrigen -1 ].EsBlanca() != this.EsBlanca())
-                    lista.add( new int[]{filaOrigen,columnaOrigen,filaOrigen,columnaOrigen -1});
+                if(tablero[fila][columna -1 ].EsBlanca() != this.EsBlanca())
+                    lista.add( new int[]{fila,columna,fila,columna -1});
         }
         
         //enroque
-        if(EstadoTablero.EnroqueCBlanco && esBlanco){
-            if(tablero[filaOrigen][columnaOrigen + 1] == null &&  tablero[filaOrigen][columnaOrigen + 2] == null){
-                tablero[filaOrigen][columnaOrigen + 1] = tablero[filaOrigen][columnaOrigen];
-                tablero[filaOrigen][columnaOrigen] = null;
+        if(Juego.estadoTablero.EnroqueCBlanco && esBlanco){
+            if(columna == 4)
+            if(tablero[fila][columna + 1] == null &&  tablero[fila][columna + 2] == null){
+                tablero[fila][columna + 1] = tablero[fila][columna];//camino del rey
+                tablero[fila][columna] = null;
+                Juego.estadoTablero.PosicionReyBlanco[0] = fila;
+                Juego.estadoTablero.PosicionReyBlanco[1] = columna + 1;
                 if(!ReyEnJaque(tablero, esBlanco)){
-                    tablero[filaOrigen][columnaOrigen + 2] = tablero[filaOrigen][columnaOrigen + 1];
-                    tablero[filaOrigen][columnaOrigen + 1] = null;
+                    tablero[fila][columna + 2] = tablero[fila][columna + 1];
+                    tablero[fila][columna + 1] = null;
+                    Juego.estadoTablero.PosicionReyBlanco[0] = fila;
+                    Juego.estadoTablero.PosicionReyBlanco[1] = columna + 2;
                     if(!ReyEnJaque(tablero, esBlanco))
                     {
-                        lista.add( new int[]{filaOrigen,columnaOrigen,filaOrigen,columnaOrigen + 2});
-                        tablero[filaOrigen][columnaOrigen] = tablero[filaOrigen][columnaOrigen + 2];
-                        tablero[filaOrigen][columnaOrigen + 2] = null;
+                        lista.add( new int[]{fila,columna,fila,columna + 2});
+                        tablero[fila][columna] = tablero[fila][columna + 2];
+                        tablero[fila][columna + 2] = null;
                     }
                 }
             }
+            Juego.estadoTablero.PosicionReyBlanco[0] = fila;
+            Juego.estadoTablero.PosicionReyBlanco[1] = columna;
         }
         
-        if(EstadoTablero.EnroqueLBlanco && esBlanco){
-            if(tablero[filaOrigen][columnaOrigen - 1] == null &&  tablero[filaOrigen][columnaOrigen -2] == null){
-                tablero[filaOrigen][columnaOrigen - 1] = tablero[filaOrigen][columnaOrigen];
-                tablero[filaOrigen][columnaOrigen] = null;
+        if(Juego.estadoTablero.EnroqueLBlanco && esBlanco){
+            if(columna == 4)
+            if(tablero[fila][columna - 1] == null &&  tablero[fila][columna -2] == null && tablero[fila][columna -3] == null){
+                tablero[fila][columna - 1] = tablero[fila][columna];
+                tablero[fila][columna] = null;
+                Juego.estadoTablero.PosicionReyBlanco[0] = fila;
+                Juego.estadoTablero.PosicionReyBlanco[1] = columna -1;
                 if(!ReyEnJaque(tablero, esBlanco)){
-                    tablero[filaOrigen][columnaOrigen - 2] = tablero[filaOrigen][columnaOrigen - 1];
-                    tablero[filaOrigen][columnaOrigen - 1] = null;
+                    tablero[fila][columna - 2] = tablero[fila][columna - 1];
+                    tablero[fila][columna - 1] = null;
+                    Juego.estadoTablero.PosicionReyBlanco[0] = fila;
+                    Juego.estadoTablero.PosicionReyBlanco[1] = columna - 2;
                     if(!ReyEnJaque(tablero, esBlanco))
                     {
-                        lista.add( new int[]{filaOrigen,columnaOrigen,filaOrigen,columnaOrigen - 2});
-                        tablero[filaOrigen][columnaOrigen] = tablero[filaOrigen][columnaOrigen - 2];
-                        tablero[filaOrigen][columnaOrigen - 2] = null;
+                        lista.add( new int[]{fila,columna,fila,columna - 2});
+                        tablero[fila][columna] = tablero[fila][columna - 2];
+                        tablero[fila][columna - 2] = null;
                     }
                 }
             }
+            Juego.estadoTablero.PosicionReyBlanco[0] = fila;
+            Juego.estadoTablero.PosicionReyBlanco[1] = columna;
         }
         //enroque
-        if(EstadoTablero.EnroqueCNegro && !esBlanco){
-            if(tablero[filaOrigen][columnaOrigen + 1] == null &&  tablero[filaOrigen][columnaOrigen + 2] == null){
-                tablero[filaOrigen][columnaOrigen + 1] = tablero[filaOrigen][columnaOrigen];
-                tablero[filaOrigen][columnaOrigen] = null;
+        if(Juego.estadoTablero.EnroqueCNegro && !esBlanco){
+            if(columna == 4)
+            if(tablero[fila][columna + 1] == null &&  tablero[fila][columna + 2] == null){
+                tablero[fila][columna + 1] = tablero[fila][columna];
+                tablero[fila][columna] = null;
+                Juego.estadoTablero.PosicionReyNegro[0] = fila;
+                Juego.estadoTablero.PosicionReyNegro[1] = columna +1;
                 if(!ReyEnJaque(tablero, esBlanco)){
-                    tablero[filaOrigen][columnaOrigen + 2] = tablero[filaOrigen][columnaOrigen + 1];
-                    tablero[filaOrigen][columnaOrigen + 1] = null;
+                    tablero[fila][columna + 2] = tablero[fila][columna + 1];
+                    tablero[fila][columna + 1] = null;
+                    Juego.estadoTablero.PosicionReyNegro[0] = fila;
+                    Juego.estadoTablero.PosicionReyNegro[1] = columna + 2;
                     if(!ReyEnJaque(tablero, esBlanco))
                     {
-                        lista.add( new int[]{filaOrigen,columnaOrigen,filaOrigen,columnaOrigen + 2});
-                        tablero[filaOrigen][columnaOrigen] = tablero[filaOrigen][columnaOrigen + 2];
-                        tablero[filaOrigen][columnaOrigen + 2] = null;
+                        lista.add( new int[]{fila,columna,fila,columna + 2});
+                        tablero[fila][columna] = tablero[fila][columna + 2];
+                        tablero[fila][columna + 2] = null;
                     }
                 }
             }
+            Juego.estadoTablero.PosicionReyNegro[0] = fila;
+            Juego.estadoTablero.PosicionReyNegro[1] = columna;
         }
         
-        if(EstadoTablero.EnroqueLNegro && !esBlanco){
-            if(tablero[filaOrigen][columnaOrigen - 1] == null &&  tablero[filaOrigen][columnaOrigen -2] == null){
-                tablero[filaOrigen][columnaOrigen - 1] = tablero[filaOrigen][columnaOrigen];
-                tablero[filaOrigen][columnaOrigen] = null;
+        if(Juego.estadoTablero.EnroqueLNegro && !esBlanco){
+            if(columna == 4)
+            if(tablero[fila][columna - 1] == null &&  tablero[fila][columna -2] == null &&  tablero[fila][columna -3] == null){
+                tablero[fila][columna - 1] = tablero[fila][columna];
+                tablero[fila][columna] = null;
+                Juego.estadoTablero.PosicionReyNegro[0] = fila;
+                 Juego.estadoTablero.PosicionReyNegro[1] = columna -1;
                 if(!ReyEnJaque(tablero, esBlanco)){
-                    tablero[filaOrigen][columnaOrigen - 2] = tablero[filaOrigen][columnaOrigen - 1];
-                    tablero[filaOrigen][columnaOrigen - 1] = null;
+                    tablero[fila][columna - 2] = tablero[fila][columna - 1];
+                    tablero[fila][columna - 1] = null;
+                    Juego.estadoTablero.PosicionReyNegro[0] = fila;
+                    Juego.estadoTablero.PosicionReyNegro[1] = columna - 2;
                     if(!ReyEnJaque(tablero, esBlanco))
                     {
-                        lista.add( new int[]{filaOrigen,columnaOrigen,filaOrigen,columnaOrigen - 2});
-                        tablero[filaOrigen][columnaOrigen] = tablero[filaOrigen][columnaOrigen - 2];
-                        tablero[filaOrigen][columnaOrigen - 2] = null;
+                        lista.add( new int[]{fila,columna,fila,columna - 2});
+                        tablero[fila][columna] = tablero[fila][columna - 2];
+                        tablero[fila][columna - 2] = null;
                     }
                 }
             }
+            Juego.estadoTablero.PosicionReyNegro[0] = fila;
+            Juego.estadoTablero.PosicionReyNegro[1] = columna;
         }
 
-System.out.print("Rey " + esBlanco + " genero: ");
-        lista.forEach((pos) -> {
-            System.out.print(Juego.juego.ConvertirANotacion(pos) + " ");
-        });
-        System.out.println("");
-        var mValidos =  MovimientosValidos(lista, tablero, esBlanco);
-        System.out.print("Rey " + esBlanco + " genero: ");
-        mValidos.forEach((pos) -> {
-            System.out.print(Juego.juego.ConvertirANotacion(pos) + " ");
-        });
-        System.out.println("");
-            return mValidos;
+//System.out.print("Rey " + esBlanco + " genero: ");
+//        lista.forEach((pos) -> {
+//            System.out.print(Juego.ConvertirANotacion(pos) + " ");
+//        });
+//        System.out.println("");
+return this.MovimientosValidos(lista, tablero, esBlanco);
+//        System.out.print("Rey " + esBlanco + " genero: ");
+//        mValidos.forEach((pos) -> {
+//            System.out.print(Juego.ConvertirANotacion(pos) + " ");
+//        });
+//        System.out.println("");
+//            return mValidos;
     }
+
+    @Override
+    public List<int[]> MovimientosValidos(List<int[]> movimientos, Pieza[][] tablero, boolean blanco) {
+        var iterator = movimientos.iterator();
+        while(iterator.hasNext()){
+            var movimiento = iterator.next();
+            var fo = movimiento[0];
+            var co = movimiento[1];
+            var fd = movimiento[2];
+            var cd = movimiento[3];
+            Pieza piezaActual  = tablero[fo][co];
+            Pieza piezaDestino = tablero[fd][cd];
+
+            tablero[fo][co] = null;
+            tablero[fd][cd] = piezaActual;
+            if(blanco){
+            Juego.estadoTablero.PosicionReyBlanco[0] = fd;
+            Juego.estadoTablero.PosicionReyBlanco[1] = cd;
+            }else{
+                Juego.estadoTablero.PosicionReyNegro[0] = fd;
+            Juego.estadoTablero.PosicionReyNegro[1] = cd;
+            }
+            
+            var jaque = ReyEnJaque(tablero,blanco);
+            
+            if(blanco){
+                Juego.estadoTablero.PosicionReyBlanco[0] = fo;
+                Juego.estadoTablero.PosicionReyBlanco[1] = co;
+            }else{
+                Juego.estadoTablero.PosicionReyNegro[0] = fo;
+                Juego.estadoTablero.PosicionReyNegro[1] = co;
+            }
+            
+            tablero[fd][cd] = piezaDestino;
+            tablero[fo][co] = piezaActual;
+        //Juego.ImprimirPosicicion();
+            if(jaque)
+            {
+                iterator.remove();
+            }
+        }
+        return movimientos; 
+    }
+    
+    
 
     @Override
     public boolean EsBlanca() {
@@ -169,6 +241,11 @@ System.out.print("Rey " + esBlanco + " genero: ");
     @Override
     public String Nombre() {
         return esBlanco ? "R" : "r";
+    }
+    
+    @Override
+    public int Valor() {
+        return esBlanco ? 10 : -10;
     }
     
 }

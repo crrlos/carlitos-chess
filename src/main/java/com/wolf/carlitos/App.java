@@ -4,9 +4,9 @@ import java.util.Scanner;
 
 public class App {
     public static void main(String[] args) throws Exception {
+        
        var scanner = new Scanner(System.in);
        Juego juego = new Juego();
-       
 
         while(scanner.hasNext()){
             var linea = scanner.nextLine();
@@ -18,7 +18,8 @@ public class App {
                     juego.ImprimirPosicicion();
                     }
             }else if(linea.contains("go")){
-                juego.MovimientosValidos();
+                System.out.println("bestmove "+juego.Mover((EstadoTablero)Juego.estadoTablero.clone()));
+                //juego.ImprimirPosicicion();
             }else if(linea.contains("isready"))
                 System.out.println("readyok");
             else if(linea.contains("ucinewgame")){

@@ -1,5 +1,6 @@
 package com.wolf.carlitos.Piezas;
 
+import com.wolf.carlitos.Juego;
 import java.util.List;
 
 /**
@@ -8,90 +9,85 @@ import java.util.List;
 public class Base {
     public boolean CasillaAtacada(int fila, int columna, Pieza[][] tablero,boolean blanco){
         
-        if(AtaqueFilaColumna(fila, columna, tablero, blanco)) return true;
+         if(AtaqueFilaColumna(fila, columna, tablero, blanco)) return true;
         if(AtaqueDiagonal(fila, columna, tablero, blanco)) return true;
         if(AtaqueCaballo(fila, columna , tablero, blanco)) return true;
         if(AtaquePeon(fila, columna, tablero, blanco)) return true;
         if(AtaqueRey(fila, columna, tablero, blanco)) return true;
+        
         return false;
     }
     public int[] BuscarPosicionRey(boolean blanco, Pieza[][] tablero){
-            for (int i = 0; i < tablero.length; i++) {
-                for (int j = 0; j < tablero.length; j++) {
-                    if(tablero[i][j] instanceof Rey)
-                        {
-                            if(tablero[i][j].EsBlanca() == blanco)
-                                return new int[]{i,j};
-                        }
-                }
-            }
-            return new int[]{};
+            return blanco ? Juego.estadoTablero.PosicionReyBlanco : Juego.estadoTablero.PosicionReyNegro;
     }
     public boolean ReyEnJaque(Pieza [][] tablero, boolean blanco){
         var posicionRey = BuscarPosicionRey(blanco,tablero);
-        return CasillaAtacada(posicionRey[0], posicionRey[1], tablero,blanco);   
-    }
-    private boolean AtaqueRey(int filaOrigen, int columnaOrigen, Pieza[][] tablero, boolean blanco){
+        if(posicionRey.length == 0)
+                   Juego.ImprimirPosicicion();
         
-       if(columnaOrigen + 1 < 8)
-           if(tablero[filaOrigen][columnaOrigen + 1] != null && (tablero[filaOrigen][columnaOrigen + 1] instanceof Rey))
+       return CasillaAtacada(posicionRey[0], posicionRey[1], tablero,blanco); 
+    }
+    private boolean AtaqueRey(int fila, int columna, Pieza[][] tablero, boolean blanco){
+        //Juego.ImprimirPosicicion();
+        
+       if(columna + 1 < 8)
+           if(tablero[fila][columna + 1] != null && (tablero[fila][columna + 1] instanceof Rey))
             return true;
-      if(columnaOrigen - 1 >= 0)
-           if(tablero[filaOrigen][columnaOrigen - 1] != null && (tablero[filaOrigen][columnaOrigen - 1] instanceof Rey))
+      if(columna - 1 >= 0)
+           if(tablero[fila][columna - 1] != null && (tablero[fila][columna - 1] instanceof Rey))
             return true;
       
-    if(filaOrigen + 1 < 8){
-        if(tablero[filaOrigen + 1][columnaOrigen] != null && (tablero[filaOrigen + 1][columnaOrigen] instanceof Rey))
+    if(fila + 1 < 8){
+        if(tablero[fila + 1][columna] != null && (tablero[fila + 1][columna] instanceof Rey))
             return true;
-        if(columnaOrigen + 1 < 8)
-            if(tablero[filaOrigen + 1][columnaOrigen + 1] != null && (tablero[filaOrigen + 1][columnaOrigen + 1] instanceof Rey))
+        if(columna + 1 < 8)
+            if(tablero[fila + 1][columna + 1] != null && (tablero[fila + 1][columna + 1] instanceof Rey))
             return true;
-        if(columnaOrigen - 1 >= 0)
-            if(tablero[filaOrigen + 1][columnaOrigen - 1] != null && (tablero[filaOrigen + 1][columnaOrigen - 1] instanceof Rey))
+        if(columna - 1 >= 0)
+            if(tablero[fila + 1][columna - 1] != null && (tablero[fila + 1][columna - 1] instanceof Rey))
             return true; 
     }
-    if(filaOrigen - 1 >= 0){
-            if(tablero[filaOrigen - 1][columnaOrigen] != null && (tablero[filaOrigen - 1][columnaOrigen] instanceof Rey))
+    if(fila - 1 >= 0){
+            if(tablero[fila - 1][columna] != null && (tablero[fila - 1][columna] instanceof Rey))
                 return true;
-            if(columnaOrigen + 1 < 8)
-                if(tablero[filaOrigen - 1][columnaOrigen + 1] != null && (tablero[filaOrigen - 1][columnaOrigen + 1] instanceof Rey))
+            if(columna + 1 < 8)
+                if(tablero[fila - 1][columna + 1] != null && (tablero[fila - 1][columna + 1] instanceof Rey))
                 return true;
-            if(columnaOrigen - 1 >= 0)
-                if(tablero[filaOrigen - 1][columnaOrigen - 1] != null && (tablero[filaOrigen - 1][columnaOrigen - 1] instanceof Rey))
+            if(columna - 1 >= 0)
+                if(tablero[fila - 1][columna - 1] != null && (tablero[fila - 1][columna - 1] instanceof Rey))
                 return true; 
         }    
         
     return false;
     }
-    private boolean AtaquePeon(int filaOrigen, int columnaOrigen, Pieza[][] tablero, boolean blanco){
+    private boolean AtaquePeon(int fila, int columna, Pieza[][] tablero, boolean blanco){
         Pieza pieza;
-        int fila;
         boolean condicion;
         
-         fila = filaOrigen + (blanco ? 1 : -1);
+         fila = fila + (blanco ? 1 : -1);
          condicion = blanco ? fila < 8 :  fila >= 0;
         
         if(condicion){
-            if(columnaOrigen + 1 < 8)
-                if((pieza = tablero[fila][columnaOrigen + 1]) != null){
+            if(columna + 1 < 8)
+                if((pieza = tablero[fila][columna + 1]) != null){
                     if(pieza.EsBlanca() != blanco && pieza instanceof Peon) return true;
 
                 }
-            if(columnaOrigen - 1 >= 0)
-                if((pieza = tablero[fila][columnaOrigen - 1]) != null){
+            if(columna - 1 >= 0)
+                if((pieza = tablero[fila][columna - 1]) != null){
                     if(pieza.EsBlanca() != blanco && pieza instanceof Peon) return true;
                 }
         }
             
         return false;
     }
-    private boolean AtaqueFilaColumna(int filaOrigen, int columnaOrigen, Pieza[][] tablero, boolean blanco){
+    private boolean AtaqueFilaColumna(int fila, int columna, Pieza[][] tablero, boolean blanco){
 
-        var i = filaOrigen + 1;
+        var i = fila + 1;
         Pieza posicionActual;
         while(i < 8){
 
-            posicionActual = tablero[i][columnaOrigen];
+            posicionActual = tablero[i][columna];
             if(posicionActual != null)
                 if(posicionActual.EsBlanca() != blanco && (posicionActual instanceof Torre || posicionActual instanceof Dama))
                     return true;
@@ -99,30 +95,30 @@ public class Base {
             i++;
         }
 
-        i = filaOrigen - 1;
+        i = fila - 1;
         while(i >= 0){
 
-            posicionActual = tablero[i][columnaOrigen];
+            posicionActual = tablero[i][columna];
             if(posicionActual != null)
                 if(posicionActual.EsBlanca() != blanco && (posicionActual instanceof Torre || posicionActual instanceof Dama))
                     return true;
                 else break;
            i--;
         }
-        i = columnaOrigen + 1;
+        i = columna + 1;
         while(i < 8){
 
-            posicionActual = tablero[filaOrigen][i];
+            posicionActual = tablero[fila][i];
             if(posicionActual != null)
                 if(posicionActual.EsBlanca() != blanco && (posicionActual instanceof Torre || posicionActual instanceof Dama))
                     return true;
                 else break;
             i++;
         }
-        i = columnaOrigen - 1;
+        i = columna - 1;
         while(i >= 0){
 
-            posicionActual = tablero[filaOrigen][i];
+            posicionActual = tablero[fila][i];
             if(posicionActual != null)
                 if(posicionActual.EsBlanca() != blanco && (posicionActual instanceof Torre || posicionActual instanceof Dama))
                     return true;
@@ -132,10 +128,10 @@ public class Base {
      
         return false;
     }
-    private boolean AtaqueDiagonal(int filaOrigen, int columnaOrigen, Pieza[][] tablero, boolean blanco){
+    private boolean AtaqueDiagonal(int fila, int columna, Pieza[][] tablero, boolean blanco){
 
-        var f = filaOrigen + 1;
-        var c = columnaOrigen + 1;
+        var f = fila + 1;
+        var c = columna + 1;
         Pieza posicionActual;
         while(f < 8 && c < 8){
             posicionActual = tablero[f][c];
@@ -147,8 +143,8 @@ public class Base {
             ++f;++c;
         }
 
-         f = filaOrigen -1;
-         c = columnaOrigen -1;
+         f = fila -1;
+         c = columna -1;
         while(f >= 0 && c >=0){
             posicionActual = tablero[f][c];
             if( posicionActual !=null){
@@ -159,8 +155,8 @@ public class Base {
             --f;--c;
         }
 
-         f = filaOrigen +1;
-         c = columnaOrigen -1;
+         f = fila +1;
+         c = columna -1;
         while(f < 8 && c >=0){
             posicionActual = tablero[f][c];
             if( posicionActual !=null){
@@ -171,8 +167,8 @@ public class Base {
             ++f;--c;
         }
 
-         f = filaOrigen -1;
-         c = columnaOrigen +1;
+         f = fila -1;
+         c = columna +1;
         while(f >= 0 && c < 8){
             posicionActual = tablero[f][c];
             if( posicionActual !=null){
@@ -185,20 +181,20 @@ public class Base {
      
         return false;
     }
-    private boolean AtaqueCaballo(int filaOrigen, int columnaOrigen, Pieza[][] tablero, boolean blanco){
+    private boolean AtaqueCaballo(int fila, int columna, Pieza[][] tablero, boolean blanco){
         Pieza posicionActual;
 
-        if(filaOrigen + 2 < 8){
-            if(columnaOrigen + 1 < 8){
-                posicionActual = tablero[filaOrigen + 2][columnaOrigen+1];
+        if(fila + 2 < 8){
+            if(columna + 1 < 8){
+                posicionActual = tablero[fila + 2][columna+1];
                 if( posicionActual != null){
                     if(posicionActual.EsBlanca() != blanco && posicionActual instanceof Caballo)
                         return true;
                 }
                 
             }
-            if(columnaOrigen - 1 >= 0){
-            posicionActual = tablero[filaOrigen + 2][columnaOrigen-1];
+            if(columna - 1 >= 0){
+            posicionActual = tablero[fila + 2][columna-1];
             if( posicionActual != null){
                 if(posicionActual.EsBlanca() != blanco && posicionActual instanceof Caballo)
                     return true;
@@ -206,16 +202,16 @@ public class Base {
         }
         }
 
-        if(filaOrigen - 2 >=0 ){
-            if(columnaOrigen + 1 < 8){
-                posicionActual = tablero[filaOrigen - 2][columnaOrigen+1];
+        if(fila - 2 >=0 ){
+            if(columna + 1 < 8){
+                posicionActual = tablero[fila - 2][columna+1];
                 if( posicionActual != null){
                     if(posicionActual.EsBlanca() != blanco && posicionActual instanceof Caballo)
                         return true;
                 }
             }
-            if(columnaOrigen - 1 >= 0){
-                posicionActual = tablero[filaOrigen - 2][columnaOrigen-1];
+            if(columna - 1 >= 0){
+                posicionActual = tablero[fila - 2][columna-1];
                 if( posicionActual != null){
                     if(posicionActual.EsBlanca() != blanco && posicionActual instanceof Caballo)
                         return true;
@@ -223,32 +219,32 @@ public class Base {
         }
         }
 
-        if(columnaOrigen - 2 >= 0){
-            if(filaOrigen + 1 < 8){
-                posicionActual = tablero[filaOrigen + 1][columnaOrigen -2];
+        if(columna - 2 >= 0){
+            if(fila + 1 < 8){
+                posicionActual = tablero[fila + 1][columna -2];
                 if( posicionActual != null){
                     if(posicionActual.EsBlanca() != blanco && posicionActual instanceof Caballo)
                         return true;
                 }
             }
-            if(filaOrigen - 1 >=0 ){
-                posicionActual =tablero[filaOrigen - 1][columnaOrigen- 2];
+            if(fila - 1 >=0 ){
+                posicionActual =tablero[fila - 1][columna- 2];
                 if( posicionActual != null){
                     if(posicionActual.EsBlanca() != blanco && posicionActual instanceof Caballo)
                         return true;
                 }
         }
         }
-        if(columnaOrigen + 2 < 8){
-            if(filaOrigen + 1 < 8){
-                posicionActual = tablero[filaOrigen + 1][columnaOrigen +2];
+        if(columna + 2 < 8){
+            if(fila + 1 < 8){
+                posicionActual = tablero[fila + 1][columna +2];
                 if( posicionActual != null){
                     if(posicionActual.EsBlanca() != blanco && posicionActual instanceof Caballo)
                         return true;
                 }
             }
-            if(filaOrigen - 1 >=0 ){
-                posicionActual = tablero[filaOrigen - 1][columnaOrigen+ 2];
+            if(fila - 1 >=0 ){
+                posicionActual = tablero[fila - 1][columna+ 2];
                 if( posicionActual != null){
                     if(posicionActual.EsBlanca() != blanco && posicionActual instanceof Caballo)
                         return true;
@@ -284,7 +280,7 @@ public class Base {
 
         tablero[fd][cd] = piezaDestino;
         tablero[fo][co] = piezaActual;
-
+        //Juego.ImprimirPosicicion();
         return !jaque;
     }
 }

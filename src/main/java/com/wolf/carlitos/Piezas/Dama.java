@@ -13,14 +13,13 @@ public class Dama extends Base  implements Pieza{
         this.esBlanco = bando;
     }
     @Override
-    public List<int[]> ObtenerMovimientos(Pieza[][] tablero, int[] posicion) {
-        int filaOrigen = posicion[0];
-        int columnaOrigen = posicion[1];
+    public List<int[]> ObtenerMovimientos(int fila, int columna) {
+        var tablero = Juego.tablero;
         Pieza posicionActual;
         var lista = new ArrayList<int[]>();
         
-        var f = filaOrigen + 1;
-        var c = columnaOrigen + 1;
+        var f = fila + 1;
+        var c = columna + 1;
         while(f < 8 && c < 8){
             posicionActual = tablero[f][c];
             
@@ -28,7 +27,7 @@ public class Dama extends Base  implements Pieza{
                 if(posicionActual.EsBlanca() == this.EsBlanca() || posicionActual instanceof Rey)
                     break;
             
-            lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
+            lista.add( new int[]{fila,columna,f,c});
             
             if(posicionActual != null && posicionActual.EsBlanca() != this.EsBlanca())
                 break;
@@ -37,8 +36,8 @@ public class Dama extends Base  implements Pieza{
             f++; c++;
         }
 
-         f = filaOrigen -1;
-         c = columnaOrigen -1;
+         f = fila -1;
+         c = columna -1;
         while(f >= 0 && c >=0){
             
             posicionActual = tablero[f][c];
@@ -47,7 +46,7 @@ public class Dama extends Base  implements Pieza{
                 if(posicionActual.EsBlanca() == this.EsBlanca() || posicionActual instanceof Rey)
                     break;
             
-            lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
+            lista.add( new int[]{fila,columna,f,c});
             
             if(posicionActual != null && posicionActual.EsBlanca() != this.EsBlanca())
                 break;
@@ -55,8 +54,8 @@ public class Dama extends Base  implements Pieza{
             f--;c--;
         }
 
-         f = filaOrigen +1;
-         c = columnaOrigen -1;
+         f = fila +1;
+         c = columna -1;
         while(f < 8 && c >=0){
             posicionActual = tablero[f][c];
             
@@ -64,7 +63,7 @@ public class Dama extends Base  implements Pieza{
                 if(posicionActual.EsBlanca() == this.EsBlanca() || posicionActual instanceof Rey)
                     break;
             
-            lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
+            lista.add( new int[]{fila,columna,f,c});
             
             if(posicionActual != null && posicionActual.EsBlanca() != this.EsBlanca())
                 break;
@@ -72,8 +71,8 @@ public class Dama extends Base  implements Pieza{
             f++;c--;
         }
 
-         f = filaOrigen -1;
-         c = columnaOrigen +1;
+         f = fila -1;
+         c = columna +1;
         while(f >= 0 && c < 8){
             posicionActual = tablero[f][c];
             
@@ -81,7 +80,7 @@ public class Dama extends Base  implements Pieza{
                 if(posicionActual.EsBlanca() == this.EsBlanca() || posicionActual instanceof Rey)
                     break;
             
-            lista.add( new int[]{filaOrigen,columnaOrigen,f,c});
+            lista.add( new int[]{fila,columna,f,c});
             
             if(posicionActual != null && posicionActual.EsBlanca() != this.EsBlanca())
                 break;
@@ -89,78 +88,78 @@ public class Dama extends Base  implements Pieza{
             f--;c++;
         }
 
-        var i = filaOrigen +1;
+        var i = fila +1;
 
         while(i < 8){
-            posicionActual = tablero[i][columnaOrigen];
+            posicionActual = tablero[i][columna];
             
             if(posicionActual != null)
                     if(posicionActual.EsBlanca() == this.EsBlanca() || posicionActual instanceof Rey)
                         break;
             
-            lista.add( new int[]{filaOrigen,columnaOrigen,i,columnaOrigen});
+            lista.add( new int[]{fila,columna,i,columna});
             
             if(posicionActual != null && posicionActual.EsBlanca() != this.EsBlanca())
                 break;
             
             i++;
         }
-        i = filaOrigen - 1;
+        i = fila - 1;
         while(i >= 0 ){
-            posicionActual = tablero[i][columnaOrigen];
+            posicionActual = tablero[i][columna];
             
             if(posicionActual != null)
                     if(posicionActual.EsBlanca() == this.EsBlanca() || posicionActual instanceof Rey)
                         break;
             
-            lista.add( new int[]{filaOrigen,columnaOrigen,i,columnaOrigen});
+            lista.add( new int[]{fila,columna,i,columna});
             
             if(posicionActual != null && posicionActual.EsBlanca() != this.EsBlanca())
                 break;
             
             i--;
         }
-        i = columnaOrigen + 1;
+        i = columna + 1;
         while(i < 8  ){
-            posicionActual = tablero[filaOrigen][i];
+            posicionActual = tablero[fila][i];
             
             if(posicionActual != null)
                     if(posicionActual.EsBlanca() == this.EsBlanca() || posicionActual instanceof Rey)
                         break;
             
-            lista.add( new int[]{filaOrigen,columnaOrigen,filaOrigen,i});
+            lista.add( new int[]{fila,columna,fila,i});
             
             if(posicionActual != null && posicionActual.EsBlanca() != this.EsBlanca())
                 break;
             i++;
         }
-        i = columnaOrigen - 1;
+        i = columna - 1;
         while(i >= 0  ){
-            posicionActual = tablero[filaOrigen][i];
+            posicionActual = tablero[fila][i];
             
             if(posicionActual != null)
                     if(posicionActual.EsBlanca() == this.EsBlanca() || posicionActual instanceof Rey)
                         break;
             
-           lista.add( new int[]{filaOrigen,columnaOrigen,filaOrigen,i});
+           lista.add( new int[]{fila,columna,fila,i});
            
            if(posicionActual != null && posicionActual.EsBlanca() != this.EsBlanca())
                 break;
            
             i--;
         }
-        System.out.print("Dama " + esBlanco + " genero: ");
-        lista.forEach((pos) -> {
-            System.out.print(Juego.juego.ConvertirANotacion(pos) + " ");
-        });
-        System.out.println("");
-        var mValidos =  MovimientosValidos(lista, tablero, esBlanco);
-        System.out.print("Dama " + esBlanco + " genero: ");
-        mValidos.forEach((pos) -> {
-            System.out.print(Juego.juego.ConvertirANotacion(pos) + " ");
-        });
-        System.out.println("");
-            return mValidos;
+//        System.out.print("Dama " + esBlanco + " genero: ");
+//        lista.forEach((pos) -> {
+//            System.out.print(Juego.ConvertirANotacion(pos) + " ");
+//        });
+//        System.out.println("");
+return MovimientosValidos(lista, tablero, esBlanco);
+//        System.out.print("Dama " + esBlanco + " genero: ");
+//        mValidos.forEach((pos) -> {
+//            System.out.print(Juego.ConvertirANotacion(pos) + " ");
+//        });
+//        System.out.println("");
+//            return mValidos;
     }
     @Override
     public boolean EsBlanca() {
@@ -170,5 +169,9 @@ public class Dama extends Base  implements Pieza{
     @Override
     public String Nombre() {
         return esBlanco ? "D" : "d";
+    }
+    @Override
+    public int Valor() {
+        return esBlanco ? 9 : -9;
     }
 }
