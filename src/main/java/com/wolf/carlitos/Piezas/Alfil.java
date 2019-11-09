@@ -19,7 +19,7 @@ public class Alfil  extends Base implements Pieza{
         var tablero = Juego.tablero;
         
         var f = fila + 1;
-        var c = fila + 1;
+        var c = columna + 1;
         while(f < 8 && c < 8){
             posicionActual = tablero[f][c];
             

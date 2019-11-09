@@ -15,7 +15,6 @@ import java.util.Scanner;
 public class Juego {
     public static Pieza[][] tablero;
     public static EstadoTablero estadoTablero;
-    
     private static final String filas = "12345678";
     private static final String columnas = "abcdefgh";
    
@@ -99,6 +98,7 @@ public class Juego {
                 if(pieza != null && pieza.EsBlanca() == Juego.estadoTablero.TurnoBlanco)
                     movimientos.addAll(pieza.ObtenerMovimientos(i,j));
                 j++;
+                Juego.ImprimirPosicicion();
             }
             i++; j = 0;
         }
@@ -109,6 +109,9 @@ public class Juego {
         
         int eval = 1000;
         var movimientos = MovimientosValidos();
+        if(movimientos.isEmpty()){
+           movimientos = MovimientosValidos();
+        }
         
         Juego.estadoTablero = estado.clone();
         
@@ -123,6 +126,7 @@ public class Juego {
             RevertirMovimiento(mov[0],mov[1],mov[2],mov[3],estado.TurnoBlanco,estadoTablero);
             Juego.estadoTablero = (EstadoTablero) estado.clone();
         }
+        //System.out.println("mini nivel " + nivel + " retorna  "+ eval);
         return eval;
     }
     public int Maxi(int nivel, EstadoTablero estado) throws CloneNotSupportedException{
@@ -130,6 +134,9 @@ public class Juego {
         
         int eval = -1000;
         var movimientos = MovimientosValidos();
+        if(movimientos.isEmpty()){
+           movimientos = MovimientosValidos();
+        }
         
         Juego.estadoTablero = estado.clone();
         
@@ -138,57 +145,69 @@ public class Juego {
             //ImprimirPosicicion();
             estadoTablero.TurnoBlanco = !estado.TurnoBlanco;
             int evaluacion = Mini(nivel -1,estadoTablero.clone());
+            
             if(evaluacion > eval)
                 eval = evaluacion;
             
             RevertirMovimiento(mov[0],mov[1],mov[2],mov[3],estado.TurnoBlanco,estadoTablero);
             Juego.estadoTablero = (EstadoTablero) estado.clone();
         }
+        
+        //System.out.println("maxi nivel " + nivel + " retorna  "+ eval);
         return eval;
     }
 
     public int Evaluar(){
         Juego.estadoTablero.contador++;
         int total = 0;
+        int totalPiezasBlancas  = 0;
+        int totalPiezasNegras  = 0;
         for(var fila : tablero)
             for(var pieza : fila)
-                if(pieza != null) total += pieza.Valor();
+                if(pieza != null) 
+                    if(pieza.EsBlanca())  totalPiezasBlancas += pieza.Valor() ;
+                    else 
+                        totalPiezasNegras += pieza.Valor();
         //System.out.println("Evaluar ------------------------------------ " + total);
-        return total;
+        return totalPiezasBlancas + totalPiezasNegras;
     }
     
    public String Mover(EstadoTablero estado) throws CloneNotSupportedException{
        Juego.estadoTablero.contador = 0;
-       int valoracion = estado.TurnoBlanco ? -100 : 100;
+       int valoracion = estado.TurnoBlanco ? -1000 : 1000;
        int pos = 0;
+       
        var movimientos = MovimientosValidos();
-       System.out.println("mov validos" + movimientos.size());
+       //ystem.out.println("mov validos" + movimientos.size());
        for (int i = 0; i < movimientos.size(); i++) {
            
             var mov = movimientos.get(i);
+            
             ActualizarTablero(ConvertirANotacion(mov));
             Juego.estadoTablero.TurnoBlanco = !Juego.estadoTablero.TurnoBlanco;
             //ImprimirPosicicion();
             var estadoLocal = (EstadoTablero) Juego.estadoTablero.clone();
             
-            int eval = estado.TurnoBlanco ? Maxi(3,estadoLocal) : Mini(3,estadoLocal);
+            int eval = estado.TurnoBlanco ? Mini(4,estadoLocal) : Maxi(4,estadoLocal);
             
-            if(estado.TurnoBlanco)
+            if(estado.TurnoBlanco){
                 if(eval > valoracion){
                    valoracion = eval;
                    pos = i;
                 }
-            else
+            }
+            else{
                  if(eval < valoracion){
                    valoracion = eval;
                    pos = i;
                 }
+            }
            
            RevertirMovimiento(mov[0],mov[1],mov[2],mov[3],estado.TurnoBlanco,estadoLocal);
            Juego.estadoTablero = (EstadoTablero) estado.clone();
        }
-       System.out.println(valoracion);
-       System.out.println(Juego.estadoTablero.contador);
+       //System.out.println(valoracion);
+       //System.out.println(Juego.estadoTablero.contador);
        return ConvertirANotacion(movimientos.get(pos));
    }
     private void RevertirMovimiento(int fi, int ci, int fd, int cd,boolean turnoBlanco, EstadoTablero estado){
