@@ -5,6 +5,7 @@ import com.wolf.carlitos.Piezas.Pieza;
 
 public  class EstadoTablero  implements Cloneable{
     public static int contador = 0;
+    public static int capturas = 0;
     public  boolean EnroqueCBlanco = true;
     public  boolean EnroqueLBlanco = true;
     public  boolean EnroqueCNegro = true;

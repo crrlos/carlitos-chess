@@ -18,7 +18,14 @@ public class Base {
         return false;
     }
     public int[] BuscarPosicionRey(boolean blanco, Pieza[][] tablero){
-            return blanco ? Juego.estadoTablero.PosicionReyBlanco : Juego.estadoTablero.PosicionReyNegro;
+            for (int i = 0; i < 8; i++) {
+                for (int j = 0; j < 8; j++) {
+                    if(tablero[i][j] != null && tablero[i][j].EsBlanca() == blanco && tablero[i][j] instanceof Rey)
+                        return new int[]{i,j};
+                }
+            
+        }
+       return null;
     }
     public boolean ReyEnJaque(Pieza [][] tablero, boolean blanco){
         var posicionRey = BuscarPosicionRey(blanco,tablero);
@@ -257,7 +264,9 @@ public class Base {
 
         var iterator = movimientos.iterator();
         while(iterator.hasNext()){
-            if(!MovimientoValido(iterator.next(),tablero,blanco))
+            var mov = iterator.next();
+            
+            if(!MovimientoValido(mov,tablero,blanco))
             {
                 iterator.remove();
             }

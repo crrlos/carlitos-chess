@@ -208,7 +208,7 @@ return this.MovimientosValidos(lista, tablero, esBlanco);
             Juego.estadoTablero.PosicionReyBlanco[1] = cd;
             }else{
                 Juego.estadoTablero.PosicionReyNegro[0] = fd;
-            Juego.estadoTablero.PosicionReyNegro[1] = cd;
+                Juego.estadoTablero.PosicionReyNegro[1] = cd;
             }
             
             var jaque = ReyEnJaque(tablero,blanco);

@@ -98,7 +98,7 @@ public class Juego {
                 if(pieza != null && pieza.EsBlanca() == Juego.estadoTablero.TurnoBlanco)
                     movimientos.addAll(pieza.ObtenerMovimientos(i,j));
                 j++;
-                Juego.ImprimirPosicicion();
+                //Juego.ImprimirPosicicion();
             }
             i++; j = 0;
         }
@@ -106,7 +106,7 @@ public class Juego {
     }
     public int Mini(int nivel,EstadoTablero estado) throws CloneNotSupportedException{
         if(nivel == 0) return Evaluar();
-        
+        //System.out.println("Inicia MINI -----------------------------------------");
         int eval = 1000;
         var movimientos = MovimientosValidos();
         if(movimientos.isEmpty()){
@@ -131,8 +131,9 @@ public class Juego {
     }
     public int Maxi(int nivel, EstadoTablero estado) throws CloneNotSupportedException{
         if(nivel == 0) return Evaluar();
-        
+        //System.out.println("Inicia MAXI ----------------------------------------- nivel " + nivel);
         int eval = -1000;
+        //Juego.ImprimirPosicicion();
         var movimientos = MovimientosValidos();
         if(movimientos.isEmpty()){
            movimientos = MovimientosValidos();
@@ -188,7 +189,7 @@ public class Juego {
             //ImprimirPosicicion();
             var estadoLocal = (EstadoTablero) Juego.estadoTablero.clone();
             
-            int eval = estado.TurnoBlanco ? Mini(4,estadoLocal) : Maxi(4,estadoLocal);
+            int eval = estado.TurnoBlanco ? Mini(3,estadoLocal) : Maxi(3,estadoLocal);
             
             if(estado.TurnoBlanco){
                 if(eval > valoracion){
@@ -208,6 +209,7 @@ public class Juego {
        }
        //System.out.println(valoracion);
        //System.out.println(Juego.estadoTablero.contador);
+       System.out.println(Juego.estadoTablero.contador + " " + Juego.estadoTablero.capturas);
        return ConvertirANotacion(movimientos.get(pos));
    }
     private void RevertirMovimiento(int fi, int ci, int fd, int cd,boolean turnoBlanco, EstadoTablero estado){
@@ -351,8 +353,10 @@ public class Juego {
                      Juego.estadoTablero.EnroqueLNegro = false;
          }
          
-       if(tablero[filaFinal][colFinal] != null)
+       if(tablero[filaFinal][colFinal] != null){
             estadoTablero.PiezaCapturada = tablero[filaFinal][colFinal];
+            Juego.estadoTablero.capturas++;
+       }
        
        
        tablero[filaFinal][colFinal] = pieza;
