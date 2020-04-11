@@ -1,5 +1,6 @@
 package com.wolf.carlitos.Piezas;
 
+import com.wolf.carlitos.EstadoTablero;
 import com.wolf.carlitos.Juego;
 import java.util.List;
 
@@ -28,11 +29,13 @@ public class Base {
        return null;
     }
     public boolean ReyEnJaque(Pieza [][] tablero, boolean blanco){
+        
         var posicionRey = BuscarPosicionRey(blanco,tablero);
-        if(posicionRey.length == 0)
-                   Juego.ImprimirPosicicion();
+        
+        if(posicionRey.length == 0) Juego.ImprimirPosicicion();
         
        return CasillaAtacada(posicionRey[0], posicionRey[1], tablero,blanco); 
+       
     }
     private boolean AtaqueRey(int fila, int columna, Pieza[][] tablero, boolean blanco){
         //Juego.ImprimirPosicicion();

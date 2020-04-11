@@ -15,8 +15,8 @@ import java.util.Scanner;
 public class Juego {
     public static Pieza[][] tablero;
     public static EstadoTablero estadoTablero;
-    private static final String filas = "12345678";
-    private static final String columnas = "abcdefgh";
+    private static final String FILAS = "12345678";
+    private static final String COLUMNAS = "abcdefgh";
    
     public Pieza[] piezasBlancas;
     public Pieza[] piezasNegras;
@@ -75,8 +75,8 @@ public class Juego {
         }
     }
     public static  String ConvertirANotacion(int[] movimiento){
-        var mov = columnas.charAt(movimiento[1]) + "" + filas.charAt(movimiento[0]) +
-                  columnas.charAt(movimiento[3]) + "" + filas.charAt(movimiento[2]);
+        var mov = COLUMNAS.charAt(movimiento[1]) + "" + FILAS.charAt(movimiento[0]) +
+                  COLUMNAS.charAt(movimiento[3]) + "" + FILAS.charAt(movimiento[2]);
         if(movimiento.length == 5){
             switch(movimiento[4]){
                 case 1: return mov + "q";
@@ -109,6 +109,7 @@ public class Juego {
         //System.out.println("Inicia MINI -----------------------------------------");
         int eval = 1000;
         var movimientos = MovimientosValidos();
+        
         if(movimientos.isEmpty()){
            movimientos = MovimientosValidos();
         }
@@ -116,6 +117,9 @@ public class Juego {
         Juego.estadoTablero = estado.clone();
         
         for(var mov : movimientos){
+            //debug
+            EstadoTablero.ultimoMov.add(ConvertirANotacion(mov));
+            
             ActualizarTablero(ConvertirANotacion(mov));
             //ImprimirPosicicion();
             estadoTablero.TurnoBlanco = !estado.TurnoBlanco;
@@ -125,8 +129,9 @@ public class Juego {
             
             RevertirMovimiento(mov[0],mov[1],mov[2],mov[3],estado.TurnoBlanco,estadoTablero);
             Juego.estadoTablero = (EstadoTablero) estado.clone();
+             EstadoTablero.ultimoMov.remove(EstadoTablero.ultimoMov.size() -1);
         }
-        //System.out.println("mini nivel " + nivel + " retorna  "+ eval);
+       
         return eval;
     }
     public int Maxi(int nivel, EstadoTablero estado) throws CloneNotSupportedException{
@@ -135,6 +140,7 @@ public class Juego {
         int eval = -1000;
         //Juego.ImprimirPosicicion();
         var movimientos = MovimientosValidos();
+        
         if(movimientos.isEmpty()){
            movimientos = MovimientosValidos();
         }
@@ -142,6 +148,9 @@ public class Juego {
         Juego.estadoTablero = estado.clone();
         
         for(var mov : movimientos){
+            
+            EstadoTablero.ultimoMov.add(ConvertirANotacion(mov));
+            
             ActualizarTablero(ConvertirANotacion(mov));
             //ImprimirPosicicion();
             estadoTablero.TurnoBlanco = !estado.TurnoBlanco;
@@ -152,6 +161,8 @@ public class Juego {
             
             RevertirMovimiento(mov[0],mov[1],mov[2],mov[3],estado.TurnoBlanco,estadoTablero);
             Juego.estadoTablero = (EstadoTablero) estado.clone();
+            
+            EstadoTablero.ultimoMov.remove(EstadoTablero.ultimoMov.size() -1);
         }
         
         //System.out.println("maxi nivel " + nivel + " retorna  "+ eval);
@@ -174,19 +185,23 @@ public class Juego {
     }
     
    public String Mover(EstadoTablero estado) throws CloneNotSupportedException{
-       Juego.estadoTablero.contador = 0;
+       EstadoTablero.contador = 0;
        int valoracion = estado.TurnoBlanco ? -1000 : 1000;
        int pos = 0;
        
        var movimientos = MovimientosValidos();
-       //ystem.out.println("mov validos" + movimientos.size());
+       
        for (int i = 0; i < movimientos.size(); i++) {
            
             var mov = movimientos.get(i);
             
+            EstadoTablero.ultimoMov.add(ConvertirANotacion(mov));
+            
             ActualizarTablero(ConvertirANotacion(mov));
+            
+            
             Juego.estadoTablero.TurnoBlanco = !Juego.estadoTablero.TurnoBlanco;
-            //ImprimirPosicicion();
+            
             var estadoLocal = (EstadoTablero) Juego.estadoTablero.clone();
             
             int eval = estado.TurnoBlanco ? Mini(EstadoTablero.deep,estadoLocal) : Maxi(EstadoTablero.deep,estadoLocal);
@@ -206,10 +221,10 @@ public class Juego {
            
            RevertirMovimiento(mov[0],mov[1],mov[2],mov[3],estado.TurnoBlanco,estadoLocal);
            Juego.estadoTablero = (EstadoTablero) estado.clone();
+           EstadoTablero.ultimoMov.remove(0);
        }
-       //System.out.println(valoracion);
-       //System.out.println(Juego.estadoTablero.contador);
-       System.out.println(Juego.estadoTablero.contador + " " + Juego.estadoTablero.capturas);
+      
+       System.out.println(EstadoTablero.contador + " " + EstadoTablero.capturas);
        return ConvertirANotacion(movimientos.get(pos));
    }
     private void RevertirMovimiento(int fi, int ci, int fd, int cd,boolean turnoBlanco, EstadoTablero estado){
@@ -238,25 +253,19 @@ public class Juego {
                     Juego.tablero[fi][cd + 1] = null;
                 }
                 
-                
-//                System.out.println("Reversion de enroque");
-//                
-//                ImprimirPosicicion();
-//                System.out.println("Fin reversion");
-//                ImprimirPosicicion();
-//                System.out.println("Fin reversion");
                 break;
                 
               
         }
+       
         Juego.tablero[fd][cd] = estado.PiezaCapturada;
     }
     private void ActualizarTablero(String movimiento){
         
-        int colInicio = columnas.indexOf(movimiento.substring(0,1));
-        int filaInicio = filas.indexOf(movimiento.substring(1, 2));
-        int colFinal = columnas.indexOf(movimiento.substring(2, 3));
-        int filaFinal = filas.indexOf(movimiento.substring(3, 4));
+        int colInicio = COLUMNAS.indexOf(movimiento.substring(0,1));
+        int filaInicio = FILAS.indexOf(movimiento.substring(1, 2));
+        int colFinal = COLUMNAS.indexOf(movimiento.substring(2, 3));
+        int filaFinal = FILAS.indexOf(movimiento.substring(3, 4));
         Juego.estadoTablero.PiezaCapturada = null;
         Juego.estadoTablero.TipoMovimiento = -1;
 
