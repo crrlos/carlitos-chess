@@ -189,7 +189,7 @@ public class Juego {
             //ImprimirPosicicion();
             var estadoLocal = (EstadoTablero) Juego.estadoTablero.clone();
             
-            int eval = estado.TurnoBlanco ? Mini(3,estadoLocal) : Maxi(3,estadoLocal);
+            int eval = estado.TurnoBlanco ? Mini(EstadoTablero.deep,estadoLocal) : Maxi(EstadoTablero.deep,estadoLocal);
             
             if(estado.TurnoBlanco){
                 if(eval > valoracion){

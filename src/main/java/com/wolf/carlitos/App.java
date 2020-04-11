@@ -18,8 +18,13 @@ public class App {
                     juego.ImprimirPosicicion();
                     }
             }else if(linea.contains("go")){
+                try{
+                
+                   EstadoTablero.deep =  Integer.parseInt(linea.replaceAll("go", ""));
+                
+                }catch(Exception e){}
                 System.out.println("bestmove "+juego.Mover((EstadoTablero)Juego.estadoTablero.clone()));
-                //juego.ImprimirPosicicion();
+                
             }else if(linea.contains("isready"))
                 System.out.println("readyok");
             else if(linea.contains("ucinewgame")){
