@@ -105,7 +105,6 @@ public class Juego {
                 if(pieza != null && pieza.EsBlanca() == Juego.estadoTablero.TurnoBlanco)
                     movimientos.addAll(pieza.ObtenerMovimientos(i,j));
                 j++;
-                //Juego.ImprimirPosicicion();
             }
             i++; j = 0;
         }
@@ -312,6 +311,7 @@ public class Juego {
         int filaInicio = FILAS.indexOf(movimiento.substring(1, 2));
         int colFinal = COLUMNAS.indexOf(movimiento.substring(2, 3));
         int filaFinal = FILAS.indexOf(movimiento.substring(3, 4));
+        
         Juego.estadoTablero.PiezaCapturada = null;
         Juego.estadoTablero.TipoMovimiento = -1;
 
