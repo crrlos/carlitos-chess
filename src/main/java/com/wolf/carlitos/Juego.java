@@ -7,8 +7,15 @@ import com.wolf.carlitos.Piezas.Peon;
 import com.wolf.carlitos.Piezas.Pieza;
 import com.wolf.carlitos.Piezas.Rey;
 import com.wolf.carlitos.Piezas.Torre;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Scanner;
+import com.wolf.carlitos.Proceso;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.stream.Collectors;
 
 
 
@@ -104,21 +111,23 @@ public class Juego {
         }
         return movimientos;
     }
-    public int Mini(int nivel,EstadoTablero estado) throws CloneNotSupportedException{
+    public int Mini(int nivel,EstadoTablero estado) throws CloneNotSupportedException, IOException{
+        
+        
+        
         if(nivel == 0) return Evaluar();
-        //System.out.println("Inicia MINI -----------------------------------------");
+        
         int eval = 1000;
         var movimientos = MovimientosValidos();
         
-        if(movimientos.isEmpty()){
-           movimientos = MovimientosValidos();
-        }
+        comparar(movimientos, EstadoTablero.ultimoMov);
         
         Juego.estadoTablero = estado.clone();
         
         for(var mov : movimientos){
             //debug
             EstadoTablero.ultimoMov.add(ConvertirANotacion(mov));
+            EstadoTablero.contadorPorMovimiento++;
             
             ActualizarTablero(ConvertirANotacion(mov));
             //ImprimirPosicicion();
@@ -134,12 +143,14 @@ public class Juego {
        
         return eval;
     }
-    public int Maxi(int nivel, EstadoTablero estado) throws CloneNotSupportedException{
+    public int Maxi(int nivel, EstadoTablero estado) throws CloneNotSupportedException, IOException{
         if(nivel == 0) return Evaluar();
         //System.out.println("Inicia MAXI ----------------------------------------- nivel " + nivel);
         int eval = -1000;
         //Juego.ImprimirPosicicion();
         var movimientos = MovimientosValidos();
+        
+        comparar(movimientos, EstadoTablero.ultimoMov);
         
         if(movimientos.isEmpty()){
            movimientos = MovimientosValidos();
@@ -148,8 +159,9 @@ public class Juego {
         Juego.estadoTablero = estado.clone();
         
         for(var mov : movimientos){
-            
+            //debug
             EstadoTablero.ultimoMov.add(ConvertirANotacion(mov));
+            EstadoTablero.contadorPorMovimiento++;
             
             ActualizarTablero(ConvertirANotacion(mov));
             //ImprimirPosicicion();
@@ -184,7 +196,37 @@ public class Juego {
         return totalPiezasBlancas + totalPiezasNegras;
     }
     
-   public String Mover(EstadoTablero estado) throws CloneNotSupportedException{
+   private void comparar(List<int[]> movimientos, List<String> movs) throws IOException{
+       
+    if(!EstadoTablero.DEBUG) return;
+       
+    var res =  Proceso.getInstance().movimentosValidos(movs);
+   
+    
+    if(movimientos.size() == res.size()) return;
+    
+    Collections.sort(res);
+    
+      var movGenerados =  movimientos.stream().map( p -> ConvertirANotacion(p) )
+              .collect(Collectors.toList());
+      
+    Collections.sort(movGenerados);
+       
+       res.forEach( m -> {
+       
+          if(!movGenerados.contains(m)){
+                System.out.println("no se encontró en la secuencia: ");
+                System.out.println(movs);
+                System.out.println(movGenerados);
+                System.out.println(res);
+          }
+           
+       });
+       
+       
+   }
+    
+   public String Mover(EstadoTablero estado) throws CloneNotSupportedException, IOException{
        EstadoTablero.contador = 0;
        int valoracion = estado.TurnoBlanco ? -1000 : 1000;
        int pos = 0;
@@ -195,6 +237,7 @@ public class Juego {
            
             var mov = movimientos.get(i);
             
+            //debug
             EstadoTablero.ultimoMov.add(ConvertirANotacion(mov));
             
             ActualizarTablero(ConvertirANotacion(mov));
@@ -222,6 +265,9 @@ public class Juego {
            RevertirMovimiento(mov[0],mov[1],mov[2],mov[3],estado.TurnoBlanco,estadoLocal);
            Juego.estadoTablero = (EstadoTablero) estado.clone();
            EstadoTablero.ultimoMov.remove(0);
+           
+           System.out.println(ConvertirANotacion(mov) + " " + EstadoTablero.contadorPorMovimiento);
+           EstadoTablero.contadorPorMovimiento = 0;
        }
       
        System.out.println(EstadoTablero.contador + " " + EstadoTablero.capturas);

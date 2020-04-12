@@ -2,11 +2,20 @@ package com.wolf.carlitos;
 
 import static com.wolf.carlitos.Juego.tablero;
 import com.wolf.carlitos.Piezas.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class App {
     public static void main(String[] args) throws Exception {
-  
+        
+        Proceso.getInstance();
+        
        var scanner = new Scanner(System.in);
        Juego juego = new Juego();
 
