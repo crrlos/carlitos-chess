@@ -74,125 +74,126 @@ public class Rey extends Base implements Pieza {
 
         }
 
-        //enroque
-        if (Juego.estadoTablero.EnroqueCBlanco && esBlanco) {
-            if (columna == 4) {
-                if (tablero[fila][columna + 1] == null && tablero[fila][columna + 2] == null) {
-                    tablero[fila][columna + 1] = tablero[fila][columna];//camino del rey
-                    tablero[fila][columna] = null;
-                    //Juego.estadoTablero.PosicionReyBlanco[0] = fila;
-                    Juego.estadoTablero.PosicionReyBlanco[1] = columna + 1;
-                    if (!ReyEnJaque(tablero, esBlanco)) {
-                        tablero[fila][columna + 2] = tablero[fila][columna + 1];
-                        tablero[fila][columna + 1] = null;
+        if (!ReyEnJaque(tablero, esBlanco)) {
+            if (Juego.estadoTablero.EnroqueCBlanco && esBlanco) {
+                if (columna == 4) {
+                    if (tablero[fila][columna + 1] == null && tablero[fila][columna + 2] == null) {
+                        tablero[fila][columna + 1] = tablero[fila][columna];//camino del rey
+                        tablero[fila][columna] = null;
                         //Juego.estadoTablero.PosicionReyBlanco[0] = fila;
-                        Juego.estadoTablero.PosicionReyBlanco[1] = columna + 2;
+                        Juego.estadoTablero.PosicionReyBlanco[1] = columna + 1;
                         if (!ReyEnJaque(tablero, esBlanco)) {
-                            lista.add(new int[]{fila, columna, fila, columna + 2});
-                            tablero[fila][columna] = tablero[fila][columna + 2];
-                            tablero[fila][columna + 2] = null;
+                            tablero[fila][columna + 2] = tablero[fila][columna + 1];
+                            tablero[fila][columna + 1] = null;
+                            //Juego.estadoTablero.PosicionReyBlanco[0] = fila;
+                            Juego.estadoTablero.PosicionReyBlanco[1] = columna + 2;
+                            if (!ReyEnJaque(tablero, esBlanco)) {
+                                lista.add(new int[]{fila, columna, fila, columna + 2});
+                                tablero[fila][columna] = tablero[fila][columna + 2];
+                                tablero[fila][columna + 2] = null;
+                            } else {
+                                tablero[fila][columna] = tablero[fila][columna + 2];
+                                tablero[fila][columna + 2] = null;
+                            }
                         } else {
-                            tablero[fila][columna] = tablero[fila][columna + 2];
-                            tablero[fila][columna + 2] = null;
+                            tablero[fila][columna] = tablero[fila][columna + 1];
+                            tablero[fila][columna + 1] = null;
                         }
-                    } else {
-                        tablero[fila][columna] = tablero[fila][columna + 1];
-                        tablero[fila][columna + 1] = null;
                     }
                 }
+                Juego.estadoTablero.PosicionReyBlanco[0] = fila;
+                Juego.estadoTablero.PosicionReyBlanco[1] = columna;
             }
-            Juego.estadoTablero.PosicionReyBlanco[0] = fila;
-            Juego.estadoTablero.PosicionReyBlanco[1] = columna;
-        }
 
-        if (Juego.estadoTablero.EnroqueLBlanco && esBlanco) {
-            if (columna == 4) {
-                if (tablero[fila][columna - 1] == null && tablero[fila][columna - 2] == null && tablero[fila][columna - 3] == null) {
-                    tablero[fila][columna - 1] = tablero[fila][columna];
-                    tablero[fila][columna] = null;
-                    //Juego.estadoTablero.PosicionReyBlanco[0] = fila;
-                    Juego.estadoTablero.PosicionReyBlanco[1] = columna - 1;
-                    if (!ReyEnJaque(tablero, esBlanco)) {
-                        tablero[fila][columna - 2] = tablero[fila][columna - 1];
-                        tablero[fila][columna - 1] = null;
-                        // Juego.estadoTablero.PosicionReyBlanco[0] = fila;
-                        Juego.estadoTablero.PosicionReyBlanco[1] = columna - 2;
+            if (Juego.estadoTablero.EnroqueLBlanco && esBlanco) {
+                if (columna == 4) {
+                    if (tablero[fila][columna - 1] == null && tablero[fila][columna - 2] == null && tablero[fila][columna - 3] == null) {
+                        tablero[fila][columna - 1] = tablero[fila][columna];
+                        tablero[fila][columna] = null;
+                        //Juego.estadoTablero.PosicionReyBlanco[0] = fila;
+                        Juego.estadoTablero.PosicionReyBlanco[1] = columna - 1;
                         if (!ReyEnJaque(tablero, esBlanco)) {
-                            lista.add(new int[]{fila, columna, fila, columna - 2});
-                            tablero[fila][columna] = tablero[fila][columna - 2];
-                            tablero[fila][columna - 2] = null;
+                            tablero[fila][columna - 2] = tablero[fila][columna - 1];
+                            tablero[fila][columna - 1] = null;
+                            // Juego.estadoTablero.PosicionReyBlanco[0] = fila;
+                            Juego.estadoTablero.PosicionReyBlanco[1] = columna - 2;
+                            if (!ReyEnJaque(tablero, esBlanco)) {
+                                lista.add(new int[]{fila, columna, fila, columna - 2});
+                                tablero[fila][columna] = tablero[fila][columna - 2];
+                                tablero[fila][columna - 2] = null;
+                            } else {
+                                tablero[fila][columna] = tablero[fila][columna - 2];
+                                tablero[fila][columna - 2] = null;
+                            }
                         } else {
-                            tablero[fila][columna] = tablero[fila][columna - 2];
-                            tablero[fila][columna - 2] = null;
+                            tablero[fila][columna] = tablero[fila][columna - 1];
+                            tablero[fila][columna - 1] = null;
                         }
-                    } else {
-                        tablero[fila][columna] = tablero[fila][columna - 1];
-                        tablero[fila][columna - 1] = null;
                     }
                 }
+                Juego.estadoTablero.PosicionReyBlanco[0] = fila;
+                Juego.estadoTablero.PosicionReyBlanco[1] = columna;
             }
-            Juego.estadoTablero.PosicionReyBlanco[0] = fila;
-            Juego.estadoTablero.PosicionReyBlanco[1] = columna;
-        }
-        //enroque
-        if (Juego.estadoTablero.EnroqueCNegro && !esBlanco) {
-            if (columna == 4) {
-                if (tablero[fila][columna + 1] == null && tablero[fila][columna + 2] == null) {
-                    tablero[fila][columna + 1] = tablero[fila][columna];
-                    tablero[fila][columna] = null;
-                    //Juego.estadoTablero.PosicionReyNegro[0] = fila;
-                    Juego.estadoTablero.PosicionReyNegro[1] = columna + 1;
-                    if (!ReyEnJaque(tablero, esBlanco)) {
-                        tablero[fila][columna + 2] = tablero[fila][columna + 1];
-                        tablero[fila][columna + 1] = null;
-                        Juego.estadoTablero.PosicionReyNegro[0] = fila;
-                        Juego.estadoTablero.PosicionReyNegro[1] = columna + 2;
-                        if (!ReyEnJaque(tablero, esBlanco)) {
-                            lista.add(new int[]{fila, columna, fila, columna + 2});
-                            tablero[fila][columna] = tablero[fila][columna + 2];
-                            tablero[fila][columna + 2] = null;
-                        } else {
-                            tablero[fila][columna] = tablero[fila][columna + 2];
-                            tablero[fila][columna + 2] = null;
-                        }
-                    } else {
-                        tablero[fila][columna] = tablero[fila][columna + 1];
-                        tablero[fila][columna + 1] = null;
-                    }
-                }
-            }
-            Juego.estadoTablero.PosicionReyNegro[0] = fila;
-            Juego.estadoTablero.PosicionReyNegro[1] = columna;
-        }
-
-        if (Juego.estadoTablero.EnroqueLNegro && !esBlanco) {
-            if (columna == 4) {
-                if (tablero[fila][columna - 1] == null && tablero[fila][columna - 2] == null && tablero[fila][columna - 3] == null) {
-                    tablero[fila][columna - 1] = tablero[fila][columna];
-                    tablero[fila][columna] = null;
-                    //Juego.estadoTablero.PosicionReyNegro[0] = fila;
-                    Juego.estadoTablero.PosicionReyNegro[1] = columna - 1;
-                    if (!ReyEnJaque(tablero, esBlanco)) {
-                        tablero[fila][columna - 2] = tablero[fila][columna - 1];
-                        tablero[fila][columna - 1] = null;
+            //enroque
+            if (Juego.estadoTablero.EnroqueCNegro && !esBlanco) {
+                if (columna == 4) {
+                    if (tablero[fila][columna + 1] == null && tablero[fila][columna + 2] == null) {
+                        tablero[fila][columna + 1] = tablero[fila][columna];
+                        tablero[fila][columna] = null;
                         //Juego.estadoTablero.PosicionReyNegro[0] = fila;
-                        Juego.estadoTablero.PosicionReyNegro[1] = columna - 2;
+                        Juego.estadoTablero.PosicionReyNegro[1] = columna + 1;
                         if (!ReyEnJaque(tablero, esBlanco)) {
-                            lista.add(new int[]{fila, columna, fila, columna - 2});
-                            tablero[fila][columna] = tablero[fila][columna - 2];
-                            tablero[fila][columna - 2] = null;
+                            tablero[fila][columna + 2] = tablero[fila][columna + 1];
+                            tablero[fila][columna + 1] = null;
+                            Juego.estadoTablero.PosicionReyNegro[0] = fila;
+                            Juego.estadoTablero.PosicionReyNegro[1] = columna + 2;
+                            if (!ReyEnJaque(tablero, esBlanco)) {
+                                lista.add(new int[]{fila, columna, fila, columna + 2});
+                                tablero[fila][columna] = tablero[fila][columna + 2];
+                                tablero[fila][columna + 2] = null;
+                            } else {
+                                tablero[fila][columna] = tablero[fila][columna + 2];
+                                tablero[fila][columna + 2] = null;
+                            }
                         } else {
-                            tablero[fila][columna] = tablero[fila][columna - 2];
-                            tablero[fila][columna - 2] = null;
+                            tablero[fila][columna] = tablero[fila][columna + 1];
+                            tablero[fila][columna + 1] = null;
                         }
-                    } else {
-                        tablero[fila][columna] = tablero[fila][columna - 1];
-                        tablero[fila][columna - 1] = null;
                     }
                 }
+                Juego.estadoTablero.PosicionReyNegro[0] = fila;
+                Juego.estadoTablero.PosicionReyNegro[1] = columna;
             }
-            Juego.estadoTablero.PosicionReyNegro[0] = fila;
-            Juego.estadoTablero.PosicionReyNegro[1] = columna;
+
+            if (Juego.estadoTablero.EnroqueLNegro && !esBlanco) {
+                if (columna == 4) {
+                    if (tablero[fila][columna - 1] == null && tablero[fila][columna - 2] == null && tablero[fila][columna - 3] == null) {
+                        tablero[fila][columna - 1] = tablero[fila][columna];
+                        tablero[fila][columna] = null;
+                        //Juego.estadoTablero.PosicionReyNegro[0] = fila;
+                        Juego.estadoTablero.PosicionReyNegro[1] = columna - 1;
+                        if (!ReyEnJaque(tablero, esBlanco)) {
+                            tablero[fila][columna - 2] = tablero[fila][columna - 1];
+                            tablero[fila][columna - 1] = null;
+                            //Juego.estadoTablero.PosicionReyNegro[0] = fila;
+                            Juego.estadoTablero.PosicionReyNegro[1] = columna - 2;
+                            if (!ReyEnJaque(tablero, esBlanco)) {
+                                lista.add(new int[]{fila, columna, fila, columna - 2});
+                                tablero[fila][columna] = tablero[fila][columna - 2];
+                                tablero[fila][columna - 2] = null;
+                            } else {
+                                tablero[fila][columna] = tablero[fila][columna - 2];
+                                tablero[fila][columna - 2] = null;
+                            }
+                        } else {
+                            tablero[fila][columna] = tablero[fila][columna - 1];
+                            tablero[fila][columna - 1] = null;
+                        }
+                    }
+                }
+                Juego.estadoTablero.PosicionReyNegro[0] = fila;
+                Juego.estadoTablero.PosicionReyNegro[1] = columna;
+            }
         }
 
         return this.MovimientosValidos(lista, tablero, esBlanco);

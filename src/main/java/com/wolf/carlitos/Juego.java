@@ -121,7 +121,11 @@ public class Juego {
         
         int eval = 1000;
         var movimientos = MovimientosValidos();
-       // if(nivel == 1)
+       
+       
+            
+        
+        if(nivel == 1)
             comparar(movimientos, EstadoTablero.ultimoMov);
         
         Juego.estadoTablero = estado.clone();
@@ -129,7 +133,6 @@ public class Juego {
         for(var mov : movimientos){
             //debug
             EstadoTablero.ultimoMov.add(ConvertirANotacion(mov));
-            EstadoTablero.contadorPorMovimiento++;
             
             ActualizarTablero(ConvertirANotacion(mov));
             //ImprimirPosicicion();
@@ -154,7 +157,9 @@ public class Juego {
         
         var movimientos = MovimientosValidos();
         
-        //if(nivel == 1)
+        
+        
+        if(nivel == 1)
             comparar(movimientos, EstadoTablero.ultimoMov);
         
        
@@ -164,7 +169,6 @@ public class Juego {
         for(var mov : movimientos){
             //debug
             EstadoTablero.ultimoMov.add(ConvertirANotacion(mov));
-            EstadoTablero.contadorPorMovimiento++;
             
             ActualizarTablero(ConvertirANotacion(mov));
             //ImprimirPosicicion();
@@ -185,22 +189,23 @@ public class Juego {
     }
 
     public int Evaluar(){
-        Juego.estadoTablero.contador++;
-        int total = 0;
-        int totalPiezasBlancas  = 0;
-        int totalPiezasNegras  = 0;
-        for(var fila : tablero)
-            for(var pieza : fila)
-                if(pieza != null) 
-                    if(pieza.EsBlanca())  totalPiezasBlancas += pieza.Valor() ;
-                    else 
-                        totalPiezasNegras += pieza.Valor();
-        //System.out.println("Evaluar ------------------------------------ " + total);
-        return totalPiezasBlancas + totalPiezasNegras;
+        EstadoTablero.contador++;
+        EstadoTablero.contadorPorMovimiento++;
+        return 0;
+//        int total = 0;
+//        int totalPiezasBlancas  = 0;
+//        int totalPiezasNegras  = 0;
+//        for(var fila : tablero)
+//            for(var pieza : fila)
+//                if(pieza != null) 
+//                    if(pieza.EsBlanca())  totalPiezasBlancas += pieza.Valor() ;
+//                    else 
+//                        totalPiezasNegras += pieza.Valor();
+//        //System.out.println("Evaluar ------------------------------------ " + total);
+//        return totalPiezasBlancas + totalPiezasNegras;
     }
     
-   private void comparar(List<int[]> movimientos, List<String> movs) throws IOException{
-       
+   private void comparar(List<int[]> movimientos, List<String> movs) throws IOException{  
     if(!EstadoTablero.DEBUG) return;
     
     var movimientosCopia = movimientos.stream()
@@ -215,8 +220,6 @@ public class Juego {
     var movsCopia = movs.stream().map(e -> e).collect(Collectors.toList());
     
     Hilos.comparar(movimientosCopia, movsCopia);
-
-    
    }
     
    public String Mover(EstadoTablero estado) throws CloneNotSupportedException, IOException{
@@ -225,8 +228,7 @@ public class Juego {
        int pos = 0;
        
        var movimientos = MovimientosValidos();
-       
-       for (int i = 0; i < movimientos.size(); i++) {
+       for (int i = 0; i < movimientos.size() ; i++) {
            
             var mov = movimientos.get(i);
             
@@ -257,13 +259,13 @@ public class Juego {
            
            RevertirMovimiento(mov[0],mov[1],mov[2],mov[3],estado.TurnoBlanco,estadoLocal);
            Juego.estadoTablero = (EstadoTablero) estado.clone();
-           EstadoTablero.ultimoMov.remove(estadoTablero.ultimoMov.size() -1);
+           EstadoTablero.ultimoMov.remove(EstadoTablero.ultimoMov.size() -1);
            
            System.out.println(ConvertirANotacion(mov) + " " + EstadoTablero.contadorPorMovimiento);
            EstadoTablero.contadorPorMovimiento = 0;
        }
       
-       System.out.println(EstadoTablero.contador + " " + EstadoTablero.capturas);
+       System.out.println(EstadoTablero.contador);
        return ConvertirANotacion(movimientos.get(pos));
    }
     private void RevertirMovimiento(int fi, int ci, int fd, int cd,boolean turnoBlanco, EstadoTablero estado){

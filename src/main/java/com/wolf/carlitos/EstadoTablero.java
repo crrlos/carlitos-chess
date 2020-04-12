@@ -3,10 +3,14 @@ package com.wolf.carlitos;
 
 import com.wolf.carlitos.Piezas.Pieza;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public  class EstadoTablero  implements Cloneable{
-    public static boolean DEBUG = true;
+    
+    public static HashMap<String,String> map = new HashMap<>();
+    
+    public static boolean DEBUG = false;
     public static int contadorPorMovimiento = 0;
     public static List<String> ultimoMov = new ArrayList<>();
     public static int deep = 1;
