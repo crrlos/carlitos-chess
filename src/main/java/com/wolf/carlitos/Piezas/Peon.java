@@ -26,10 +26,6 @@ public class Peon extends Base implements Pieza {
             if (tablero[esBlanco ? 2 : 5][columna] == null && tablero[esBlanco ? 3 : 4][columna] == null) {
                 lista.add(new int[]{fila, columna, esBlanco ? 3 : 4, columna});
             }
-
-//            //al paso
-//            Juego.estadoTablero.AlPaso = true;
-//            Juego.estadoTablero.PiezaALPaso = tablero[fila][columna];
         }
 
         //avance una casilla

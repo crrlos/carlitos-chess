@@ -77,6 +77,9 @@ public class Juego {
     }
     public void EstablecerPosicion(String... movimientos){
         for (var movimiento : movimientos) {
+            
+            EstadoTablero.ultimoMov.add(movimiento);
+            
             ActualizarTablero(movimiento);
             Juego.estadoTablero.TurnoBlanco  = !Juego.estadoTablero.TurnoBlanco;
         }
@@ -118,8 +121,8 @@ public class Juego {
         
         int eval = 1000;
         var movimientos = MovimientosValidos();
-        
-        comparar(movimientos, EstadoTablero.ultimoMov);
+       // if(nivel == 1)
+            comparar(movimientos, EstadoTablero.ultimoMov);
         
         Juego.estadoTablero = estado.clone();
         
@@ -143,17 +146,18 @@ public class Juego {
         return eval;
     }
     public int Maxi(int nivel, EstadoTablero estado) throws CloneNotSupportedException, IOException{
+        
         if(nivel == 0) return Evaluar();
-        //System.out.println("Inicia MAXI ----------------------------------------- nivel " + nivel);
+        
         int eval = -1000;
-        //Juego.ImprimirPosicicion();
+        
+        
         var movimientos = MovimientosValidos();
         
-        comparar(movimientos, EstadoTablero.ultimoMov);
+        //if(nivel == 1)
+            comparar(movimientos, EstadoTablero.ultimoMov);
         
-        if(movimientos.isEmpty()){
-           movimientos = MovimientosValidos();
-        }
+       
         
         Juego.estadoTablero = estado.clone();
         
@@ -198,31 +202,21 @@ public class Juego {
    private void comparar(List<int[]> movimientos, List<String> movs) throws IOException{
        
     if(!EstadoTablero.DEBUG) return;
-       
-    var res =  Proceso.getInstance().movimentosValidos(movs);
-   
     
-    if(movimientos.size() == res.size()) return;
+    var movimientosCopia = movimientos.stream()
+            .map((int[] e) -> {
+               if(e.length == 4){
+                   return new int[]{e[0],e[1],e[2],e[3]};
+               }
+                 return new int[]{e[0],e[1],e[2],e[3],e[4]};
+            
+            }).collect(Collectors.toList());
     
-    Collections.sort(res);
+    var movsCopia = movs.stream().map(e -> e).collect(Collectors.toList());
     
-      var movGenerados =  movimientos.stream().map( p -> ConvertirANotacion(p) )
-              .collect(Collectors.toList());
-      
-    Collections.sort(movGenerados);
-       
-       res.forEach( m -> {
-       
-          if(!movGenerados.contains(m)){
-                System.out.println("no se encontró en la secuencia: ");
-                System.out.println(movs);
-                System.out.println(movGenerados);
-                System.out.println(res);
-          }
-           
-       });
-       
-       
+    Hilos.comparar(movimientosCopia, movsCopia);
+
+    
    }
     
    public String Mover(EstadoTablero estado) throws CloneNotSupportedException, IOException{
@@ -263,7 +257,7 @@ public class Juego {
            
            RevertirMovimiento(mov[0],mov[1],mov[2],mov[3],estado.TurnoBlanco,estadoLocal);
            Juego.estadoTablero = (EstadoTablero) estado.clone();
-           EstadoTablero.ultimoMov.remove(0);
+           EstadoTablero.ultimoMov.remove(estadoTablero.ultimoMov.size() -1);
            
            System.out.println(ConvertirANotacion(mov) + " " + EstadoTablero.contadorPorMovimiento);
            EstadoTablero.contadorPorMovimiento = 0;

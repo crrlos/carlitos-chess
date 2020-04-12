@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public  class EstadoTablero  implements Cloneable{
-    public static boolean DEBUG = false;
+    public static boolean DEBUG = true;
     public static int contadorPorMovimiento = 0;
     public static List<String> ultimoMov = new ArrayList<>();
     public static int deep = 1;
