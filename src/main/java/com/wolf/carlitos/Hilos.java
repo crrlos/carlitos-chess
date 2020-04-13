@@ -55,6 +55,9 @@ public class Hilos {
                 return;
             }
             
+            var a = Juego.estadoTablero.PosicionReyBlanco;
+            var b = Juego.estadoTablero.PosicionReyNegro;
+            
             Collections.sort(res);
 
             var movGenerados = movimientos.stream().map(p -> ConvertirANotacion(p))

@@ -270,6 +270,10 @@ public class Juego {
    }
     private void RevertirMovimiento(int fi, int ci, int fd, int cd,boolean turnoBlanco, EstadoTablero estado){
         
+         if(Juego.estadoTablero.PosicionReyNegro[1] == 5 && estado.TipoMovimiento != 100){
+             var a = 4;
+         }
+        
         
         switch(estado.TipoMovimiento){
             case 0: //mov
@@ -294,7 +298,24 @@ public class Juego {
                     Juego.tablero[fi][cd + 1] = null;
                 }
                 
+                if(turnoBlanco){
+                    Juego.estadoTablero.PosicionReyBlanco[0] = fi;
+                    Juego.estadoTablero.PosicionReyBlanco[1] =ci;
+                }else{
+                    Juego.estadoTablero.PosicionReyNegro[0] =fi;
+                    Juego.estadoTablero.PosicionReyNegro[1] = ci;
+                }
+                
                 break;
+            case 100:
+                Juego.tablero[fi][ci] = Juego.tablero[fd][cd];
+                if(turnoBlanco){
+                    Juego.estadoTablero.PosicionReyBlanco[0] = fi;
+                    Juego.estadoTablero.PosicionReyBlanco[1] =ci;
+                }else{
+                    Juego.estadoTablero.PosicionReyNegro[0] =fi;
+                    Juego.estadoTablero.PosicionReyNegro[1] = ci;
+                }
                 
               
         }
@@ -375,6 +396,8 @@ public class Juego {
                     }
                 }
                 estadoTablero.TipoMovimiento = 3;
+            }else{
+                estadoTablero.TipoMovimiento = 100;
             }
             if(pieza.EsBlanca()){
                 Juego.estadoTablero.EnroqueCBlanco = Juego.estadoTablero.EnroqueLBlanco = false;
@@ -418,5 +441,7 @@ public class Juego {
        if(estadoTablero.TipoMovimiento == -1)
             estadoTablero.TipoMovimiento = 0;
        
+       
+      
     }
 }
