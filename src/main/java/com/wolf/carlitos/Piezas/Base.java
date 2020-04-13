@@ -18,26 +18,15 @@ public class Base {
         
         return false;
     }
-    public int[] BuscarPosicionRey(boolean blanco, Pieza[][] tablero){
-//            for (int i = 0; i < 8; i++) {
-//                for (int j = 0; j < 8; j++) {
-//                    if(tablero[i][j] != null && tablero[i][j].EsBlanca() == blanco && tablero[i][j] instanceof Rey)
-//                        return new int[]{i,j};
-//                }
-//            
-//        }
-//       return null;
-    return blanco ? Juego.estadoTablero.PosicionReyBlanco : Juego.estadoTablero.PosicionReyNegro;
-    }
+   
     public boolean ReyEnJaque(Pieza [][] tablero, boolean blanco){
         
-        var posicionRey = BuscarPosicionRey(blanco,tablero);
+        var posicionRey = blanco ? Juego.estadoTablero.PosicionReyBlanco : Juego.estadoTablero.PosicionReyNegro;
         
        return CasillaAtacada(posicionRey[0], posicionRey[1], tablero,blanco); 
        
     }
     private boolean AtaqueRey(int fila, int columna, Pieza[][] tablero, boolean blanco){
-        //Juego.ImprimirPosicicion();
         
        if(columna + 1 < 8)
            if(tablero[fila][columna + 1] != null && (tablero[fila][columna + 1] instanceof Rey))

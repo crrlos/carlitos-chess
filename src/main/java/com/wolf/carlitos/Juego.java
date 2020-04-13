@@ -132,9 +132,9 @@ public class Juego {
         
         for(var mov : movimientos){
             //debug
-            EstadoTablero.ultimoMov.add(ConvertirANotacion(mov));
+            //EstadoTablero.ultimoMov.add(ConvertirANotacion(mov));
             
-            ActualizarTablero(ConvertirANotacion(mov));
+            ActualizarTablero(mov);
             //ImprimirPosicicion();
             estadoTablero.TurnoBlanco = !estado.TurnoBlanco;
             int evaluacion = Maxi(nivel -1,estadoTablero.clone());
@@ -143,7 +143,7 @@ public class Juego {
             
             RevertirMovimiento(mov[0],mov[1],mov[2],mov[3],estado.TurnoBlanco,estadoTablero);
             Juego.estadoTablero = (EstadoTablero) estado.clone();
-             EstadoTablero.ultimoMov.remove(EstadoTablero.ultimoMov.size() -1);
+           //ƒmover  EstadoTablero.ultimoMov.remove(EstadoTablero.ultimoMov.size() -1);
         }
        
         return eval;
@@ -159,8 +159,8 @@ public class Juego {
         
         
         
-        if(nivel == 1)
-            comparar(movimientos, EstadoTablero.ultimoMov);
+//        if(nivel == 1)
+//            comparar(movimientos, EstadoTablero.ultimoMov);
         
        
         
@@ -168,9 +168,9 @@ public class Juego {
         
         for(var mov : movimientos){
             //debug
-            EstadoTablero.ultimoMov.add(ConvertirANotacion(mov));
+           // EstadoTablero.ultimoMov.add(ConvertirANotacion(mov));
             
-            ActualizarTablero(ConvertirANotacion(mov));
+            ActualizarTablero(mov);
             //ImprimirPosicicion();
             estadoTablero.TurnoBlanco = !estado.TurnoBlanco;
             int evaluacion = Mini(nivel -1,estadoTablero.clone());
@@ -181,7 +181,7 @@ public class Juego {
             RevertirMovimiento(mov[0],mov[1],mov[2],mov[3],estado.TurnoBlanco,estadoTablero);
             Juego.estadoTablero = (EstadoTablero) estado.clone();
             
-            EstadoTablero.ultimoMov.remove(EstadoTablero.ultimoMov.size() -1);
+            //EstadoTablero.ultimoMov.remove(EstadoTablero.ultimoMov.size() -1);
         }
         
         //System.out.println("maxi nivel " + nivel + " retorna  "+ eval);
@@ -233,9 +233,9 @@ public class Juego {
             var mov = movimientos.get(i);
             
             //debug
-            EstadoTablero.ultimoMov.add(ConvertirANotacion(mov));
+           // EstadoTablero.ultimoMov.add(ConvertirANotacion(mov));
             
-            ActualizarTablero(ConvertirANotacion(mov));
+            ActualizarTablero(mov);
             
             
             Juego.estadoTablero.TurnoBlanco = !Juego.estadoTablero.TurnoBlanco;
@@ -259,7 +259,7 @@ public class Juego {
            
            RevertirMovimiento(mov[0],mov[1],mov[2],mov[3],estado.TurnoBlanco,estadoLocal);
            Juego.estadoTablero = (EstadoTablero) estado.clone();
-           EstadoTablero.ultimoMov.remove(EstadoTablero.ultimoMov.size() -1);
+          // EstadoTablero.ultimoMov.remove(EstadoTablero.ultimoMov.size() -1);
            
            System.out.println(ConvertirANotacion(mov) + " " + EstadoTablero.contadorPorMovimiento);
            EstadoTablero.contadorPorMovimiento = 0;
@@ -270,9 +270,7 @@ public class Juego {
    }
     private void RevertirMovimiento(int fi, int ci, int fd, int cd,boolean turnoBlanco, EstadoTablero estado){
         
-         if(Juego.estadoTablero.PosicionReyNegro[1] == 5 && estado.TipoMovimiento != 100){
-             var a = 4;
-         }
+       
         
         
         switch(estado.TipoMovimiento){
@@ -367,6 +365,129 @@ public class Juego {
                         pieza = new Caballo(Juego.estadoTablero.TurnoBlanco);
                         break;
                     case 'b':
+                        pieza = new Alfil(Juego.estadoTablero.TurnoBlanco);
+                        break;
+                }
+                estadoTablero.TipoMovimiento = 2;
+            }
+            
+         }
+         else
+         if(pieza instanceof Rey){
+            // en los enroques solo se mueven las torres por ser el movimiento especial
+            if(Math.abs(colInicio - colFinal) == 2){
+                if(pieza.EsBlanca()){
+                    if(colFinal == 6){//enroque corto
+                        tablero[0][5] = tablero[0][7];
+                        tablero[0][7] = null;
+                    }else {//enroque largo
+                        tablero[0][3] = tablero[0][0];
+                        tablero[0][0] = null;
+                    }
+                }else{
+                    if(colFinal == 6){//enroque corto
+                        tablero[7][5] = tablero[7][7];
+                        tablero[7][7] = null;
+                    }else {//enroque largo
+                        tablero[7][3] = tablero[7][0];
+                        tablero[7][0] = null;
+                    }
+                }
+                estadoTablero.TipoMovimiento = 3;
+            }else{
+                estadoTablero.TipoMovimiento = 100;
+            }
+            if(pieza.EsBlanca()){
+                Juego.estadoTablero.EnroqueCBlanco = Juego.estadoTablero.EnroqueLBlanco = false;
+                Juego.estadoTablero.PosicionReyBlanco[0] = filaFinal;
+                Juego.estadoTablero.PosicionReyBlanco[1] = colFinal;
+            }
+            else{
+                Juego.estadoTablero.EnroqueCNegro  = Juego.estadoTablero.EnroqueLNegro = false;
+                Juego.estadoTablero.PosicionReyNegro[0] = filaFinal;
+                Juego.estadoTablero.PosicionReyNegro[1] = colFinal;
+            }
+            
+            
+         }
+         else
+         if(pieza instanceof Torre){
+             if(colInicio == 7)
+             {
+                 if(pieza.EsBlanca())
+                     Juego.estadoTablero.EnroqueCBlanco = false;
+                 else
+                     Juego.estadoTablero.EnroqueCNegro = false;
+             }else if(colInicio == 0)
+                 if(pieza.EsBlanca())
+                     Juego.estadoTablero.EnroqueLBlanco = false;
+                 else
+                     Juego.estadoTablero.EnroqueLNegro = false;
+         }
+         
+       if(tablero[filaFinal][colFinal] != null){
+            estadoTablero.PiezaCapturada = tablero[filaFinal][colFinal];
+            Juego.estadoTablero.capturas++;
+       }
+       
+       
+       tablero[filaFinal][colFinal] = pieza;
+       tablero[filaInicio][colInicio] = null;
+       
+       Juego.estadoTablero.AlPaso = false;
+       
+       if(estadoTablero.TipoMovimiento == -1)
+            estadoTablero.TipoMovimiento = 0;
+       
+       
+      
+    }
+    private void ActualizarTablero(int[] movimiento){
+        
+        int filaInicio = movimiento[0];
+        int colInicio = movimiento[1];
+        int filaFinal = movimiento[2];
+        int colFinal = movimiento[3];
+        
+        
+        Juego.estadoTablero.PiezaCapturada = null;
+        Juego.estadoTablero.TipoMovimiento = -1;
+
+        var pieza = tablero[filaInicio][colInicio];
+
+         if(pieza instanceof Peon){
+
+            if(Math.abs(filaInicio - filaFinal) == 2){
+                Juego.estadoTablero.AlPaso = true;
+                Juego.estadoTablero.PiezaALPaso = pieza;
+                
+                tablero[filaFinal][colFinal] = pieza;
+                tablero[filaInicio][colInicio] = null;
+                Juego.estadoTablero.TipoMovimiento = 0;
+                return;
+            }
+            if(Juego.estadoTablero.AlPaso){
+                if(colFinal > colInicio || colFinal < colInicio){
+                    if(tablero[filaInicio][colFinal] == Juego.estadoTablero.PiezaALPaso){
+                        tablero[filaInicio][colFinal] = null;
+                        estadoTablero.TipoMovimiento = 1;
+                    }
+                }
+                Juego.estadoTablero.AlPaso = false;
+            }
+            
+            if(filaFinal == 7 || filaFinal == 0){
+                switch(movimiento[4]){
+                    case 1:
+                        pieza = new Dama(Juego.estadoTablero.TurnoBlanco);
+                        break;
+                     case 2:
+                        pieza = new Torre(Juego.estadoTablero.TurnoBlanco);
+                        break;
+                     case 3:
+                        pieza = new Caballo(Juego.estadoTablero.TurnoBlanco);
+                        break;
+                    case 4:
                         pieza = new Alfil(Juego.estadoTablero.TurnoBlanco);
                         break;
                 }

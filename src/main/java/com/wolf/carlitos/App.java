@@ -10,7 +10,7 @@ public class App {
         
         
 
-       new Hilos();
+       //new Hilos();
 
         var scanner = new Scanner(System.in);
         Juego juego = new Juego();
