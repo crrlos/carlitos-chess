@@ -31,7 +31,7 @@ public class App {
 
                 } catch (Exception e) {
                 }
-                System.out.println("bestmove " + juego.Mover());
+                System.out.println("bestmove " + juego.mover(4));
 
             } else if (linea.contains("isready")) {
                 System.out.println("readyok");
