@@ -97,22 +97,7 @@ public class Juego {
         }
         return mov;
     }
-    public ArrayList<int[]> MovimientosValidos(){
-        var movimientos = new ArrayList<int[]>();
-        
-        int i = 0, j = 0;
-        
-        for(var fila: tablero){
-            for (var pieza : fila){
-                
-                if(pieza != null && pieza.EsBlanca() == Juego.estadoTablero.TurnoBlanco)
-                    movimientos.addAll(pieza.ObtenerMovimientos(i,j));
-                j++;
-            }
-            i++; j = 0;
-        }
-        return movimientos;
-    }
+   
     public int Mini(int nivel,EstadoTablero estado) throws CloneNotSupportedException, IOException{
         
         
@@ -120,7 +105,7 @@ public class Juego {
         if(nivel == 0) return Evaluar();
         
         int eval = 1000;
-        var movimientos = MovimientosValidos();
+        var movimientos = Generador.generarMovimientos(tablero, estado);
        
        
             
@@ -155,7 +140,7 @@ public class Juego {
         int eval = -1000;
         
         
-        var movimientos = MovimientosValidos();
+        var movimientos = Generador.generarMovimientos(tablero, estado);
         
         
         
@@ -227,7 +212,7 @@ public class Juego {
        int valoracion = estado.TurnoBlanco ? -1000 : 1000;
        int pos = 0;
        
-       var movimientos = MovimientosValidos();
+       var movimientos = Generador.generarMovimientos(tablero, estado);
        for (int i = 0; i < movimientos.size() ; i++) {
            
             var mov = movimientos.get(i);

@@ -251,7 +251,7 @@ public class Base {
         }
         return false;
     }
-    public List<int[]> MovimientosValidos(List<int[]> movimientos, Pieza[][] tablero,boolean blanco){
+    public  List<int[]> MovimientosValidos(List<int[]> movimientos, Pieza[][] tablero,boolean blanco){
 
         var iterator = movimientos.iterator();
         while(iterator.hasNext()){

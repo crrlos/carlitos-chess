@@ -42,7 +42,7 @@ public class App {
                 System.out.println("uciok");
             } else if (linea.contains("stop")) {
                 System.out.println("readyok");
-                juego.MovimientosValidos();
+                
             } else if (linea.contains("fen")) {
                 tablero = new Pieza[8][8];
                 String[] filas = linea.replace("fen ", "").split("/");
