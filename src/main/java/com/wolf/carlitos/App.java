@@ -69,7 +69,11 @@ public class App {
                 juego.ImprimirPosicicion();
 
             }else if(linea.contains("perft")){
-                juego.perft(5);
+                int n = 1;
+                
+                try{n = Integer.parseInt(linea.replace("perft ",""));}catch(NumberFormatException ex){}
+                
+                juego.perft(n);
             }
 
         }
