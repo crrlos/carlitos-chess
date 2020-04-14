@@ -25,13 +25,14 @@ public class App {
                     juego.ImprimirPosicicion();
                 }
             } else if (linea.contains("go")) {
+                int n = 1;
                 try {
 
-                    EstadoTablero.deep = Integer.parseInt(linea.replaceAll("go", ""));
+                    n= Integer.parseInt(linea.replaceAll("go ", ""));
 
                 } catch (Exception e) {
                 }
-                System.out.println("bestmove " + juego.mover(4));
+                System.out.println("bestmove " + juego.mover(n));
 
             } else if (linea.contains("isready")) {
                 System.out.println("readyok");

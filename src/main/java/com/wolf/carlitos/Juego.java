@@ -71,8 +71,6 @@ public class Juego {
    public void EstablecerPosicion(String... movimientos){
         for (var movimiento : movimientos) {
             
-            EstadoTablero.ultimoMov.add(movimiento);
-            
             ActualizarTablero(movimiento);
             estadoTablero.TurnoBlanco  = !estadoTablero.TurnoBlanco;
         }
