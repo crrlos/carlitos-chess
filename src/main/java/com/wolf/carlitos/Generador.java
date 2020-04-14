@@ -26,12 +26,12 @@ public class Generador {
                 
                 if(pieza != null && pieza.EsBlanca() == estado.TurnoBlanco)
                 {
-                    var movs = pieza instanceof Dama ? movimientosDeDama(tablero,fila,columna) :
-                               pieza instanceof Torre ? movimientosDeTorre(tablero,fila,columna):
-                               pieza instanceof Alfil ? movimientosDeAlfil(tablero,fila,columna):
-                               pieza instanceof Caballo ? movimientosDeCaballo(tablero, fila,columna):
-                               pieza instanceof Peon ? movimientosDePeon(tablero,fila,columna):
-                               movimientosDeRey(tablero,fila,columna);
+                    var movs = pieza instanceof Dama ? movimientosDeDama(tablero,estado,fila,columna) :
+                               pieza instanceof Torre ? movimientosDeTorre(tablero,estado,fila,columna):
+                               pieza instanceof Alfil ? movimientosDeAlfil(tablero,estado,fila,columna):
+                               pieza instanceof Caballo ? movimientosDeCaballo(tablero,estado, fila,columna):
+                               pieza instanceof Peon ? movimientosDePeon(tablero,estado,fila,columna):
+                               movimientosDeRey(tablero,estado,fila,columna);
                     movimientos.addAll(movs);
                 }
                 columna++;
@@ -42,7 +42,7 @@ public class Generador {
        
    }
    
-   private static List<int[]> movimientosDeTorre(Pieza[][] tablero, int fila, int columna){
+   private static List<int[]> movimientosDeTorre(Pieza[][] tablero,EstadoTablero estado, int fila, int columna){
         Pieza posicionActual;
         Pieza pieza;
         var lista = new ArrayList<int[]>();
@@ -108,9 +108,9 @@ public class Generador {
            
             i--;
         }
-return new Base().MovimientosValidos(lista, tablero, pieza.EsBlanca());
+return new Base(estado).MovimientosValidos(lista, tablero, pieza.EsBlanca());
    }
-   private static List<int[]> movimientosDeDama(Pieza[][] tablero, int fila, int columna){
+   private static List<int[]> movimientosDeDama(Pieza[][] tablero,EstadoTablero estado, int fila, int columna){
         Pieza posicionActual;
         Pieza pieza;
         var lista = new ArrayList<int[]>();
@@ -245,9 +245,9 @@ return new Base().MovimientosValidos(lista, tablero, pieza.EsBlanca());
            
             i--;
         }
-return new Base().MovimientosValidos(lista, tablero, pieza.EsBlanca());
+return new Base(estado).MovimientosValidos(lista, tablero, pieza.EsBlanca());
    }
-   private static List<int[]> movimientosDeCaballo(Pieza[][] tablero, int fila, int columna){
+   private static List<int[]> movimientosDeCaballo(Pieza[][] tablero,EstadoTablero estado, int fila, int columna){
         Pieza posicionActual;
         Pieza pieza;
 
@@ -338,10 +338,10 @@ return new Base().MovimientosValidos(lista, tablero, pieza.EsBlanca());
         }
         }
 
-return new Base().MovimientosValidos(lista, tablero, pieza.EsBlanca());
+return new Base(estado).MovimientosValidos(lista, tablero, pieza.EsBlanca());
 
    }
-   private static List<int[]> movimientosDeAlfil(Pieza[][] tablero, int fila, int columna){
+   private static List<int[]> movimientosDeAlfil(Pieza[][] tablero,EstadoTablero estado, int fila, int columna){
        
         Pieza posicionActual;
         Pieza pieza = tablero[fila][columna];
@@ -416,11 +416,13 @@ return new Base().MovimientosValidos(lista, tablero, pieza.EsBlanca());
             
             f--;c++;
         }
-        return new Base().MovimientosValidos(lista, tablero, pieza.EsBlanca());
+        return new Base(estado).MovimientosValidos(lista, tablero, pieza.EsBlanca());
            
    }
-   private static List<int[]> movimientosDeRey(Pieza[][] tablero, int fila, int columna){
-
+   private static List<int[]> movimientosDeRey(Pieza[][] tablero,EstadoTablero estado, int fila, int columna){
+        
+       var base = new Base(estado);
+       
         var lista = new ArrayList<int[]>();
         
         Pieza pieza = tablero[fila][columna];
@@ -476,18 +478,18 @@ return new Base().MovimientosValidos(lista, tablero, pieza.EsBlanca());
             }
 
         }
-        var base = new Base();
+       
         if (!base.ReyEnJaque(tablero, pieza.EsBlanca())) {
-            if (Juego.estadoTablero.EnroqueCBlanco && pieza.EsBlanca()) {
+            if (estado.EnroqueCBlanco && pieza.EsBlanca()) {
                 if (columna == 4) {
                     if (tablero[fila][columna + 1] == null && tablero[fila][columna + 2] == null) {
                         tablero[fila][columna + 1] = tablero[fila][columna];//camino del rey
                         tablero[fila][columna] = null;
-                        Juego.estadoTablero.PosicionReyBlanco[1] = columna + 1;
+                        estado.PosicionReyBlanco[1] = columna + 1;
                         if (!base.ReyEnJaque(tablero, pieza.EsBlanca())) {
                             tablero[fila][columna + 2] = tablero[fila][columna + 1];
                             tablero[fila][columna + 1] = null;
-                            Juego.estadoTablero.PosicionReyBlanco[1] = columna + 2;
+                            estado.PosicionReyBlanco[1] = columna + 2;
                             if (!base.ReyEnJaque(tablero, pieza.EsBlanca())) {
                                 lista.add(new int[]{fila, columna, fila, columna + 2});
                                 tablero[fila][columna] = tablero[fila][columna + 2];
@@ -502,21 +504,21 @@ return new Base().MovimientosValidos(lista, tablero, pieza.EsBlanca());
                         }
                     }
                 }
-                Juego.estadoTablero.PosicionReyBlanco[1] = columna;
+                estado.PosicionReyBlanco[1] = columna;
             }else
 
-            if (Juego.estadoTablero.EnroqueLBlanco && pieza.EsBlanca()) {
+            if (estado.EnroqueLBlanco && pieza.EsBlanca()) {
                 if (columna == 4) {
                     if (tablero[fila][columna - 1] == null && tablero[fila][columna - 2] == null && tablero[fila][columna - 3] == null) {
                         tablero[fila][columna - 1] = tablero[fila][columna];
                         tablero[fila][columna] = null;
-                        //Juego.estadoTablero.PosicionReyBlanco[0] = fila;
-                        Juego.estadoTablero.PosicionReyBlanco[1] = columna - 1;
+                        //estado.PosicionReyBlanco[0] = fila;
+                        estado.PosicionReyBlanco[1] = columna - 1;
                         if (!base.ReyEnJaque(tablero, pieza.EsBlanca())) {
                             tablero[fila][columna - 2] = tablero[fila][columna - 1];
                             tablero[fila][columna - 1] = null;
-                            // Juego.estadoTablero.PosicionReyBlanco[0] = fila;
-                            Juego.estadoTablero.PosicionReyBlanco[1] = columna - 2;
+                            // estado.PosicionReyBlanco[0] = fila;
+                            estado.PosicionReyBlanco[1] = columna - 2;
                             if (!base.ReyEnJaque(tablero, pieza.EsBlanca())) {
                                 lista.add(new int[]{fila, columna, fila, columna - 2});
                                 tablero[fila][columna] = tablero[fila][columna - 2];
@@ -531,21 +533,21 @@ return new Base().MovimientosValidos(lista, tablero, pieza.EsBlanca());
                         }
                     }
                 }
-                Juego.estadoTablero.PosicionReyBlanco[1] = columna;
+                estado.PosicionReyBlanco[1] = columna;
             }else
             //enroque
-            if (Juego.estadoTablero.EnroqueCNegro && !pieza.EsBlanca()) {
+            if (estado.EnroqueCNegro && !pieza.EsBlanca()) {
                 if (columna == 4) {
                     if (tablero[fila][columna + 1] == null && tablero[fila][columna + 2] == null) {
                         tablero[fila][columna + 1] = tablero[fila][columna];
                         tablero[fila][columna] = null;
-                        //Juego.estadoTablero.PosicionReyNegro[0] = fila;
-                        Juego.estadoTablero.PosicionReyNegro[1] = columna + 1;
+                        //estado.PosicionReyNegro[0] = fila;
+                        estado.PosicionReyNegro[1] = columna + 1;
                         if (!base.ReyEnJaque(tablero, pieza.EsBlanca())) {
                             tablero[fila][columna + 2] = tablero[fila][columna + 1];
                             tablero[fila][columna + 1] = null;
-                            Juego.estadoTablero.PosicionReyNegro[0] = fila;
-                            Juego.estadoTablero.PosicionReyNegro[1] = columna + 2;
+                            estado.PosicionReyNegro[0] = fila;
+                            estado.PosicionReyNegro[1] = columna + 2;
                             if (!base.ReyEnJaque(tablero, pieza.EsBlanca())) {
                                 lista.add(new int[]{fila, columna, fila, columna + 2});
                                 tablero[fila][columna] = tablero[fila][columna + 2];
@@ -560,21 +562,21 @@ return new Base().MovimientosValidos(lista, tablero, pieza.EsBlanca());
                         }
                     }
                 }
-                Juego.estadoTablero.PosicionReyNegro[1] = columna;
+                estado.PosicionReyNegro[1] = columna;
             }else
 
-            if (Juego.estadoTablero.EnroqueLNegro && !pieza.EsBlanca()) {
+            if (estado.EnroqueLNegro && !pieza.EsBlanca()) {
                 if (columna == 4) {
                     if (tablero[fila][columna - 1] == null && tablero[fila][columna - 2] == null && tablero[fila][columna - 3] == null) {
                         tablero[fila][columna - 1] = tablero[fila][columna];
                         tablero[fila][columna] = null;
-                        //Juego.estadoTablero.PosicionReyNegro[0] = fila;
-                        Juego.estadoTablero.PosicionReyNegro[1] = columna - 1;
+                        //estado.PosicionReyNegro[0] = fila;
+                        estado.PosicionReyNegro[1] = columna - 1;
                         if (!base.ReyEnJaque(tablero, pieza.EsBlanca())) {
                             tablero[fila][columna - 2] = tablero[fila][columna - 1];
                             tablero[fila][columna - 1] = null;
-                            //Juego.estadoTablero.PosicionReyNegro[0] = fila;
-                            Juego.estadoTablero.PosicionReyNegro[1] = columna - 2;
+                            //estado.PosicionReyNegro[0] = fila;
+                            estado.PosicionReyNegro[1] = columna - 2;
                             if (!base.ReyEnJaque(tablero, pieza.EsBlanca())) {
                                 lista.add(new int[]{fila, columna, fila, columna - 2});
                                 tablero[fila][columna] = tablero[fila][columna - 2];
@@ -589,12 +591,12 @@ return new Base().MovimientosValidos(lista, tablero, pieza.EsBlanca());
                         }
                     }
                 }
-                Juego.estadoTablero.PosicionReyNegro[1] = columna;
+                estado.PosicionReyNegro[1] = columna;
             }
         }
-        return ((Rey)pieza).MovimientosValidos(lista, tablero, pieza.EsBlanca());
+        return base.MovimientosValidosRey(lista, tablero, pieza.EsBlanca());
    }
-   private static List<int[]> movimientosDePeon(Pieza[][] tablero, int fila, int columna){
+   private static List<int[]> movimientosDePeon(Pieza[][] tablero,EstadoTablero estado, int fila, int columna){
         int filaDestino;
 
         Pieza posicionActual;
@@ -635,8 +637,8 @@ return new Base().MovimientosValidos(lista, tablero, pieza.EsBlanca());
                         lista.add(new int[]{fila, columna, filaDestino, columna - 1});
                     }
                 }
-            }else if(Juego.estadoTablero.AlPaso && fila == (pieza.EsBlanca() ? 4 : 3)){
-                if(tablero[fila][columna - 1] == Juego.estadoTablero.PiezaALPaso){
+            }else if(estado.AlPaso && fila == (pieza.EsBlanca() ? 4 : 3)){
+                if(tablero[fila][columna - 1] == estado.PiezaALPaso){
                     lista.add(new int[]{fila, columna, filaDestino, columna - 1});
                 }
             }
@@ -654,14 +656,14 @@ return new Base().MovimientosValidos(lista, tablero, pieza.EsBlanca());
                         lista.add(new int[]{fila, columna, filaDestino, columna + 1});
                     }
                 }
-            }else if(Juego.estadoTablero.AlPaso && fila == (pieza.EsBlanca() ? 4 : 3)){
-                if(tablero[fila][columna + 1] == Juego.estadoTablero.PiezaALPaso){
+            }else if(estado.AlPaso && fila == (pieza.EsBlanca() ? 4 : 3)){
+                if(tablero[fila][columna + 1] == estado.PiezaALPaso){
                     lista.add(new int[]{fila, columna, filaDestino, columna + 1});
                 }
             }
         }
 
-        return new Base().MovimientosValidos(lista, tablero, pieza.EsBlanca());
+        return new Base(estado).MovimientosValidos(lista, tablero, pieza.EsBlanca());
    }
     
     

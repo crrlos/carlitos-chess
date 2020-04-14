@@ -1,11 +1,11 @@
 package com.wolf.carlitos;
 
-import static com.wolf.carlitos.Juego.tablero;
 import com.wolf.carlitos.Piezas.*;
 import java.util.Scanner;
 
 public class App {
-
+    static Juego juego = new Juego();
+    
     public static void main(String[] args) throws Exception {
         
         
@@ -13,7 +13,7 @@ public class App {
        //new Hilos();
 
         var scanner = new Scanner(System.in);
-        Juego juego = new Juego();
+        
 
         while (scanner.hasNext()) {
             var linea = scanner.nextLine();
@@ -31,7 +31,7 @@ public class App {
 
                 } catch (Exception e) {
                 }
-                System.out.println("bestmove " + juego.Mover((EstadoTablero) Juego.estadoTablero.clone()));
+                System.out.println("bestmove " + juego.Mover((EstadoTablero) juego.estadoTablero.clone()));
 
             } else if (linea.contains("isready")) {
                 System.out.println("readyok");
@@ -44,7 +44,7 @@ public class App {
                 System.out.println("readyok");
                 
             } else if (linea.contains("fen")) {
-                tablero = new Pieza[8][8];
+                juego.tablero = new Pieza[8][8];
                 String[] filas = linea.replace("fen ", "").split("/");
 
                 for (int i = 0; i < filas.length; i++) {
@@ -53,11 +53,11 @@ public class App {
                         String[] ops = filas[i].split(" ");
                         IniciarFen(ops[0], 7 - i);
 
-                        Juego.estadoTablero.TurnoBlanco = ops[1].equals("w");
-                        Juego.estadoTablero.EnroqueCBlanco = ops[2].contains("K");
-                        Juego.estadoTablero.EnroqueLBlanco = ops[2].contains("Q");
-                        Juego.estadoTablero.EnroqueCNegro = ops[2].contains("k");
-                        Juego.estadoTablero.EnroqueLNegro = ops[2].contains("q");
+                        juego.estadoTablero.TurnoBlanco = ops[1].equals("w");
+                        juego.estadoTablero.EnroqueCBlanco = ops[2].contains("K");
+                        juego.estadoTablero.EnroqueLBlanco = ops[2].contains("Q");
+                        juego.estadoTablero.EnroqueCNegro = ops[2].contains("k");
+                        juego.estadoTablero.EnroqueLNegro = ops[2].contains("q");
 
                     } else {
                         IniciarFen(filas[i], 7 - i);
@@ -66,7 +66,7 @@ public class App {
                 }
 
                 System.out.println("fen procesado");
-                Juego.ImprimirPosicicion();
+                juego.ImprimirPosicicion();
 
             }
 
@@ -80,41 +80,41 @@ public class App {
 
         for (char c : fila.toCharArray()) {
             if (c == 'k') {
-                Juego.tablero[i][j] = new Rey(false);
+                juego.tablero[i][j] = new Rey(false);
             }
             if (c == 'q') {
-                Juego.tablero[i][j] = new Dama(false);
+                juego.tablero[i][j] = new Dama(false);
             }
             if (c == 'r') {
-                Juego.tablero[i][j] = new Torre(false);
+                juego.tablero[i][j] = new Torre(false);
             }
             if (c == 'b') {
-                Juego.tablero[i][j] = new Alfil(false);
+                juego.tablero[i][j] = new Alfil(false);
             }
             if (c == 'n') {
-                Juego.tablero[i][j] = new Caballo(false);
+                juego.tablero[i][j] = new Caballo(false);
             }
             if (c == 'p') {
-                Juego.tablero[i][j] = new Peon(false);
+                juego.tablero[i][j] = new Peon(false);
             }
 
             if (c == 'K') {
-                Juego.tablero[i][j] = new Rey(true);
+                juego.tablero[i][j] = new Rey(true);
             }
             if (c == 'Q') {
-                Juego.tablero[i][j] = new Dama(true);
+                juego.tablero[i][j] = new Dama(true);
             }
             if (c == 'R') {
-                Juego.tablero[i][j] = new Torre(true);
+                juego.tablero[i][j] = new Torre(true);
             }
             if (c == 'B') {
-                Juego.tablero[i][j] = new Alfil(true);
+                juego.tablero[i][j] = new Alfil(true);
             }
             if (c == 'N') {
-                Juego.tablero[i][j] = new Caballo(true);
+                juego.tablero[i][j] = new Caballo(true);
             }
             if (c == 'P') {
-                Juego.tablero[i][j] = new Peon(true);
+                juego.tablero[i][j] = new Peon(true);
             }
 
             if (Character.isDigit(c)) {

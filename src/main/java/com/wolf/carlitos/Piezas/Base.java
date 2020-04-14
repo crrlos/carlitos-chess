@@ -8,6 +8,12 @@ import java.util.List;
  * Base
  */
 public class Base {
+    
+    private final EstadoTablero estado;
+    
+    public Base(EstadoTablero estado){
+        this.estado = estado;
+    }
     public boolean CasillaAtacada(int fila, int columna, Pieza[][] tablero,boolean blanco){
         
          if(AtaqueFilaColumna(fila, columna, tablero, blanco)) return true;
@@ -21,7 +27,7 @@ public class Base {
    
     public boolean ReyEnJaque(Pieza [][] tablero, boolean blanco){
         
-        var posicionRey = blanco ? Juego.estadoTablero.PosicionReyBlanco : Juego.estadoTablero.PosicionReyNegro;
+        var posicionRey = blanco ? estado.PosicionReyBlanco : estado.PosicionReyNegro;
         
        return CasillaAtacada(posicionRey[0], posicionRey[1], tablero,blanco); 
        
@@ -282,5 +288,46 @@ public class Base {
         tablero[fo][co] = piezaActual;
         //Juego.ImprimirPosicicion();
         return !jaque;
+    }
+    
+    public List<int[]> MovimientosValidosRey(List<int[]> movimientos, Pieza[][] tablero, boolean blanco) {
+        var iterator = movimientos.iterator();
+        while (iterator.hasNext()) {
+            var movimiento = iterator.next();
+            var fo = movimiento[0];
+            var co = movimiento[1];
+            var fd = movimiento[2];
+            var cd = movimiento[3];
+            Pieza piezaActual = tablero[fo][co];
+            Pieza piezaDestino = tablero[fd][cd];
+
+            tablero[fo][co] = null;
+            tablero[fd][cd] = piezaActual;
+            if (blanco) {
+                estado.PosicionReyBlanco[0] = fd;
+                estado.PosicionReyBlanco[1] = cd;
+            } else {
+                estado.PosicionReyNegro[0] = fd;
+                estado.PosicionReyNegro[1] = cd;
+            }
+
+            var jaque = ReyEnJaque(tablero, blanco);
+
+            if (blanco) {
+                estado.PosicionReyBlanco[0] = fo;
+                estado.PosicionReyBlanco[1] = co;
+            } else {
+                estado.PosicionReyNegro[0] = fo;
+                estado.PosicionReyNegro[1] = co;
+            }
+
+            tablero[fd][cd] = piezaDestino;
+            tablero[fo][co] = piezaActual;
+            //Juego.ImprimirPosicicion();
+            if (jaque) {
+                iterator.remove();
+            }
+        }
+        return movimientos;
     }
 }

@@ -5,7 +5,6 @@
  */
 package com.wolf.carlitos;
 
-import static com.wolf.carlitos.Juego.ConvertirANotacion;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -32,7 +31,7 @@ public class Hilos {
         System.out.println("procesos iniciados");
     }
 
-    public static void comparar(List<int[]> movimientos, List<String> movs) {
+    public static void comparar(List<int[]> movimientos, List<String> movs,EstadoTablero estado) {
 
         executor.execute(() -> {
 
@@ -55,12 +54,12 @@ public class Hilos {
                 return;
             }
             
-            var a = Juego.estadoTablero.PosicionReyBlanco;
-            var b = Juego.estadoTablero.PosicionReyNegro;
+            var a = estado.PosicionReyBlanco;
+            var b = estado.PosicionReyNegro;
             
             Collections.sort(res);
 
-            var movGenerados = movimientos.stream().map(p -> ConvertirANotacion(p))
+            var movGenerados = movimientos.stream().map(p -> new Juego().ConvertirANotacion(p))
                     .collect(Collectors.toList());
 
             Collections.sort(movGenerados);

@@ -1,13 +1,8 @@
 package com.wolf.carlitos.Piezas;
 
-import com.wolf.carlitos.EstadoTablero;
-import com.wolf.carlitos.Juego;
-import java.util.ArrayList;
-import java.util.List;
+public class Peon implements Pieza {
 
-public class Peon extends Base implements Pieza {
-
-    public boolean esBlanco;
+    private final boolean esBlanco;
 
     public Peon(boolean bando) {
         this.esBlanco = bando;
