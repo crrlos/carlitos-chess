@@ -59,7 +59,7 @@ public class Hilos {
             
             Collections.sort(res);
 
-            var movGenerados = movimientos.stream().map(p -> new Juego().ConvertirANotacion(p))
+            var movGenerados = movimientos.stream().map(p -> Utilidades.ConvertirANotacion(p))
                     .collect(Collectors.toList());
 
             Collections.sort(movGenerados);

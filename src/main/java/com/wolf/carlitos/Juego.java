@@ -16,8 +16,7 @@ import java.util.stream.Collectors;
 public class Juego {
     public  Pieza[][] tablero;
     public  EstadoTablero estadoTablero;
-    private static final String FILAS = "12345678";
-    private static final String COLUMNAS = "abcdefgh";
+   
    
     public Pieza[] piezasBlancas;
     public Pieza[] piezasNegras;
@@ -78,19 +77,7 @@ public class Juego {
             estadoTablero.TurnoBlanco  = !estadoTablero.TurnoBlanco;
         }
     }
-    public  String ConvertirANotacion(int[] movimiento){
-        var mov = COLUMNAS.charAt(movimiento[1]) + "" + FILAS.charAt(movimiento[0]) +
-                  COLUMNAS.charAt(movimiento[3]) + "" + FILAS.charAt(movimiento[2]);
-        if(movimiento.length == 5){
-            switch(movimiento[4]){
-                case 1: return mov + "q";
-                case 2: return mov + "r";
-                case 3: return mov + "n";
-                case 4: return mov + "b";
-            }
-        }
-        return mov;
-    }
+   
    
     public int Mini(int nivel,EstadoTablero estado) throws CloneNotSupportedException, IOException{
         
@@ -201,29 +188,30 @@ public class Juego {
     Hilos.comparar(movimientosCopia, movsCopia,estadoTablero);
    }
     
-   public String Mover(EstadoTablero estado) throws CloneNotSupportedException, IOException{
+   public String Mover() throws CloneNotSupportedException, IOException{
+       
+       var estadoOriginal = estadoTablero.clone();//copia original
+       
+       
        EstadoTablero.contador = 0;
-       int valoracion = estado.TurnoBlanco ? -1000 : 1000;
+       int valoracion = estadoOriginal.TurnoBlanco ? -1000 : 1000;
        int pos = 0;
        
-       var movimientos = Generador.generarMovimientos(tablero, estado);
+       var movimientos = Generador.generarMovimientos(tablero, estadoOriginal);
        for (int i = 0; i < movimientos.size() ; i++) {
            
             var mov = movimientos.get(i);
             
-            //debug
-           // EstadoTablero.ultimoMov.add(ConvertirANotacion(mov));
-            
-            ActualizarTablero(mov);
+            ActualizarTablero(mov);//modifica el original
             
             
             estadoTablero.TurnoBlanco = !estadoTablero.TurnoBlanco;
             
             var estadoLocal = (EstadoTablero) estadoTablero.clone();
             
-            int eval = estado.TurnoBlanco ? Mini(EstadoTablero.deep,estadoLocal) : Maxi(EstadoTablero.deep,estadoLocal);
+            int eval = estadoOriginal.TurnoBlanco ? Mini(EstadoTablero.deep,estadoLocal) : Maxi(EstadoTablero.deep,estadoLocal);
             
-            if(estado.TurnoBlanco){
+            if(estadoOriginal.TurnoBlanco){
                 if(eval > valoracion){
                    valoracion = eval;
                    pos = i;
@@ -236,16 +224,15 @@ public class Juego {
                 }
             }
            
-           RevertirMovimiento(mov[0],mov[1],mov[2],mov[3],estado.TurnoBlanco,estadoLocal);
-           estadoTablero = (EstadoTablero) estado.clone();
-          // EstadoTablero.ultimoMov.remove(EstadoTablero.ultimoMov.size() -1);
+           RevertirMovimiento(mov[0],mov[1],mov[2],mov[3],estadoOriginal.TurnoBlanco,estadoLocal);
+           estadoTablero =  estadoOriginal.clone(); //vuelve a ser el original
            
-           System.out.println(ConvertirANotacion(mov) + " " + EstadoTablero.contadorPorMovimiento);
+           System.out.println(Utilidades.ConvertirANotacion(mov) + " " + EstadoTablero.contadorPorMovimiento);
            EstadoTablero.contadorPorMovimiento = 0;
        }
       
        System.out.println(EstadoTablero.contador);
-       return ConvertirANotacion(movimientos.get(pos));
+       return Utilidades.ConvertirANotacion(movimientos.get(pos));
    }
     private void RevertirMovimiento(int fi, int ci, int fd, int cd,boolean turnoBlanco, EstadoTablero estado){
         
@@ -301,10 +288,10 @@ public class Juego {
     }
     private void ActualizarTablero(String movimiento){
         
-        int colInicio = COLUMNAS.indexOf(movimiento.substring(0,1));
-        int filaInicio = FILAS.indexOf(movimiento.substring(1, 2));
-        int colFinal = COLUMNAS.indexOf(movimiento.substring(2, 3));
-        int filaFinal = FILAS.indexOf(movimiento.substring(3, 4));
+        int colInicio = "abcdefgh".indexOf(movimiento.substring(0,1));
+        int filaInicio = "12345678".indexOf(movimiento.substring(1, 2));
+        int colFinal =  "abcdefgh".indexOf(movimiento.substring(2, 3));
+        int filaFinal = "12345678".indexOf(movimiento.substring(3, 4));
         
         estadoTablero.PiezaCapturada = null;
         estadoTablero.TipoMovimiento = -1;
@@ -544,4 +531,10 @@ public class Juego {
        
       
     }
+    
+   public void perft(int n) throws CloneNotSupportedException, IOException{
+       var search = new Search(tablero, estadoTablero);
+       search.perft(n);
+       
+   }
 }

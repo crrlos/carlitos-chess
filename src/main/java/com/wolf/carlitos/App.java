@@ -31,7 +31,7 @@ public class App {
 
                 } catch (Exception e) {
                 }
-                System.out.println("bestmove " + juego.Mover((EstadoTablero) juego.estadoTablero.clone()));
+                System.out.println("bestmove " + juego.Mover());
 
             } else if (linea.contains("isready")) {
                 System.out.println("readyok");
@@ -68,6 +68,8 @@ public class App {
                 System.out.println("fen procesado");
                 juego.ImprimirPosicicion();
 
+            }else if(linea.contains("perft")){
+                juego.perft(5);
             }
 
         }
