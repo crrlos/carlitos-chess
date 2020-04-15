@@ -136,7 +136,6 @@ public class Search {
          
        if(tablero[filaFinal][colFinal] != null){
             estadoTablero.PiezaCapturada = tablero[filaFinal][colFinal];
-            estadoTablero.capturas++;
        }
        
        
