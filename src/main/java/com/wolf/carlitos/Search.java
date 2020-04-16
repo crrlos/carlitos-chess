@@ -151,7 +151,7 @@ public class Search {
       
     }
     
-    public void perftSearch(int deep, EstadoTablero estado, Acumulador acumulador, boolean reset) throws CloneNotSupportedException{
+    private void perftSearch(int deep, EstadoTablero estado, Acumulador acumulador, boolean reset) throws CloneNotSupportedException{
         
         if(deep == 0) {
             acumulador.contador++;
@@ -189,8 +189,16 @@ public class Search {
     }
      public void perft(int deep) throws CloneNotSupportedException, IOException{
          var acumulador = new Acumulador();
+         var tinicio =  System.currentTimeMillis();
          perftSearch(deep, estadoTablero,acumulador,true);
          System.out.println(acumulador.contador);
+         
+         var tfin = (System.currentTimeMillis() - tinicio) / 1000;
+         
+         System.out.println("tiempo: " + tfin+ " segundos");
+         
+         System.out.println("Velocidad: " + acumulador.contador / tfin + " n/s");
+         
        
      }
     
