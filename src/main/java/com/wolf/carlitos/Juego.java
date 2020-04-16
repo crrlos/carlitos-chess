@@ -49,14 +49,16 @@ public class Juego {
     }
    public   void ImprimirPosicicion(){
         for (int i = 7; i >=0 ; i--) {
+            System.out.println("+---+---+---+---+---+---+---+---+");
             for (int j = 0; j < 8 ; j++) {
                 var pieza = tablero[i][j];
-                System.out.print(pieza != null ? pieza.Nombre() : " ");
-                System.out.print("|");
+                System.out.print("| "+ (pieza != null ? pieza.Nombre() : " ") + " ");
             }
+            System.out.print("|");
             System.out.println();
         }
-        System.out.println("");
+        
+        System.out.println("+---+---+---+---+---+---+---+---+");
     }
    public void EstablecerPosicion(String... movimientos){
         for (var movimiento : movimientos) {
