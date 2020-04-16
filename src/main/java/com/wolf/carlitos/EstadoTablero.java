@@ -19,13 +19,15 @@ public  class EstadoTablero  implements Cloneable{
     
     public  Pieza PiezaALPaso;
     public  Pieza PiezaCapturada;
+    public Pieza piezaJaque;
     
     public  int TipoMovimiento = -1;
     
     public int[] PosicionReyBlanco = new int[]{0,4};
     public int[] PosicionReyNegro  = new int[]{7,4};
     
-    public List<Integer[]> trayectorias =  new ArrayList<>();
+    
+    public List<Trayectoria> trayectorias =  new ArrayList<>();
     
     
     @Override

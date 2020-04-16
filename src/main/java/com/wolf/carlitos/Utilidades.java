@@ -5,11 +5,25 @@
  */
 package com.wolf.carlitos;
 
+import com.wolf.carlitos.Piezas.Pieza;
+
 /**
  *
  * @author carlos
  */
 public class Utilidades {
+    
+    public static  void ImprimirPosicicion(Pieza[][] tablero){
+        for (int i = 7; i >=0 ; i--) {
+            for (int j = 0; j < 8 ; j++) {
+                var pieza = tablero[i][j];
+                System.out.print(pieza != null ? pieza.Nombre() : " ");
+                System.out.print("|");
+            }
+            System.out.println();
+        }
+        System.out.println("");
+    }
     
      public static String ConvertirANotacion(int[] movimiento){
          

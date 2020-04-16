@@ -27,21 +27,196 @@ public class Search {
         this.tablero = tablero;
         this.estadoTablero = estado.clone();
     }
-    
-    private void ActualizarTablero(int[] movimiento){
-        
+    private void actualizarTrayectorias(Pieza pieza, int[] movimiento) {
+
         int filaInicio = movimiento[0];
         int colInicio = movimiento[1];
         int filaFinal = movimiento[2];
         int colFinal = movimiento[3];
+
+        //calculos con trayectorias
+        var ubicacionRey = !estadoTablero.TurnoBlanco
+                ? estadoTablero.PosicionReyBlanco
+                : estadoTablero.PosicionReyNegro;
+
+        //posicion de la pieza
+        int x1 = colFinal;
+        int y1 = filaFinal;
+
+        //posicion del rey
+        int x2 = ubicacionRey[1];
+        int y2 = ubicacionRey[0];
         
+
+        // si la pendiente es 1 es trayectoria diagonal
+        if ((pieza instanceof Dama || pieza instanceof Alfil) && (x2 -x1) != 0) {
+            
+            var pendiente = false;
+            pendiente = Math.abs((double)(y2 - y1) / (x2 - x1)) == 1;
+            
+           
+            
+            if (pendiente) {
+                var trayectoria = new Trayectoria(pieza,x1, y1);
+                estadoTablero.trayectorias.add(trayectoria);
+                
+                var jaque = true;
+                //si hay pieza amiga terminar
+                if (x1 < x2 && y1 > y2) {
+                    for (int i = y1 - 1; i > y2; i--) {
+                        var p = tablero[i][x1 + (y1 - i)];
+                        if (p != null) {
+                            if (p.EsBlanca() != pieza.EsBlanca()) {
+                                jaque = false;
+                                trayectoria.piezasAtacadas++;
+                            } else {
+                                jaque = false;
+                                break;
+                            }
+                        }
+                    }
+                } else if (x1 < x2 && y1 < y2) {
+                    //diagonal derecha arriba
+                    for (int i = y1 + 1; i < y2; i++) {
+                        var p = tablero[i][x1 + (i - y1)];
+                        if (p != null) {
+                            if (p.EsBlanca() != pieza.EsBlanca()) {
+                                jaque = false;
+                               
+                                trayectoria.piezasAtacadas++;
+                            } else {
+                                jaque = false;
+                                break;
+                            }
+                        }
+                    }
+                } else if (x1 > x2 && y1 > y2) {
+                    //diagonal izquierda abajo
+                    for (int i = y1 - 1; i > y2; i--) {
+                        var p = tablero[i][x1 - (y1 - i)];
+                        if (p != null) {
+                            if (p.EsBlanca() != pieza.EsBlanca()) {
+                                jaque = false;
+                               
+                                trayectoria.piezasAtacadas++;
+                            } else {
+                                jaque = false;
+                                break;
+                            }
+                        }
+                    }
+                } else if (x1 > x2 && y1 < y2) {
+                    //diagonal izquierda arriba
+                    for (int i = y1 + 1; i < y2; i++) {
+                        var p = tablero[i][x1 - (i - y1)];
+                        if (p != null) {
+                            if (p.EsBlanca() != pieza.EsBlanca()) {
+                                jaque = false;
+                                
+                                trayectoria.piezasAtacadas++;
+                            } else {
+                                jaque = false;
+                                break;
+                            }
+                        }
+                    }
+                }
+                estadoTablero.reyEnJaque = jaque;
+                if(jaque){
+                    estadoTablero.piezaJaque = pieza;
+                }
+
+            }
+        }
+
+//        if ((pieza instanceof Torre || pieza instanceof Dama) && (x1 == x2 || y1 == y2)) {
+//            //trayectoria recta
+//            var trayectoria =new Trayectoria(x1, y1, x2, y2, true);
+//                Juego.estadoTablero.trayectorias.put(pieza, trayectoria);
+//                tablero[y2][x2].setTrayectoria(pieza);
+//                
+//            //Juego.ImprimirPosicicion();
+//            
+//            if (x1 < x2) {//derecha
+//                for (int i = x1 + 1; i < x2; i++) {
+//                    var p = tablero[y1][i];
+//                    if (p != null) {
+//                        if (p.EsBlanca() != pieza.EsBlanca()) {
+//                            p.setTrayectoria(pieza);
+//                            trayectoria.piezas.add(p);
+//                        } else {
+//                            break;
+//                        }
+//                    }
+//                }
+//            } else if (x1 > x2) {
+//                //izquierda
+//                for (int i = x1 - 1; i > x2; i--) {
+//                    var p = tablero[y1][i];
+//                    if (p != null) {
+//                        if (p.EsBlanca() != pieza.EsBlanca()) {
+//                            p.setTrayectoria(pieza);
+//                            trayectoria.piezas.add(p);
+//                        } else {
+//                            break;
+//                        }
+//                    }
+//                }
+//            } else if (y1 > y2) {
+//                for (int i = y1 - 1; i > y2; i--) {
+//                    var p = tablero[i][x1];
+//                    if (p != null) {
+//                        if (p.EsBlanca() != pieza.EsBlanca()) {
+//                            p.setTrayectoria(pieza);
+//                            trayectoria.piezas.add(p);
+//                        } else {
+//                            break;
+//                        }
+//                    }
+//                }
+//            } else if (y1 < y2) {
+//                //arriba
+//                for (int i = y1 + 1; i < y2; i++) {
+//                    var p = tablero[i][x1];
+//                    if (p != null) {
+//                        if (p.EsBlanca() != pieza.EsBlanca()) {
+//                            p.setTrayectoria(pieza);
+//                            trayectoria.piezas.add(p);
+//                        } else {
+//                            break;
+//                        }
+//                    }
+//                }
+//            }
+//        }
+        //fin calculos con trayectorias
+    }
+    private void ActualizarTablero(int[] movimiento){
+        
+        int filaInicio = movimiento[0];
+        int filaFinal = 0;
+        int colInicio = movimiento[1];
+        try{
+        filaFinal = movimiento[2];
+        }catch(Exception es){
+        
+            System.out.println("excepcion");
+            Utilidades.ImprimirPosicicion(tablero);
+        
+        
+        }
+        int colFinal = movimiento[3];
+        
+        var pieza = tablero[filaInicio][colInicio];
+        
+        estadoTablero.reyEnJaque = false;
+        
+        actualizarTrayectorias(pieza, movimiento);
         
         estadoTablero.PiezaCapturada = null;
         estadoTablero.TipoMovimiento = -1;
-
-        var pieza = tablero[filaInicio][colInicio];
-
-         if(pieza instanceof Peon){
+        
+        if(pieza instanceof Peon){
 
             if(Math.abs(filaInicio - filaFinal) == 2){
                 estadoTablero.AlPaso = true;
@@ -206,6 +381,18 @@ public class Search {
     private void RevertirMovimiento(int fi, int ci, int fd, int cd,boolean turnoBlanco, EstadoTablero estado){
         
        
+        var pieza = tablero[fd][cd];
+        
+        
+        var iterator = estadoTablero.trayectorias.listIterator(estado.trayectorias.size());
+        
+        while(iterator.hasPrevious()){
+            var ele =  iterator.previous();
+            if(ele.pieza == pieza){
+                iterator.remove();
+            }
+        }
+        
         
         
         switch(estado.TipoMovimiento){
@@ -283,6 +470,8 @@ public class Search {
        
         return eval;
     }
+    
+    
     public int Maxi(int nivel, EstadoTablero estado) throws CloneNotSupportedException, IOException{
         
         if(nivel == 0) return 0;

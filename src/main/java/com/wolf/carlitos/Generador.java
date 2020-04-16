@@ -46,14 +46,84 @@ public class Generador {
     private static List<int[]> movimientosDeTorre(Pieza[][] tablero, EstadoTablero estado, int fila, int columna) {
         boolean horizontal = true;
         boolean vertical = true;
-        
+        var lista = new ArrayList<int[]>();
         
         var posicionRey = estado.TurnoBlanco?  
                 estado.PosicionReyBlanco : 
                 estado.PosicionReyNegro;
         
-        
+        int[] posicionPiezaAtaque = null; 
         if(estado.reyEnJaque){
+            //buscar posicion de jaque
+            var iterator = estado.trayectorias.listIterator(estado.trayectorias.size());
+            while(iterator.hasPrevious()){
+                var trayectoria = iterator.previous();
+                if(trayectoria.pieza == estado.piezaJaque){
+                    posicionPiezaAtaque = trayectoria.posicion;
+                }
+            }
+            
+            //Utilidades.ImprimirPosicicion(tablero);
+            
+             int x1 = 0;
+             int y1 = 0;
+        
+             int x2 = 0;
+             int y2 = 0;
+        
+            
+            if(posicionRey[1] > posicionPiezaAtaque[0]){
+                x1 = posicionPiezaAtaque[0];
+                y1 = posicionPiezaAtaque[1];
+                
+                x2 = posicionRey[1];
+                y2 = posicionRey[0];
+            }else{
+                x1 = posicionRey[1];
+                y1 = posicionRey[0];
+                
+                x2 = posicionPiezaAtaque[0];
+                y2 = posicionPiezaAtaque[1];
+            }
+            
+            var jaqueDiagonal = x1 != x2;
+            
+            if(jaqueDiagonal){
+                
+                int constante = ((y2 - y1) * -x1) + ((x2 - x1) * -y1 * -1);
+                constante /= y2 - y1;
+                constante *= -1;
+                
+                
+                int punto  = constante < 0 ?  fila - constante:
+                              constante -fila;
+                
+                if(x1 <= punto && punto < x2){
+                    lista.add(new int[]{fila, columna, fila, punto});
+                }
+                
+                punto  = constante < 0 ? columna - constante :
+                              constante - columna;
+                
+                
+                 if(y1 <= punto && punto < y2){
+                    lista.add(new int[]{fila,columna,fila, punto});
+                }
+                 
+                 
+                 var ite = lista.iterator();
+                 
+                 while(ite.hasNext()){
+                     var mov = ite.next();
+                     
+                     
+                 }
+                
+                 return lista;
+                
+            }
+            
+            
             
             
             
@@ -63,7 +133,7 @@ public class Generador {
         Pieza posicionActual;
         Pieza pieza;
         
-        var lista = new ArrayList<int[]>();
+        
         pieza = tablero[fila][columna];
 
         var i = fila + 1;
