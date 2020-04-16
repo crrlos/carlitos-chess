@@ -14,417 +14,505 @@ import java.util.List;
  * @author carlos
  */
 public class Generador {
-    
-   public static List<int[]> generarMovimientos(Pieza[][] tablero, EstadoTablero estado){
-       
-       var movimientos = new ArrayList<int[]>();
-        
-        int fila = 0; int  columna = 0;
-        
-        for(var f: tablero){
-            for (var pieza : f){
-                
-                if(pieza != null && pieza.EsBlanca() == estado.TurnoBlanco)
-                {
-                    var movs = pieza instanceof Dama ? movimientosDeDama(tablero,estado,fila,columna) :
-                               pieza instanceof Torre ? movimientosDeTorre(tablero,estado,fila,columna):
-                               pieza instanceof Alfil ? movimientosDeAlfil(tablero,estado,fila,columna):
-                               pieza instanceof Caballo ? movimientosDeCaballo(tablero,estado, fila,columna):
-                               pieza instanceof Peon ? movimientosDePeon(tablero,estado,fila,columna):
-                               movimientosDeRey(tablero,estado,fila,columna);
+
+    public static List<int[]> generarMovimientos(Pieza[][] tablero, EstadoTablero estado) {
+
+        var movimientos = new ArrayList<int[]>();
+
+        int fila = 0;
+        int columna = 0;
+
+        for (var f : tablero) {
+            for (var pieza : f) {
+
+                if (pieza != null && pieza.EsBlanca() == estado.TurnoBlanco) {
+                    var movs = pieza instanceof Dama ? movimientosDeDama(tablero, estado, fila, columna)
+                            : pieza instanceof Torre ? movimientosDeTorre(tablero, estado, fila, columna)
+                                    : pieza instanceof Alfil ? movimientosDeAlfil(tablero, estado, fila, columna)
+                                            : pieza instanceof Caballo ? movimientosDeCaballo(tablero, estado, fila, columna)
+                                                    : pieza instanceof Peon ? movimientosDePeon(tablero, estado, fila, columna)
+                                                            : movimientosDeRey(tablero, estado, fila, columna);
                     movimientos.addAll(movs);
                 }
                 columna++;
             }
-            fila++; columna = 0;
+            fila++;
+            columna = 0;
         }
         return movimientos;
-       
-   }
-   
-   private static List<int[]> movimientosDeTorre(Pieza[][] tablero,EstadoTablero estado, int fila, int columna){
+
+    }
+
+    private static List<int[]> movimientosDeTorre(Pieza[][] tablero, EstadoTablero estado, int fila, int columna) {
+        boolean horizontal = true;
+        boolean vertical = true;
+        
+        
+        var posicionRey = estado.TurnoBlanco?  
+                estado.PosicionReyBlanco : 
+                estado.PosicionReyNegro;
+        
+        
+        if(estado.reyEnJaque){
+            
+            
+            
+        }
+        
+        
         Pieza posicionActual;
         Pieza pieza;
+        
         var lista = new ArrayList<int[]>();
         pieza = tablero[fila][columna];
 
         var i = fila + 1;
 
-        while(i < 8){
-            posicionActual = tablero[i][columna];
-            
-            if(posicionActual != null)
-                    if(posicionActual.EsBlanca() == pieza.EsBlanca() || posicionActual instanceof Rey)
+        if (vertical) {
+            while (i < 8) {
+                posicionActual = tablero[i][columna];
+
+                if (posicionActual != null) {
+                    if (posicionActual.EsBlanca() == pieza.EsBlanca() || posicionActual instanceof Rey) {
                         break;
-            
-            lista.add( new int[]{fila,columna,i,columna});
-            
-            if(posicionActual != null && posicionActual.EsBlanca() != pieza.EsBlanca())
-                break;
-            
-            i++;
-        }
-        i = fila - 1;
-        while(i >= 0 ){
-            posicionActual = tablero[i][columna];
-            
-            if(posicionActual != null)
-                    if(posicionActual.EsBlanca() == pieza.EsBlanca() || posicionActual instanceof Rey)
+                    }
+                }
+
+                lista.add(new int[]{fila, columna, i, columna});
+
+                if (posicionActual != null && posicionActual.EsBlanca() != pieza.EsBlanca()) {
+                    break;
+                }
+
+                i++;
+            }
+            i = fila - 1;
+            while (i >= 0) {
+                posicionActual = tablero[i][columna];
+
+                if (posicionActual != null) {
+                    if (posicionActual.EsBlanca() == pieza.EsBlanca() || posicionActual instanceof Rey) {
                         break;
-            
-            lista.add( new int[]{fila,columna,i,columna});
-            
-            if(posicionActual != null && posicionActual.EsBlanca() != pieza.EsBlanca())
-                break;
-            
-            i--;
+                    }
+                }
+
+                lista.add(new int[]{fila, columna, i, columna});
+
+                if (posicionActual != null && posicionActual.EsBlanca() != pieza.EsBlanca()) {
+                    break;
+                }
+
+                i--;
+            }
         }
         i = columna + 1;
-        while(i < 8  ){
+        if(horizontal){
+            while (i < 8) {
             posicionActual = tablero[fila][i];
-            
-            if(posicionActual != null)
-                    if(posicionActual.EsBlanca() == pieza.EsBlanca() || posicionActual instanceof Rey)
-                        break;
-            
-            lista.add( new int[]{fila,columna,fila,i});
-            
-            if(posicionActual != null && posicionActual.EsBlanca() != pieza.EsBlanca())
+
+            if (posicionActual != null) {
+                if (posicionActual.EsBlanca() == pieza.EsBlanca() || posicionActual instanceof Rey) {
+                    break;
+                }
+            }
+
+            lista.add(new int[]{fila, columna, fila, i});
+
+            if (posicionActual != null && posicionActual.EsBlanca() != pieza.EsBlanca()) {
                 break;
+            }
             i++;
         }
         i = columna - 1;
-        while(i >= 0  ){
+        while (i >= 0) {
             posicionActual = tablero[fila][i];
-            
-            if(posicionActual != null)
-                    if(posicionActual.EsBlanca() == pieza.EsBlanca() || posicionActual instanceof Rey)
-                        break;
-            
-           lista.add( new int[]{fila,columna,fila,i});
-           
-           if(posicionActual != null && posicionActual.EsBlanca() != pieza.EsBlanca())
+
+            if (posicionActual != null) {
+                if (posicionActual.EsBlanca() == pieza.EsBlanca() || posicionActual instanceof Rey) {
+                    break;
+                }
+            }
+
+            lista.add(new int[]{fila, columna, fila, i});
+
+            if (posicionActual != null && posicionActual.EsBlanca() != pieza.EsBlanca()) {
                 break;
-           
+            }
+
             i--;
         }
-return new Base(estado).MovimientosValidos(lista, tablero, pieza.EsBlanca());
-   }
-   private static List<int[]> movimientosDeDama(Pieza[][] tablero,EstadoTablero estado, int fila, int columna){
+        }
+        return new Base(estado).MovimientosValidos(lista, tablero, pieza.EsBlanca());
+    }
+
+    private static List<int[]> movimientosDeDama(Pieza[][] tablero, EstadoTablero estado, int fila, int columna) {
         Pieza posicionActual;
         Pieza pieza;
         var lista = new ArrayList<int[]>();
         pieza = tablero[fila][columna];
         var f = fila + 1;
         var c = columna + 1;
-        while(f < 8 && c < 8){
+        while (f < 8 && c < 8) {
             posicionActual = tablero[f][c];
-            
-            if(posicionActual != null)
-                if(posicionActual.EsBlanca() == pieza.EsBlanca() || posicionActual instanceof Rey)
+
+            if (posicionActual != null) {
+                if (posicionActual.EsBlanca() == pieza.EsBlanca() || posicionActual instanceof Rey) {
                     break;
-            
-            lista.add( new int[]{fila,columna,f,c});
-            
-            if(posicionActual != null && posicionActual.EsBlanca() != pieza.EsBlanca())
+                }
+            }
+
+            lista.add(new int[]{fila, columna, f, c});
+
+            if (posicionActual != null && posicionActual.EsBlanca() != pieza.EsBlanca()) {
                 break;
-            
-            
-            f++; c++;
+            }
+
+            f++;
+            c++;
         }
 
-         f = fila -1;
-         c = columna -1;
-        while(f >= 0 && c >=0){
-            
+        f = fila - 1;
+        c = columna - 1;
+        while (f >= 0 && c >= 0) {
+
             posicionActual = tablero[f][c];
-            
-            if(posicionActual != null)
-                if(posicionActual.EsBlanca() == pieza.EsBlanca() || posicionActual instanceof Rey)
+
+            if (posicionActual != null) {
+                if (posicionActual.EsBlanca() == pieza.EsBlanca() || posicionActual instanceof Rey) {
                     break;
-            
-            lista.add( new int[]{fila,columna,f,c});
-            
-            if(posicionActual != null && posicionActual.EsBlanca() != pieza.EsBlanca())
+                }
+            }
+
+            lista.add(new int[]{fila, columna, f, c});
+
+            if (posicionActual != null && posicionActual.EsBlanca() != pieza.EsBlanca()) {
                 break;
-            
-            f--;c--;
+            }
+
+            f--;
+            c--;
         }
 
-         f = fila +1;
-         c = columna -1;
-        while(f < 8 && c >=0){
+        f = fila + 1;
+        c = columna - 1;
+        while (f < 8 && c >= 0) {
             posicionActual = tablero[f][c];
-            
-            if(posicionActual != null)
-                if(posicionActual.EsBlanca() == pieza.EsBlanca() || posicionActual instanceof Rey)
+
+            if (posicionActual != null) {
+                if (posicionActual.EsBlanca() == pieza.EsBlanca() || posicionActual instanceof Rey) {
                     break;
-            
-            lista.add( new int[]{fila,columna,f,c});
-            
-            if(posicionActual != null && posicionActual.EsBlanca() != pieza.EsBlanca())
+                }
+            }
+
+            lista.add(new int[]{fila, columna, f, c});
+
+            if (posicionActual != null && posicionActual.EsBlanca() != pieza.EsBlanca()) {
                 break;
-            
-            f++;c--;
+            }
+
+            f++;
+            c--;
         }
 
-         f = fila -1;
-         c = columna +1;
-        while(f >= 0 && c < 8){
+        f = fila - 1;
+        c = columna + 1;
+        while (f >= 0 && c < 8) {
             posicionActual = tablero[f][c];
-            
-            if(posicionActual != null)
-                if(posicionActual.EsBlanca() == pieza.EsBlanca() || posicionActual instanceof Rey)
+
+            if (posicionActual != null) {
+                if (posicionActual.EsBlanca() == pieza.EsBlanca() || posicionActual instanceof Rey) {
                     break;
-            
-            lista.add( new int[]{fila,columna,f,c});
-            
-            if(posicionActual != null && posicionActual.EsBlanca() != pieza.EsBlanca())
+                }
+            }
+
+            lista.add(new int[]{fila, columna, f, c});
+
+            if (posicionActual != null && posicionActual.EsBlanca() != pieza.EsBlanca()) {
                 break;
-            
-            f--;c++;
+            }
+
+            f--;
+            c++;
         }
 
-        var i = fila +1;
+        var i = fila + 1;
 
-        while(i < 8){
+        while (i < 8) {
             posicionActual = tablero[i][columna];
-            
-            if(posicionActual != null)
-                    if(posicionActual.EsBlanca() == pieza.EsBlanca() || posicionActual instanceof Rey)
-                        break;
-            
-            lista.add( new int[]{fila,columna,i,columna});
-            
-            if(posicionActual != null && posicionActual.EsBlanca() != pieza.EsBlanca())
+
+            if (posicionActual != null) {
+                if (posicionActual.EsBlanca() == pieza.EsBlanca() || posicionActual instanceof Rey) {
+                    break;
+                }
+            }
+
+            lista.add(new int[]{fila, columna, i, columna});
+
+            if (posicionActual != null && posicionActual.EsBlanca() != pieza.EsBlanca()) {
                 break;
-            
+            }
+
             i++;
         }
         i = fila - 1;
-        while(i >= 0 ){
+        while (i >= 0) {
             posicionActual = tablero[i][columna];
-            
-            if(posicionActual != null)
-                    if(posicionActual.EsBlanca() == pieza.EsBlanca() || posicionActual instanceof Rey)
-                        break;
-            
-            lista.add( new int[]{fila,columna,i,columna});
-            
-            if(posicionActual != null && posicionActual.EsBlanca() != pieza.EsBlanca())
+
+            if (posicionActual != null) {
+                if (posicionActual.EsBlanca() == pieza.EsBlanca() || posicionActual instanceof Rey) {
+                    break;
+                }
+            }
+
+            lista.add(new int[]{fila, columna, i, columna});
+
+            if (posicionActual != null && posicionActual.EsBlanca() != pieza.EsBlanca()) {
                 break;
-            
+            }
+
             i--;
         }
         i = columna + 1;
-        while(i < 8  ){
+        while (i < 8) {
             posicionActual = tablero[fila][i];
-            
-            if(posicionActual != null)
-                    if(posicionActual.EsBlanca() == pieza.EsBlanca() || posicionActual instanceof Rey)
-                        break;
-            
-            lista.add( new int[]{fila,columna,fila,i});
-            
-            if(posicionActual != null && posicionActual.EsBlanca() != pieza.EsBlanca())
+
+            if (posicionActual != null) {
+                if (posicionActual.EsBlanca() == pieza.EsBlanca() || posicionActual instanceof Rey) {
+                    break;
+                }
+            }
+
+            lista.add(new int[]{fila, columna, fila, i});
+
+            if (posicionActual != null && posicionActual.EsBlanca() != pieza.EsBlanca()) {
                 break;
+            }
             i++;
         }
         i = columna - 1;
-        while(i >= 0  ){
+        while (i >= 0) {
             posicionActual = tablero[fila][i];
-            
-            if(posicionActual != null)
-                    if(posicionActual.EsBlanca() == pieza.EsBlanca() || posicionActual instanceof Rey)
-                        break;
-            
-           lista.add( new int[]{fila,columna,fila,i});
-           
-           if(posicionActual != null && posicionActual.EsBlanca() != pieza.EsBlanca())
+
+            if (posicionActual != null) {
+                if (posicionActual.EsBlanca() == pieza.EsBlanca() || posicionActual instanceof Rey) {
+                    break;
+                }
+            }
+
+            lista.add(new int[]{fila, columna, fila, i});
+
+            if (posicionActual != null && posicionActual.EsBlanca() != pieza.EsBlanca()) {
                 break;
-           
+            }
+
             i--;
         }
-return new Base(estado).MovimientosValidos(lista, tablero, pieza.EsBlanca());
-   }
-   private static List<int[]> movimientosDeCaballo(Pieza[][] tablero,EstadoTablero estado, int fila, int columna){
+        return new Base(estado).MovimientosValidos(lista, tablero, pieza.EsBlanca());
+    }
+
+    private static List<int[]> movimientosDeCaballo(Pieza[][] tablero, EstadoTablero estado, int fila, int columna) {
         Pieza posicionActual;
         Pieza pieza;
 
         var lista = new ArrayList<int[]>();
-        
+
         pieza = tablero[fila][columna];
 
-        if(fila + 2 < 8){
-            if(columna + 1 < 8){
-                posicionActual = tablero[fila + 2][columna+1];
-                if( posicionActual != null){
-                    if(posicionActual.EsBlanca() != pieza.EsBlanca() && !(posicionActual instanceof Rey))
-                        lista.add( new int[]{fila,columna,fila +2,columna +1});
+        if (fila + 2 < 8) {
+            if (columna + 1 < 8) {
+                posicionActual = tablero[fila + 2][columna + 1];
+                if (posicionActual != null) {
+                    if (posicionActual.EsBlanca() != pieza.EsBlanca() && !(posicionActual instanceof Rey)) {
+                        lista.add(new int[]{fila, columna, fila + 2, columna + 1});
+                    }
+                } else {
+                    lista.add(new int[]{fila, columna, fila + 2, columna + 1});
                 }
-                else
-                    lista.add( new int[]{fila,columna,fila +2,columna +1});
             }
-            if(columna - 1 >= 0){
-            posicionActual = tablero[fila + 2][columna-1];
-            if(posicionActual != null){
-                if(posicionActual.EsBlanca() != pieza.EsBlanca() && !(posicionActual instanceof Rey))
-                    lista.add( new int[]{fila,columna,fila +2,columna -1});
+            if (columna - 1 >= 0) {
+                posicionActual = tablero[fila + 2][columna - 1];
+                if (posicionActual != null) {
+                    if (posicionActual.EsBlanca() != pieza.EsBlanca() && !(posicionActual instanceof Rey)) {
+                        lista.add(new int[]{fila, columna, fila + 2, columna - 1});
+                    }
+                } else {
+                    lista.add(new int[]{fila, columna, fila + 2, columna - 1});
+                }
             }
-            else
-                lista.add( new int[]{fila,columna,fila +2,columna -1});
-        }
         }
 
-        if(fila - 2 >=0 ){
-            if(columna + 1 < 8){
-                posicionActual = tablero[fila - 2][columna+1];
-                if(posicionActual != null){
-                    if(posicionActual.EsBlanca() != pieza.EsBlanca() && !(posicionActual instanceof Rey))
-                        lista.add( new int[]{fila,columna,fila -2,columna +1});
+        if (fila - 2 >= 0) {
+            if (columna + 1 < 8) {
+                posicionActual = tablero[fila - 2][columna + 1];
+                if (posicionActual != null) {
+                    if (posicionActual.EsBlanca() != pieza.EsBlanca() && !(posicionActual instanceof Rey)) {
+                        lista.add(new int[]{fila, columna, fila - 2, columna + 1});
+                    }
+                } else {
+                    lista.add(new int[]{fila, columna, fila - 2, columna + 1});
                 }
-                else
-                    lista.add( new int[]{fila,columna,fila -2,columna +1});
             }
-            if(columna - 1 >= 0){
-                posicionActual = tablero[fila - 2][columna-1];
-            if(posicionActual != null){
-                if(posicionActual.EsBlanca() != pieza.EsBlanca() && !(posicionActual instanceof Rey))
-                    lista.add( new int[]{fila,columna,fila -2,columna -1});
+            if (columna - 1 >= 0) {
+                posicionActual = tablero[fila - 2][columna - 1];
+                if (posicionActual != null) {
+                    if (posicionActual.EsBlanca() != pieza.EsBlanca() && !(posicionActual instanceof Rey)) {
+                        lista.add(new int[]{fila, columna, fila - 2, columna - 1});
+                    }
+                } else {
+                    lista.add(new int[]{fila, columna, fila - 2, columna - 1});
+                }
             }
-            else
-                lista.add( new int[]{fila,columna,fila -2,columna -1});
-        }
         }
 
-        if(columna - 2 >= 0){
-            if(fila + 1 < 8){
-                posicionActual = tablero[fila + 1][columna -2];
-                if( posicionActual != null){
-                    if(posicionActual.EsBlanca() != pieza.EsBlanca() && !(posicionActual instanceof Rey))
-                        lista.add( new int[]{fila,columna,fila +1,columna -2});
+        if (columna - 2 >= 0) {
+            if (fila + 1 < 8) {
+                posicionActual = tablero[fila + 1][columna - 2];
+                if (posicionActual != null) {
+                    if (posicionActual.EsBlanca() != pieza.EsBlanca() && !(posicionActual instanceof Rey)) {
+                        lista.add(new int[]{fila, columna, fila + 1, columna - 2});
+                    }
+                } else {
+                    lista.add(new int[]{fila, columna, fila + 1, columna - 2});
                 }
-                else
-                    lista.add( new int[]{fila,columna,fila +1,columna -2});
             }
-            if(fila - 1 >=0 ){
-                posicionActual =tablero[fila - 1][columna- 2];
-            if(posicionActual != null){
-                if(posicionActual.EsBlanca() != pieza.EsBlanca() && !(posicionActual instanceof Rey))
-                    lista.add( new int[]{fila,columna,fila -1,columna -2});
-            }
-            else
-                lista.add( new int[]{fila,columna,fila -1,columna -2});
-        }
-        }
-        if(columna + 2 < 8){
-            if(fila + 1 < 8){
-                posicionActual = tablero[fila + 1][columna +2];
-                if(posicionActual != null){
-                    if(posicionActual.EsBlanca() != pieza.EsBlanca() && !(posicionActual instanceof Rey))
-                         lista.add( new int[]{fila,columna,fila +1,columna +2});
+            if (fila - 1 >= 0) {
+                posicionActual = tablero[fila - 1][columna - 2];
+                if (posicionActual != null) {
+                    if (posicionActual.EsBlanca() != pieza.EsBlanca() && !(posicionActual instanceof Rey)) {
+                        lista.add(new int[]{fila, columna, fila - 1, columna - 2});
+                    }
+                } else {
+                    lista.add(new int[]{fila, columna, fila - 1, columna - 2});
                 }
-                else
-                    lista.add( new int[]{fila,columna,fila +1,columna +2});
             }
-            if(fila - 1 >=0 ){
-                posicionActual = tablero[fila - 1][columna+ 2];
-            if(posicionActual != null){
-                if(posicionActual.EsBlanca() != pieza.EsBlanca() && !(posicionActual instanceof Rey))
-                    lista.add( new int[]{fila,columna,fila -1,columna +2});
-            }
-            else
-                lista.add( new int[]{fila,columna,fila -1,columna +2});
         }
+        if (columna + 2 < 8) {
+            if (fila + 1 < 8) {
+                posicionActual = tablero[fila + 1][columna + 2];
+                if (posicionActual != null) {
+                    if (posicionActual.EsBlanca() != pieza.EsBlanca() && !(posicionActual instanceof Rey)) {
+                        lista.add(new int[]{fila, columna, fila + 1, columna + 2});
+                    }
+                } else {
+                    lista.add(new int[]{fila, columna, fila + 1, columna + 2});
+                }
+            }
+            if (fila - 1 >= 0) {
+                posicionActual = tablero[fila - 1][columna + 2];
+                if (posicionActual != null) {
+                    if (posicionActual.EsBlanca() != pieza.EsBlanca() && !(posicionActual instanceof Rey)) {
+                        lista.add(new int[]{fila, columna, fila - 1, columna + 2});
+                    }
+                } else {
+                    lista.add(new int[]{fila, columna, fila - 1, columna + 2});
+                }
+            }
         }
 
-return new Base(estado).MovimientosValidos(lista, tablero, pieza.EsBlanca());
+        return new Base(estado).MovimientosValidos(lista, tablero, pieza.EsBlanca());
 
-   }
-   private static List<int[]> movimientosDeAlfil(Pieza[][] tablero,EstadoTablero estado, int fila, int columna){
-       
+    }
+
+    private static List<int[]> movimientosDeAlfil(Pieza[][] tablero, EstadoTablero estado, int fila, int columna) {
+
         Pieza posicionActual;
         Pieza pieza = tablero[fila][columna];
         var lista = new ArrayList<int[]>();
-        
+
         var f = fila + 1;
         var c = columna + 1;
-        while(f < 8 && c < 8){
+        while (f < 8 && c < 8) {
             posicionActual = tablero[f][c];
-            
-            if(posicionActual != null)
-                if(posicionActual.EsBlanca() == pieza.EsBlanca() || posicionActual instanceof Rey)
+
+            if (posicionActual != null) {
+                if (posicionActual.EsBlanca() == pieza.EsBlanca() || posicionActual instanceof Rey) {
                     break;
-            
-            lista.add( new int[]{fila,columna,f,c});
-            
-            if(posicionActual != null && posicionActual.EsBlanca() != pieza.EsBlanca())
+                }
+            }
+
+            lista.add(new int[]{fila, columna, f, c});
+
+            if (posicionActual != null && posicionActual.EsBlanca() != pieza.EsBlanca()) {
                 break;
-            
-            
-            f++; c++;
+            }
+
+            f++;
+            c++;
         }
 
-         f = fila -1;
-         c = columna -1;
-        while(f >= 0 && c >=0){
-            
+        f = fila - 1;
+        c = columna - 1;
+        while (f >= 0 && c >= 0) {
+
             posicionActual = tablero[f][c];
-            
-            if(posicionActual != null)
-                if(posicionActual.EsBlanca() == pieza.EsBlanca() || posicionActual instanceof Rey)
+
+            if (posicionActual != null) {
+                if (posicionActual.EsBlanca() == pieza.EsBlanca() || posicionActual instanceof Rey) {
                     break;
-            
-            lista.add( new int[]{fila,columna,f,c});
-            
-            if(posicionActual != null && posicionActual.EsBlanca() != pieza.EsBlanca())
+                }
+            }
+
+            lista.add(new int[]{fila, columna, f, c});
+
+            if (posicionActual != null && posicionActual.EsBlanca() != pieza.EsBlanca()) {
                 break;
-            
-            f--;c--;
+            }
+
+            f--;
+            c--;
         }
 
-         f = fila +1;
-         c = columna -1;
-        while(f < 8 && c >=0){
+        f = fila + 1;
+        c = columna - 1;
+        while (f < 8 && c >= 0) {
             posicionActual = tablero[f][c];
-            
-            if(posicionActual != null)
-                if(posicionActual.EsBlanca() == pieza.EsBlanca() || posicionActual instanceof Rey)
+
+            if (posicionActual != null) {
+                if (posicionActual.EsBlanca() == pieza.EsBlanca() || posicionActual instanceof Rey) {
                     break;
-            
-            lista.add( new int[]{fila,columna,f,c});
-            
-            if(posicionActual != null && posicionActual.EsBlanca() != pieza.EsBlanca())
+                }
+            }
+
+            lista.add(new int[]{fila, columna, f, c});
+
+            if (posicionActual != null && posicionActual.EsBlanca() != pieza.EsBlanca()) {
                 break;
-            
-            f++;c--;
+            }
+
+            f++;
+            c--;
         }
 
-         f = fila -1;
-         c = columna +1;
-        while(f >= 0 && c < 8){
+        f = fila - 1;
+        c = columna + 1;
+        while (f >= 0 && c < 8) {
             posicionActual = tablero[f][c];
-            
-            if(posicionActual != null)
-                if(posicionActual.EsBlanca() == pieza.EsBlanca() || posicionActual instanceof Rey)
+
+            if (posicionActual != null) {
+                if (posicionActual.EsBlanca() == pieza.EsBlanca() || posicionActual instanceof Rey) {
                     break;
-            
-            lista.add( new int[]{fila,columna,f,c});
-            
-            if(posicionActual != null && posicionActual.EsBlanca() != pieza.EsBlanca())
+                }
+            }
+
+            lista.add(new int[]{fila, columna, f, c});
+
+            if (posicionActual != null && posicionActual.EsBlanca() != pieza.EsBlanca()) {
                 break;
-            
-            f--;c++;
+            }
+
+            f--;
+            c++;
         }
         return new Base(estado).MovimientosValidos(lista, tablero, pieza.EsBlanca());
-           
-   }
-   private static List<int[]> movimientosDeRey(Pieza[][] tablero,EstadoTablero estado, int fila, int columna){
-        
-       var base = new Base(estado);
-       
+
+    }
+
+    private static List<int[]> movimientosDeRey(Pieza[][] tablero, EstadoTablero estado, int fila, int columna) {
+
+        var base = new Base(estado);
+
         var lista = new ArrayList<int[]>();
-        
+
         Pieza pieza = tablero[fila][columna];
 
         if (fila + 1 < 8) {
@@ -478,7 +566,7 @@ return new Base(estado).MovimientosValidos(lista, tablero, pieza.EsBlanca());
             }
 
         }
-       
+
         if (!base.ReyEnJaque(tablero, pieza.EsBlanca())) {
             if (estado.EnroqueCBlanco && pieza.EsBlanca()) {
                 if (columna == 4) {
@@ -505,9 +593,7 @@ return new Base(estado).MovimientosValidos(lista, tablero, pieza.EsBlanca());
                     }
                 }
                 estado.PosicionReyBlanco[1] = columna;
-            }else
-
-            if (estado.EnroqueLBlanco && pieza.EsBlanca()) {
+            } else if (estado.EnroqueLBlanco && pieza.EsBlanca()) {
                 if (columna == 4) {
                     if (tablero[fila][columna - 1] == null && tablero[fila][columna - 2] == null && tablero[fila][columna - 3] == null) {
                         tablero[fila][columna - 1] = tablero[fila][columna];
@@ -534,8 +620,7 @@ return new Base(estado).MovimientosValidos(lista, tablero, pieza.EsBlanca());
                     }
                 }
                 estado.PosicionReyBlanco[1] = columna;
-            }else
-            //enroque
+            } else //enroque
             if (estado.EnroqueCNegro && !pieza.EsBlanca()) {
                 if (columna == 4) {
                     if (tablero[fila][columna + 1] == null && tablero[fila][columna + 2] == null) {
@@ -563,9 +648,7 @@ return new Base(estado).MovimientosValidos(lista, tablero, pieza.EsBlanca());
                     }
                 }
                 estado.PosicionReyNegro[1] = columna;
-            }else
-
-            if (estado.EnroqueLNegro && !pieza.EsBlanca()) {
+            } else if (estado.EnroqueLNegro && !pieza.EsBlanca()) {
                 if (columna == 4) {
                     if (tablero[fila][columna - 1] == null && tablero[fila][columna - 2] == null && tablero[fila][columna - 3] == null) {
                         tablero[fila][columna - 1] = tablero[fila][columna];
@@ -595,13 +678,14 @@ return new Base(estado).MovimientosValidos(lista, tablero, pieza.EsBlanca());
             }
         }
         return base.MovimientosValidosRey(lista, tablero, pieza.EsBlanca());
-   }
-   private static List<int[]> movimientosDePeon(Pieza[][] tablero,EstadoTablero estado, int fila, int columna){
+    }
+
+    private static List<int[]> movimientosDePeon(Pieza[][] tablero, EstadoTablero estado, int fila, int columna) {
         int filaDestino;
 
         Pieza posicionActual;
         Pieza pieza = tablero[fila][columna];
-        
+
         var lista = new ArrayList<int[]>();
 
         //avance dos casillas
@@ -637,8 +721,8 @@ return new Base(estado).MovimientosValidos(lista, tablero, pieza.EsBlanca());
                         lista.add(new int[]{fila, columna, filaDestino, columna - 1});
                     }
                 }
-            }else if(estado.AlPaso && fila == (pieza.EsBlanca() ? 4 : 3)){
-                if(tablero[fila][columna - 1] == estado.PiezaALPaso){
+            } else if (estado.AlPaso && fila == (pieza.EsBlanca() ? 4 : 3)) {
+                if (tablero[fila][columna - 1] == estado.PiezaALPaso) {
                     lista.add(new int[]{fila, columna, filaDestino, columna - 1});
                 }
             }
@@ -656,17 +740,14 @@ return new Base(estado).MovimientosValidos(lista, tablero, pieza.EsBlanca());
                         lista.add(new int[]{fila, columna, filaDestino, columna + 1});
                     }
                 }
-            }else if(estado.AlPaso && fila == (pieza.EsBlanca() ? 4 : 3)){
-                if(tablero[fila][columna + 1] == estado.PiezaALPaso){
+            } else if (estado.AlPaso && fila == (pieza.EsBlanca() ? 4 : 3)) {
+                if (tablero[fila][columna + 1] == estado.PiezaALPaso) {
                     lista.add(new int[]{fila, columna, filaDestino, columna + 1});
                 }
             }
         }
 
         return new Base(estado).MovimientosValidos(lista, tablero, pieza.EsBlanca());
-   }
-    
-    
-    
-    
+    }
+
 }
