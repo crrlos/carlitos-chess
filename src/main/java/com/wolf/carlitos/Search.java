@@ -565,4 +565,10 @@ public class Search {
         
         
     }
+
+    public void setSecuencia(List<int[]> secuencia) {
+        this.secuencia = secuencia;
+    }
+    
+    
 }

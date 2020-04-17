@@ -25,6 +25,39 @@ public class Utilidades {
         System.out.println("");
     }
     
+    public static int[] convertirAPosicion(String movimiento){
+        int[] posicion;
+        
+        if(movimiento.length() == 5){
+            posicion =  new int[5];
+            
+        }else{
+            posicion = new int[4];
+        }
+        
+        
+        posicion[1] = "abcdefgh".indexOf(movimiento.charAt(0));
+        posicion[0] = "12345678".indexOf(movimiento.charAt(1));
+        
+        posicion[3] = "abcdefgh".indexOf(movimiento.charAt(2));
+        posicion[2] = "12345678".indexOf(movimiento.charAt(3));
+        
+        
+        if(movimiento.length() == 5){
+            switch(movimiento.charAt(4)){
+                case 'q': posicion[4] = 1;
+                case 'r': posicion[4] = 2;
+                case 'n': posicion[4] = 3;
+                case 'b': posicion[4] = 4;
+            }
+        }
+        
+        
+        return posicion;
+    }
+        
+       
+    
      public static String ConvertirANotacion(int[] movimiento){
          
           final String FILAS = "12345678";

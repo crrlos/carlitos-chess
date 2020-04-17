@@ -714,7 +714,8 @@ public class Generador {
                     }
                 }
                 estado.PosicionReyBlanco[1] = columna;
-            } else if (estado.EnroqueLBlanco && pieza.EsBlanca()) {
+            } 
+            if (estado.EnroqueLBlanco && pieza.EsBlanca()) {
                 if (columna == 4) {
                     if (tablero[fila][columna - 1] == null && tablero[fila][columna - 2] == null && tablero[fila][columna - 3] == null) {
                         tablero[fila][columna - 1] = tablero[fila][columna];
@@ -741,7 +742,8 @@ public class Generador {
                     }
                 }
                 estado.PosicionReyBlanco[1] = columna;
-            } else //enroque
+            } 
+            //enroque
             if (estado.EnroqueCNegro && !pieza.EsBlanca()) {
                 if (columna == 4) {
                     if (tablero[fila][columna + 1] == null && tablero[fila][columna + 2] == null) {
@@ -769,7 +771,8 @@ public class Generador {
                     }
                 }
                 estado.PosicionReyNegro[1] = columna;
-            } else if (estado.EnroqueLNegro && !pieza.EsBlanca()) {
+            } 
+            if (estado.EnroqueLNegro && !pieza.EsBlanca()) {
                 if (columna == 4) {
                     if (tablero[fila][columna - 1] == null && tablero[fila][columna - 2] == null && tablero[fila][columna - 3] == null) {
                         tablero[fila][columna - 1] = tablero[fila][columna];

@@ -8,12 +8,15 @@ import com.wolf.carlitos.Piezas.Pieza;
 import com.wolf.carlitos.Piezas.Rey;
 import com.wolf.carlitos.Piezas.Torre;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 
 public class Juego {
     public  Pieza[][] tablero;
     public  EstadoTablero estadoTablero;
+    public  List<int[]> secuencia =  new ArrayList<>();
 
     
    public Juego(){
@@ -62,7 +65,7 @@ public class Juego {
     }
    public void EstablecerPosicion(String... movimientos){
         for (var movimiento : movimientos) {
-            
+            secuencia.add(Utilidades.convertirAPosicion(movimiento));
             ActualizarTablero(movimiento);
             estadoTablero.TurnoBlanco  = !estadoTablero.TurnoBlanco;
         }
@@ -190,6 +193,7 @@ public class Juego {
     }
    public void perft(int n) throws CloneNotSupportedException, IOException{
        var search = new Search(tablero, estadoTablero);
+       search.setSecuencia(secuencia);
        search.perft(n);
        
    }
