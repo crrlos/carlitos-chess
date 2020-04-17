@@ -75,8 +75,7 @@ public class Generador {
                     tipoTrayectoria = trayectoria.trayectoria;
                 }
             }
-
-            //Utilidades.ImprimirPosicicion(tablero);
+            
             int x1 = posicionPiezaAtaque[0];
             int y1 = posicionPiezaAtaque[1];
 
@@ -141,6 +140,9 @@ public class Generador {
                     }
                     break;
                 case Recta:
+                    
+                   
+                    //Utilidades.ImprimirPosicicion(tablero);
                     if (x1 - x2 != 0 && columna >= Math.min(x1, x2) && columna <= Math.max(x1, x2)) {
                         if (!(tablero[y1][columna] instanceof Rey)) {
                             lista.add(new int[]{fila, columna, y1, columna});
@@ -152,9 +154,6 @@ public class Generador {
                     }
                     break;
                 case Ninguna:
-//                    if(tablero[0][3] instanceof Torre && tablero[1][3] instanceof Peon && tablero[0][4] instanceof Rey){
-//                        Utilidades.ImprimirPosicicion(tablero);
-//                    }
                     if (x1 - columna == 0) {
                         lista.add(new int[]{fila, columna, y1, columna});
                     } else if (y1 - fila == 0) {

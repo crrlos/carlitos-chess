@@ -417,75 +417,89 @@ public class Utilidades {
                 estadoTablero.piezaJaque = pieza;
             }
 
-//        } else if ((x1 - x2 == 0 || y1 - y2 == 0) && (pieza instanceof Torre || pieza instanceof Dama)) {
-//
-//            var trayectoria = new Trayectoria(pieza, x1, y1, TRAYECTORIA.Recta);
-//            boolean jaque = true;
-//            if (x1 - x2 == 0) {
-//                if (y1 > y2) {
-//                    //izquierda
-//                    for (int i = y1 - 1; i > y2; i--) {
-//                        var p = tablero[x1][i];
-//
-//                        if (p != null && p.EsBlanca() != pieza.EsBlanca()) {
-//                            trayectoria.piezasAtacadas++;
-//                            jaque = false;
-//                        } else {
-//                            jaque = false;
-//                            break;
-//                        }
-//
-//                    }
-//                } else {
-//                    //derecha
-//                    for (int i = y1 + 1; i < y2; i++) {
-//                        var p = tablero[x1][i];
-//
-//                        if (p != null && p.EsBlanca() != pieza.EsBlanca()) {
-//                            trayectoria.piezasAtacadas++;
-//                            jaque = false;
-//                        } else {
-//                            jaque = false;
-//                            break;
-//                        }
-//
-//                    }
-//                }
-//            } else {
-//                if (x1 > x2) {
-//                    //abajo
-//                    for (int i = x1 - 1; i > x2; i--) {
-//                        var p = tablero[i][y1];
-//                        if (p != null && p.EsBlanca() != pieza.EsBlanca()) {
-//                            trayectoria.piezasAtacadas++;
-//                            jaque = false;
-//                        } else {
-//                            jaque = false;
-//                            break;
-//                        }
-//
-//                    }
-//                } else {
-//                    //arriba
-//                    for (int i = x1 + 1; i < x2; i++) {
-//                        var p = tablero[i][y1];
-//                        if (p != null && p.EsBlanca() != pieza.EsBlanca()) {
-//                            trayectoria.piezasAtacadas++;
-//                            jaque = false;
-//                        } else {
-//                            jaque = false;
-//                            break;
-//                        }
-//
-//                    }
-//                }
-//            }
-//
-//            if (jaque) {
-//                estadoTablero.reyEnJaque = true;
-//                estadoTablero.piezaJaque = pieza;
-//            }
-//
+        } else if ((x1 - x2 == 0 || y1 - y2 == 0) && (pieza instanceof Torre || pieza instanceof Dama)) {
+            
+            
+
+            var trayectoria = new Trayectoria(pieza, x1, y1, TRAYECTORIA.Recta);
+            estadoTablero.trayectorias.add(trayectoria);
+            
+            boolean jaque = true;
+            if (x1 - x2 == 0) {
+                if (y1 > y2) {
+                    //izquierda
+                    for (int i = y1 - 1; i > y2; i--) {
+                        var p = tablero[x1][i];
+                        if (p != null) {
+                            if (p.EsBlanca() != pieza.EsBlanca()) {
+                                trayectoria.piezasAtacadas++;
+                                jaque = false;
+                            } else {
+                                jaque = false;
+                                break;
+                            }
+
+                        }
+                    }
+                } else {
+                    //derecha
+                    for (int i = y1 + 1; i < y2; i++) {
+                        var p = tablero[x1][i];
+
+                        if (p != null) {
+                            if (p.EsBlanca() != pieza.EsBlanca()) {
+                                trayectoria.piezasAtacadas++;
+                                jaque = false;
+                            } else {
+                                jaque = false;
+                                break;
+                            }
+
+                        }
+
+                    }
+                }
+            } else {
+                if (x1 > x2) {
+                    //abajo
+                    for (int i = x1 - 1; i > x2; i--) {
+                        var p = tablero[i][y1];
+                        if (p != null) {
+                            if (p.EsBlanca() != pieza.EsBlanca()) {
+                                trayectoria.piezasAtacadas++;
+                                jaque = false;
+                            } else {
+                                jaque = false;
+                                break;
+                            }
+
+                        }
+
+                    }
+                } else {
+                    //arriba
+                    for (int i = x1 + 1; i < x2; i++) {
+                        var p = tablero[i][y1];
+                        if (p != null) {
+                            if (p.EsBlanca() != pieza.EsBlanca()) {
+                                trayectoria.piezasAtacadas++;
+                                jaque = false;
+                            } else {
+                                jaque = false;
+                                break;
+                            }
+
+                        }
+
+                    }
+                }
+            }
+
+            if (jaque) {
+                estadoTablero.reyEnJaque = true;
+                estadoTablero.piezaJaque = pieza;
+            }
+
         }
 
     }
