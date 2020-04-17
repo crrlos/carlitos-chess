@@ -21,7 +21,7 @@ public class App {
                     var movimientos = linea.replaceAll("position startpos moves ", "").split(" ");
                     juego = new Juego();
                     juego.EstablecerPosicion(movimientos);
-                    juego.ImprimirPosicicion();
+                    Utilidades.ImprimirPosicicion(juego.tablero);
                 }
             } else if (linea.contains("go")) {
                 int n = 1;
@@ -66,7 +66,7 @@ public class App {
                 }
 
                 System.out.println("fen procesado");
-                juego.ImprimirPosicicion();
+                Utilidades.ImprimirPosicicion(juego.tablero);
 
             }else if(linea.contains("perft")){
                 int n = 1;

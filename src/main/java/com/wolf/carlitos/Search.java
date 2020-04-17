@@ -30,322 +30,7 @@ public class Search {
         this.tablero = tablero;
         this.estadoTablero = estado.clone();
     }
-    private void actualizarTrayectorias(Pieza pieza, int[] movimiento) {
-
-        int filaInicio = movimiento[0];
-        int colInicio = movimiento[1];
-        int filaFinal = movimiento[2];
-        int colFinal = movimiento[3];
-
-        //calculos con trayectorias
-        var ubicacionRey = !estadoTablero.TurnoBlanco
-                ? estadoTablero.PosicionReyBlanco
-                : estadoTablero.PosicionReyNegro;
-
-        //posicion de la pieza
-        int x1 = filaFinal;
-        int y1 = colFinal;
-
-        //posicion del rey
-        int x2 = ubicacionRey[0];
-        int y2 = ubicacionRey[1];
-        
-
-        // si la pendiente es 1 es trayectoria diagonal
-        if ((pieza instanceof Dama || pieza instanceof Alfil) && (x2 -x1) != 0) {
-            
-            var pendiente = false;
-            pendiente = Math.abs((double)(y2 - y1) / (x2 - x1)) == 1;
-            
-           
-            
-            if (pendiente) {
-                var trayectoria = new Trayectoria(pieza,x1, y1);
-                estadoTablero.trayectorias.add(trayectoria);
-                
-                var jaque = true;
-                //si hay pieza amiga terminar
-                if (x1 < x2 && y1 > y2) {
-                    //IA
-                    for (int i = x1 + 1; i < x2; i++) {
-                        var p = tablero[i][y1 - (i - x1)];
-                        if (p != null) {
-                            if (p.EsBlanca() != pieza.EsBlanca()) {
-                                jaque = false;
-                                trayectoria.piezasAtacadas++;
-                            } else {
-                                jaque = false;
-                                break;
-                            }
-                        }
-                    }
-                } else if (x1 < x2 && y1 < y2) {
-                    //DA
-                    for (int i = x1 + 1; i < x2; i++) {
-                        var p = tablero[i][y1 + (i - x1)];
-                        if (p != null) {
-                            if (p.EsBlanca() != pieza.EsBlanca()) {
-                                jaque = false;
-                               
-                                trayectoria.piezasAtacadas++;
-                            } else {
-                                jaque = false;
-                                break;
-                            }
-                        }
-                    }
-                } else if (x1 > x2 && y1 < y2) {
-                    //DAB
-                    for (int i = x1 - 1; i > x2; i--) {
-                        var p = tablero[i][y1 + (x1 - i)];
-                        if (p != null) {
-                            if (p.EsBlanca() != pieza.EsBlanca()) {
-                                jaque = false;
-                                
-                                trayectoria.piezasAtacadas++;
-                            } else {
-                                jaque = false;
-                                break;
-                            }
-                        }
-                    }
-                }
-                else if (x1 > x2 && y1 > y2) {
-                    //IAB
-                    for (int i = x1 - 1; i > x2; i--) {
-                        var p = tablero[i][y1 - (x1 - i)];
-                        if (p != null) {
-                            if (p.EsBlanca() != pieza.EsBlanca()) {
-                                jaque = false;
-                               
-                                trayectoria.piezasAtacadas++;
-                            } else {
-                                jaque = false;
-                                break;
-                            }
-                        }
-                    }
-                } 
-                estadoTablero.reyEnJaque = jaque;
-                if(jaque){
-                    estadoTablero.piezaJaque = pieza;
-                }
-
-            }
-        }
-
-//        if ((pieza instanceof Torre || pieza instanceof Dama) && (x1 == x2 || y1 == y2)) {
-//            //trayectoria recta
-//            var trayectoria =new Trayectoria(x1, y1, x2, y2, true);
-//                Juego.estadoTablero.trayectorias.put(pieza, trayectoria);
-//                tablero[y2][x2].setTrayectoria(pieza);
-//                
-//            //Juego.ImprimirPosicicion();
-//            
-//            if (x1 < x2) {//derecha
-//                for (int i = x1 + 1; i < x2; i++) {
-//                    var p = tablero[y1][i];
-//                    if (p != null) {
-//                        if (p.EsBlanca() != pieza.EsBlanca()) {
-//                            p.setTrayectoria(pieza);
-//                            trayectoria.piezas.add(p);
-//                        } else {
-//                            break;
-//                        }
-//                    }
-//                }
-//            } else if (x1 > x2) {
-//                //izquierda
-//                for (int i = x1 - 1; i > x2; i--) {
-//                    var p = tablero[y1][i];
-//                    if (p != null) {
-//                        if (p.EsBlanca() != pieza.EsBlanca()) {
-//                            p.setTrayectoria(pieza);
-//                            trayectoria.piezas.add(p);
-//                        } else {
-//                            break;
-//                        }
-//                    }
-//                }
-//            } else if (y1 > y2) {
-//                for (int i = y1 - 1; i > y2; i--) {
-//                    var p = tablero[i][x1];
-//                    if (p != null) {
-//                        if (p.EsBlanca() != pieza.EsBlanca()) {
-//                            p.setTrayectoria(pieza);
-//                            trayectoria.piezas.add(p);
-//                        } else {
-//                            break;
-//                        }
-//                    }
-//                }
-//            } else if (y1 < y2) {
-//                //arriba
-//                for (int i = y1 + 1; i < y2; i++) {
-//                    var p = tablero[i][x1];
-//                    if (p != null) {
-//                        if (p.EsBlanca() != pieza.EsBlanca()) {
-//                            p.setTrayectoria(pieza);
-//                            trayectoria.piezas.add(p);
-//                        } else {
-//                            break;
-//                        }
-//                    }
-//                }
-//            }
-//        }
-        //fin calculos con trayectorias
-    }
-    private void ActualizarTablero(int[] movimiento){
-        
-        int filaInicio = movimiento[0];
-        int filaFinal = 0;
-        int colInicio = movimiento[1];
-        try{
-        filaFinal = movimiento[2];
-        }catch(Exception es){
-        
-            System.out.println("excepcion");
-            Utilidades.ImprimirPosicicion(tablero);
-        
-        
-        }
-        int colFinal = movimiento[3];
-        
-        var pieza = tablero[filaInicio][colInicio];
-        
-        estadoTablero.reyEnJaque = false;
-        
-        actualizarTrayectorias(pieza, movimiento);
-        
-        estadoTablero.PiezaCapturada = null;
-        estadoTablero.TipoMovimiento = -1;
-        
-        if(pieza instanceof Peon){
-
-            if(Math.abs(filaInicio - filaFinal) == 2){
-                estadoTablero.AlPaso = true;
-                estadoTablero.PiezaALPaso = pieza;
-                
-                tablero[filaFinal][colFinal] = pieza;
-                tablero[filaInicio][colInicio] = null;
-                estadoTablero.TipoMovimiento = 0;
-                return;
-            }
-            if(estadoTablero.AlPaso){
-                if(colFinal > colInicio || colFinal < colInicio){
-                    if(tablero[filaInicio][colFinal] == estadoTablero.PiezaALPaso){
-                        tablero[filaInicio][colFinal] = null;
-                        estadoTablero.TipoMovimiento = 1;
-                    }
-                }
-                estadoTablero.AlPaso = false;
-            }
-            
-            if(filaFinal == 7 || filaFinal == 0){
-                switch(movimiento[4]){
-                    case 1:
-                        pieza = new Dama(estadoTablero.TurnoBlanco);
-                        break;
-                     case 2:
-                        pieza = new Torre(estadoTablero.TurnoBlanco);
-                        break;
-                     case 3:
-                        pieza = new Caballo(estadoTablero.TurnoBlanco);
-                        break;
-                    case 4:
-                        pieza = new Alfil(estadoTablero.TurnoBlanco);
-                        break;
-                }
-                estadoTablero.TipoMovimiento = 2;
-            }
-            
-         }
-         else
-         if(pieza instanceof Rey){
-            // en los enroques solo se mueven las torres por ser el movimiento especial
-            if(Math.abs(colInicio - colFinal) == 2){
-                if(pieza.EsBlanca()){
-                    if(colFinal == 6){//enroque corto
-                        tablero[0][5] = tablero[0][7];
-                        tablero[0][7] = null;
-                    }else {//enroque largo
-                        tablero[0][3] = tablero[0][0];
-                        tablero[0][0] = null;
-                    }
-                }else{
-                    if(colFinal == 6){//enroque corto
-                        tablero[7][5] = tablero[7][7];
-                        tablero[7][7] = null;
-                    }else {//enroque largo
-                        tablero[7][3] = tablero[7][0];
-                        tablero[7][0] = null;
-                    }
-                }
-                estadoTablero.TipoMovimiento = 3;
-            }else{
-                estadoTablero.TipoMovimiento = 100;
-            }
-            if(pieza.EsBlanca()){
-                estadoTablero.EnroqueCBlanco = estadoTablero.EnroqueLBlanco = false;
-                estadoTablero.PosicionReyBlanco[0] = filaFinal;
-                estadoTablero.PosicionReyBlanco[1] = colFinal;
-            }
-            else{
-                estadoTablero.EnroqueCNegro  = estadoTablero.EnroqueLNegro = false;
-                estadoTablero.PosicionReyNegro[0] = filaFinal;
-                estadoTablero.PosicionReyNegro[1] = colFinal;
-            }
-            
-            
-         }
-         else
-         if(pieza instanceof Torre){
-             if(colInicio == 7)
-             {
-                 if(pieza.EsBlanca())
-                     estadoTablero.EnroqueCBlanco = false;
-                 else
-                     estadoTablero.EnroqueCNegro = false;
-             }else if(colInicio == 0)
-                 if(pieza.EsBlanca())
-                     estadoTablero.EnroqueLBlanco = false;
-                 else
-                     estadoTablero.EnroqueLNegro = false;
-         }
-         
-       if(tablero[filaFinal][colFinal] != null){
-            estadoTablero.PiezaCapturada = tablero[filaFinal][colFinal];
-            
-            if(estadoTablero.PiezaCapturada instanceof Torre){
-                if(colFinal == 7){
-                    if(estadoTablero.TurnoBlanco){
-                        estadoTablero.EnroqueCNegro = false;
-                    }else{
-                        estadoTablero.EnroqueCBlanco = false;
-                    }
-                }else if(colFinal == 0){
-                     if(estadoTablero.TurnoBlanco){
-                        estadoTablero.EnroqueLNegro = false;
-                    }else{
-                        estadoTablero.EnroqueLBlanco = false;
-                    }
-                }
-            }
-       }
-       
-       
-       tablero[filaFinal][colFinal] = pieza;
-       tablero[filaInicio][colInicio] = null;
-       
-       estadoTablero.AlPaso = false;
-       
-       if(estadoTablero.TipoMovimiento == -1)
-            estadoTablero.TipoMovimiento = 0;
-       
-       
-      
-    }
+   
     
     private void perftSearch(int deep, EstadoTablero estado, Acumulador acumulador, boolean reset) throws CloneNotSupportedException{
         
@@ -365,7 +50,7 @@ public class Search {
             
             secuencia.add(mov);
             
-            ActualizarTablero(mov);
+            Utilidades.actualizarTablero(tablero, estadoTablero, mov);
             
             estadoTablero.TurnoBlanco = !estadoTablero.TurnoBlanco;
             
@@ -482,7 +167,7 @@ public class Search {
         
         for(var mov : movimientos){
             
-            ActualizarTablero(mov);
+           Utilidades.actualizarTablero(tablero, estadoTablero, mov);
             
             estadoTablero.TurnoBlanco = !estado.TurnoBlanco;
             
@@ -512,7 +197,7 @@ public class Search {
         
         for(var mov : movimientos){
            
-            ActualizarTablero(mov);
+            Utilidades.actualizarTablero(tablero, estadoTablero, mov);
             
             estadoTablero.TurnoBlanco = !estado.TurnoBlanco;
             
@@ -537,7 +222,7 @@ public class Search {
            
             var mov = movimientos.get(i);
             
-            ActualizarTablero(mov);//modifica el original
+            Utilidades.actualizarTablero(tablero, estadoTablero, mov);
             
             
             estadoTablero.TurnoBlanco = !estadoTablero.TurnoBlanco;
