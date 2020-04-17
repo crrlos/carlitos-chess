@@ -177,6 +177,23 @@ public class Juego {
          
        if(tablero[filaFinal][colFinal] != null){
             estadoTablero.PiezaCapturada = tablero[filaFinal][colFinal];
+            
+            if(estadoTablero.PiezaCapturada instanceof Torre){
+                if(colFinal == 7){
+                    if(estadoTablero.TurnoBlanco){
+                        estadoTablero.EnroqueCNegro = false;
+                    }else{
+                        estadoTablero.EnroqueCBlanco = false;
+                    }
+                }else if(colFinal == 0){
+                     if(estadoTablero.TurnoBlanco){
+                        estadoTablero.EnroqueLNegro = false;
+                    }else{
+                        estadoTablero.EnroqueLBlanco = false;
+                    }
+                }
+            }
+            
        }
        
        
