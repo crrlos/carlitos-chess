@@ -13,13 +13,16 @@ import com.wolf.carlitos.Piezas.Pieza;
 import com.wolf.carlitos.Piezas.Rey;
 import com.wolf.carlitos.Piezas.Torre;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  *
  * @author carlos
  */
 public class Search {
-    
+    private List<int[]> secuencia =  new ArrayList<>();
     private final Pieza[][] tablero;
     private EstadoTablero estadoTablero;
 
@@ -40,12 +43,12 @@ public class Search {
                 : estadoTablero.PosicionReyNegro;
 
         //posicion de la pieza
-        int x1 = colFinal;
-        int y1 = filaFinal;
+        int x1 = filaFinal;
+        int y1 = colFinal;
 
         //posicion del rey
-        int x2 = ubicacionRey[1];
-        int y2 = ubicacionRey[0];
+        int x2 = ubicacionRey[0];
+        int y2 = ubicacionRey[1];
         
 
         // si la pendiente es 1 es trayectoria diagonal
@@ -63,8 +66,9 @@ public class Search {
                 var jaque = true;
                 //si hay pieza amiga terminar
                 if (x1 < x2 && y1 > y2) {
-                    for (int i = y1 - 1; i > y2; i--) {
-                        var p = tablero[i][x1 + (y1 - i)];
+                    //IA
+                    for (int i = x1 + 1; i < x2; i++) {
+                        var p = tablero[i][y1 - (i - x1)];
                         if (p != null) {
                             if (p.EsBlanca() != pieza.EsBlanca()) {
                                 jaque = false;
@@ -76,24 +80,9 @@ public class Search {
                         }
                     }
                 } else if (x1 < x2 && y1 < y2) {
-                    //diagonal derecha arriba
-                    for (int i = y1 + 1; i < y2; i++) {
-                        var p = tablero[i][x1 + (i - y1)];
-                        if (p != null) {
-                            if (p.EsBlanca() != pieza.EsBlanca()) {
-                                jaque = false;
-                               
-                                trayectoria.piezasAtacadas++;
-                            } else {
-                                jaque = false;
-                                break;
-                            }
-                        }
-                    }
-                } else if (x1 > x2 && y1 > y2) {
-                    //diagonal izquierda abajo
-                    for (int i = y1 - 1; i > y2; i--) {
-                        var p = tablero[i][x1 - (y1 - i)];
+                    //DA
+                    for (int i = x1 + 1; i < x2; i++) {
+                        var p = tablero[i][y1 + (i - x1)];
                         if (p != null) {
                             if (p.EsBlanca() != pieza.EsBlanca()) {
                                 jaque = false;
@@ -106,9 +95,9 @@ public class Search {
                         }
                     }
                 } else if (x1 > x2 && y1 < y2) {
-                    //diagonal izquierda arriba
-                    for (int i = y1 + 1; i < y2; i++) {
-                        var p = tablero[i][x1 - (i - y1)];
+                    //DAB
+                    for (int i = x1 - 1; i > x2; i--) {
+                        var p = tablero[i][y1 + (x1 - i)];
                         if (p != null) {
                             if (p.EsBlanca() != pieza.EsBlanca()) {
                                 jaque = false;
@@ -121,6 +110,22 @@ public class Search {
                         }
                     }
                 }
+                else if (x1 > x2 && y1 > y2) {
+                    //IAB
+                    for (int i = x1 - 1; i > x2; i--) {
+                        var p = tablero[i][y1 - (x1 - i)];
+                        if (p != null) {
+                            if (p.EsBlanca() != pieza.EsBlanca()) {
+                                jaque = false;
+                               
+                                trayectoria.piezasAtacadas++;
+                            } else {
+                                jaque = false;
+                                break;
+                            }
+                        }
+                    }
+                } 
                 estadoTablero.reyEnJaque = jaque;
                 if(jaque){
                     estadoTablero.piezaJaque = pieza;
@@ -333,11 +338,16 @@ public class Search {
             acumulador.contadorPerft++;
             return;
         }
-         estadoTablero = estado.clone();
+        
+        estadoTablero = estado.clone();
         
         var movimientos = Generador.generarMovimientos(tablero, estadoTablero);
         
+        //comprobar(movimientos, secuencia);
+        
         for(var mov : movimientos){
+            
+            secuencia.add(mov);
             
             ActualizarTablero(mov);
             
@@ -354,6 +364,7 @@ public class Search {
                System.out.println(Utilidades.ConvertirANotacion(mov) + " " + acumulador.contadorPerft);
                 acumulador.contadorPerft = 0;
           }
+          secuencia.remove(secuencia.size() -1);
         }
         
     }
@@ -370,9 +381,9 @@ public class Search {
          
          var tfin = (System.currentTimeMillis() - tinicio) / 1000;
          
-         System.out.println("tiempo: " + tfin+ " segundos");
+         //System.out.println("tiempo: " + tfin+ " segundos");
          
-         System.out.println("Velocidad: " + acumulador.contador / tfin + " n/s");
+        // System.out.println("Velocidad: " + acumulador.contador / tfin + " n/s");
          
        
      }
@@ -537,4 +548,21 @@ public class Search {
        }
        return movimientos.get(pos);
    }
+    private void comprobar(List<int[]> movimientos, List<int[]> secuencia){
+        var movimientosCopia = movimientos.stream().map( e -> {
+        
+            return new int[]{e[0],e[1],e[2],e[3]};
+        
+        }).collect(Collectors.toList());
+        
+        var secuenciaCopia = secuencia.stream().map( e -> {
+        
+            return Utilidades.ConvertirANotacion(e);
+        
+        }).collect(Collectors.toList());
+        
+        Hilos.comparar(movimientos, secuenciaCopia, estadoTablero);
+        
+        
+    }
 }

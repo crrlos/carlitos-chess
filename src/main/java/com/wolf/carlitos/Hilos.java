@@ -21,10 +21,10 @@ import java.util.stream.Collectors;
 public class Hilos {
 
     static List<Proceso> procesos = new ArrayList<Proceso>();
-    static ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1000);
+    static ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(50);
 
     public Hilos() {
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 50; i++) {
             procesos.add(new Proceso());
 
         }
