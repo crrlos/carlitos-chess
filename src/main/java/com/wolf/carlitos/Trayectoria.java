@@ -13,15 +13,19 @@ import com.wolf.carlitos.Piezas.Pieza;
  */
 public class Trayectoria {
     
+    public static enum TRAYECTORIA {Diagonal, Recta, Ninguna}
+    
     public Pieza pieza;
     public int piezasAtacadas;
     public int[] posicion = new int[2];
+    public TRAYECTORIA trayectoria;
     
 
-    public Trayectoria(Pieza p,int x, int y) {
+    public Trayectoria(Pieza p,int x, int y,TRAYECTORIA trayectoria) {
         this.pieza = p;
         posicion[0] = x;
         posicion[1] = y; 
+        this.trayectoria = trayectoria;
     }
     
     

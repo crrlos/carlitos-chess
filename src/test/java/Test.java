@@ -7,7 +7,7 @@ public class Test
     public static void main (String ... args){
         
         
-        System.out.println(Arrays.toString(Utilidades.convertirAPosicion("a2a4")));
+        System.out.println(true && false || true && false);
                 
                 
         
