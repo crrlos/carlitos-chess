@@ -283,59 +283,32 @@ public class Utilidades {
 
         
         if (pieza instanceof Caballo) {
-            
-            Pieza posicionActual;
 
-            var posiciones = new ArrayList<Pieza>();
+            var coordenadas = new ArrayList<int[]>();
 
-            if (filaFinal + 2 < 8) {
-                if (colFinal + 1 < 8) {
-                    posicionActual = tablero[filaFinal + 2][colFinal + 1];
-                    posiciones.add(posicionActual);
+            coordenadas.add(new int[]{filaFinal + 2, colFinal + 1});
+            coordenadas.add(new int[]{filaFinal + 2, colFinal - 1});
+            coordenadas.add(new int[]{filaFinal - 2, colFinal + 1});
+            coordenadas.add(new int[]{filaFinal - 2, colFinal - 1});
+            coordenadas.add(new int[]{filaFinal + 1, colFinal - 2});
+            coordenadas.add(new int[]{filaFinal + 1, colFinal - 2});
+            coordenadas.add(new int[]{filaFinal + 1, colFinal + 2});
+            coordenadas.add(new int[]{filaFinal - 1, colFinal + 2});
 
-                }
-                if (colFinal - 1 >= 0) {
-                    posicionActual = tablero[filaFinal + 2][colFinal - 1];
-                    posiciones.add(posicionActual);
-                }
-            }
+            var posicionesValidas = coordenadas.stream()
+                    .filter(c -> c[0] >= 0 && c[0] < 8 && c[1] >= 0 && c[1] < 8)
+                    .collect(Collectors.toList());
 
-            if (filaFinal - 2 >= 0) {
-                if (colFinal + 1 < 8) {
-                    posicionActual = tablero[filaFinal - 2][colFinal + 1];
-                    posiciones.add(posicionActual);
-                }
-                if (colFinal - 1 >= 0) {
-                    posicionActual = tablero[filaFinal - 2][colFinal - 1];
-                    posiciones.add(posicionActual);
-                }
-            }
 
-            if (colFinal - 2 >= 0) {
-                if (filaFinal + 1 < 8) {
-                    posicionActual = tablero[filaFinal + 1][colFinal - 2];
-                    posiciones.add(posicionActual);
-                }
-                if (filaFinal - 1 >= 0) {
-                    posicionActual = tablero[filaFinal - 1][colFinal - 2];
-                    posiciones.add(posicionActual);
-                }
-            }
-            if (colFinal + 2 < 8) {
-                if (filaFinal + 1 < 8) {
-                    posicionActual = tablero[filaFinal + 1][colFinal + 2];
-                    posiciones.add(posicionActual);
-                }
-                if (filaFinal - 1 >= 0) {
-                    posicionActual = tablero[filaFinal - 1][colFinal + 2];
-                    posiciones.add(posicionActual);
-
-                }
-            }
-            
-            var jaqueCaballo = posiciones.stream().anyMatch(p -> 
-                    p != null && p.EsBlanca() != pieza.EsBlanca() && p instanceof Rey
-            );
+            var jaqueCaballo = posicionesValidas.stream()
+                    .anyMatch(p ->
+                            {
+                                var piezaAtacada = tablero[p[0]][p[1]];
+                                return piezaAtacada != null
+                                        && piezaAtacada.EsBlanca() != pieza.EsBlanca()
+                                        && piezaAtacada instanceof Rey;
+                            }
+                    );
 
             if (jaqueCaballo) {
                 estadoTablero.reyEnJaque = true;
@@ -349,23 +322,25 @@ public class Utilidades {
         
         if (pieza instanceof Peon) {
 
-            var jaquePeon = false;
             var esBlanco = pieza.EsBlanca();
 
-            if (filaFinal < 7 && filaFinal > 0) {
-                if (colFinal >= 0 && colFinal < 7) {
-                    var p = tablero[filaFinal + (esBlanco ? 1 : -1)][colFinal + 1];
-                    if (p instanceof Rey && p.EsBlanca() != pieza.EsBlanca()) {
-                        jaquePeon = true;
-                    }
-                }
-                if (colFinal <= 7 && colFinal > 0) {
-                    var p = tablero[filaFinal + (esBlanco ? 1 : -1)][colFinal - 1];
-                    if (p instanceof Rey && p.EsBlanca() != pieza.EsBlanca()) {
-                        jaquePeon = true;
-                    }
-                }
-            }
+            var posiciones = new ArrayList<int[]>();
+
+            posiciones.add(new int[]{filaFinal + (esBlanco ? 1 : -1),colFinal + 1});
+            posiciones.add(new int[]{filaFinal + (esBlanco ? 1 : -1),colFinal - 1});
+
+            var posicionesValidas = posiciones.stream()
+                    .filter(c -> c[0] >= 0 && c[0] < 8 && c[1] >= 0 && c[1] < 8)
+                    .collect(Collectors.toList());
+
+            var jaquePeon = posicionesValidas.stream()
+                    .anyMatch(p ->
+                    {
+                        var piezaAtacada = tablero[p[0]][p[1]];
+                        return piezaAtacada != null
+                                && piezaAtacada.EsBlanca() != pieza.EsBlanca()
+                                && piezaAtacada instanceof Rey;
+                    });
 
             if (jaquePeon) {
                 estadoTablero.reyEnJaque = true;
