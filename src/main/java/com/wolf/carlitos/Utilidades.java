@@ -437,10 +437,10 @@ public class Utilidades {
                 }
             }
 
-            var piezasAtacas = Collections.synchronizedCollection(trayectoria.piezasAtacadas);
-            piezasRecorridas.parallelStream()
+
+            piezasRecorridas.stream()
                     .filter(Objects::nonNull)
-                    .forEach(piezasAtacas::add);
+                    .forEach(trayectoria.piezasAtacadas::add);
 
 
             var jaque = trayectoria.piezasAtacadas.size() == 0;

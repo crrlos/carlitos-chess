@@ -1,107 +1,29 @@
-
-
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.stream.Collectors;
 
-
- class pruebas04 {
-
-    static InputStreamReader entrada = new InputStreamReader(System.in);
-    static BufferedReader br = new BufferedReader(entrada);
-
-    public  void main () throws Exception{
-        //@FranBarcos
-
-        String base  = "";
-        String archivos [] = {"archivo1","archivo2","archivo3", "archivo4"};
-        int num=pideEntero("Indique el Nº de Archivo a Borrar: ");
-        num--;
-
-
-        File borrado = new File (base + archivos[num]);
-        borrado.delete();
-        System.out.print("El archivo seleccionado es: "+borrado+"\n");
-        System.out.print("El Archivo "+borrado+" se ha Eliminado con Éxito!!.\n");
-
-        for(int i=0; i<archivos.length;i++) {
-            System.out.println(archivos[i]);
-        }//end for
-
-
-    }//end main
-
-    static public int pideEntero(String text) throws Exception{
+public class Test{
 
 
 
+    public static void main(String... args){
 
-        int num=0;
-        boolean correcto;
-
-        do {correcto=true;
-            try {
-                System.out.print(text);
-                num=Integer.parseInt(br.readLine());
-            }//end try
-            catch(Exception er) {
-                System.out.print("ERROR!, ");
-                correcto=false;
-            }//end catch
-        }while(!correcto);
-        return num;
-    }//end pideEntero
-
-}//end class
-
-public class Test
-{
-     class Prueba implements Cloneable{
-        public List<String> lista = new ArrayList<>();
-
-        @Override
-        protected Prueba clone() throws CloneNotSupportedException {
-            var clon = (Prueba) super.clone();
-            clon.lista = new ArrayList<>();
-            clon.lista.addAll(lista);
-            return  clon;
+        var numeros = new ArrayList<Integer>();
+        for (int i = 0; i < 10000000; i++) {
+            numeros.add(i);
         }
-    }
 
-    public static void main (String ... args) throws Exception {
+       var t1 =  System.currentTimeMillis();
+        var pares = numeros.stream().filter(n -> n % 2 == 0).collect(Collectors.toList());
+        var t2 = System.currentTimeMillis();
+        System.out.println(t2- t1);
 
-        pruebas04 ere = new pruebas04();
-        ere.main();
+        var pares2 =  numeros.parallelStream().filter(n -> n % 2 == 0).collect(Collectors.toList());
 
-         var test = new
-                 Test();
-
-         test.probar();
-
-    }
-
-    public void probar() throws CloneNotSupportedException {
+        System.out.println(System.currentTimeMillis() - t2);
 
 
-        Prueba p = new Prueba();
-
-        p.lista.add("hola");
-        p.lista.add("adios");
 
 
-        System.out.println(p.lista.size());
-
-        var clon = p.clone();
-
-        clon.lista.remove(0);
-
-        System.out.println(clon.lista.size());
-
-        System.out.println(p.lista.size());
 
     }
 }
