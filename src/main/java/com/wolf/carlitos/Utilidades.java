@@ -418,12 +418,12 @@ public class Utilidades {
             }
 
         } else if ((x1 - x2 == 0 || y1 - y2 == 0) && (pieza instanceof Torre || pieza instanceof Dama)) {
-            
-            
+
+
 
             var trayectoria = new Trayectoria(pieza, x1, y1, TRAYECTORIA.Recta);
             estadoTablero.trayectorias.add(trayectoria);
-            
+
             boolean jaque = true;
             if (x1 - x2 == 0) {
                 if (y1 > y2) {
@@ -500,7 +500,7 @@ public class Utilidades {
                 estadoTablero.piezaJaque = pieza;
             }
 
-        }
+      }
 
     }
 

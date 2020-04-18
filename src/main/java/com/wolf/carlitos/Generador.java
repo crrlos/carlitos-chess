@@ -140,9 +140,7 @@ public class Generador {
                     }
                     break;
                 case Recta:
-                    
-                   
-                    //Utilidades.ImprimirPosicicion(tablero);
+
                     if (x1 - x2 != 0 && columna >= Math.min(x1, x2) && columna <= Math.max(x1, x2)) {
                         if (!(tablero[y1][columna] instanceof Rey)) {
                             lista.add(new int[]{fila, columna, y1, columna});
