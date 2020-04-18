@@ -13,7 +13,11 @@ import com.wolf.carlitos.Piezas.Pieza;
 import com.wolf.carlitos.Piezas.Rey;
 import com.wolf.carlitos.Piezas.Torre;
 import com.wolf.carlitos.Trayectoria.TRAYECTORIA;
+
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -100,46 +104,46 @@ public class Utilidades {
         var pieza = tablero[filaInicio][colInicio];
 
         estadoTablero.reyEnJaque = false;
-        estadoTablero.PiezaCapturada = null;
-        estadoTablero.TipoMovimiento = -1;
+        estadoTablero.piezaCapturada = null;
+        estadoTablero.tipoMovimiento = -1;
 
         if (pieza instanceof Peon) {
 
             if (Math.abs(filaInicio - filaFinal) == 2) {
-                estadoTablero.AlPaso = true;
-                estadoTablero.PiezaALPaso = pieza;
+                estadoTablero.alPaso = true;
+                estadoTablero.piezaALPaso = pieza;
 
                 tablero[filaFinal][colFinal] = pieza;
                 tablero[filaInicio][colInicio] = null;
-                estadoTablero.TipoMovimiento = 0;
+                estadoTablero.tipoMovimiento = 0;
                 return;
             }
-            if (estadoTablero.AlPaso) {
+            if (estadoTablero.alPaso) {
                 if (colFinal > colInicio || colFinal < colInicio) {
-                    if (tablero[filaInicio][colFinal] == estadoTablero.PiezaALPaso) {
+                    if (tablero[filaInicio][colFinal] == estadoTablero.piezaALPaso) {
                         tablero[filaInicio][colFinal] = null;
-                        estadoTablero.TipoMovimiento = 1;
+                        estadoTablero.tipoMovimiento = 1;
                     }
                 }
-                estadoTablero.AlPaso = false;
+                estadoTablero.alPaso = false;
             }
 
             if (filaFinal == 7 || filaFinal == 0) {
                 switch (movimiento[4]) {
                     case 1:
-                        pieza = new Dama(estadoTablero.TurnoBlanco);
+                        pieza = new Dama(estadoTablero.turnoBlanco);
                         break;
                     case 2:
-                        pieza = new Torre(estadoTablero.TurnoBlanco);
+                        pieza = new Torre(estadoTablero.turnoBlanco);
                         break;
                     case 3:
-                        pieza = new Caballo(estadoTablero.TurnoBlanco);
+                        pieza = new Caballo(estadoTablero.turnoBlanco);
                         break;
                     case 4:
-                        pieza = new Alfil(estadoTablero.TurnoBlanco);
+                        pieza = new Alfil(estadoTablero.turnoBlanco);
                         break;
                 }
-                estadoTablero.TipoMovimiento = 2;
+                estadoTablero.tipoMovimiento = 2;
             }
 
         } else if (pieza instanceof Rey) {
@@ -162,51 +166,51 @@ public class Utilidades {
                         tablero[7][0] = null;
                     }
                 }
-                estadoTablero.TipoMovimiento = 3;
+                estadoTablero.tipoMovimiento = 3;
             } else {
-                estadoTablero.TipoMovimiento = 100;
+                estadoTablero.tipoMovimiento = 100;
             }
             if (pieza.EsBlanca()) {
-                estadoTablero.EnroqueCBlanco = estadoTablero.EnroqueLBlanco = false;
-                estadoTablero.PosicionReyBlanco[0] = filaFinal;
-                estadoTablero.PosicionReyBlanco[1] = colFinal;
+                estadoTablero.enroqueCBlanco = estadoTablero.enroqueLBlanco = false;
+                estadoTablero.posicionReyBlanco[0] = filaFinal;
+                estadoTablero.posicionReyBlanco[1] = colFinal;
             } else {
-                estadoTablero.EnroqueCNegro = estadoTablero.EnroqueLNegro = false;
-                estadoTablero.PosicionReyNegro[0] = filaFinal;
-                estadoTablero.PosicionReyNegro[1] = colFinal;
+                estadoTablero.enroqueCNegro = estadoTablero.enroqueLNegro = false;
+                estadoTablero.posicionReyNegro[0] = filaFinal;
+                estadoTablero.posicionReyNegro[1] = colFinal;
             }
 
         } else if (pieza instanceof Torre) {
             if (colInicio == 7) {
                 if (pieza.EsBlanca()) {
-                    estadoTablero.EnroqueCBlanco = false;
+                    estadoTablero.enroqueCBlanco = false;
                 } else {
-                    estadoTablero.EnroqueCNegro = false;
+                    estadoTablero.enroqueCNegro = false;
                 }
             } else if (colInicio == 0) {
                 if (pieza.EsBlanca()) {
-                    estadoTablero.EnroqueLBlanco = false;
+                    estadoTablero.enroqueLBlanco = false;
                 } else {
-                    estadoTablero.EnroqueLNegro = false;
+                    estadoTablero.enroqueLNegro = false;
                 }
             }
         }
 
         if (tablero[filaFinal][colFinal] != null) {
-            estadoTablero.PiezaCapturada = tablero[filaFinal][colFinal];
+            estadoTablero.piezaCapturada = tablero[filaFinal][colFinal];
 
-            if (estadoTablero.PiezaCapturada instanceof Torre) {
+            if (estadoTablero.piezaCapturada instanceof Torre) {
                 if (colFinal == 7) {
-                    if (estadoTablero.TurnoBlanco) {
-                        estadoTablero.EnroqueCNegro = false;
+                    if (estadoTablero.turnoBlanco) {
+                        estadoTablero.enroqueCNegro = false;
                     } else {
-                        estadoTablero.EnroqueCBlanco = false;
+                        estadoTablero.enroqueCBlanco = false;
                     }
                 } else if (colFinal == 0) {
-                    if (estadoTablero.TurnoBlanco) {
-                        estadoTablero.EnroqueLNegro = false;
+                    if (estadoTablero.turnoBlanco) {
+                        estadoTablero.enroqueLNegro = false;
                     } else {
-                        estadoTablero.EnroqueLBlanco = false;
+                        estadoTablero.enroqueLBlanco = false;
                     }
                 }
             }
@@ -215,25 +219,65 @@ public class Utilidades {
         tablero[filaFinal][colFinal] = pieza;
         tablero[filaInicio][colInicio] = null;
 
-        estadoTablero.AlPaso = false;
+        estadoTablero.alPaso = false;
 
-        if (estadoTablero.TipoMovimiento == -1) {
-            estadoTablero.TipoMovimiento = 0;
+        if (estadoTablero.tipoMovimiento == -1) {
+            estadoTablero.tipoMovimiento = 0;
         }
     }
 
     public static void actualizarTablero(Pieza[][] tablero, EstadoTablero estadoTablero, int[] movimiento) {
         actualizarPosicion(tablero,estadoTablero,movimiento);
 
+        var pieza = tablero[movimiento[2]][movimiento[3]];
+
+        if(pieza instanceof  Rey){
+            //recalcular trayectorias
+            var esBlanco =  estadoTablero.turnoBlanco;
+
+            var trayectoriasBandoContrario = estadoTablero
+                    .trayectorias
+                    .stream().filter(t -> t.pieza.EsBlanca() != esBlanco)
+                    .collect(Collectors.toList());
+
+            estadoTablero.trayectorias.removeAll(trayectoriasBandoContrario);
+
+            for (int i = 0; i < tablero.length; i++) {
+                for (int j = 0; j < tablero.length; j++) {
+                    var p =  tablero[i][j];
+                    if(p != null && p.EsBlanca() != esBlanco){
+                        actualizarTrayectorias(i,j,estadoTablero,tablero);
+                    }
+                }
+            }
+            return;
+        }
+
+        var trayectoria = estadoTablero.trayectorias.stream()
+                        .filter(t -> t.piezasAtacadas.contains(pieza))
+                        .collect(Collectors.toList());
 
 
-        actualizarTrayectorias(movimiento,estadoTablero, tablero);
+
+        if(!trayectoria.isEmpty()){
+
+            if(trayectoria.size() > 1){ throw new IllegalStateException("la pieza esta en dos trayectorias");
+                //System.out.println("");
+                //Utilidades.ImprimirPosicicion(tablero);
+            }
+
+            estadoTablero.trayectorias.remove(trayectoria);
+
+            var posicion = trayectoria.get(0).posicion;
+
+            actualizarTrayectorias(posicion[0],posicion[1],estadoTablero, tablero);
+        }else{
+
+            actualizarTrayectorias(movimiento[2],movimiento[3],estadoTablero,tablero);
+        }
     }
 
-    private static void actualizarTrayectorias(int[] movimiento, EstadoTablero estadoTablero, Pieza[][] tablero) {
-
-        int filaFinal = movimiento[2];
-        int colFinal = movimiento[3];
+    private static void actualizarTrayectorias(int filaFinal, int colFinal, EstadoTablero estadoTablero, Pieza[][] tablero) {
 
         var pieza = tablero[filaFinal][colFinal];
 
@@ -334,9 +378,9 @@ public class Utilidades {
 
 
         //calculos con trayectorias
-        var ubicacionRey = !estadoTablero.TurnoBlanco
-                ? estadoTablero.PosicionReyBlanco
-                : estadoTablero.PosicionReyNegro;
+        var ubicacionRey = !estadoTablero.turnoBlanco
+                ? estadoTablero.posicionReyBlanco
+                : estadoTablero.posicionReyNegro;
 
         //posicion de la pieza
         int x1 = filaFinal;
@@ -353,74 +397,56 @@ public class Utilidades {
         }
 
         if (pendiente && (pieza instanceof Dama || pieza instanceof Alfil)) {
-            var trayectoria = new Trayectoria(pieza, x1, y1, TRAYECTORIA.Diagonal);
 
+            //eliminar trayectoria anterior si existe
+            var trayectoriaAnterior = estadoTablero.trayectorias.stream()
+                                        .filter(t -> t.pieza == pieza)
+                                        .findFirst();
+
+            trayectoriaAnterior.ifPresent(estadoTablero.trayectorias::remove);
+
+            var trayectoria = new Trayectoria(pieza, x1, y1, TRAYECTORIA.Diagonal);
             estadoTablero.trayectorias.add(trayectoria);
 
-            var jaque = true;
-            //si hay pieza amiga terminar
+            var piezasRecorridas = new ArrayList<Pieza>();
+
+
             if (x1 < x2 && y1 > y2) {
                 //IA
                 for (int i = x1 + 1; i < x2; i++) {
                     var p = tablero[i][y1 - (i - x1)];
-                    if (p != null) {
-                        if (p.EsBlanca() != pieza.EsBlanca()) {
-                            jaque = false;
-                            trayectoria.piezasAtacadas.add(p);
-                        } else {
-                            jaque = false;
-                            break;
-                        }
-                    }
+                    piezasRecorridas.add(p);
                 }
             } else if (x1 < x2 && y1 < y2) {
                 //DA
                 for (int i = x1 + 1; i < x2; i++) {
                     var p = tablero[i][y1 + (i - x1)];
-                    if (p != null) {
-                        if (p.EsBlanca() != pieza.EsBlanca()) {
-                            jaque = false;
-
-                            trayectoria.piezasAtacadas.add(p);
-                        } else {
-                            jaque = false;
-                            break;
-                        }
-                    }
+                    piezasRecorridas.add(p);
                 }
             } else if (x1 > x2 && y1 < y2) {
                 //DAB
                 for (int i = x1 - 1; i > x2; i--) {
                     var p = tablero[i][y1 + (x1 - i)];
-                    if (p != null) {
-                        if (p.EsBlanca() != pieza.EsBlanca()) {
-                            jaque = false;
-
-                            trayectoria.piezasAtacadas.add(p);
-                        } else {
-                            jaque = false;
-                            break;
-                        }
-                    }
+                    piezasRecorridas.add(p);
                 }
             } else if (x1 > x2 && y1 > y2) {
                 //IAB
                 for (int i = x1 - 1; i > x2; i--) {
                     var p = tablero[i][y1 - (x1 - i)];
-                    if (p != null) {
-                        if (p.EsBlanca() != pieza.EsBlanca()) {
-                            jaque = false;
-
-                            trayectoria.piezasAtacadas.add(p);
-                        } else {
-                            jaque = false;
-                            break;
-                        }
-                    }
+                    piezasRecorridas.add(p);
                 }
             }
-            estadoTablero.reyEnJaque = jaque;
+
+            var piezasAtacas = Collections.synchronizedCollection(trayectoria.piezasAtacadas);
+            piezasRecorridas.parallelStream()
+                    .filter(Objects::nonNull)
+                    .forEach(piezasAtacas::add);
+
+
+            var jaque = trayectoria.piezasAtacadas.size() == 0;
+
             if (jaque) {
+                estadoTablero.reyEnJaque = true;
                 estadoTablero.piezaJaque = pieza;
             }
 

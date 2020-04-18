@@ -54,8 +54,8 @@ public class Hilos {
                 return;
             }
             
-            var a = estado.PosicionReyBlanco;
-            var b = estado.PosicionReyNegro;
+            var a = estado.posicionReyBlanco;
+            var b = estado.posicionReyNegro;
             
             Collections.sort(res);
 

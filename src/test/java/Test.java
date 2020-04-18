@@ -1,9 +1,62 @@
 
-import com.wolf.carlitos.Utilidades;
 
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+
+ class pruebas04 {
+
+    static InputStreamReader entrada = new InputStreamReader(System.in);
+    static BufferedReader br = new BufferedReader(entrada);
+
+    public  void main () throws Exception{
+        //@FranBarcos
+
+        String base  = "";
+        String archivos [] = {"archivo1","archivo2","archivo3", "archivo4"};
+        int num=pideEntero("Indique el Nº de Archivo a Borrar: ");
+        num--;
+
+
+        File borrado = new File (base + archivos[num]);
+        borrado.delete();
+        System.out.print("El archivo seleccionado es: "+borrado+"\n");
+        System.out.print("El Archivo "+borrado+" se ha Eliminado con Éxito!!.\n");
+
+        for(int i=0; i<archivos.length;i++) {
+            System.out.println(archivos[i]);
+        }//end for
+
+
+    }//end main
+
+    static public int pideEntero(String text) throws Exception{
+
+
+
+
+        int num=0;
+        boolean correcto;
+
+        do {correcto=true;
+            try {
+                System.out.print(text);
+                num=Integer.parseInt(br.readLine());
+            }//end try
+            catch(Exception er) {
+                System.out.print("ERROR!, ");
+                correcto=false;
+            }//end catch
+        }while(!correcto);
+        return num;
+    }//end pideEntero
+
+}//end class
 
 public class Test
 {
@@ -19,7 +72,10 @@ public class Test
         }
     }
 
-    public static void main (String ... args) throws CloneNotSupportedException {
+    public static void main (String ... args) throws Exception {
+
+        pruebas04 ere = new pruebas04();
+        ere.main();
 
          var test = new
                  Test();

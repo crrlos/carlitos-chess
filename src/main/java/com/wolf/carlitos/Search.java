@@ -5,13 +5,9 @@
  */
 package com.wolf.carlitos;
 
-import com.wolf.carlitos.Piezas.Alfil;
-import com.wolf.carlitos.Piezas.Caballo;
-import com.wolf.carlitos.Piezas.Dama;
 import com.wolf.carlitos.Piezas.Peon;
 import com.wolf.carlitos.Piezas.Pieza;
-import com.wolf.carlitos.Piezas.Rey;
-import com.wolf.carlitos.Piezas.Torre;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,12 +48,12 @@ public class Search {
             
             Utilidades.actualizarTablero(tablero, estadoTablero, mov);
             
-            estadoTablero.TurnoBlanco = !estadoTablero.TurnoBlanco;
+            estadoTablero.turnoBlanco = !estadoTablero.turnoBlanco;
             
             
             perftSearch(deep - 1, estadoTablero.clone(),acumulador,false);
             
-            RevertirMovimiento(mov[0],mov[1],mov[2],mov[3],estado.TurnoBlanco,estadoTablero);
+            RevertirMovimiento(mov[0],mov[1],mov[2],mov[3],estado.turnoBlanco,estadoTablero);
             
             estadoTablero =  estado.clone(); //vuelve a ser el original
            
@@ -107,7 +103,7 @@ public class Search {
         
         
         
-        switch(estado.TipoMovimiento){
+        switch(estado.tipoMovimiento){
             case 0: //mov
                 tablero[fi][ci] = tablero[fd][cd];
                 break;
@@ -131,28 +127,28 @@ public class Search {
                 }
                 
                 if(turnoBlanco){
-                    estadoTablero.PosicionReyBlanco[0] = fi;
-                    estadoTablero.PosicionReyBlanco[1] =ci;
+                    estadoTablero.posicionReyBlanco[0] = fi;
+                    estadoTablero.posicionReyBlanco[1] =ci;
                 }else{
-                    estadoTablero.PosicionReyNegro[0] =fi;
-                    estadoTablero.PosicionReyNegro[1] = ci;
+                    estadoTablero.posicionReyNegro[0] =fi;
+                    estadoTablero.posicionReyNegro[1] = ci;
                 }
                 
                 break;
             case 100:
                 tablero[fi][ci] = tablero[fd][cd];
                 if(turnoBlanco){
-                    estadoTablero.PosicionReyBlanco[0] = fi;
-                    estadoTablero.PosicionReyBlanco[1] =ci;
+                    estadoTablero.posicionReyBlanco[0] = fi;
+                    estadoTablero.posicionReyBlanco[1] =ci;
                 }else{
-                    estadoTablero.PosicionReyNegro[0] =fi;
-                    estadoTablero.PosicionReyNegro[1] = ci;
+                    estadoTablero.posicionReyNegro[0] =fi;
+                    estadoTablero.posicionReyNegro[1] = ci;
                 }
                 
               
         }
        
-        tablero[fd][cd] = estado.PiezaCapturada;
+        tablero[fd][cd] = estado.piezaCapturada;
     }
     public int Mini(int nivel,EstadoTablero estado) throws CloneNotSupportedException, IOException{
         
@@ -169,14 +165,14 @@ public class Search {
             
            Utilidades.actualizarTablero(tablero, estadoTablero, mov);
             
-            estadoTablero.TurnoBlanco = !estado.TurnoBlanco;
+            estadoTablero.turnoBlanco = !estado.turnoBlanco;
             
             int evaluacion = Maxi(nivel -1,estadoTablero.clone());
             
             if(evaluacion < eval)
                 eval = evaluacion;
             
-            RevertirMovimiento(mov[0],mov[1],mov[2],mov[3],estado.TurnoBlanco,estadoTablero);
+            RevertirMovimiento(mov[0],mov[1],mov[2],mov[3],estado.turnoBlanco,estadoTablero);
             estadoTablero = (EstadoTablero) estado.clone();
         }
        
@@ -199,14 +195,14 @@ public class Search {
            
             Utilidades.actualizarTablero(tablero, estadoTablero, mov);
             
-            estadoTablero.TurnoBlanco = !estado.TurnoBlanco;
+            estadoTablero.turnoBlanco = !estado.turnoBlanco;
             
             int evaluacion = Mini(nivel -1,estadoTablero.clone());
             
             if(evaluacion > eval)
                 eval = evaluacion;
             
-            RevertirMovimiento(mov[0],mov[1],mov[2],mov[3],estado.TurnoBlanco,estadoTablero);
+            RevertirMovimiento(mov[0],mov[1],mov[2],mov[3],estado.turnoBlanco,estadoTablero);
             estadoTablero = (EstadoTablero) estado.clone();
         }
         return eval;
@@ -214,7 +210,7 @@ public class Search {
     public int[] search(int n) throws CloneNotSupportedException, IOException{
        
        var estadoOriginal = estadoTablero.clone();//copia original
-       int valoracion = estadoOriginal.TurnoBlanco ? -1000 : 1000;
+       int valoracion = estadoOriginal.turnoBlanco ? -1000 : 1000;
        int pos = 0;
        
        var movimientos = Generador.generarMovimientos(tablero, estadoOriginal);
@@ -225,13 +221,13 @@ public class Search {
             Utilidades.actualizarTablero(tablero, estadoTablero, mov);
             
             
-            estadoTablero.TurnoBlanco = !estadoTablero.TurnoBlanco;
+            estadoTablero.turnoBlanco = !estadoTablero.turnoBlanco;
             
             var estadoLocal = (EstadoTablero) estadoTablero.clone();
             
-            int eval = estadoOriginal.TurnoBlanco ? Mini(n,estadoLocal) : Maxi(n,estadoLocal);
+            int eval = estadoOriginal.turnoBlanco ? Mini(n,estadoLocal) : Maxi(n,estadoLocal);
             
-            if(estadoOriginal.TurnoBlanco){
+            if(estadoOriginal.turnoBlanco){
                 if(eval > valoracion){
                    valoracion = eval;
                    pos = i;
@@ -244,7 +240,7 @@ public class Search {
                 }
             }
            
-           RevertirMovimiento(mov[0],mov[1],mov[2],mov[3],estadoOriginal.TurnoBlanco,estadoLocal);
+           RevertirMovimiento(mov[0],mov[1],mov[2],mov[3],estadoOriginal.turnoBlanco,estadoLocal);
            estadoTablero =  estadoOriginal.clone(); //vuelve a ser el original
        }
        return movimientos.get(pos);

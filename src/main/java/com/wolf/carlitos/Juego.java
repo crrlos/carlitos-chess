@@ -55,7 +55,7 @@ public class Juego {
         for (var movimiento : movimientos) {
             secuencia.add(Utilidades.convertirAPosicion(movimiento));
             Utilidades.actualizarTablero(tablero, estadoTablero, Utilidades.convertirAPosicion(movimiento));
-            estadoTablero.TurnoBlanco  = !estadoTablero.TurnoBlanco;
+            estadoTablero.turnoBlanco = !estadoTablero.turnoBlanco;
         }
     }
   

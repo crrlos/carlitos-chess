@@ -9,7 +9,6 @@ import com.wolf.carlitos.Piezas.*;
 import com.wolf.carlitos.Trayectoria.TRAYECTORIA;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  *
@@ -27,7 +26,7 @@ public class Generador {
         for (var f : tablero) {
             for (var pieza : f) {
 
-                if (pieza != null && pieza.EsBlanca() == estado.TurnoBlanco) {
+                if (pieza != null && pieza.EsBlanca() == estado.turnoBlanco) {
                     var movs = pieza instanceof Dama ? movimientosDeDama(tablero, estado, fila, columna)
                             : pieza instanceof Torre ? movimientosDeTorre(tablero, estado, fila, columna)
                                     : pieza instanceof Alfil ? movimientosDeAlfil(tablero, estado, fila, columna)
@@ -56,9 +55,9 @@ public class Generador {
         boolean vertical = true;
         var lista = new ArrayList<int[]>();
 
-        var posicionRey = estado.TurnoBlanco
-                ? estado.PosicionReyBlanco
-                : estado.PosicionReyNegro;
+        var posicionRey = estado.turnoBlanco
+                ? estado.posicionReyBlanco
+                : estado.posicionReyNegro;
 
         int[] posicionPiezaAtaque = null;
         if (estado.reyEnJaque) {
@@ -745,16 +744,16 @@ public class Generador {
         }
 
         if (!base.ReyEnJaque(tablero, pieza.EsBlanca())) {
-            if (estado.EnroqueCBlanco && pieza.EsBlanca()) {
+            if (estado.enroqueCBlanco && pieza.EsBlanca()) {
                 if (columna == 4) {
                     if (tablero[fila][columna + 1] == null && tablero[fila][columna + 2] == null) {
                         tablero[fila][columna + 1] = tablero[fila][columna];//camino del rey
                         tablero[fila][columna] = null;
-                        estado.PosicionReyBlanco[1] = columna + 1;
+                        estado.posicionReyBlanco[1] = columna + 1;
                         if (!base.ReyEnJaque(tablero, pieza.EsBlanca())) {
                             tablero[fila][columna + 2] = tablero[fila][columna + 1];
                             tablero[fila][columna + 1] = null;
-                            estado.PosicionReyBlanco[1] = columna + 2;
+                            estado.posicionReyBlanco[1] = columna + 2;
                             if (!base.ReyEnJaque(tablero, pieza.EsBlanca())) {
                                 lista.add(new int[]{fila, columna, fila, columna + 2});
                                 tablero[fila][columna] = tablero[fila][columna + 2];
@@ -769,20 +768,20 @@ public class Generador {
                         }
                     }
                 }
-                estado.PosicionReyBlanco[1] = columna;
+                estado.posicionReyBlanco[1] = columna;
             }
-            if (estado.EnroqueLBlanco && pieza.EsBlanca()) {
+            if (estado.enroqueLBlanco && pieza.EsBlanca()) {
                 if (columna == 4) {
                     if (tablero[fila][columna - 1] == null && tablero[fila][columna - 2] == null && tablero[fila][columna - 3] == null) {
                         tablero[fila][columna - 1] = tablero[fila][columna];
                         tablero[fila][columna] = null;
                         //estado.PosicionReyBlanco[0] = fila;
-                        estado.PosicionReyBlanco[1] = columna - 1;
+                        estado.posicionReyBlanco[1] = columna - 1;
                         if (!base.ReyEnJaque(tablero, pieza.EsBlanca())) {
                             tablero[fila][columna - 2] = tablero[fila][columna - 1];
                             tablero[fila][columna - 1] = null;
                             // estado.PosicionReyBlanco[0] = fila;
-                            estado.PosicionReyBlanco[1] = columna - 2;
+                            estado.posicionReyBlanco[1] = columna - 2;
                             if (!base.ReyEnJaque(tablero, pieza.EsBlanca())) {
                                 lista.add(new int[]{fila, columna, fila, columna - 2});
                                 tablero[fila][columna] = tablero[fila][columna - 2];
@@ -797,21 +796,21 @@ public class Generador {
                         }
                     }
                 }
-                estado.PosicionReyBlanco[1] = columna;
+                estado.posicionReyBlanco[1] = columna;
             }
             //enroque
-            if (estado.EnroqueCNegro && !pieza.EsBlanca()) {
+            if (estado.enroqueCNegro && !pieza.EsBlanca()) {
                 if (columna == 4) {
                     if (tablero[fila][columna + 1] == null && tablero[fila][columna + 2] == null) {
                         tablero[fila][columna + 1] = tablero[fila][columna];
                         tablero[fila][columna] = null;
                         //estado.PosicionReyNegro[0] = fila;
-                        estado.PosicionReyNegro[1] = columna + 1;
+                        estado.posicionReyNegro[1] = columna + 1;
                         if (!base.ReyEnJaque(tablero, pieza.EsBlanca())) {
                             tablero[fila][columna + 2] = tablero[fila][columna + 1];
                             tablero[fila][columna + 1] = null;
-                            estado.PosicionReyNegro[0] = fila;
-                            estado.PosicionReyNegro[1] = columna + 2;
+                            estado.posicionReyNegro[0] = fila;
+                            estado.posicionReyNegro[1] = columna + 2;
                             if (!base.ReyEnJaque(tablero, pieza.EsBlanca())) {
                                 lista.add(new int[]{fila, columna, fila, columna + 2});
                                 tablero[fila][columna] = tablero[fila][columna + 2];
@@ -826,20 +825,20 @@ public class Generador {
                         }
                     }
                 }
-                estado.PosicionReyNegro[1] = columna;
+                estado.posicionReyNegro[1] = columna;
             }
-            if (estado.EnroqueLNegro && !pieza.EsBlanca()) {
+            if (estado.enroqueLNegro && !pieza.EsBlanca()) {
                 if (columna == 4) {
                     if (tablero[fila][columna - 1] == null && tablero[fila][columna - 2] == null && tablero[fila][columna - 3] == null) {
                         tablero[fila][columna - 1] = tablero[fila][columna];
                         tablero[fila][columna] = null;
                         //estado.PosicionReyNegro[0] = fila;
-                        estado.PosicionReyNegro[1] = columna - 1;
+                        estado.posicionReyNegro[1] = columna - 1;
                         if (!base.ReyEnJaque(tablero, pieza.EsBlanca())) {
                             tablero[fila][columna - 2] = tablero[fila][columna - 1];
                             tablero[fila][columna - 1] = null;
                             //estado.PosicionReyNegro[0] = fila;
-                            estado.PosicionReyNegro[1] = columna - 2;
+                            estado.posicionReyNegro[1] = columna - 2;
                             if (!base.ReyEnJaque(tablero, pieza.EsBlanca())) {
                                 lista.add(new int[]{fila, columna, fila, columna - 2});
                                 tablero[fila][columna] = tablero[fila][columna - 2];
@@ -854,7 +853,7 @@ public class Generador {
                         }
                     }
                 }
-                estado.PosicionReyNegro[1] = columna;
+                estado.posicionReyNegro[1] = columna;
             }
         }
         return base.MovimientosValidosRey(lista, tablero, pieza.EsBlanca());
@@ -901,8 +900,8 @@ public class Generador {
                         lista.add(new int[]{fila, columna, filaDestino, columna - 1});
                     }
                 }
-            } else if (estado.AlPaso && fila == (pieza.EsBlanca() ? 4 : 3)) {
-                if (tablero[fila][columna - 1] == estado.PiezaALPaso) {
+            } else if (estado.alPaso && fila == (pieza.EsBlanca() ? 4 : 3)) {
+                if (tablero[fila][columna - 1] == estado.piezaALPaso) {
                     lista.add(new int[]{fila, columna, filaDestino, columna - 1});
                 }
             }
@@ -920,8 +919,8 @@ public class Generador {
                         lista.add(new int[]{fila, columna, filaDestino, columna + 1});
                     }
                 }
-            } else if (estado.AlPaso && fila == (pieza.EsBlanca() ? 4 : 3)) {
-                if (tablero[fila][columna + 1] == estado.PiezaALPaso) {
+            } else if (estado.alPaso && fila == (pieza.EsBlanca() ? 4 : 3)) {
+                if (tablero[fila][columna + 1] == estado.piezaALPaso) {
                     lista.add(new int[]{fila, columna, filaDestino, columna + 1});
                 }
             }

@@ -2,8 +2,6 @@ package com.wolf.carlitos;
 
 import com.wolf.carlitos.Piezas.*;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 public class App {
@@ -58,11 +56,11 @@ public class App {
                         String[] ops = filas[i].split(" ");
                         IniciarFen(ops[0], 7 - i);
 
-                        juego.estadoTablero.TurnoBlanco = ops[1].equals("w");
-                        juego.estadoTablero.EnroqueCBlanco = ops[2].contains("K");
-                        juego.estadoTablero.EnroqueLBlanco = ops[2].contains("Q");
-                        juego.estadoTablero.EnroqueCNegro = ops[2].contains("k");
-                        juego.estadoTablero.EnroqueLNegro = ops[2].contains("q");
+                        juego.estadoTablero.turnoBlanco = ops[1].equals("w");
+                        juego.estadoTablero.enroqueCBlanco = ops[2].contains("K");
+                        juego.estadoTablero.enroqueLBlanco = ops[2].contains("Q");
+                        juego.estadoTablero.enroqueCNegro = ops[2].contains("k");
+                        juego.estadoTablero.enroqueLNegro = ops[2].contains("q");
 
                     } else {
                         IniciarFen(filas[i], 7 - i);

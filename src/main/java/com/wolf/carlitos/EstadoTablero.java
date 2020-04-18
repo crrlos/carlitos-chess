@@ -9,22 +9,22 @@ import java.util.List;
 public  class EstadoTablero  implements Cloneable{
     
     public  boolean DEBUG = false;
-    public  boolean EnroqueCBlanco = true;
-    public  boolean EnroqueLBlanco = true;
-    public  boolean EnroqueCNegro = true;
-    public  boolean EnroqueLNegro = true;
-    public  boolean AlPaso;
-    public  boolean TurnoBlanco = true;
+    public  boolean enroqueCBlanco = true;
+    public  boolean enroqueLBlanco = true;
+    public  boolean enroqueCNegro = true;
+    public  boolean enroqueLNegro = true;
+    public  boolean alPaso;
+    public  boolean turnoBlanco = true;
     public  boolean reyEnJaque;
     
-    public  Pieza PiezaALPaso;
-    public  Pieza PiezaCapturada;
+    public  Pieza piezaALPaso;
+    public  Pieza piezaCapturada;
     public Pieza piezaJaque;
     
-    public  int TipoMovimiento = -1;
+    public  int tipoMovimiento = -1;
     
-    public int[] PosicionReyBlanco = new int[]{0,4};
-    public int[] PosicionReyNegro  = new int[]{7,4};
+    public int[] posicionReyBlanco = new int[]{0,4};
+    public int[] posicionReyNegro = new int[]{7,4};
     
     
     public List<Trayectoria> trayectorias =  new ArrayList<>();
@@ -33,7 +33,11 @@ public  class EstadoTablero  implements Cloneable{
     @Override
     public EstadoTablero clone() throws
                    CloneNotSupportedException 
-    { 
-        return (EstadoTablero)super.clone(); 
+    {
+        var estadoTablero = (EstadoTablero)super.clone();
+        estadoTablero.trayectorias = new ArrayList<>();
+        estadoTablero.trayectorias.addAll(trayectorias);
+
+        return estadoTablero;
     } 
 }

@@ -1,7 +1,7 @@
 package com.wolf.carlitos.Piezas;
 
 import com.wolf.carlitos.EstadoTablero;
-import com.wolf.carlitos.Juego;
+
 import java.util.List;
 
 /**
@@ -27,7 +27,7 @@ public class Base {
    
     public boolean ReyEnJaque(Pieza [][] tablero, boolean blanco){
         
-        var posicionRey = blanco ? estado.PosicionReyBlanco : estado.PosicionReyNegro;
+        var posicionRey = blanco ? estado.posicionReyBlanco : estado.posicionReyNegro;
         
        return CasillaAtacada(posicionRey[0], posicionRey[1], tablero,blanco); 
        
@@ -304,21 +304,21 @@ public class Base {
             tablero[fo][co] = null;
             tablero[fd][cd] = piezaActual;
             if (blanco) {
-                estado.PosicionReyBlanco[0] = fd;
-                estado.PosicionReyBlanco[1] = cd;
+                estado.posicionReyBlanco[0] = fd;
+                estado.posicionReyBlanco[1] = cd;
             } else {
-                estado.PosicionReyNegro[0] = fd;
-                estado.PosicionReyNegro[1] = cd;
+                estado.posicionReyNegro[0] = fd;
+                estado.posicionReyNegro[1] = cd;
             }
 
             var jaque = ReyEnJaque(tablero, blanco);
 
             if (blanco) {
-                estado.PosicionReyBlanco[0] = fo;
-                estado.PosicionReyBlanco[1] = co;
+                estado.posicionReyBlanco[0] = fo;
+                estado.posicionReyBlanco[1] = co;
             } else {
-                estado.PosicionReyNegro[0] = fo;
-                estado.PosicionReyNegro[1] = co;
+                estado.posicionReyNegro[0] = fo;
+                estado.posicionReyNegro[1] = co;
             }
 
             tablero[fd][cd] = piezaDestino;
