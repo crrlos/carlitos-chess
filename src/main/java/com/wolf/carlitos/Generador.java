@@ -9,6 +9,7 @@ import com.wolf.carlitos.Piezas.*;
 import com.wolf.carlitos.Trayectoria.TRAYECTORIA;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -45,8 +46,8 @@ public class Generador {
     }
 
     private static List<int[]> movimientosDeTorre(Pieza[][] tablero, EstadoTablero estado, int fila, int columna) {
-        
-//        
+
+//
 //        if(tablero[3][7] instanceof Dama && tablero[1][7] == null && tablero[2][7] == null){
 //           Utilidades.ImprimirPosicicion(tablero);
 //        }
@@ -75,7 +76,7 @@ public class Generador {
                     tipoTrayectoria = trayectoria.trayectoria;
                 }
             }
-            
+
             int x1 = posicionPiezaAtaque[0];
             int y1 = posicionPiezaAtaque[1];
 
@@ -208,6 +209,36 @@ public class Generador {
 
         pieza = tablero[fila][columna];
 
+
+
+//        var estaClavada = estado.trayectorias
+//                .stream()
+//                .anyMatch(t -> t.piezasAtacadas.contains(pieza)
+//                        && t.piezasAtacadas.size() == 1 && t.trayectoria == TRAYECTORIA.Diagonal);
+//
+//        if(estaClavada) return lista;
+//
+//
+//
+//        var resultado = estado.trayectorias
+//                .stream()
+//                .filter(t -> t.piezasAtacadas.contains(pieza))
+//                .findFirst();
+//
+//        if(resultado.isPresent()){
+//            var trayectoria = resultado.get();
+//
+//           int x = trayectoria.posicion[0];
+//           int y = trayectoria.posicion[1];
+//
+//           if(x == fila)
+//               vertical = false;
+//
+//           if(y == columna)
+//               horizontal = false;
+//        }
+
+
         var i = fila + 1;
 
         if (vertical) {
@@ -284,7 +315,11 @@ public class Generador {
                 i--;
             }
         }
-        return new Base(estado).MovimientosValidos(lista, tablero, pieza.EsBlanca());
+
+
+
+
+        return new Base(estado).MovimientosValidos(lista,tablero, pieza.EsBlanca());
     }
 
     private static List<int[]> movimientosDeDama(Pieza[][] tablero, EstadoTablero estado, int fila, int columna) {

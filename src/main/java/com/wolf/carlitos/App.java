@@ -1,15 +1,20 @@
 package com.wolf.carlitos;
 
 import com.wolf.carlitos.Piezas.*;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class App {
     static Juego juego = new Juego();
     
     public static void main(String[] args) throws Exception {
+
+
         
         
-        new Hilos();
+        //new Hilos();
 
         var scanner = new Scanner(System.in);
         
