@@ -14,13 +14,13 @@ import com.wolf.carlitos.Piezas.Rey;
 import com.wolf.carlitos.Piezas.Torre;
 import com.wolf.carlitos.Trayectoria.TRAYECTORIA;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- *
  * @author carlos
  */
 public class Utilidades {
@@ -93,7 +93,7 @@ public class Utilidades {
         return mov;
     }
 
-    private static void actualizarPosicion(Pieza[][] tablero, EstadoTablero estadoTablero, int[] movimiento){
+    private static void actualizarPosicion(Pieza[][] tablero, EstadoTablero estadoTablero, int[] movimiento) {
         int filaInicio = movimiento[0];
         int filaFinal = 0;
         int colInicio = movimiento[1];
@@ -103,7 +103,6 @@ public class Utilidades {
 
         var pieza = tablero[filaInicio][colInicio];
 
-        estadoTablero.reyEnJaque = false;
         estadoTablero.piezaCapturada = null;
         estadoTablero.tipoMovimiento = -1;
 
@@ -227,61 +226,109 @@ public class Utilidades {
     }
 
     public static void actualizarTablero(Pieza[][] tablero, EstadoTablero estadoTablero, int[] movimiento) {
-        actualizarPosicion(tablero,estadoTablero,movimiento);
 
-        var pieza = tablero[movimiento[2]][movimiento[3]];
+        actualizarPosicion(tablero, estadoTablero, movimiento);
+        actualizarTrayectorias(movimiento[2], movimiento[3], estadoTablero, tablero, false);
+    }
 
-        if(pieza instanceof  Rey){
-            //recalcular trayectorias
-            var esBlanco =  estadoTablero.turnoBlanco;
+    private static void actualizarTrayectorias(int filaFinal, int colFinal, EstadoTablero estadoTablero,
+                                               Pieza[][] tablero, boolean recursivo) {
 
-            var trayectoriasBandoContrario = estadoTablero
-                    .trayectorias
-                    .stream().filter(t -> t.pieza.EsBlanca() != esBlanco)
-                    .collect(Collectors.toList());
+        var pieza = tablero[filaFinal][colFinal];
+
+        var posicionRey = estadoTablero.turnoBlanco ?
+                        estadoTablero.posicionReyNegro:
+                        estadoTablero.posicionReyBlanco;
+
+        if(!recursivo){
+            estadoTablero.reyEnJaque = false;
+            estadoTablero.piezaJaque = null;
+        }
+
+
+        // si pieza  es atacada en alguna trayectoria borrar trayectoria
+        // y recalcular
+        if (!recursivo) {
+            var trayectorias = new ArrayList<Trayectoria>();
+
+            for (var trayectoria : estadoTablero.trayectorias) {
+                if (trayectoria.piezasAtacadas.contains(pieza)) {
+                    trayectorias.add(trayectoria);
+                }
+            }
+
+            estadoTablero.trayectorias.removeAll(trayectorias);
+
+            for (var trayectoria : trayectorias) {
+                var posicion = trayectoria.posicion;
+                actualizarTrayectorias(posicion[0], posicion[1], estadoTablero, tablero, true);
+            }
+        }
+        // buscar trayectorias activas, si la pieza está en trayectoria agregarla
+        if (!recursivo) {
+
+            for (var trayectoria : estadoTablero.trayectorias) {
+
+                var posicion = trayectoria.posicion;
+
+                int piezaTrayectoriaX = posicion[1];
+                int piezaTrayectoriaY = posicion[0];
+                int reyX = posicionRey[1];
+                int reyY = posicionRey[0];
+                int piezaX = colFinal;
+                int piezaY = filaFinal;
+
+                boolean piezaEntreTrayectoria =
+                        (piezaTrayectoriaY - piezaY) - (piezaY - reyY) == piezaTrayectoriaY - reyY ||
+                                (piezaTrayectoriaX - piezaX) - (piezaX - reyX) == piezaTrayectoriaX - reyX;
+                if (piezaEntreTrayectoria)
+                    if (trayectoria.trayectoria == TRAYECTORIA.Diagonal) {
+                        if (reyX - piezaX != 0) {
+                            var pendienteTrayectoria = reyY - piezaTrayectoriaY / reyX - piezaTrayectoriaX;
+                            var pendientePiezaAlRey = reyY - piezaY / reyX - piezaX;
+
+                            if (pendientePiezaAlRey == pendienteTrayectoria) {
+                                trayectoria.piezasAtacadas.add(pieza);
+                            }
+                        }
+
+                    } else if (trayectoria.trayectoria == TRAYECTORIA.Recta) {
+
+                        if (piezaX == piezaTrayectoriaX && piezaX == reyX
+                                || piezaY == piezaTrayectoriaY && piezaY == reyY) {
+                                trayectoria.piezasAtacadas.add(pieza);
+                        }
+
+                    }
+            }
+
+        }
+
+
+        // recalcular las trayectorias de las piezas contrarias
+        if (pieza instanceof Rey) {
+            var esBlanco = estadoTablero.turnoBlanco;
+
+            var trayectoriasBandoContrario = new ArrayList<Trayectoria>();
+
+            for(var trayectoria : estadoTablero.trayectorias){
+                if(trayectoria.pieza.EsBlanca() != esBlanco)
+                    trayectoriasBandoContrario.add(trayectoria);
+            }
 
             estadoTablero.trayectorias.removeAll(trayectoriasBandoContrario);
 
             for (int i = 0; i < tablero.length; i++) {
                 for (int j = 0; j < tablero.length; j++) {
-                    var p =  tablero[i][j];
-                    if(p != null && p.EsBlanca() != esBlanco){
-                        actualizarTrayectorias(i,j,estadoTablero,tablero);
+                    var p = tablero[i][j];
+                    if (p != null && p.EsBlanca() != esBlanco && !(p instanceof Rey)) {
+                        actualizarTrayectorias(i, j, estadoTablero, tablero, true);
                     }
                 }
             }
             return;
         }
 
-        var trayectoria = estadoTablero.trayectorias.stream()
-                        .filter(t -> t.piezasAtacadas.contains(pieza))
-                        .collect(Collectors.toList());
-
-
-
-        if(!trayectoria.isEmpty()){
-
-            if(trayectoria.size() > 1){ throw new IllegalStateException("la pieza esta en dos trayectorias");
-                //System.out.println("");
-                //Utilidades.ImprimirPosicicion(tablero);
-            }
-
-            estadoTablero.trayectorias.remove(trayectoria);
-
-            var posicion = trayectoria.get(0).posicion;
-
-            actualizarTrayectorias(posicion[0],posicion[1],estadoTablero, tablero);
-        }else{
-
-            actualizarTrayectorias(movimiento[2],movimiento[3],estadoTablero,tablero);
-        }
-    }
-
-    private static void actualizarTrayectorias(int filaFinal, int colFinal, EstadoTablero estadoTablero, Pieza[][] tablero) {
-
-        var pieza = tablero[filaFinal][colFinal];
-
-        
         if (pieza instanceof Caballo) {
 
             var coordenadas = new ArrayList<int[]>();
@@ -295,20 +342,24 @@ public class Utilidades {
             coordenadas.add(new int[]{filaFinal + 1, colFinal + 2});
             coordenadas.add(new int[]{filaFinal - 1, colFinal + 2});
 
-            var posicionesValidas = coordenadas.stream()
-                    .filter(c -> c[0] >= 0 && c[0] < 8 && c[1] >= 0 && c[1] < 8)
-                    .collect(Collectors.toList());
+            var posicionesValidas = new ArrayList<int[]>();
 
+            for(var c : coordenadas){
+                if(c[0] >= 0 && c[0] < 8 && c[1] >= 0 && c[1] < 8)
+                    posicionesValidas.add(c);
+            }
 
-            var jaqueCaballo = posicionesValidas.stream()
-                    .anyMatch(p ->
-                            {
-                                var piezaAtacada = tablero[p[0]][p[1]];
-                                return piezaAtacada != null
-                                        && piezaAtacada.EsBlanca() != pieza.EsBlanca()
-                                        && piezaAtacada instanceof Rey;
-                            }
-                    );
+            var jaqueCaballo = false;
+
+            for (var p : posicionesValidas) {
+                var piezaAtacada = tablero[p[0]][p[1]];
+                if (piezaAtacada != null
+                        && piezaAtacada.EsBlanca() != pieza.EsBlanca()
+                        && piezaAtacada instanceof Rey) {
+                    jaqueCaballo = true;
+                    break;
+                }
+            }
 
             if (jaqueCaballo) {
                 estadoTablero.reyEnJaque = true;
@@ -319,15 +370,15 @@ public class Utilidades {
 
             return;
         }
-        
+
         if (pieza instanceof Peon) {
 
             var esBlanco = pieza.EsBlanca();
 
             var posiciones = new ArrayList<int[]>();
 
-            posiciones.add(new int[]{filaFinal + (esBlanco ? 1 : -1),colFinal + 1});
-            posiciones.add(new int[]{filaFinal + (esBlanco ? 1 : -1),colFinal - 1});
+            posiciones.add(new int[]{filaFinal + (esBlanco ? 1 : -1), colFinal + 1});
+            posiciones.add(new int[]{filaFinal + (esBlanco ? 1 : -1), colFinal - 1});
 
             var posicionesValidas = posiciones.stream()
                     .filter(c -> c[0] >= 0 && c[0] < 8 && c[1] >= 0 && c[1] < 8)
@@ -351,19 +402,13 @@ public class Utilidades {
             return;
         }
 
-
-        //calculos con trayectorias
-        var ubicacionRey = !estadoTablero.turnoBlanco
-                ? estadoTablero.posicionReyBlanco
-                : estadoTablero.posicionReyNegro;
-
         //posicion de la pieza
         int x1 = filaFinal;
         int y1 = colFinal;
 
         //posicion del rey
-        int x2 = ubicacionRey[0];
-        int y2 = ubicacionRey[1];
+        int x2 = posicionRey[0];
+        int y2 = posicionRey[1];
 
         var pendiente = false;
 
@@ -371,14 +416,7 @@ public class Utilidades {
             pendiente = Math.abs((double) (y2 - y1) / (x2 - x1)) == 1;
         }
 
-        if (pendiente && (pieza instanceof Dama || pieza instanceof Alfil)) {
-
-            //eliminar trayectoria anterior si existe
-            var trayectoriaAnterior = estadoTablero.trayectorias.stream()
-                                        .filter(t -> t.pieza == pieza)
-                                        .findFirst();
-
-            trayectoriaAnterior.ifPresent(estadoTablero.trayectorias::remove);
+        if ((pieza instanceof Dama || pieza instanceof Alfil) && pendiente) {
 
             var trayectoria = new Trayectoria(pieza, x1, y1, TRAYECTORIA.Diagonal);
             estadoTablero.trayectorias.add(trayectoria);
@@ -395,6 +433,11 @@ public class Utilidades {
             } else if (x1 < x2 && y1 < y2) {
                 //DA
                 for (int i = x1 + 1; i < x2; i++) {
+//                    try{
+//                        var p = tablero[i][y1 + (i - x1)];
+//                    }catch(ArrayIndexOutOfBoundsException ex){
+//                        Utilidades.ImprimirPosicicion(tablero);;
+//                    }
                     var p = tablero[i][y1 + (i - x1)];
                     piezasRecorridas.add(p);
                 }
@@ -425,90 +468,94 @@ public class Utilidades {
                 estadoTablero.piezaJaque = pieza;
             }
 
-//        } else if ((x1 - x2 == 0 || y1 - y2 == 0) && (pieza instanceof Torre || pieza instanceof Dama)) {
-//
-//
-//
-//            var trayectoria = new Trayectoria(pieza, x1, y1, TRAYECTORIA.Recta);
-//            estadoTablero.trayectorias.add(trayectoria);
-//
-//            boolean jaque = true;
-//            if (x1 - x2 == 0) {
-//                if (y1 > y2) {
-//                    //izquierda
-//                    for (int i = y1 - 1; i > y2; i--) {
-//                        var p = tablero[x1][i];
-//                        if (p != null) {
-//                            if (p.EsBlanca() != pieza.EsBlanca()) {
-//                                trayectoria.piezasAtacadas.add(p);
-//                                jaque = false;
-//                            } else {
-//                                jaque = false;
-//                                break;
-//                            }
-//
-//                        }
-//                    }
-//                } else {
-//                    //derecha
-//                    for (int i = y1 + 1; i < y2; i++) {
-//                        var p = tablero[x1][i];
-//
-//                        if (p != null) {
-//                            if (p.EsBlanca() != pieza.EsBlanca()) {
-//                                trayectoria.piezasAtacadas.add(p);
-//                                jaque = false;
-//                            } else {
-//                                jaque = false;
-//                                break;
-//                            }
-//
-//                        }
-//
-//                    }
-//                }
-//            } else {
-//                if (x1 > x2) {
-//                    //abajo
-//                    for (int i = x1 - 1; i > x2; i--) {
-//                        var p = tablero[i][y1];
-//                        if (p != null) {
-//                            if (p.EsBlanca() != pieza.EsBlanca()) {
-//                                trayectoria.piezasAtacadas.add(p);
-//                                jaque = false;
-//                            } else {
-//                                jaque = false;
-//                                break;
-//                            }
-//
-//                        }
-//
-//                    }
-//                } else {
-//                    //arriba
-//                    for (int i = x1 + 1; i < x2; i++) {
-//                        var p = tablero[i][y1];
-//                        if (p != null) {
-//                            if (p.EsBlanca() != pieza.EsBlanca()) {
-//                                trayectoria.piezasAtacadas.add(p);
-//                                jaque = false;
-//                            } else {
-//                                jaque = false;
-//                                break;
-//                            }
-//
-//                        }
-//
-//                    }
-//                }
-//            }
-//
-//            if (jaque) {
-//                estadoTablero.reyEnJaque = true;
-//                estadoTablero.piezaJaque = pieza;
-//            }
-//
-    }
+        }
+
+        var mismaLinea = (x1 - x2 == 0 || y1 - y2 == 0);
+        if(false)
+        if ((pieza instanceof Torre || pieza instanceof Dama) && mismaLinea) {
+
+            var trayectoria = new Trayectoria(pieza, x1, y1, TRAYECTORIA.Recta);
+            estadoTablero.trayectorias.add(trayectoria);
+
+            boolean jaque = true;
+            if (x1 - x2 == 0) {
+                if (y1 > y2) {
+                    //izquierda
+                    for (int i = y1 - 1; i > y2; i--) {
+                        var p = tablero[x1][i];
+                        if (p != null) {
+                            if (p.EsBlanca() != pieza.EsBlanca()) {
+                                trayectoria.piezasAtacadas.add(p);
+                                jaque = false;
+                            } else {
+                                jaque = false;
+                                break;
+                            }
+
+                        }
+                    }
+                } else {
+                    //derecha
+                    for (int i = y1 + 1; i < y2; i++) {
+                        var p = tablero[x1][i];
+
+                        if (p != null) {
+                            if (p.EsBlanca() != pieza.EsBlanca()) {
+                                trayectoria.piezasAtacadas.add(p);
+                                jaque = false;
+                            } else {
+                                jaque = false;
+                                break;
+                            }
+
+                        }
+
+                    }
+                }
+            } else {
+                if (x1 > x2) {
+                    //abajo
+                    for (int i = x1 - 1; i > x2; i--) {
+                        var p = tablero[i][y1];
+                        if (p != null) {
+                            if (p.EsBlanca() != pieza.EsBlanca()) {
+                                trayectoria.piezasAtacadas.add(p);
+                                jaque = false;
+                            } else {
+                                jaque = false;
+                                break;
+                            }
+
+                        }
+
+                    }
+                } else {
+                    //arriba
+                    for (int i = x1 + 1; i < x2; i++) {
+                        var p = tablero[i][y1];
+                        if (p != null) {
+                            if (p.EsBlanca() != pieza.EsBlanca()) {
+                                trayectoria.piezasAtacadas.add(p);
+                                jaque = false;
+                            } else {
+                                jaque = false;
+                                break;
+                            }
+
+                        }
+
+                    }
+                }
+            }
+
+            if (jaque) {
+                estadoTablero.reyEnJaque = true;
+                estadoTablero.piezaJaque = pieza;
+            }
+
+
+
+        }
 
     }
 
