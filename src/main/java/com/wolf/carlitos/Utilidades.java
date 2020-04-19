@@ -241,6 +241,19 @@ public class Utilidades {
                         estadoTablero.posicionReyNegro:
                         estadoTablero.posicionReyBlanco;
 
+        //eliminar trayectoria de esta pieza
+        if(!recursivo){
+            Trayectoria trayectoria = null;
+
+            for(var t : estadoTablero.trayectorias){
+                if(t.pieza == pieza){
+                    trayectoria = t;
+                    break;
+                }
+            }
+            estadoTablero.trayectorias.remove(trayectoria);
+        }
+
         // buscar trayectoria en esta posicion, si existe y la pieza != pieza, eliminar trayectoria
         // porque fue capturada
         if(!recursivo){
