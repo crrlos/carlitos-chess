@@ -234,11 +234,29 @@ public class Utilidades {
     private static void actualizarTrayectorias(int filaFinal, int colFinal, EstadoTablero estadoTablero,
                                                Pieza[][] tablero, boolean recursivo) {
 
+
         var pieza = tablero[filaFinal][colFinal];
 
         var posicionRey = estadoTablero.turnoBlanco ?
                         estadoTablero.posicionReyNegro:
                         estadoTablero.posicionReyBlanco;
+
+        // buscar trayectoria en esta posicion, si existe y la pieza != pieza, eliminar trayectoria
+        // porque fue capturada
+        if(!recursivo){
+
+            for(var trayectoria : estadoTablero.trayectorias){
+                var posicion = trayectoria.posicion;
+                if(posicion[0] == filaFinal && posicion[1] == colFinal){
+                    var p =  trayectoria.pieza;
+                    if(p != pieza){
+                        estadoTablero.trayectorias.remove(p);
+                    }
+                    break;
+                }
+            }
+
+        }
 
         if(!recursivo){
             estadoTablero.reyEnJaque = false;
