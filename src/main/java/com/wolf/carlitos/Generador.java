@@ -119,10 +119,10 @@ public class Generador {
                     c = constante > 0;
                     constante = Math.abs(constante);
                     if (!x && !c) {
-                        puntoX = fila - constante;
+                        puntoX = fila + constante;
                         puntoY = columna + constante;
                     } else if (!x && c) {
-                        puntoX = fila - constante;
+                        puntoX = fila + constante;
                         puntoY = columna - constante;
                     } else if (x && !c) {
                         puntoX = -fila + constante;
