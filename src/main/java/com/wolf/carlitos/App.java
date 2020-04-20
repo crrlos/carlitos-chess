@@ -12,7 +12,9 @@ public class App {
 
         
         
-       // new Hilos();
+       if(Config.debug){
+           new Hilos();
+       }
 
         var scanner = new Scanner(System.in);
         

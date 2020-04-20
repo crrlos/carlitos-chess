@@ -13,17 +13,17 @@ public class Rey  implements Pieza {
         this.esBlanco = bando;
     }
     @Override
-    public boolean EsBlanca() {
+    public boolean esBlanca() {
         return esBlanco;
     }
 
     @Override
-    public String Nombre() {
+    public String nombre() {
         return esBlanco ? "R" : "r";
     }
 
     @Override
-    public int Valor() {
+    public int valor() {
         return esBlanco ? 10 : -10;
     }
 

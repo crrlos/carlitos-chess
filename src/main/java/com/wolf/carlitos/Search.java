@@ -39,8 +39,10 @@ public class Search {
         estadoTablero = estado.clone();
         
         var movimientos = Generador.generarMovimientos(tablero, estadoTablero);
-        
-        //comprobar(movimientos, secuencia);
+
+        if(Config.debug){
+            comprobar(movimientos, secuencia);
+        }
         
         for(var mov : movimientos){
             
@@ -77,10 +79,7 @@ public class Search {
          System.out.println(acumulador.contador);
          
          var tfin = (System.currentTimeMillis() - tinicio) / 1000;
-         
-         //System.out.println("tiempo: " + tfin+ " segundos");
-         
-        // System.out.println("Velocidad: " + acumulador.contador / tfin + " n/s");
+
          
        
      }

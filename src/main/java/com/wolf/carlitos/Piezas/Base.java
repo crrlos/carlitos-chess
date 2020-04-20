@@ -74,12 +74,12 @@ public class Base {
         if(condicion){
             if(columna + 1 < 8)
                 if((pieza = tablero[fila][columna + 1]) != null){
-                    if(pieza.EsBlanca() != blanco && pieza instanceof Peon) return true;
+                    if(pieza.esBlanca() != blanco && pieza instanceof Peon) return true;
 
                 }
             if(columna - 1 >= 0)
                 if((pieza = tablero[fila][columna - 1]) != null){
-                    if(pieza.EsBlanca() != blanco && pieza instanceof Peon) return true;
+                    if(pieza.esBlanca() != blanco && pieza instanceof Peon) return true;
                 }
         }
             
@@ -93,7 +93,7 @@ public class Base {
 
             posicionActual = tablero[i][columna];
             if(posicionActual != null)
-                if(posicionActual.EsBlanca() != blanco && (posicionActual instanceof Torre || posicionActual instanceof Dama))
+                if(posicionActual.esBlanca() != blanco && (posicionActual instanceof Torre || posicionActual instanceof Dama))
                     return true;
                 else break;
             i++;
@@ -104,7 +104,7 @@ public class Base {
 
             posicionActual = tablero[i][columna];
             if(posicionActual != null)
-                if(posicionActual.EsBlanca() != blanco && (posicionActual instanceof Torre || posicionActual instanceof Dama))
+                if(posicionActual.esBlanca() != blanco && (posicionActual instanceof Torre || posicionActual instanceof Dama))
                     return true;
                 else break;
            i--;
@@ -114,7 +114,7 @@ public class Base {
 
             posicionActual = tablero[fila][i];
             if(posicionActual != null)
-                if(posicionActual.EsBlanca() != blanco && (posicionActual instanceof Torre || posicionActual instanceof Dama))
+                if(posicionActual.esBlanca() != blanco && (posicionActual instanceof Torre || posicionActual instanceof Dama))
                     return true;
                 else break;
             i++;
@@ -124,7 +124,7 @@ public class Base {
 
             posicionActual = tablero[fila][i];
             if(posicionActual != null)
-                if(posicionActual.EsBlanca() != blanco && (posicionActual instanceof Torre || posicionActual instanceof Dama))
+                if(posicionActual.esBlanca() != blanco && (posicionActual instanceof Torre || posicionActual instanceof Dama))
                     return true;
                 else break;
             i--;
@@ -140,7 +140,7 @@ public class Base {
         while(f < 8 && c < 8){
             posicionActual = tablero[f][c];
             if( posicionActual !=null){
-                if(posicionActual.EsBlanca() != blanco && (posicionActual instanceof Dama || posicionActual instanceof Alfil))
+                if(posicionActual.esBlanca() != blanco && (posicionActual instanceof Dama || posicionActual instanceof Alfil))
                     return true;
                 else break;
             }
@@ -152,7 +152,7 @@ public class Base {
         while(f >= 0 && c >=0){
             posicionActual = tablero[f][c];
             if( posicionActual !=null){
-                if(posicionActual.EsBlanca() != blanco && (posicionActual instanceof Dama || posicionActual instanceof Alfil))
+                if(posicionActual.esBlanca() != blanco && (posicionActual instanceof Dama || posicionActual instanceof Alfil))
                     return true;
                 else break;
             }
@@ -164,7 +164,7 @@ public class Base {
         while(f < 8 && c >=0){
             posicionActual = tablero[f][c];
             if( posicionActual !=null){
-                if(posicionActual.EsBlanca() != blanco && (posicionActual instanceof Dama || posicionActual instanceof Alfil))
+                if(posicionActual.esBlanca() != blanco && (posicionActual instanceof Dama || posicionActual instanceof Alfil))
                     return true;
                 else break;
             }
@@ -176,7 +176,7 @@ public class Base {
         while(f >= 0 && c < 8){
             posicionActual = tablero[f][c];
             if( posicionActual !=null){
-                if(posicionActual.EsBlanca() != blanco && (posicionActual instanceof Dama || posicionActual instanceof Alfil))
+                if(posicionActual.esBlanca() != blanco && (posicionActual instanceof Dama || posicionActual instanceof Alfil))
                     return true;
                 else break;
             }
@@ -192,7 +192,7 @@ public class Base {
             if(columna + 1 < 8){
                 posicionActual = tablero[fila + 2][columna+1];
                 if( posicionActual != null){
-                    if(posicionActual.EsBlanca() != blanco && posicionActual instanceof Caballo)
+                    if(posicionActual.esBlanca() != blanco && posicionActual instanceof Caballo)
                         return true;
                 }
                 
@@ -200,7 +200,7 @@ public class Base {
             if(columna - 1 >= 0){
             posicionActual = tablero[fila + 2][columna-1];
             if( posicionActual != null){
-                if(posicionActual.EsBlanca() != blanco && posicionActual instanceof Caballo)
+                if(posicionActual.esBlanca() != blanco && posicionActual instanceof Caballo)
                     return true;
             }
         }
@@ -210,14 +210,14 @@ public class Base {
             if(columna + 1 < 8){
                 posicionActual = tablero[fila - 2][columna+1];
                 if( posicionActual != null){
-                    if(posicionActual.EsBlanca() != blanco && posicionActual instanceof Caballo)
+                    if(posicionActual.esBlanca() != blanco && posicionActual instanceof Caballo)
                         return true;
                 }
             }
             if(columna - 1 >= 0){
                 posicionActual = tablero[fila - 2][columna-1];
                 if( posicionActual != null){
-                    if(posicionActual.EsBlanca() != blanco && posicionActual instanceof Caballo)
+                    if(posicionActual.esBlanca() != blanco && posicionActual instanceof Caballo)
                         return true;
                 }
         }
@@ -227,14 +227,14 @@ public class Base {
             if(fila + 1 < 8){
                 posicionActual = tablero[fila + 1][columna -2];
                 if( posicionActual != null){
-                    if(posicionActual.EsBlanca() != blanco && posicionActual instanceof Caballo)
+                    if(posicionActual.esBlanca() != blanco && posicionActual instanceof Caballo)
                         return true;
                 }
             }
             if(fila - 1 >=0 ){
                 posicionActual =tablero[fila - 1][columna- 2];
                 if( posicionActual != null){
-                    if(posicionActual.EsBlanca() != blanco && posicionActual instanceof Caballo)
+                    if(posicionActual.esBlanca() != blanco && posicionActual instanceof Caballo)
                         return true;
                 }
         }
@@ -243,14 +243,14 @@ public class Base {
             if(fila + 1 < 8){
                 posicionActual = tablero[fila + 1][columna +2];
                 if( posicionActual != null){
-                    if(posicionActual.EsBlanca() != blanco && posicionActual instanceof Caballo)
+                    if(posicionActual.esBlanca() != blanco && posicionActual instanceof Caballo)
                         return true;
                 }
             }
             if(fila - 1 >=0 ){
                 posicionActual = tablero[fila - 1][columna+ 2];
                 if( posicionActual != null){
-                    if(posicionActual.EsBlanca() != blanco && posicionActual instanceof Caballo)
+                    if(posicionActual.esBlanca() != blanco && posicionActual instanceof Caballo)
                         return true;
                 }
         }

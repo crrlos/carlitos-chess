@@ -12,17 +12,17 @@ public class Torre implements Pieza {
     }
 
     @Override
-    public boolean EsBlanca() {
+    public boolean esBlanca() {
         return esBlanco;
     }
 
     @Override
-    public String Nombre() {
+    public String nombre() {
         return esBlanco ? "T" : "t";
     }
 
     @Override
-    public int Valor() {
+    public int valor() {
         return esBlanco ? 5 : -5;
     }
 

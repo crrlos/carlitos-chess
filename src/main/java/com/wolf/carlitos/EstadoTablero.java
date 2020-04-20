@@ -8,7 +8,6 @@ import java.util.List;
 
 public  class EstadoTablero  implements Cloneable{
     
-    public  boolean DEBUG = false;
     public  boolean enroqueCBlanco = true;
     public  boolean enroqueLBlanco = true;
     public  boolean enroqueCNegro = true;

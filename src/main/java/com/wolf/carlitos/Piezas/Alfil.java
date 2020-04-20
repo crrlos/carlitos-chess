@@ -12,17 +12,17 @@ public class Alfil implements Pieza {
     }
 
     @Override
-    public boolean EsBlanca() {
+    public boolean esBlanca() {
         return esBlanco;
     }
 
     @Override
-    public String Nombre() {
+    public String nombre() {
         return esBlanco ? "A" : "a";
     }
 
     @Override
-    public int Valor() {
+    public int valor() {
         return esBlanco ? 3 : -3;
     }
 
