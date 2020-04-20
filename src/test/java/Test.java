@@ -14,13 +14,32 @@ public class Test{
 
         var lista = new ArrayList<Integer>();
 
-        lista.add(1);lista.add(2);lista.add(3);
+        for (int i = 0; i < 100000; i++) {
+            lista.add(i);
+        }
 
-        for (int i = 0; i < lista.size(); i++) {
-            if(lista.get(i) == 1){
-                lista.remove(i);
+        var dd = lista.toArray();
+        var t1 = System.currentTimeMillis();
+
+        for (int i = 0; i < 10000; i++) {
+            for (int j = 0; j < lista.size(); j++) {
+                var c = dd[i];
             }
         }
+
+        var t2 = System.currentTimeMillis();
+
+        System.out.println(t2- t1);
+
+        for (int i = 0; i < 10000; i++) {
+            for (var d : lista.toArray()){
+                var c = d;
+            }
+        }
+
+        System.out.println(System.currentTimeMillis() - t2);
+
+
 
 
     }

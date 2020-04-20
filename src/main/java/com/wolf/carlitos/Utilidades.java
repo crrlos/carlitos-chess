@@ -244,8 +244,8 @@ public class Utilidades {
         //eliminar trayectoria de esta pieza
         if(!recursivo){
             Trayectoria trayectoria = null;
-
-            for(var t : estadoTablero.trayectorias){
+            for (int i = 0; i < estadoTablero.trayectorias.size(); i++) {
+                var t = estadoTablero.trayectorias.get(i);
                 if(t.pieza == pieza){
                     trayectoria = t;
                     break;
@@ -257,8 +257,8 @@ public class Utilidades {
         // buscar trayectoria en esta posicion, si existe y la pieza != pieza, eliminar trayectoria
         // porque fue capturada
         if(!recursivo){
-
-            for(var trayectoria : estadoTablero.trayectorias){
+            for (int i = 0; i < estadoTablero.trayectorias.size(); i++) {
+                var trayectoria = estadoTablero.trayectorias.get(i);
                 var posicion = trayectoria.posicion;
                 if(posicion[0] == filaFinal && posicion[1] == colFinal){
                     var p =  trayectoria.pieza;
@@ -282,7 +282,8 @@ public class Utilidades {
         if (!recursivo) {
             var trayectorias = new ArrayList<Trayectoria>();
 
-            for (var trayectoria : estadoTablero.trayectorias) {
+            for (int i = 0; i < estadoTablero.trayectorias.size(); i++) {
+                var trayectoria = estadoTablero.trayectorias.get(i);
                 if (trayectoria.piezasAtacadas.contains(pieza)) {
                     trayectorias.add(trayectoria);
                 }
@@ -292,9 +293,10 @@ public class Utilidades {
 
             estadoTablero.turnoBlanco = !estadoTablero.turnoBlanco;
 
-            for (var trayectoria : trayectorias) {
-                var posicion = trayectoria.posicion;
+            for (int i = 0; i < trayectorias.size(); i++) {
+                var posicion = trayectorias.get(i).posicion;
                 actualizarTrayectorias(posicion[0], posicion[1], estadoTablero, tablero, true);
+
             }
 
             estadoTablero.turnoBlanco = !estadoTablero.turnoBlanco;
@@ -302,7 +304,8 @@ public class Utilidades {
         // buscar trayectorias activas, si la pieza está en trayectoria agregarla
         if (!recursivo) {
 
-            for (var trayectoria : estadoTablero.trayectorias) {
+            for (int i = 0; i < estadoTablero.trayectorias.size(); i++) {
+                var trayectoria = estadoTablero.trayectorias.get(i);
 
                 var posicion = trayectoria.posicion;
 
@@ -331,10 +334,11 @@ public class Utilidades {
 
                         if (piezaX == piezaTrayectoriaX && piezaX == reyX
                                 || piezaY == piezaTrayectoriaY && piezaY == reyY) {
-                                trayectoria.piezasAtacadas.add(pieza);
+                            trayectoria.piezasAtacadas.add(pieza);
                         }
 
                     }
+
             }
 
         }
@@ -346,10 +350,13 @@ public class Utilidades {
 
             var trayectoriasBandoContrario = new ArrayList<Trayectoria>();
 
-            for(var trayectoria : estadoTablero.trayectorias){
+            for (int i = 0; i < estadoTablero.trayectorias.size(); i++) {
+                var trayectoria = estadoTablero.trayectorias.get(i);
+
                 if(trayectoria.pieza.EsBlanca() != esBlanco)
                     trayectoriasBandoContrario.add(trayectoria);
             }
+
 
             estadoTablero.trayectorias.removeAll(trayectoriasBandoContrario);
 
@@ -382,14 +389,17 @@ public class Utilidades {
 
             var posicionesValidas = new ArrayList<int[]>();
 
-            for(var c : coordenadas){
+            for (int i = 0; i < coordenadas.size(); i++) {
+                var c = coordenadas.get(i);
                 if(c[0] >= 0 && c[0] < 8 && c[1] >= 0 && c[1] < 8)
                     posicionesValidas.add(c);
             }
 
             var jaqueCaballo = false;
 
-            for (var p : posicionesValidas) {
+            for (int i = 0; i < posicionesValidas.size(); i++) {
+                var p = posicionesValidas.get(i);
+
                 var piezaAtacada = tablero[p[0]][p[1]];
                 if (piezaAtacada != null
                         && piezaAtacada.EsBlanca() != pieza.EsBlanca()
@@ -398,6 +408,8 @@ public class Utilidades {
                     break;
                 }
             }
+
+
 
             if (jaqueCaballo) {
                 estadoTablero.reyEnJaque = true;
@@ -418,19 +430,28 @@ public class Utilidades {
             posiciones.add(new int[]{filaFinal + (esBlanco ? 1 : -1), colFinal + 1});
             posiciones.add(new int[]{filaFinal + (esBlanco ? 1 : -1), colFinal - 1});
 
-            var posicionesValidas = posiciones.stream()
-                    .filter(c -> c[0] >= 0 && c[0] < 8 && c[1] >= 0 && c[1] < 8)
-                    .collect(Collectors.toList());
+            var posicionesValidas = new ArrayList<int[]>();
 
-            var jaquePeon = posicionesValidas.stream()
-                    .anyMatch(p ->
-                    {
-                        var piezaAtacada = tablero[p[0]][p[1]];
-                        return piezaAtacada != null
-                                && piezaAtacada.EsBlanca() != pieza.EsBlanca()
-                                && piezaAtacada instanceof Rey;
-                    });
+            for (int i = 0; i < posiciones.size(); i++) {
+                var c = posiciones.get(i);
+                if(c[0] >= 0 && c[0] < 8 && c[1] >= 0 && c[1] < 8){
+                    posicionesValidas.add(c);
+                }
+            }
 
+            boolean jaquePeon = false;
+
+            for (int i = 0; i < posicionesValidas.size(); i++) {
+                var p = posicionesValidas.get(i);
+                var piezaAtacada = tablero[p[0]][p[1]];
+
+                if(piezaAtacada != null
+                        && piezaAtacada.EsBlanca() != pieza.EsBlanca()
+                        && piezaAtacada instanceof Rey){
+                    jaquePeon = true;
+                    break;
+                }
+            }
             if (jaquePeon) {
                 estadoTablero.reyEnJaque = true;
                 estadoTablero.piezaJaque = pieza;
