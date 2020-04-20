@@ -290,10 +290,14 @@ public class Utilidades {
 
             estadoTablero.trayectorias.removeAll(trayectorias);
 
+            estadoTablero.turnoBlanco = !estadoTablero.turnoBlanco;
+
             for (var trayectoria : trayectorias) {
                 var posicion = trayectoria.posicion;
                 actualizarTrayectorias(posicion[0], posicion[1], estadoTablero, tablero, true);
             }
+
+            estadoTablero.turnoBlanco = !estadoTablero.turnoBlanco;
         }
         // buscar trayectorias activas, si la pieza está en trayectoria agregarla
         if (!recursivo) {
@@ -349,6 +353,8 @@ public class Utilidades {
 
             estadoTablero.trayectorias.removeAll(trayectoriasBandoContrario);
 
+            estadoTablero.turnoBlanco = !estadoTablero.turnoBlanco;
+
             for (int i = 0; i < tablero.length; i++) {
                 for (int j = 0; j < tablero.length; j++) {
                     var p = tablero[i][j];
@@ -357,6 +363,7 @@ public class Utilidades {
                     }
                 }
             }
+            estadoTablero.turnoBlanco = !estadoTablero.turnoBlanco;
             return;
         }
 
@@ -502,7 +509,7 @@ public class Utilidades {
         }
 
         var mismaLinea = (x1 - x2 == 0 || y1 - y2 == 0);
-        if(false)
+
         if ((pieza instanceof Torre || pieza instanceof Dama) && mismaLinea) {
 
             var trayectoria = new Trayectoria(pieza, x1, y1, TRAYECTORIA.Recta);

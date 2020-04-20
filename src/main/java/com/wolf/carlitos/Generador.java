@@ -51,7 +51,7 @@ public class Generador {
 //        && estado.reyEnJaque){
 //           Utilidades.ImprimirPosicicion(tablero);
 //        }
-
+//        Utilidades.ImprimirPosicicion(tablero);
         boolean horizontal = true;
         boolean vertical = true;
         var lista = new ArrayList<int[]>();
