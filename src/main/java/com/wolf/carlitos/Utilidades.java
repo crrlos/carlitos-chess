@@ -536,20 +536,22 @@ public class Utilidades {
             var trayectoria = new Trayectoria(pieza, x1, y1, TRAYECTORIA.Recta);
             estadoTablero.trayectorias.add(trayectoria);
 
-            var piezasRecorridas = new ArrayList<Pieza>();
-
             if (x1 - x2 == 0) {
                 if (y1 > y2) {
                     //izquierda
                     for (int i = y1 - 1; i > y2; i--) {
                         var p = tablero[x1][i];
-                        piezasRecorridas.add(p);
+                        if (p != null) {
+                            trayectoria.piezasAtacadas.add(p);
+                        }
                     }
                 } else {
                     //derecha
                     for (int i = y1 + 1; i < y2; i++) {
                         var p = tablero[x1][i];
-                        piezasRecorridas.add(p);
+                        if (p != null) {
+                            trayectoria.piezasAtacadas.add(p);
+                        }
 
                     }
                 }
@@ -558,27 +560,26 @@ public class Utilidades {
                     //abajo
                     for (int i = x1 - 1; i > x2; i--) {
                         var p = tablero[i][y1];
-                        piezasRecorridas.add(p);
+                        if (p != null) {
+                            trayectoria.piezasAtacadas.add(p);
+                        }
 
                     }
                 } else {
                     //arriba
                     for (int i = x1 + 1; i < x2; i++) {
                         var p = tablero[i][y1];
-                        piezasRecorridas.add(p);
+                        if (p != null) {
+                            trayectoria.piezasAtacadas.add(p);
+                        }
 
                     }
                 }
             }
 
-            var jaque = piezasRecorridas.size() == 0;
+            var jaque = trayectoria.piezasAtacadas.size() == 0;
 
-            for (int i = 0; i < piezasRecorridas.size(); i++) {
-                var p = piezasRecorridas.get(i);
-                if (p != null) {
-                    trayectoria.piezasAtacadas.add(p);
-                }
-            }
+
             if (jaque) {
                 estadoTablero.reyEnJaque = true;
                 estadoTablero.piezaJaque = pieza;
