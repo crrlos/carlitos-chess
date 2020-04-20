@@ -209,34 +209,41 @@ public class Generador {
 
         pieza = tablero[fila][columna];
 
+        boolean estaClavada = false;
+
+        for (var trayectoria : estado.trayectorias) {
+            if (trayectoria.piezasAtacadas.contains(pieza)
+                    && trayectoria.piezasAtacadas.size() == 1
+                    && trayectoria.trayectoria == TRAYECTORIA.Diagonal) {
+                estaClavada = true;
+                break;
+            }
+        }
+        if(estaClavada) return lista;
 
 
-//        var estaClavada = estado.trayectorias
-//                .stream()
-//                .anyMatch(t -> t.piezasAtacadas.contains(pieza)
-//                        && t.piezasAtacadas.size() == 1 && t.trayectoria == TRAYECTORIA.Diagonal);
-//
-//        if(estaClavada) return lista;
-//
-//
-//
-//        var resultado = estado.trayectorias
-//                .stream()
-//                .filter(t -> t.piezasAtacadas.contains(pieza))
-//                .findFirst();
-//
-//        if(resultado.isPresent()){
-//            var trayectoria = resultado.get();
-//
-//           int x = trayectoria.posicion[0];
-//           int y = trayectoria.posicion[1];
-//
-//           if(x == fila)
-//               vertical = false;
-//
-//           if(y == columna)
-//               horizontal = false;
-//        }
+        Trayectoria resultado = null;
+
+        for(var t : estado.trayectorias){
+            if(t.piezasAtacadas.contains(pieza)){
+                resultado = t;
+                break;
+            }
+        }
+
+
+
+        if(resultado != null){
+
+           int x = resultado.posicion[0];
+           int y = resultado.posicion[1];
+
+           if(x == fila)
+               vertical = false;
+
+           if(y == columna)
+               horizontal = false;
+        }
 
 
         var i = fila + 1;
@@ -319,7 +326,7 @@ public class Generador {
 
 
 
-        return new Base(estado).MovimientosValidos(lista,tablero, pieza.EsBlanca());
+        return lista;
     }
 
     private static List<int[]> movimientosDeDama(Pieza[][] tablero, EstadoTablero estado, int fila, int columna) {
