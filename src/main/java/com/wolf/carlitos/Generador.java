@@ -147,8 +147,8 @@ public class Generador {
                             lista.add(new int[]{fila, columna, y1, columna});
                         }
                     } else if (y1 - y2 != 0 && fila >= Math.min(y1, y2) && fila <= Math.max(y1, y2)) {
-                        if (!(tablero[fila][y1] instanceof Rey)) {
-                            lista.add(new int[]{fila, columna, fila, y1});
+                        if (!(tablero[fila][x2] instanceof Rey)) {
+                            lista.add(new int[]{fila, columna, fila, x2});
                         }
                     }
                     break;
