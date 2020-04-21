@@ -137,7 +137,13 @@ public class Generador {
                     }
                     break;
                 case Recta:
-
+                    // torre puede capturar pieza que ataca
+                    if (fila - y1 == 0) {//misma fila
+                        lista.add(new int[]{fila, columna, fila, x1});
+                    } else if (columna - x1 == 0) {
+                        lista.add(new int[]{fila, columna, y1, columna});
+                    }
+                    //si torre puede bloquear
                     if (x1 - x2 != 0 && columna >= Math.min(x1, x2) && columna <= Math.max(x1, x2)) {
                         if (!(tablero[y1][columna] instanceof Rey)) {
                             lista.add(new int[]{fila, columna, y1, columna});
