@@ -56,12 +56,16 @@ public class Utilidades {
             switch (movimiento.charAt(4)) {
                 case 'q':
                     posicion[4] = 1;
+                    break;
                 case 'r':
                     posicion[4] = 2;
+                    break;
                 case 'n':
                     posicion[4] = 3;
+                    break;
                 case 'b':
                     posicion[4] = 4;
+                    break;
             }
         }
 
