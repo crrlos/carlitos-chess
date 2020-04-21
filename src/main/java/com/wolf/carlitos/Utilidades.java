@@ -238,6 +238,7 @@ public class Utilidades {
                 estadoTablero.posicionReyNegro :
                 estadoTablero.posicionReyBlanco;
 
+
         //eliminar trayectoria de esta pieza
         if (!recursivo) {
             Trayectoria trayectoria = null;
@@ -260,7 +261,7 @@ public class Utilidades {
                 if (posicion[0] == filaFinal && posicion[1] == colFinal) {
                     var p = trayectoria.pieza;
                     if (p != pieza) {
-                        estadoTablero.trayectorias.remove(p);
+                        estadoTablero.trayectorias.remove(trayectoria);
                     }
                     break;
                 }

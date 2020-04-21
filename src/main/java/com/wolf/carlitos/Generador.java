@@ -47,11 +47,6 @@ public class Generador {
     private static List<int[]> movimientosDeTorre(Pieza[][] tablero, EstadoTablero estado, int fila, int columna) {
 
 
-//        if(tablero[7][4] instanceof Rey && tablero[6][5] instanceof Dama && tablero[5][0] instanceof Torre
-//        && estado.reyEnJaque){
-//           Utilidades.ImprimirPosicicion(tablero);
-//        }
-//        Utilidades.ImprimirPosicicion(tablero);
 
         boolean horizontal = true;
         boolean vertical = true;
