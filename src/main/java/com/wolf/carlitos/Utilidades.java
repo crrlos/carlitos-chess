@@ -385,9 +385,9 @@ public class Utilidades {
             coordenadas.add(new int[]{filaFinal - 2, colFinal + 1});
             coordenadas.add(new int[]{filaFinal - 2, colFinal - 1});
             coordenadas.add(new int[]{filaFinal + 1, colFinal - 2});
-            coordenadas.add(new int[]{filaFinal + 1, colFinal - 2});
             coordenadas.add(new int[]{filaFinal + 1, colFinal + 2});
             coordenadas.add(new int[]{filaFinal - 1, colFinal + 2});
+            coordenadas.add(new int[]{filaFinal - 1, colFinal - 2});
 
             var posicionesValidas = new ArrayList<int[]>();
 
