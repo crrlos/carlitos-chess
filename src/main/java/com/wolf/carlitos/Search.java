@@ -149,12 +149,12 @@ public class Search {
        
         tablero[fd][cd] = estado.piezaCapturada;
 
-        // TODO experimental
 
-//        for (int i = 0; i < estadoTablero.trayectorias.size(); i++) {
-//            var t =  estadoTablero.trayectorias.get(i);
-//            t.piezasAtacadas.remove(pieza);
-//        }
+        //quitar pieza de listas de ataque
+        for (int i = 0; i < estadoTablero.trayectorias.size(); i++) {
+            var t =  estadoTablero.trayectorias.get(i);
+            t.piezasAtacadas.remove(pieza);
+        }
 
     }
     public int Mini(int nivel,EstadoTablero estado) throws CloneNotSupportedException, IOException{
