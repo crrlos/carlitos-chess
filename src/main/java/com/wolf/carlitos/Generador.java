@@ -52,6 +52,7 @@ public class Generador {
 //           Utilidades.ImprimirPosicicion(tablero);
 //        }
 //        Utilidades.ImprimirPosicicion(tablero);
+
         boolean horizontal = true;
         boolean vertical = true;
         var lista = new ArrayList<int[]>();
@@ -211,10 +212,12 @@ public class Generador {
 
         boolean estaClavada = false;
 
-        for (var trayectoria : estado.trayectorias) {
-            if (trayectoria.piezasAtacadas.contains(pieza)
+        for (int i = 0; i < estado.trayectorias.size(); i++) {
+            var trayectoria = estado.trayectorias.get(i);
+            if (trayectoria.pieza.esBlanca() != pieza.esBlanca()
                     && trayectoria.piezasAtacadas.size() == 1
-                    && trayectoria.trayectoria == TRAYECTORIA.Diagonal) {
+                    && trayectoria.trayectoria == TRAYECTORIA.Diagonal
+                    && trayectoria.piezasAtacadas.contains(pieza)) {
                 estaClavada = true;
                 break;
             }
@@ -224,13 +227,16 @@ public class Generador {
 
         Trayectoria resultado = null;
 
-        for(var t : estado.trayectorias){
-            if(t.piezasAtacadas.contains(pieza)){
-                resultado = t;
+
+        for (int i = 0; i < estado.trayectorias.size(); i++) {
+            var trayectoria = estado.trayectorias.get(i);
+
+            if (trayectoria.pieza.esBlanca() != pieza.esBlanca()
+                    && trayectoria.piezasAtacadas.contains(pieza)) {
+                resultado = trayectoria;
                 break;
             }
         }
-
 
 
         if(resultado != null){
@@ -322,10 +328,6 @@ public class Generador {
                 i--;
             }
         }
-
-
-
-
         return lista;
     }
 
