@@ -181,38 +181,29 @@ public class Utilidades {
             }
 
         } else if (pieza instanceof Torre) {
-            if (colInicio == 7) {
-                if (pieza.esBlanca()) {
-                    estadoTablero.enroqueCBlanco = false;
-                } else {
-                    estadoTablero.enroqueCNegro = false;
-                }
-            } else if (colInicio == 0) {
-                if (pieza.esBlanca()) {
-                    estadoTablero.enroqueLBlanco = false;
-                } else {
-                    estadoTablero.enroqueLNegro = false;
-                }
+
+            if(colInicio == 7 && filaInicio == 7){
+                estadoTablero.enroqueCNegro = false;
+            }else if(colInicio == 0 && filaInicio == 7){
+                estadoTablero.enroqueLNegro = false;
+            }else if(colInicio == 7 && filaInicio == 0){
+                estadoTablero.enroqueCBlanco = false;
+            }else if(colInicio == 0 && filaInicio == 0){
+                estadoTablero.enroqueLBlanco = false;
             }
         }
 
-        if (tablero[filaFinal][colFinal] != null) {
-            estadoTablero.piezaCapturada = tablero[filaFinal][colFinal];
+        estadoTablero.piezaCapturada = tablero[filaFinal][colFinal];
+        if (estadoTablero.piezaCapturada instanceof Torre) {
 
-            if (estadoTablero.piezaCapturada instanceof Torre) {
-                if (colFinal == 7) {
-                    if (estadoTablero.turnoBlanco) {
-                        estadoTablero.enroqueCNegro = false;
-                    } else {
-                        estadoTablero.enroqueCBlanco = false;
-                    }
-                } else if (colFinal == 0) {
-                    if (estadoTablero.turnoBlanco) {
-                        estadoTablero.enroqueLNegro = false;
-                    } else {
-                        estadoTablero.enroqueLBlanco = false;
-                    }
-                }
+            if(colFinal == 7 && filaFinal == 7){
+                estadoTablero.enroqueCNegro = false;
+            }else if(colFinal == 0 && filaFinal == 7){
+                estadoTablero.enroqueLNegro = false;
+            }else if(colFinal == 7 && filaFinal == 0){
+                estadoTablero.enroqueCBlanco = false;
+            }else if(colFinal == 0 && filaFinal == 0){
+                estadoTablero.enroqueLBlanco = false;
             }
         }
 
