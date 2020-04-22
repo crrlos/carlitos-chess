@@ -321,8 +321,8 @@ public class Utilidades {
                 int piezaY = filaFinal;
 
                 boolean piezaEntreTrayectoria =
-                        (piezaTrayectoriaY - piezaY) - (piezaY - reyY) == piezaTrayectoriaY - reyY ||
-                                (piezaTrayectoriaX - piezaX) - (piezaX - reyX) == piezaTrayectoriaX - reyX;
+                        (piezaTrayectoriaY - piezaY) + (piezaY - reyY) == piezaTrayectoriaY - reyY ||
+                                (piezaTrayectoriaX - piezaX) + (piezaX - reyX) == piezaTrayectoriaX - reyX;
                 if (piezaEntreTrayectoria)
                     if (trayectoria.trayectoria == TRAYECTORIA.Diagonal) {
                         if (reyX - piezaX != 0) {
