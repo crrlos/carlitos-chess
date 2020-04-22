@@ -872,12 +872,40 @@ public class Generador {
     }
 
     private static List<int[]> movimientosDePeon(Pieza[][] tablero, EstadoTablero estado, int fila, int columna) {
-        int filaDestino;
+
+        var lista = new ArrayList<int[]>();
 
         Pieza posicionActual;
         Pieza pieza = tablero[fila][columna];
 
-        var lista = new ArrayList<int[]>();
+        boolean puedeAlPaso = true;
+
+        if (estado.alPaso && fila == (pieza.esBlanca() ? 4 : 3)) {
+            for (int i = 0; i < estado.trayectorias.size(); i++) {
+                var trayectoria = estado.trayectorias.get(i);
+
+                if(trayectoria.piezasAtacadas.size() == 2){
+                    if(trayectoria.piezasAtacadas.contains(pieza)){
+                        var piezaAlPaso = tablero[fila][columna + 1] == estado.piezaALPaso ||
+                                tablero[fila][columna -1] == estado.piezaALPaso;
+
+                        if(piezaAlPaso){
+                         puedeAlPaso = false;
+                        }
+
+                    }
+                }
+
+            }
+        }
+
+
+
+        int filaDestino;
+
+
+
+
 
         //avance dos casillas
         if (fila == (pieza.esBlanca() ? 1 : 6)) {
@@ -912,7 +940,7 @@ public class Generador {
                         lista.add(new int[]{fila, columna, filaDestino, columna - 1});
                     }
                 }
-            } else if (estado.alPaso && fila == (pieza.esBlanca() ? 4 : 3)) {
+            } else if (estado.alPaso && fila == (pieza.esBlanca() ? 4 : 3) && puedeAlPaso) {
                 if (tablero[fila][columna - 1] == estado.piezaALPaso) {
                     lista.add(new int[]{fila, columna, filaDestino, columna - 1});
                 }
@@ -931,7 +959,7 @@ public class Generador {
                         lista.add(new int[]{fila, columna, filaDestino, columna + 1});
                     }
                 }
-            } else if (estado.alPaso && fila == (pieza.esBlanca() ? 4 : 3)) {
+            } else if (estado.alPaso && fila == (pieza.esBlanca() ? 4 : 3) && puedeAlPaso) {
                 if (tablero[fila][columna + 1] == estado.piezaALPaso) {
                     lista.add(new int[]{fila, columna, filaDestino, columna + 1});
                 }
