@@ -12,6 +12,22 @@ public class Test{
 
     public static void main(String... args){
 
+        var pos = "12323";
+
+        if(!pos.matches("^[0-9]+$")){
+            //mostrar mensaje
+            System.out.println("naddfd");
+            return;
+        }
+
+        if (!pos.chars().allMatch(Character::isDigit)) {
+
+            // mostrar mensaje que el valor ingresado no es un numero
+
+            return;
+        }
+
+
         var lista = new ArrayList<Integer>();
 
         for (int i = 0; i < 100000; i++) {

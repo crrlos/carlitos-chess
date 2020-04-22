@@ -270,15 +270,19 @@ public class Utilidades {
         }
 
 
-        // si pieza  es atacada en alguna trayectoria borrar trayectoria
-        // y recalcular
+        // si pieza  es atacada en alguna trayectoria y es la unica pieza borrar trayectoria
+        // y recalcular, sino solo borrar pieza de la trayectoria
         if (!recursivo) {
             var trayectorias = new ArrayList<Trayectoria>();
 
             for (int i = 0; i < estadoTablero.trayectorias.size(); i++) {
                 var trayectoria = estadoTablero.trayectorias.get(i);
+
                 if (trayectoria.piezasAtacadas.contains(pieza)) {
-                    trayectorias.add(trayectoria);
+                    if(trayectoria.piezasAtacadas.size() == 1)
+                        trayectorias.add(trayectoria);
+                    else
+                        trayectoria.piezasAtacadas.remove(pieza);
                 }
             }
 
