@@ -233,6 +233,7 @@ public class Generador {
             var trayectoria = estado.trayectorias.get(i);
 
             if (trayectoria.pieza.esBlanca() != pieza.esBlanca()
+                    && trayectoria.piezasAtacadas.size() == 1
                     && trayectoria.piezasAtacadas.contains(pieza)) {
                 resultado = trayectoria;
                 break;
