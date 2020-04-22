@@ -58,6 +58,82 @@ public class Juego {
             estadoTablero.turnoBlanco = !estadoTablero.turnoBlanco;
         }
     }
+    public void setFen(String linea){
+        tablero = new Pieza[8][8];
+        String[] filas = linea.replace("fen ", "").split("/");
+
+        for (int i = 0; i < filas.length; i++) {
+
+            if (i == 7) {
+                String[] ops = filas[i].split(" ");
+                IniciarFen(ops[0], 7 - i);
+
+                estadoTablero.turnoBlanco = ops[1].equals("w");
+                estadoTablero.enroqueLBlanco = ops[2].contains("Q");
+                estadoTablero.enroqueCNegro = ops[2].contains("k");
+                estadoTablero.enroqueCBlanco = ops[2].contains("K");
+                estadoTablero.enroqueLNegro = ops[2].contains("q");
+
+            } else {
+                IniciarFen(filas[i], 7 - i);
+            }
+
+        }
+
+        System.out.println("fen procesado");
+        Utilidades.ImprimirPosicicion(tablero);
+    }
+    private  void IniciarFen(String fila, int i) {
+
+        int j = 0;
+
+        for (char c : fila.toCharArray()) {
+            if (c == 'k') {
+                tablero[i][j] = new Rey(false);
+            }
+            if (c == 'q') {
+                tablero[i][j] = new Dama(false);
+            }
+            if (c == 'r') {
+                tablero[i][j] = new Torre(false);
+            }
+            if (c == 'b') {
+                tablero[i][j] = new Alfil(false);
+            }
+            if (c == 'n') {
+                tablero[i][j] = new Caballo(false);
+            }
+            if (c == 'p') {
+                tablero[i][j] = new Peon(false);
+            }
+
+            if (c == 'K') {
+                tablero[i][j] = new Rey(true);
+            }
+            if (c == 'Q') {
+                tablero[i][j] = new Dama(true);
+            }
+            if (c == 'R') {
+                tablero[i][j] = new Torre(true);
+            }
+            if (c == 'B') {
+                tablero[i][j] = new Alfil(true);
+            }
+            if (c == 'N') {
+                tablero[i][j] = new Caballo(true);
+            }
+            if (c == 'P') {
+                tablero[i][j] = new Peon(true);
+            }
+
+            if (Character.isDigit(c)) {
+                j += Integer.parseInt(String.valueOf(c));
+            } else {
+                j++;
+            }
+        }
+
+    }
   
    public void perft(int n) throws CloneNotSupportedException, IOException{
        var search = new Search(tablero, estadoTablero);
