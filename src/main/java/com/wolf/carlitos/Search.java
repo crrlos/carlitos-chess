@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
  * @author carlos
  */
 public class Search {
-    private List<int[]> secuencia =  new ArrayList<>();
+    public static List<int[]> secuencia =  new ArrayList<>();
     private final Pieza[][] tablero;
     private EstadoTablero estadoTablero;
 

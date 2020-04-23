@@ -307,46 +307,64 @@ public class Utilidades {
         }
         // buscar trayectorias activas, si la pieza está en trayectoria agregarla
         if (!recursivo) {
-
+            int[] posicionReyInterna;
             for (int i = 0; i < estadoTablero.trayectorias.size(); i++) {
                 var trayectoria = estadoTablero.trayectorias.get(i);
+
+                // no agregar al rey en trayectoria de pieza contraria, eso es jaque
+                if (pieza instanceof Rey) {
+                    if (trayectoria.pieza.esBlanca() != pieza.esBlanca()) {
+                        continue;
+                    }
+                }
+
+                if (trayectoria.pieza.esBlanca()) {
+                    posicionReyInterna = estadoTablero.posicionReyNegro;
+                } else {
+                    posicionReyInterna = estadoTablero.posicionReyBlanco;
+                }
 
                 var posicion = trayectoria.posicion;
 
                 int piezaTrayectoriaX = posicion[1];
                 int piezaTrayectoriaY = posicion[0];
-                int reyX = posicionRey[1];
-                int reyY = posicionRey[0];
+                int reyX = posicionReyInterna[1];
+                int reyY = posicionReyInterna[0];
                 int piezaX = colFinal;
                 int piezaY = filaFinal;
 
-                boolean piezaEntreTrayectoria =
-                        (piezaTrayectoriaY - piezaY) + (piezaY - reyY) == piezaTrayectoriaY - reyY ||
-                                (piezaTrayectoriaX - piezaX) + (piezaX - reyX) == piezaTrayectoriaX - reyX;
-                if (piezaEntreTrayectoria)
-                    if (trayectoria.trayectoria == TRAYECTORIA.Diagonal) {
-                        if (reyX - piezaX != 0) {
-                            var pendienteTrayectoria = reyY - piezaTrayectoriaY / reyX - piezaTrayectoriaX;
-                            var pendientePiezaAlRey = reyY - piezaY / reyX - piezaX;
-
-                            if (pendientePiezaAlRey == pendienteTrayectoria) {
-                                if (!trayectoria.piezasAtacadas.contains(pieza))
-                                    trayectoria.piezasAtacadas.add(pieza);
+                if (trayectoria.trayectoria == TRAYECTORIA.Recta) {
+                    // alineación vertical
+                    if (piezaTrayectoriaX == piezaX && piezaX == reyX) {
+                        if (Math.min(piezaTrayectoriaY, reyY) <= piezaY && piezaY <= Math.max(piezaTrayectoriaY, reyY)) {
+                            //esta dentro
+                            trayectoria.piezasAtacadas.add(pieza);
+                        }
+                    } else //alineacion horizontal
+                        if (piezaTrayectoriaY == piezaY && piezaY == reyY) {
+                            if (Math.min(piezaTrayectoriaX, reyX) <= piezaX && piezaX <= Math.max(piezaTrayectoriaX, reyX)) {
+                                //esta dentro
+                                trayectoria.piezasAtacadas.add(pieza);
                             }
                         }
+                }
 
-                    } else if (trayectoria.trayectoria == TRAYECTORIA.Recta) {
+                if (trayectoria.trayectoria == TRAYECTORIA.Diagonal) {
 
-                        if (piezaX == piezaTrayectoriaX && piezaX == reyX
-                                || piezaY == piezaTrayectoriaY && piezaY == reyY) {
+                    if (reyX - piezaX != 0) {
+                        var pendienteTrayectoria = reyY - piezaTrayectoriaY / reyX - piezaTrayectoriaX;
+                        var pendientePiezaAlRey = reyY - piezaY / reyX - piezaX;
+
+                        if (pendientePiezaAlRey == pendienteTrayectoria) {
                             if (!trayectoria.piezasAtacadas.contains(pieza))
                                 trayectoria.piezasAtacadas.add(pieza);
                         }
 
                     }
 
-            }
+                }
 
+            }
         }
 
 
