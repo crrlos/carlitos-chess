@@ -211,47 +211,47 @@ public class Generador {
 
         pieza = tablero[fila][columna];
 
-        boolean estaClavada = false;
-
-        for (int i = 0; i < estado.trayectorias.size(); i++) {
-            var trayectoria = estado.trayectorias.get(i);
-            if (trayectoria.pieza.esBlanca() != pieza.esBlanca()
-                    && trayectoria.piezasAtacadas.size() == 1
-                    && trayectoria.trayectoria == TRAYECTORIA.Diagonal
-                    && trayectoria.piezasAtacadas.contains(pieza)) {
-                estaClavada = true;
-                break;
-            }
-        }
-        if(estaClavada) return lista;
-
-
-        Trayectoria resultado = null;
-
-
-        for (int i = 0; i < estado.trayectorias.size(); i++) {
-            var trayectoria = estado.trayectorias.get(i);
-
-            if (trayectoria.pieza.esBlanca() != pieza.esBlanca()
-                    && trayectoria.piezasAtacadas.size() == 1
-                    && trayectoria.piezasAtacadas.contains(pieza)) {
-                resultado = trayectoria;
-                break;
-            }
-        }
-
-
-        if(resultado != null){
-
-           int x = resultado.posicion[0];
-           int y = resultado.posicion[1];
-
-           if(x == fila)
-               vertical = false;
-
-           if(y == columna)
-               horizontal = false;
-        }
+//        boolean estaClavada = false;
+//
+//        for (int i = 0; i < estado.trayectorias.size(); i++) {
+//            var trayectoria = estado.trayectorias.get(i);
+//            if (trayectoria.pieza.esBlanca() != pieza.esBlanca()
+//                    && trayectoria.piezasAtacadas.size() == 1
+//                    && trayectoria.trayectoria == TRAYECTORIA.Diagonal
+//                    && trayectoria.piezasAtacadas.contains(pieza)) {
+//                estaClavada = true;
+//                break;
+//            }
+//        }
+//        if(estaClavada) return lista;
+//
+//
+//        Trayectoria resultado = null;
+//
+//
+//        for (int i = 0; i < estado.trayectorias.size(); i++) {
+//            var trayectoria = estado.trayectorias.get(i);
+//
+//            if (trayectoria.pieza.esBlanca() != pieza.esBlanca()
+//                    && trayectoria.piezasAtacadas.size() == 1
+//                    && trayectoria.piezasAtacadas.contains(pieza)) {
+//                resultado = trayectoria;
+//                break;
+//            }
+//        }
+//
+//
+//        if(resultado != null){
+//
+//           int x = resultado.posicion[0];
+//           int y = resultado.posicion[1];
+//
+//           if(x == fila)
+//               vertical = false;
+//
+//           if(y == columna)
+//               horizontal = false;
+//        }
 
 
         var i = fila + 1;
@@ -330,7 +330,7 @@ public class Generador {
                 i--;
             }
         }
-        return lista;
+        return new Base(estado).MovimientosValidos(lista,tablero,pieza.esBlanca());
     }
 
     private static List<int[]> movimientosDeDama(Pieza[][] tablero, EstadoTablero estado, int fila, int columna) {
@@ -880,24 +880,24 @@ public class Generador {
 
         boolean puedeAlPaso = true;
 
-        if (estado.alPaso && fila == (pieza.esBlanca() ? 4 : 3)) {
-            for (int i = 0; i < estado.trayectorias.size(); i++) {
-                var trayectoria = estado.trayectorias.get(i);
-
-                if(trayectoria.piezasAtacadas.size() == 2){
-                    if(trayectoria.piezasAtacadas.contains(pieza)){
-                        var piezaAlPaso = tablero[fila][columna + 1] == estado.piezaALPaso ||
-                                tablero[fila][columna -1] == estado.piezaALPaso;
-
-                        if(piezaAlPaso){
-                         puedeAlPaso = false;
-                        }
-
-                    }
-                }
-
-            }
-        }
+//        if (estado.alPaso && fila == (pieza.esBlanca() ? 4 : 3)) {
+//            for (int i = 0; i < estado.trayectorias.size(); i++) {
+//                var trayectoria = estado.trayectorias.get(i);
+//
+//                if(trayectoria.piezasAtacadas.size() == 2){
+//                    if(trayectoria.piezasAtacadas.contains(pieza)){
+//                        var piezaAlPaso = tablero[fila][columna + 1] == estado.piezaALPaso ||
+//                                tablero[fila][columna -1] == estado.piezaALPaso;
+//
+//                        if(piezaAlPaso){
+//                         puedeAlPaso = false;
+//                        }
+//
+//                    }
+//                }
+//
+//            }
+//        }
 
 
 
@@ -965,8 +965,11 @@ public class Generador {
                 }
             }
         }
+        var clone = new ArrayList<>(lista);
 
-        return new Base(estado).MovimientosValidos(lista, tablero, pieza.esBlanca());
+        var result = new Base(estado).MovimientosValidos(lista, tablero, pieza.esBlanca());
+
+        return result;
     }
 
 }

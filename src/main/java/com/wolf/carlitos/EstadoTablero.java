@@ -35,8 +35,17 @@ public  class EstadoTablero  implements Cloneable{
     {
         var estadoTablero = (EstadoTablero)super.clone();
         estadoTablero.trayectorias = new ArrayList<>();
-        estadoTablero.trayectorias.addAll(trayectorias);
 
+        trayectorias.forEach(t -> {
+
+            Trayectoria tra = new Trayectoria(t.pieza,t.posicion[0],t.posicion[1],t.trayectoria);
+
+            tra.piezasAtacadas = new ArrayList<Pieza>();
+            tra.piezasAtacadas.addAll(t.piezasAtacadas);
+
+            estadoTablero.trayectorias.add(tra);
+
+        });
         return estadoTablero;
     } 
 }

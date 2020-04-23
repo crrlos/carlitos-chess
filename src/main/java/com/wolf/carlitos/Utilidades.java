@@ -95,11 +95,11 @@ public class Utilidades {
     }
 
     private static void actualizarPosicion(Pieza[][] tablero, EstadoTablero estadoTablero, int[] movimiento) {
-        int filaInicio = movimiento[0];
-        int filaFinal = 0;
-        int colInicio = movimiento[1];
-        filaFinal = movimiento[2];
 
+        int filaInicio = movimiento[0];
+        int colInicio = movimiento[1];
+
+        int filaFinal = movimiento[2];
         int colFinal = movimiento[3];
 
         var pieza = tablero[filaInicio][colInicio];
@@ -121,11 +121,14 @@ public class Utilidades {
             if (estadoTablero.alPaso) {
                 if (colFinal > colInicio || colFinal < colInicio) {
                     if (tablero[filaInicio][colFinal] == estadoTablero.piezaALPaso) {
+
+                        // aqui se remueve la pieza al paso
                         tablero[filaInicio][colFinal] = null;
                         estadoTablero.tipoMovimiento = 1;
                     }
                 }
                 estadoTablero.alPaso = false;
+                estadoTablero.piezaALPaso = null;
             }
 
             if (filaFinal == 7 || filaFinal == 0) {
@@ -211,6 +214,7 @@ public class Utilidades {
         tablero[filaInicio][colInicio] = null;
 
         estadoTablero.alPaso = false;
+        estadoTablero.piezaALPaso = null;
 
         if (estadoTablero.tipoMovimiento == -1) {
             estadoTablero.tipoMovimiento = 0;
@@ -219,8 +223,106 @@ public class Utilidades {
 
     public static void actualizarTablero(Pieza[][] tablero, EstadoTablero estadoTablero, int[] movimiento) {
 
+        //var antes = analizarTablero(tablero,estadoTablero,movimiento);
+
+//        if(!antes){
+//            Utilidades.ImprimirPosicicion(tablero);
+//            System.out.println();
+//        }else{
+//            System.out.println();
+//        }
+
         actualizarPosicion(tablero, estadoTablero, movimiento);
-        actualizarTrayectorias(movimiento[2], movimiento[3], estadoTablero, tablero, false);
+        //actualizarTrayectorias(movimiento[2], movimiento[3], estadoTablero, tablero, false);
+
+       // var despues =  analizarTablero(tablero,estadoTablero,movimiento);
+
+//        if(!antes && despues)
+//        {
+//            Utilidades.ImprimirPosicicion(tablero);
+//            System.out.println();
+//        }
+
+    }
+
+    private static boolean analizarTablero(Pieza[][] tablero,EstadoTablero estado,int [] movimiento){
+
+        var trayectorias = new ArrayList<Trayectoria>();
+
+        for (int i = 0; i < tablero.length; i++) {
+            for (int j = 0; j < tablero.length; j++) {
+                var pieza = tablero[i][j];
+
+                if(pieza instanceof Torre){
+                    var posRey = pieza.esBlanca() ? estado.posicionReyNegro : estado.posicionReyBlanco;
+
+                    if(posRey[0] == i){
+                        var trayectoria = new Trayectoria(pieza,i,j,TRAYECTORIA.Recta);
+                        if(posRey[1] > j){
+                            for (int k = j + 1; k < posRey[1]; k++) {
+                                if(tablero[i][k] != null){
+                                    trayectoria.piezasAtacadas.add(tablero[i][k]);
+                                }
+                            }
+                        }
+                        if(posRey[1] < j){
+                            for (int k = j - 1; k > posRey[1]; k--) {
+                                if(tablero[i][k] != null){
+                                    trayectoria.piezasAtacadas.add(tablero[i][k]);
+                                }
+                            }
+                        }
+                        trayectorias.add(trayectoria);
+                    }
+                    if(posRey[1] == j){
+                        var trayectoria = new Trayectoria(pieza,i,j,TRAYECTORIA.Recta);
+                        if(posRey[0] > i){
+                            for (int k = i + 1; k < posRey[0]; k++) {
+                                if(tablero[k][j] != null){
+                                    trayectoria.piezasAtacadas.add(tablero[k][j]);
+                                }
+                            }
+                        }
+                        if(posRey[0] < i){
+                            for (int k = i - 1; k > posRey[0]; k--) {
+                                if(tablero[k][j] != null){
+                                    trayectoria.piezasAtacadas.add(tablero[k][j]);
+                                }
+                            }
+                        }
+                        trayectorias.add(trayectoria);
+                    }
+
+
+                }
+
+            }
+        }
+
+        if(estado.trayectorias.stream().filter(t -> t.pieza instanceof  Torre).count() !=
+        trayectorias.size()){
+            //Utilidades.ImprimirPosicicion(tablero);
+            throw  new IllegalStateException("trayectorias no iguales");
+        }
+
+        for (var tr: trayectorias){
+            var traEstado = estado.trayectorias.stream()
+                    .filter(t -> t.pieza == tr.pieza).findFirst();
+
+            if(traEstado.isEmpty()) throw new IllegalStateException("no se encontró");
+
+            var valor = traEstado.get();
+
+            if(valor.piezasAtacadas.size() != tr.piezasAtacadas.size())
+            {
+                Utilidades.ImprimirPosicicion(tablero);
+               return  true;
+            }
+
+
+        }
+
+return false;
     }
 
     private static void actualizarTrayectorias(int filaFinal, int colFinal, EstadoTablero estadoTablero,
@@ -268,6 +370,44 @@ public class Utilidades {
             estadoTablero.reyEnJaque = false;
             estadoTablero.piezaJaque = null;
         }
+
+        //si hay pieza capturada, quitarla
+        //if(false)
+        if (!recursivo && estadoTablero.piezaCapturada != null) {
+            var pcapturada = estadoTablero.piezaCapturada;
+
+            var trayectorias = new ArrayList<Trayectoria>();
+
+            for (int i = 0; i < estadoTablero.trayectorias.size(); i++) {
+                var trayectoria = estadoTablero.trayectorias.get(i);
+
+                if (trayectoria.piezasAtacadas.contains(estadoTablero.piezaCapturada)) {
+                    trayectorias.add(trayectoria);
+                }
+            }
+
+            estadoTablero.trayectorias.removeAll(trayectorias);
+
+
+            for (int i = 0; i < trayectorias.size(); i++) {
+                var posicion = trayectorias.get(i).posicion;
+
+                var mismoBando = trayectorias.get(i).pieza.esBlanca() == pcapturada.esBlanca();
+
+                if (mismoBando) {
+                    estadoTablero.turnoBlanco = !estadoTablero.turnoBlanco;
+                    actualizarTrayectorias(posicion[0], posicion[1], estadoTablero, tablero, true);
+                    estadoTablero.turnoBlanco = !estadoTablero.turnoBlanco;
+                } else {
+
+                    actualizarTrayectorias(posicion[0], posicion[1], estadoTablero, tablero, true);
+
+
+                }
+
+            }
+        }
+
 
 
         // si pieza  es atacada en alguna trayectoria y es la unica pieza borrar trayectoria
@@ -338,13 +478,15 @@ public class Utilidades {
                     if (piezaTrayectoriaX == piezaX && piezaX == reyX) {
                         if (Math.min(piezaTrayectoriaY, reyY) <= piezaY && piezaY <= Math.max(piezaTrayectoriaY, reyY)) {
                             //esta dentro
-                            trayectoria.piezasAtacadas.add(pieza);
+                            if(!trayectoria.piezasAtacadas.contains(pieza))
+                                 trayectoria.piezasAtacadas.add(pieza);
                         }
                     } else //alineacion horizontal
                         if (piezaTrayectoriaY == piezaY && piezaY == reyY) {
                             if (Math.min(piezaTrayectoriaX, reyX) <= piezaX && piezaX <= Math.max(piezaTrayectoriaX, reyX)) {
                                 //esta dentro
-                                trayectoria.piezasAtacadas.add(pieza);
+                                if(!trayectoria.piezasAtacadas.contains(pieza))
+                                    trayectoria.piezasAtacadas.add(pieza);
                             }
                         }
                 }
@@ -560,6 +702,7 @@ public class Utilidades {
                     for (int i = y1 - 1; i > y2; i--) {
                         var p = tablero[x1][i];
                         if (p != null) {
+
                             trayectoria.piezasAtacadas.add(p);
                         }
                     }
