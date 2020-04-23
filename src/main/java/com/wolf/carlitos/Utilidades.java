@@ -279,10 +279,10 @@ public class Utilidades {
                 var trayectoria = estadoTablero.trayectorias.get(i);
 
                 if (trayectoria.piezasAtacadas.contains(pieza)) {
-                    if(trayectoria.piezasAtacadas.size() == 1)
                         trayectorias.add(trayectoria);
-                    else
-                        trayectoria.piezasAtacadas.remove(pieza);
+//                    if(trayectoria.piezasAtacadas.size() == 1)
+//                    else
+//                        trayectoria.piezasAtacadas.remove(pieza);
                 }
             }
 
