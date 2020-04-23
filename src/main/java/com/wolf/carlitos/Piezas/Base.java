@@ -282,7 +282,22 @@ public class Base {
         tablero[fo][co] = null;
         tablero[fd][cd] = piezaActual;
 
+        boolean tomaAlPaso = false;
+
+        if(piezaActual instanceof Peon && estado.alPaso){
+
+            if(tablero[fo][cd] == estado.piezaALPaso){
+                tomaAlPaso = true;
+                tablero[fo][cd] = null;
+            }
+
+        }
+
         var jaque = ReyEnJaque(tablero,blanco);
+
+        if(piezaActual instanceof Peon && estado.alPaso && tomaAlPaso){
+            tablero[fo][cd] = estado.piezaALPaso;
+        }
 
         tablero[fd][cd] = piezaDestino;
         tablero[fo][co] = piezaActual;
