@@ -127,8 +127,8 @@ public class Utilidades {
                         estadoTablero.tipoMovimiento = 1;
                     }
                 }
+
                 estadoTablero.alPaso = false;
-                estadoTablero.piezaALPaso = null;
             }
 
             if (filaFinal == 7 || filaFinal == 0) {
@@ -214,7 +214,6 @@ public class Utilidades {
         tablero[filaInicio][colInicio] = null;
 
         estadoTablero.alPaso = false;
-        estadoTablero.piezaALPaso = null;
 
         if (estadoTablero.tipoMovimiento == -1) {
             estadoTablero.tipoMovimiento = 0;

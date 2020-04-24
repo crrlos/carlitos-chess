@@ -107,7 +107,7 @@ public class Search {
                 tablero[fi][ci] = tablero[fd][cd];
                 break;
             case 1: //al paso
-                tablero[fi][cd] = new Peon(!turnoBlanco);
+                tablero[fi][cd] = estadoTablero.piezaALPaso;
                 tablero[fi][ci] = tablero[fd][cd];
                 break;
             case 2: //promocion
