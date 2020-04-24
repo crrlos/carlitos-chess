@@ -1,7 +1,5 @@
 package com.wolf.carlitos;
 
-import com.wolf.carlitos.Piezas.*;
-
 import java.util.Scanner;
 
 public class App {
@@ -25,8 +23,8 @@ public class App {
                 if (linea.contains("moves")) {
                     var movimientos = linea.replaceAll("position startpos moves ", "").split(" ");
                     juego = new Juego();
-                    juego.EstablecerPosicion(movimientos);
-                    Utilidades.ImprimirPosicicion(juego.tablero);
+                    juego.establecerPosicion(movimientos);
+                    Utilidades.imprimirPosicicion(juego.tablero);
                 }
             } else if (linea.contains("go")) {
                 int n = 1;

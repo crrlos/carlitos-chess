@@ -51,7 +51,7 @@ public class Juego {
     
     }
    
-   public void EstablecerPosicion(String... movimientos){
+   public void establecerPosicion(String... movimientos){
         for (var movimiento : movimientos) {
             secuencia.add(Utilidades.convertirAPosicion(movimiento));
             Utilidades.actualizarTablero(tablero, estadoTablero, Utilidades.convertirAPosicion(movimiento));
@@ -66,7 +66,7 @@ public class Juego {
 
             if (i == 7) {
                 String[] ops = filas[i].split(" ");
-                IniciarFen(ops[0], 7 - i);
+                iniciarFen(ops[0], 7 - i);
 
                 estadoTablero.turnoBlanco = ops[1].equals("w");
                 estadoTablero.enroqueLBlanco = ops[2].contains("Q");
@@ -75,15 +75,15 @@ public class Juego {
                 estadoTablero.enroqueLNegro = ops[2].contains("q");
 
             } else {
-                IniciarFen(filas[i], 7 - i);
+                iniciarFen(filas[i], 7 - i);
             }
 
         }
 
         System.out.println("fen procesado");
-        Utilidades.ImprimirPosicicion(tablero);
+        Utilidades.imprimirPosicicion(tablero);
     }
-    private  void IniciarFen(String fila, int i) {
+    private  void iniciarFen(String fila, int i) {
 
         int j = 0;
 
@@ -136,13 +136,13 @@ public class Juego {
     }
   
    public void perft(int n) throws CloneNotSupportedException, IOException{
-       var search = new Search(tablero, estadoTablero);
+       var search = new search(tablero, estadoTablero);
        search.setSecuencia(secuencia);
        search.perft(n);
        
    }
    public String mover(int n) throws CloneNotSupportedException, IOException{
-       var search = new Search(tablero, estadoTablero);
-       return Utilidades.ConvertirANotacion(search.search(n));
+       var search = new search(tablero, estadoTablero);
+       return Utilidades.convertirANotacion(search.search(n));
    }
 }

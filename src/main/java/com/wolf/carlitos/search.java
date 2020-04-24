@@ -17,12 +17,12 @@ import java.util.stream.Collectors;
  *
  * @author carlos
  */
-public class Search {
+public class search {
     public static List<int[]> secuencia =  new ArrayList<>();
     private final Pieza[][] tablero;
     private EstadoTablero estadoTablero;
 
-    public Search(Pieza[][] tablero, EstadoTablero estado) throws CloneNotSupportedException {
+    public search(Pieza[][] tablero, EstadoTablero estado) throws CloneNotSupportedException {
         this.tablero = tablero;
         this.estadoTablero = estado.clone();
     }
@@ -55,12 +55,12 @@ public class Search {
             
             perftSearch(deep - 1, estadoTablero.clone(),acumulador,false);
             
-            RevertirMovimiento(mov[0],mov[1],mov[2],mov[3],estado.turnoBlanco,estadoTablero);
+            revertirMovimiento(mov[0],mov[1],mov[2],mov[3],estado.turnoBlanco,estadoTablero);
             
             estadoTablero =  estado.clone(); //vuelve a ser el original
            
           if(reset){
-               System.out.println(Utilidades.ConvertirANotacion(mov) + " " + acumulador.contadorPerft);
+               System.out.println(Utilidades.convertirANotacion(mov) + " " + acumulador.contadorPerft);
                 acumulador.contadorPerft = 0;
           }
           secuencia.remove(secuencia.size() -1);
@@ -85,7 +85,7 @@ public class Search {
      }
     
     
-    private void RevertirMovimiento(int fi, int ci, int fd, int cd,boolean turnoBlanco, EstadoTablero estado){
+    private void revertirMovimiento(int fi, int ci, int fd, int cd, boolean turnoBlanco, EstadoTablero estado){
         
        
         var pieza = tablero[fd][cd];
@@ -157,7 +157,7 @@ public class Search {
         }
 
     }
-    public int Mini(int nivel,EstadoTablero estado) throws CloneNotSupportedException, IOException{
+    public int mini(int nivel, EstadoTablero estado) throws CloneNotSupportedException, IOException{
         
         
         
@@ -174,12 +174,12 @@ public class Search {
             
             estadoTablero.turnoBlanco = !estado.turnoBlanco;
             
-            int evaluacion = Maxi(nivel -1,estadoTablero.clone());
+            int evaluacion = maxi(nivel -1,estadoTablero.clone());
             
             if(evaluacion < eval)
                 eval = evaluacion;
             
-            RevertirMovimiento(mov[0],mov[1],mov[2],mov[3],estado.turnoBlanco,estadoTablero);
+            revertirMovimiento(mov[0],mov[1],mov[2],mov[3],estado.turnoBlanco,estadoTablero);
             estadoTablero = (EstadoTablero) estado.clone();
         }
        
@@ -187,7 +187,7 @@ public class Search {
     }
     
     
-    public int Maxi(int nivel, EstadoTablero estado) throws CloneNotSupportedException, IOException{
+    public int maxi(int nivel, EstadoTablero estado) throws CloneNotSupportedException, IOException{
         
         if(nivel == 0) return 0;
         
@@ -204,12 +204,12 @@ public class Search {
             
             estadoTablero.turnoBlanco = !estado.turnoBlanco;
             
-            int evaluacion = Mini(nivel -1,estadoTablero.clone());
+            int evaluacion = mini(nivel -1,estadoTablero.clone());
             
             if(evaluacion > eval)
                 eval = evaluacion;
             
-            RevertirMovimiento(mov[0],mov[1],mov[2],mov[3],estado.turnoBlanco,estadoTablero);
+            revertirMovimiento(mov[0],mov[1],mov[2],mov[3],estado.turnoBlanco,estadoTablero);
             estadoTablero = (EstadoTablero) estado.clone();
         }
         return eval;
@@ -232,7 +232,7 @@ public class Search {
             
             var estadoLocal = (EstadoTablero) estadoTablero.clone();
             
-            int eval = estadoOriginal.turnoBlanco ? Mini(n,estadoLocal) : Maxi(n,estadoLocal);
+            int eval = estadoOriginal.turnoBlanco ? mini(n,estadoLocal) : maxi(n,estadoLocal);
             
             if(estadoOriginal.turnoBlanco){
                 if(eval > valoracion){
@@ -247,7 +247,7 @@ public class Search {
                 }
             }
            
-           RevertirMovimiento(mov[0],mov[1],mov[2],mov[3],estadoOriginal.turnoBlanco,estadoLocal);
+           revertirMovimiento(mov[0],mov[1],mov[2],mov[3],estadoOriginal.turnoBlanco,estadoLocal);
            estadoTablero =  estadoOriginal.clone(); //vuelve a ser el original
        }
        return movimientos.get(pos);
@@ -261,7 +261,7 @@ public class Search {
         
         var secuenciaCopia = secuencia.stream().map( e -> {
         
-            return Utilidades.ConvertirANotacion(e);
+            return Utilidades.convertirANotacion(e);
         
         }).collect(Collectors.toList());
         

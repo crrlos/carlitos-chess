@@ -22,7 +22,7 @@ import java.util.Objects;
  */
 public class Utilidades {
 
-    public static void ImprimirPosicicion(Pieza[][] tablero) {
+    public static void imprimirPosicicion(Pieza[][] tablero) {
         for (int i = 7; i >= 0; i--) {
             System.out.println("+---+---+---+---+---+---+---+---+");
             for (int j = 0; j < 8; j++) {
@@ -72,7 +72,7 @@ public class Utilidades {
         return posicion;
     }
 
-    public static String ConvertirANotacion(int[] movimiento) {
+    public static String convertirANotacion(int[] movimiento) {
 
         final String FILAS = "12345678";
         final String COLUMNAS = "abcdefgh";
@@ -314,7 +314,7 @@ public class Utilidades {
 
             if(valor.piezasAtacadas.size() != tr.piezasAtacadas.size())
             {
-                Utilidades.ImprimirPosicicion(tablero);
+                Utilidades.imprimirPosicicion(tablero);
                return  true;
             }
 
