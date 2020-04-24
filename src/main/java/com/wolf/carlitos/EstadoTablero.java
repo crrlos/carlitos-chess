@@ -14,21 +14,15 @@ public  class EstadoTablero  implements Cloneable{
     public  boolean enroqueLNegro = true;
     public  boolean alPaso;
     public  boolean turnoBlanco = true;
-    public  boolean reyEnJaque;
     
     public  Pieza piezaALPaso;
     public  Pieza piezaCapturada;
-    public Pieza piezaJaque;
     
     public  int tipoMovimiento = -1;
     
     public int[] posicionReyBlanco = new int[]{0,4};
     public int[] posicionReyNegro = new int[]{7,4};
-    
-    
-    public List<Trayectoria> trayectorias =  new ArrayList<>();
-    
-    
+
     @Override
     public EstadoTablero clone() throws
                    CloneNotSupportedException 

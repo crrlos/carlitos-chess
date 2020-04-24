@@ -86,22 +86,8 @@ public class search {
     
     
     private void revertirMovimiento(int fi, int ci, int fd, int cd, boolean turnoBlanco, EstadoTablero estado){
-        
-       
-        var pieza = tablero[fd][cd];
-        
-        
-        var iterator = estadoTablero.trayectorias.listIterator(estado.trayectorias.size());
-        
-        while(iterator.hasPrevious()){
-            var ele =  iterator.previous();
-            if(ele.pieza == pieza){
-                iterator.remove();
-            }
-        }
-        
-        
-        
+
+
         switch(estado.tipoMovimiento){
             case 0: //mov
                 tablero[fi][ci] = tablero[fd][cd];
@@ -149,12 +135,6 @@ public class search {
        
         tablero[fd][cd] = estado.piezaCapturada;
 
-
-        //quitar pieza de listas de ataque
-        for (int i = 0; i < estadoTablero.trayectorias.size(); i++) {
-            var t =  estadoTablero.trayectorias.get(i);
-            t.piezasAtacadas.remove(pieza);
-        }
 
     }
     public int mini(int nivel, EstadoTablero estado) throws CloneNotSupportedException, IOException{
@@ -271,7 +251,7 @@ public class search {
     }
 
     public void setSecuencia(List<int[]> secuencia) {
-        this.secuencia = secuencia;
+        search.secuencia = secuencia;
     }
     
     
