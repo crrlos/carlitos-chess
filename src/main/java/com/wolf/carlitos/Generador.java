@@ -676,27 +676,6 @@ public class Generador {
         Pieza posicionActual;
         Pieza pieza = tablero[fila][columna];
 
-        boolean puedeAlPaso = true;
-
-//        if (estado.alPaso && fila == (pieza.esBlanca() ? 4 : 3)) {
-//            for (int i = 0; i < estado.trayectorias.size(); i++) {
-//                var trayectoria = estado.trayectorias.get(i);
-//
-//                if(trayectoria.piezasAtacadas.size() == 2){
-//                    if(trayectoria.piezasAtacadas.contains(pieza)){
-//                        var piezaAlPaso = tablero[fila][columna + 1] == estado.piezaALPaso ||
-//                                tablero[fila][columna -1] == estado.piezaALPaso;
-//
-//                        if(piezaAlPaso){
-//                         puedeAlPaso = false;
-//                        }
-//
-//                    }
-//                }
-//
-//            }
-//        }
-
 
 
         int filaDestino;
@@ -738,7 +717,7 @@ public class Generador {
                         lista.add(new int[]{fila, columna, filaDestino, columna - 1});
                     }
                 }
-            } else if (estado.alPaso && fila == (pieza.esBlanca() ? 4 : 3) && puedeAlPaso) {
+            } else if (estado.alPaso && fila == (pieza.esBlanca() ? 4 : 3)) {
                 if (tablero[fila][columna - 1] == estado.piezaALPaso) {
                     lista.add(new int[]{fila, columna, filaDestino, columna - 1});
                 }
@@ -757,17 +736,13 @@ public class Generador {
                         lista.add(new int[]{fila, columna, filaDestino, columna + 1});
                     }
                 }
-            } else if (estado.alPaso && fila == (pieza.esBlanca() ? 4 : 3) && puedeAlPaso) {
+            } else if (estado.alPaso && fila == (pieza.esBlanca() ? 4 : 3)) {
                 if (tablero[fila][columna + 1] == estado.piezaALPaso) {
                     lista.add(new int[]{fila, columna, filaDestino, columna + 1});
                 }
             }
         }
-        var clone = new ArrayList<>(lista);
-
-        var result = new Base(estado).MovimientosValidos(lista, tablero, pieza.esBlanca());
-
-        return result;
+        return new Base(estado).MovimientosValidos(lista, tablero, pieza.esBlanca());
     }
 
 }
