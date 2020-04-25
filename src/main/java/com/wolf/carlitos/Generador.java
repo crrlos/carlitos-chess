@@ -8,6 +8,8 @@ package com.wolf.carlitos;
 import com.wolf.carlitos.Piezas.*;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -57,7 +59,7 @@ public class Generador {
         var piezaJaque = Utilidades.reyEnJaque(tablero,estado);
 
 
-        if(false)
+        //if(false)
         if (piezaJaque != null) {
 
             var posicionRey = estado.turnoBlanco ? estado.posicionReyBlanco : estado.posicionReyNegro;
@@ -166,7 +168,7 @@ public class Generador {
                         if (!(tablero[fila][x2] instanceof Rey)) {
                             if (lista.size() > 0)
                             {
-                                if (!(lista.get(0)[2] == y1 && lista.get(0)[3] == columna))
+                                if (!(lista.get(0)[2] == fila && lista.get(0)[3] == x2))
                                     lista.add(new int[]{fila, columna, fila, x2});
                             }
                             else
@@ -184,7 +186,7 @@ public class Generador {
                 default:
                     break;
             }
-            //validar movimientos generados
+            //validar que se puede llegar a las posiciones generadas
             var ite = lista.iterator();
 
             while (ite.hasNext()) {
@@ -221,9 +223,9 @@ public class Generador {
                     }
                 }
             }
-
+             // filtrar si no son movimientos válidos.
+             lista.removeIf(e -> !Utilidades.movimientoValido(e,tablero,estado));
             return lista;
-
         }
 
         boolean vertical;

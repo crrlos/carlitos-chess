@@ -39,21 +39,15 @@ public class Test{
     private void TorreSinMovimientos(){
         String[] fens = {
 
-                "8/2p4k/3p3r/KP6/4Pp2/7R/6P1/8 b - - 0 1"
+                "6k1/8/8/8/KR5r/8/8/8 w - - 0 1"
         };
         Juego j = new Juego();
 
         j.setFen(fens[0]);
 
-        var pieza  = Utilidades.reyEnJaque(j.tablero,j.estadoTablero);
+        var res = Utilidades.movimientoValido(new int[]{3,1,3,1},j.tablero,j.estadoTablero);
 
-        //if(pieza == null) throw new IllegalStateException("");
-
-        var d = Generador.movimientosDeTorre(j.tablero,j.estadoTablero,5,7);
-
-        System.out.println(d.size());
-        d.stream().map(Utilidades::convertirANotacion)
-                .forEach(s -> System.out.print(s + " "));
+        System.out.println(res);
 
 
     }
