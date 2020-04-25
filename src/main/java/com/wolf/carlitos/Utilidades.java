@@ -250,8 +250,6 @@ public class Utilidades {
         if ((result = ataqueDiagonal(posicionRey[0], posicionRey[1], tablero, blanco)) != null) return result;
         if ((result = ataqueCaballo(posicionRey[0], posicionRey[1], tablero, blanco)) != null) return result;
         if ((result = ataquePeon(posicionRey[0], posicionRey[1], tablero, blanco)) != null) return result;
-        if ((result = ataqueRey(posicionRey[0], posicionRey[1], tablero, blanco)) != null) return result;
-
 
         return null;
     }

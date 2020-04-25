@@ -45,7 +45,7 @@ public class Generador {
 
     }
 
-    private static List<int[]> movimientosDeTorre(Pieza[][] tablero, EstadoTablero estado, int fila, int columna) {
+    public static List<int[]> movimientosDeTorre(Pieza[][] tablero, EstadoTablero estado, int fila, int columna) {
 
         var lista = new ArrayList<int[]>();
 
@@ -57,7 +57,9 @@ public class Generador {
         var piezaJaque = Utilidades.reyEnJaque(tablero,estado);
 
 
+        if(false)
         if (piezaJaque != null) {
+
             var posicionRey = estado.turnoBlanco ? estado.posicionReyBlanco : estado.posicionReyNegro;
 
             Trayectoria trayectoria = null;
@@ -65,10 +67,13 @@ public class Generador {
             if (tablero[piezaJaque[0]][piezaJaque[1]] instanceof Peon ||
                     tablero[piezaJaque[0]][piezaJaque[1]] instanceof Caballo) {
                 trayectoria = Trayectoria.Ninguna;
+
             } else if (piezaJaque[0] == posicionRey[0] || piezaJaque[1] == posicionRey[1]) {
                 trayectoria = Trayectoria.Recta;
+
             } else {
                 trayectoria = Trayectoria.Diagonal;
+
             }
 
 
@@ -148,10 +153,23 @@ public class Generador {
                     //si torre puede bloquear
                     if (x1 - x2 != 0 && columna >= Math.min(x1, x2) && columna <= Math.max(x1, x2)) {
                         if (!(tablero[y1][columna] instanceof Rey)) {
-                            lista.add(new int[]{fila, columna, y1, columna});
+                            // TODO mejorar o revisar este paso
+                            if (lista.size() > 0)
+                            {
+                                if (!(lista.get(0)[2] == y1 && lista.get(0)[3] == columna))
+                                    lista.add(new int[]{fila, columna, y1, columna});
+                            }
+                            else
+                                lista.add(new int[]{fila, columna, y1, columna});
                         }
                     } else if (y1 - y2 != 0 && fila >= Math.min(y1, y2) && fila <= Math.max(y1, y2)) {
                         if (!(tablero[fila][x2] instanceof Rey)) {
+                            if (lista.size() > 0)
+                            {
+                                if (!(lista.get(0)[2] == y1 && lista.get(0)[3] == columna))
+                                    lista.add(new int[]{fila, columna, fila, x2});
+                            }
+                            else
                             lista.add(new int[]{fila, columna, fila, x2});
                         }
                     }
@@ -211,12 +229,17 @@ public class Generador {
         boolean vertical;
         boolean horizontal;
 
-        int filaPrueba = fila < 7 ? fila + 1 : fila - 1;
-        int columnaPrueba = columna < 7? columna + 1 : columna -1;
+//        int filaPrueba = fila < 7 && tablero[fila + 1][columna] == null ? fila + 1 :
+//                fila > 0 && tablero[fila - 1][columna] == null ? fila - 1: fila;
+//
+//        int columnaPrueba = columna < 7 && tablero[fila][columna + 1] == null ? columna + 1 :
+//                columna > 0 && tablero[fila][columna - 1] == null ? columna - 1: columna;
+//
+//
+//        vertical = Utilidades.movimientoValido(new int[]{fila,columna,filaPrueba,columna},tablero,estado);
+//        horizontal = Utilidades.movimientoValido(new int[]{fila,columna,fila,columnaPrueba},tablero,estado);
 
-        vertical = Utilidades.movimientoValido(new int[]{fila,columna,filaPrueba,columna},tablero,estado);
-        horizontal = Utilidades.movimientoValido(new int[]{fila,columna,fila,columnaPrueba},tablero,estado);
-
+        vertical = horizontal = true;
         int i;
 
         if(vertical){
@@ -294,8 +317,13 @@ public class Generador {
                 i--;
             }
         }
-
-        return lista;
+//        if(lista.stream().map(Utilidades::convertirANotacion).filter(s -> s.equals("h3f3")).count() > 0
+//        && !estado.turnoBlanco){
+//            Utilidades.imprimirPosicicion(tablero);
+//            System.out.println();
+//        }
+        //return lista;
+       return new Base(estado).MovimientosValidos(lista,tablero,estado.turnoBlanco);
     }
 
     private static List<int[]> movimientosDeDama(Pieza[][] tablero, EstadoTablero estado, int fila, int columna) {
