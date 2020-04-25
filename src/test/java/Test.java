@@ -10,32 +10,26 @@ public class Test{
 
 
     public static void main(String... args) throws CloneNotSupportedException {
-        boolean c=false;
-        Scanner entrada = new Scanner(System.in);
-        int x ;
-        try
-        {
 
-            while(!c)
-            {
-                System.out.println("Escriba 3 numeros enteros");
-                if(entrada.hasNextInt())
-                {
-                    x=entrada.nextInt();
-                    c=true;
-                }
-                else
-                {
-                    System.out.println("Que sea entero, try again");
-                    entrada.nextLine();
-                }
-            }
-        }
-        catch(InputMismatchException exc)
-        {
-            System.out.println(exc);
-        }
+            double dolar = 10;
+            double centavos = 50;
 
+            double dolar2 = 3;
+            double centavos2 = 50;
+
+            var total1 = dolar + centavos /100;
+            var total2 = dolar2 + centavos2 /100;
+
+            var resultado = total1 - total2;
+
+            var entero = (int) resultado;
+
+            var decimal = (resultado - entero) * 100;
+
+
+
+
+        System.out.println(entero + " " + decimal);
 
     }
 }

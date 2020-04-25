@@ -90,6 +90,8 @@ public class Juego {
         for (char c : fila.toCharArray()) {
             if (c == 'k') {
                 tablero[i][j] = new Rey(false);
+                estadoTablero.posicionReyNegro[0] = i;
+                estadoTablero.posicionReyNegro[1] = j;
             }
             if (c == 'q') {
                 tablero[i][j] = new Dama(false);
@@ -109,6 +111,8 @@ public class Juego {
 
             if (c == 'K') {
                 tablero[i][j] = new Rey(true);
+                estadoTablero.posicionReyBlanco[0] = i;
+                estadoTablero.posicionReyBlanco[1] = j;
             }
             if (c == 'Q') {
                 tablero[i][j] = new Dama(true);
