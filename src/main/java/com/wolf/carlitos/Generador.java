@@ -19,7 +19,11 @@ import java.util.List;
 public class Generador {
     enum Trayectoria {Recta, Diagonal, Ninguna}
 
+    static int[] piezaJaque = null;
+
     public static List<int[]> generarMovimientos(Pieza[][] tablero, EstadoTablero estado) {
+
+        piezaJaque = Utilidades.reyEnJaque(tablero,estado);
 
         var movimientos = new ArrayList<int[]>();
 
@@ -43,6 +47,8 @@ public class Generador {
             fila++;
             columna = 0;
         }
+
+        piezaJaque = null;
         return movimientos;
 
     }
@@ -56,10 +62,7 @@ public class Generador {
 
         pieza = tablero[fila][columna];
 
-        var piezaJaque = Utilidades.reyEnJaque(tablero,estado);
 
-
-        //if(false)
         if (piezaJaque != null) {
 
             var posicionRey = estado.turnoBlanco ? estado.posicionReyBlanco : estado.posicionReyNegro;
@@ -319,12 +322,7 @@ public class Generador {
                 i--;
             }
         }
-//        if(lista.stream().map(Utilidades::convertirANotacion).filter(s -> s.equals("h3f3")).count() > 0
-//        && !estado.turnoBlanco){
-//            Utilidades.imprimirPosicicion(tablero);
-//            System.out.println();
-//        }
-        //return lista;
+
        return new Base(estado).MovimientosValidos(lista,tablero,estado.turnoBlanco);
     }
 
