@@ -234,17 +234,29 @@ public class Generador {
         boolean vertical;
         boolean horizontal;
 
-//        int filaPrueba = fila < 7 && tablero[fila + 1][columna] == null ? fila + 1 :
-//                fila > 0 && tablero[fila - 1][columna] == null ? fila - 1: fila;
-//
-//        int columnaPrueba = columna < 7 && tablero[fila][columna + 1] == null ? columna + 1 :
-//                columna > 0 && tablero[fila][columna - 1] == null ? columna - 1: columna;
-//
-//
-//        vertical = Utilidades.movimientoValido(new int[]{fila,columna,filaPrueba,columna},tablero,estado);
-//        horizontal = Utilidades.movimientoValido(new int[]{fila,columna,fila,columnaPrueba},tablero,estado);
+        int filaPrueba =
+                fila < 7 && (tablero[fila + 1][columna] == null || (tablero[fila + 1][columna].esBlanca() != pieza.esBlanca()
+                        && !(tablero[fila + 1][columna] instanceof Rey)))
+                        ? fila + 1 :
+                        fila > 0 && (tablero[fila - 1][columna] == null || (tablero[fila - 1][columna].esBlanca() != pieza.esBlanca()
+                                && !(tablero[fila - 1][columna] instanceof Rey)))
+                                ? fila - 1
+                                : fila;
 
-        vertical = horizontal = true;
+        int columnaPrueba =
+                columna < 7 && (tablero[fila][columna + 1] == null || (tablero[fila][columna + 1].esBlanca() != pieza.esBlanca()
+                        && !(tablero[fila][columna + 1] instanceof Rey)))
+                        ? columna + 1 :
+                        columna > 0 && (tablero[fila][columna -1] == null || (tablero[fila][columna -1].esBlanca() != pieza.esBlanca()
+                                && !(tablero[fila][columna -1] instanceof Rey)))
+                                ? columna - 1
+                                : columna;
+
+
+        vertical = Utilidades.movimientoValido(new int[]{fila,columna,filaPrueba,columna},tablero,estado);
+        horizontal = Utilidades.movimientoValido(new int[]{fila,columna,fila,columnaPrueba},tablero,estado);
+
+        //vertical = horizontal = true;
         int i;
 
         if(vertical){
@@ -322,8 +334,7 @@ public class Generador {
                 i--;
             }
         }
-
-       return new Base(estado).MovimientosValidos(lista,tablero,estado.turnoBlanco);
+        return  lista;
     }
 
     private static List<int[]> movimientosDeDama(Pieza[][] tablero, EstadoTablero estado, int fila, int columna) {
