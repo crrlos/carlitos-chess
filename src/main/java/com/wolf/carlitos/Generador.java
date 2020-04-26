@@ -63,7 +63,7 @@ public class Generador {
         pieza = tablero[fila][columna];
 
 
-        if (piezaJaque != null) {
+        if (reyEnJaque()) {
 
             var posicionRey = estado.turnoBlanco ? estado.posicionReyBlanco : estado.posicionReyNegro;
 
@@ -601,8 +601,113 @@ public class Generador {
             }
         }
 
+        if(reyEnJaque()){
+
+            var posicionRey = estado.turnoBlanco ? estado.posicionReyBlanco : estado.posicionReyNegro;
+
+            Trayectoria trayectoria = null;
+
+            if (tablero[piezaJaque[0]][piezaJaque[1]] instanceof Peon ||
+                    tablero[piezaJaque[0]][piezaJaque[1]] instanceof Caballo) {
+                trayectoria = Trayectoria.Ninguna;
+
+            } else if (piezaJaque[0] == posicionRey[0] || piezaJaque[1] == posicionRey[1]) {
+                trayectoria = Trayectoria.Recta;
+
+            } else {
+                trayectoria = Trayectoria.Diagonal;
+
+            }
+
+
+
+             int x1 = piezaJaque[1];
+             int y1 = piezaJaque[0];
+
+             int x2 = posicionRey[1];
+             int y2 = posicionRey[0];
+
+
+            switch (trayectoria){
+                case Diagonal:
+                    int temp;
+                    //se invierte para que cuadre la formula de los puntos
+                    //punto x1 < x2
+                    if (x1 > x2) {
+
+                        temp = x1;
+                        x1 = x2;
+                        x2 = temp;
+                        temp = y1;
+                        y1 = y2;
+                        y2 = temp;
+
+                    }
+
+                    int constante = (x1 * (y2 - y1) - y1 * (x2 - x1)) / Math.abs(y2 - y1);
+                    boolean x;
+                    boolean c;
+                    x = -(y2 - y1) > 0;
+                    c = constante > 0;
+                    constante = Math.abs(constante);
+
+
+                    int finalConstante = constante;
+                    int finalX = x1;
+                    int finalX1 = x2;
+                    lista.removeIf(m -> {
+
+                        boolean remover = false;
+                        if (!x && !c) {
+                            remover = m[2] == m[3] + finalConstante;
+                        } else if (!x && c) {
+                            remover = m[2] == m[3] - finalConstante;
+
+                        } else if (x && !c) {
+                            remover = m[2] == -m[3] + finalConstante;
+                        }
+
+                        boolean entrePuntos = Math.min(finalX, finalX1) <= m[3] && m[3] <= Math.max(finalX, finalX1);
+
+                        return !(remover && entrePuntos);
+
+                    });
+
+
+                    break;
+
+
+                case Recta:
+
+                    lista.removeIf( m -> {
+
+                        if (m[2] == piezaJaque[0]) {
+                            return !(Math.min(piezaJaque[1], posicionRey[1]) <= m[3] && m[3] <= Math.max(piezaJaque[1], posicionRey[1]));
+
+                        }
+                        if(m[3] == piezaJaque[1]){
+                            return !(Math.min(piezaJaque[0],posicionRey[0]) <= m[2] && m[2] <= Math.max(piezaJaque[0],posicionRey[0]));
+
+                        }
+
+                    return  true;
+                    });
+
+                    break;
+
+                case Ninguna:
+                    lista.removeIf(m -> !(m[2] == piezaJaque[0] && m[3] == piezaJaque[1]));
+                    break;
+            }
+            return  lista;
+        }
+
         return new Base(estado).MovimientosValidos(lista, tablero, pieza.esBlanca());
 
+    }
+
+    private static boolean reyEnJaque() {
+        return piezaJaque != null;
     }
 
     private static List<int[]> movimientosDeAlfil(Pieza[][] tablero, EstadoTablero estado, int fila, int columna) {
