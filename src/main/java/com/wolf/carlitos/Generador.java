@@ -702,7 +702,14 @@ public class Generador {
             return  lista;
         }
 
-        return new Base(estado).MovimientosValidos(lista, tablero, pieza.esBlanca());
+        if(lista.size() > 0){
+            if(!Utilidades.movimientoValido(lista.get(0),tablero,estado)){
+                lista.clear();
+                return  lista;
+            }
+        }
+
+        return lista;
 
     }
 
