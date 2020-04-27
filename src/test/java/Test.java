@@ -52,12 +52,22 @@ public class Test{
 
     }
 
+    private  void JaquesAlfil(){
+        Juego j = new Juego();
+
+        j.setFen("2b1k3/8/8/8/Q7/8/8/8 b - - 0 1");
+        Generador.piezaJaque = new int[]{3,0};
+        var result = Generador.movimientosDeAlfil(j.tablero,j.estadoTablero,7,2);
+
+        System.out.println(result.size());
+    }
+
     public static void main(String... args)  {
 
 
     Test t = new Test();
    // t.Jaques();
-    t.TorreSinMovimientos();
+   t.JaquesAlfil();
 
 
 
