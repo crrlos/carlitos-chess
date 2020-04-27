@@ -721,92 +721,6 @@ public class Generador {
         Pieza pieza = tablero[fila][columna];
         var lista = new ArrayList<int[]>();
 
-
-        var f = fila + 1;
-        var c = columna + 1;
-        while (f < 8 && c < 8) {
-            posicionActual = tablero[f][c];
-
-            if (posicionActual != null) {
-                if (posicionActual.esBlanca() == pieza.esBlanca() || posicionActual instanceof Rey) {
-                    break;
-                }
-            }
-
-            lista.add(new int[]{fila, columna, f, c});
-
-            if (posicionActual != null && posicionActual.esBlanca() != pieza.esBlanca()) {
-                break;
-            }
-
-            f++;
-            c++;
-        }
-
-        f = fila - 1;
-        c = columna - 1;
-        while (f >= 0 && c >= 0) {
-
-            posicionActual = tablero[f][c];
-
-            if (posicionActual != null) {
-                if (posicionActual.esBlanca() == pieza.esBlanca() || posicionActual instanceof Rey) {
-                    break;
-                }
-            }
-
-            lista.add(new int[]{fila, columna, f, c});
-
-            if (posicionActual != null && posicionActual.esBlanca() != pieza.esBlanca()) {
-                break;
-            }
-
-            f--;
-            c--;
-        }
-
-        f = fila + 1;
-        c = columna - 1;
-        while (f < 8 && c >= 0) {
-            posicionActual = tablero[f][c];
-
-            if (posicionActual != null) {
-                if (posicionActual.esBlanca() == pieza.esBlanca() || posicionActual instanceof Rey) {
-                    break;
-                }
-            }
-
-            lista.add(new int[]{fila, columna, f, c});
-
-            if (posicionActual != null && posicionActual.esBlanca() != pieza.esBlanca()) {
-                break;
-            }
-
-            f++;
-            c--;
-        }
-
-        f = fila - 1;
-        c = columna + 1;
-        while (f >= 0 && c < 8) {
-            posicionActual = tablero[f][c];
-
-            if (posicionActual != null) {
-                if (posicionActual.esBlanca() == pieza.esBlanca() || posicionActual instanceof Rey) {
-                    break;
-                }
-            }
-
-            lista.add(new int[]{fila, columna, f, c});
-
-            if (posicionActual != null && posicionActual.esBlanca() != pieza.esBlanca()) {
-                break;
-            }
-
-            f--;
-            c++;
-        }
-
         if (reyEnJaque()) {
             lista.clear();
             // alfil puede bloquear
@@ -840,150 +754,150 @@ public class Generador {
             switch (trayectoria) {
                 case Diagonal:
 
-                        double temp;
-                        //se invierte para que cuadre la formula de los puntos
-                        //punto x1 < x2
-                        if (x1 > x2) {
+                    double temp;
+                    //se invierte para que cuadre la formula de los puntos
+                    //punto x1 < x2
+                    if (x1 > x2) {
 
-                            temp = x1;
-                            x1 = x2;
-                            x2 = temp;
-                            temp = y1;
-                            y1 = y2;
-                            y2 = temp;
+                        temp = x1;
+                        x1 = x2;
+                        x2 = temp;
+                        temp = y1;
+                        y1 = y2;
+                        y2 = temp;
 
-                        }
-                        // ecuacion de la recta pieza ataque al rey
-                        double constante = (x1 * (y2 - y1) - y1 * (x2 - x1)) / Math.abs(y2 - y1);
-                        boolean x;
-                        boolean cq;
-                        x = -(y2 - y1) > 0;
-                        cq = constante > 0;
-                        constante = Math.abs(constante);
+                    }
+                    // ecuacion de la recta pieza ataque al rey
+                    double constante = (x1 * (y2 - y1) - y1 * (x2 - x1)) / Math.abs(y2 - y1);
+                    boolean x;
+                    boolean cq;
+                    x = -(y2 - y1) > 0;
+                    cq = constante > 0;
+                    constante = Math.abs(constante);
 
-                        // ecuacion de la recta pieza pendiente positiva
-                        double constante2 = (columna * ((fila + 10) - fila) - fila * ((columna + 10) - columna)) / Math.abs((fila + 10) - fila);
-                        boolean cc = constante2 > 0;
-                        constante2 = Math.abs(constante2);
+                    // ecuacion de la recta pieza pendiente positiva
+                    double constante2 = (columna * ((fila + 10) - fila) - fila * ((columna + 10) - columna)) / Math.abs((fila + 10) - fila);
+                    boolean cc = constante2 > 0;
+                    constante2 = Math.abs(constante2);
 
 
-                        if (x && !cq && cc) {
-                            puntoX = (constante2 + constante) / 2;
-                            puntoY = -puntoX + constante;
-                        } else if (x && !cq) {
-                            puntoX = (-constante2 + constante) / 2;
-                            puntoY = -puntoX + constante;
+                    if (x && !cq && cc) {
+                        puntoX = (constante2 + constante) / 2;
+                        puntoY = -puntoX + constante;
+                    } else if (x && !cq) {
+                        puntoX = (-constante2 + constante) / 2;
+                        puntoY = -puntoX + constante;
 
-                        }else if(!x && !cq && !cc && constante == constante2){
-                            puntoX = piezaJaque[1];
-                            puntoY = piezaJaque[0];
-                        }
-                        else if(!x && cq && cc && constante == constante2){
-                            puntoX = piezaJaque[1];
-                            puntoY = piezaJaque[0];
-                        }
+                    }else if(!x && !cq && !cc && constante == constante2){
+                        puntoX = piezaJaque[1];
+                        puntoY = piezaJaque[0];
+                    }
+                    else if(!x && cq && cc && constante == constante2){
+                        puntoX = piezaJaque[1];
+                        puntoY = piezaJaque[0];
+                    }
 
-                        if (puntoX - (int) puntoX == 0 && puntoY - (int) puntoY == 0)
-                            if (Math.min(x1, x2) <= puntoX && puntoX <= Math.max(x1, x2) &&
-                                    Math.min(y1, y2) <= puntoY && puntoY <= Math.max(y1, y2)
-                            ) {
-                                if (!(tablero[(int) puntoY][(int) puntoX] instanceof Rey)) {
-                                    lista.add(new int[]{fila, columna, (int) puntoY, (int) puntoX});
-                                }
-
+                    if (puntoX - (int) puntoX == 0 && puntoY - (int) puntoY == 0)
+                        if (Math.min(x1, x2) <= puntoX && puntoX <= Math.max(x1, x2) &&
+                                Math.min(y1, y2) <= puntoY && puntoY <= Math.max(y1, y2)
+                        ) {
+                            if (!(tablero[(int) puntoY][(int) puntoX] instanceof Rey)) {
+                                lista.add(new int[]{fila, columna, (int) puntoY, (int) puntoX});
                             }
-                        // TODO revisar esto
-                        puntoX = puntoY = -1000;
-                        // ecuacion de la recta pieza pendiente negativa
-                        constante2 = (-columna * ((fila + 10) - fila) + fila * ((columna - 10) - columna)) / Math.abs((fila + 10) - fila);
-                        boolean pendiente = -((fila + 10) - fila) > 0;
-                        cc = constante2 > 0;
-                        constante2 = Math.abs(constante2);
-                        if (!x && cq && !cc) {
-                            puntoX = (constante2 + constante) / 2;
-                            puntoY = puntoX - constante;
-                        } else if (!x && !cq && !cc) {
-                            puntoX = (constante2 - constante) / 2;
-                            puntoY = puntoX + constante;
 
-                      }else if(x && !cq && constante == constante2){
-                            puntoX = piezaJaque[1];
-                            puntoY = piezaJaque[0];
                         }
-                        if (puntoX - (int) puntoX == 0 && puntoY - (int) puntoY == 0)
-                            if (Math.min(x1, x2) <= puntoX && puntoX <= Math.max(x1, x2) &&
-                                    Math.min(y1, y2) <= puntoY && puntoY <= Math.max(y1, y2)
-                            ) {
-                                if (!(tablero[(int) puntoY][(int) puntoX] instanceof Rey)) {
-                                    lista.add(new int[]{fila, columna, (int) puntoY, (int) puntoX});
-                                }
+                    // TODO revisar esto
+                    puntoX = puntoY = -1000;
+                    // ecuacion de la recta pieza pendiente negativa
+                    constante2 = (-columna * ((fila + 10) - fila) + fila * ((columna - 10) - columna)) / Math.abs((fila + 10) - fila);
+                    boolean pendiente = -((fila + 10) - fila) > 0;
+                    cc = constante2 > 0;
+                    constante2 = Math.abs(constante2);
+                    if (!x && cq && !cc) {
+                        puntoX = (constante2 + constante) / 2;
+                        puntoY = puntoX - constante;
+                    } else if (!x && !cq && !cc) {
+                        puntoX = (constante2 - constante) / 2;
+                        puntoY = puntoX + constante;
 
+                    }else if(x && !cq && constante == constante2){
+                        puntoX = piezaJaque[1];
+                        puntoY = piezaJaque[0];
+                    }
+                    if (puntoX - (int) puntoX == 0 && puntoY - (int) puntoY == 0)
+                        if (Math.min(x1, x2) <= puntoX && puntoX <= Math.max(x1, x2) &&
+                                Math.min(y1, y2) <= puntoY && puntoY <= Math.max(y1, y2)
+                        ) {
+                            if (!(tablero[(int) puntoY][(int) puntoX] instanceof Rey)) {
+                                lista.add(new int[]{fila, columna, (int) puntoY, (int) puntoX});
                             }
+
+                        }
 
 
                     break;
                 case Recta:
 
 
-                        int constante1 = (columna * ((fila + 10) - fila) - fila * ((columna + 10) - columna)) / Math.abs((fila + 10) - fila);
+                    int constante1 = (columna * ((fila + 10) - fila) - fila * ((columna + 10) - columna)) / Math.abs((fila + 10) - fila);
 
-                        boolean esPositiva = constante1 > 0;
+                    boolean esPositiva = constante1 > 0;
 
-                        constante1 = Math.abs(constante1);
+                    constante1 = Math.abs(constante1);
 
-                        // recta x
+                    // recta x
 
-                        if (x1 == x2) {
+                    if (x1 == x2) {
 
-                            if (esPositiva) {
-                                puntoY = x1 - constante1;
-                                puntoX = x1;
-
-                            } else {
-                                puntoY = x1 + constante1;
-                                puntoX = x1;
-                            }
-
-                        } else if (y1 == y2) {
-                            if (esPositiva) {
-                                puntoX = y1 + constante1;
-                                puntoY = y1;
-                            } else {
-                                puntoX = y1 - constante1;
-                                puntoY = y1;
-                            }
-
-                        }
-                        if (Math.min(x1, x2) <= puntoX && puntoX <= Math.max(x1, x2) &&
-                                Math.min(y1, y2) <= puntoY && puntoY <= Math.max(y1, y2)
-                        ) {
-                            if (!(tablero[(int) puntoY][(int) puntoX] instanceof Rey)) {
-                                lista.add(new int[]{fila, columna, (int) puntoY, (int) puntoX});
-                            }
-
-                        }
-
-                         constante2 = (-columna * ((fila + 10) - fila) + fila * ((columna - 10) - columna)) / Math.abs((fila + 10) - fila);
-
-                        constante2 = Math.abs(constante2);
-
-                        // recta x
-                        if (x1 == x2) {
-                            puntoY = -x1 + constante2;
+                        if (esPositiva) {
+                            puntoY = x1 - constante1;
                             puntoX = x1;
-                        } else if (y1 == y2) {// recta y
-                            puntoX = -y1 + constante2;
+
+                        } else {
+                            puntoY = x1 + constante1;
+                            puntoX = x1;
+                        }
+
+                    } else if (y1 == y2) {
+                        if (esPositiva) {
+                            puntoX = y1 + constante1;
+                            puntoY = y1;
+                        } else {
+                            puntoX = y1 - constante1;
                             puntoY = y1;
                         }
 
-                        if (Math.min(x1, x2) <= puntoX && puntoX <= Math.max(x1, x2) &&
-                                Math.min(y1, y2) <= puntoY && puntoY <= Math.max(y1, y2)
-                        ) {
-                            if (!(tablero[(int) puntoY][(int) puntoX] instanceof Rey)) {
-                                lista.add(new int[]{fila, columna, (int) puntoY, (int) puntoX});
-                            }
-
+                    }
+                    if (Math.min(x1, x2) <= puntoX && puntoX <= Math.max(x1, x2) &&
+                            Math.min(y1, y2) <= puntoY && puntoY <= Math.max(y1, y2)
+                    ) {
+                        if (!(tablero[(int) puntoY][(int) puntoX] instanceof Rey)) {
+                            lista.add(new int[]{fila, columna, (int) puntoY, (int) puntoX});
                         }
+
+                    }
+
+                    constante2 = (-columna * ((fila + 10) - fila) + fila * ((columna - 10) - columna)) / Math.abs((fila + 10) - fila);
+
+                    constante2 = Math.abs(constante2);
+
+                    // recta x
+                    if (x1 == x2) {
+                        puntoY = -x1 + constante2;
+                        puntoX = x1;
+                    } else if (y1 == y2) {// recta y
+                        puntoX = -y1 + constante2;
+                        puntoY = y1;
+                    }
+
+                    if (Math.min(x1, x2) <= puntoX && puntoX <= Math.max(x1, x2) &&
+                            Math.min(y1, y2) <= puntoY && puntoY <= Math.max(y1, y2)
+                    ) {
+                        if (!(tablero[(int) puntoY][(int) puntoX] instanceof Rey)) {
+                            lista.add(new int[]{fila, columna, (int) puntoY, (int) puntoX});
+                        }
+
+                    }
 
 
                     break;
@@ -1108,8 +1022,123 @@ public class Generador {
             return lista;
         }
 
+        boolean diagonal1 = true;
+        boolean diagonal2 = true;
 
-        return new  Base(estado).MovimientosValidos((List<int[]>) lista.clone(), tablero, pieza.esBlanca());
+        int[] movPrueba;
+
+        if((fila < 7 && columna < 7) && (tablero[fila + 1][columna + 1 ] == null || tablero[fila + 1][columna + 1].esBlanca() != pieza.esBlanca()
+        && !(tablero[fila + 1][columna + 1] instanceof  Rey))){
+            movPrueba = new int[]{fila,columna,fila + 1, columna + 1};
+            diagonal1 = Utilidades.movimientoValido(movPrueba,tablero,estado);
+        }else if((fila > 0 && columna  > 0) && (tablero[fila - 1][columna - 1 ] == null || tablero[fila -1][columna -1].esBlanca() != pieza.esBlanca()
+                && !(tablero[fila - 1][columna - 1] instanceof  Rey))){
+            movPrueba = new int[]{fila,columna,fila - 1, columna - 1};
+            diagonal1 = Utilidades.movimientoValido(movPrueba,tablero,estado);
+        }
+
+        if((fila < 7 && columna > 0) && (tablero[fila + 1][columna - 1 ] == null ||  tablero[fila + 1][columna - 1].esBlanca() != pieza.esBlanca()
+                && !(tablero[fila + 1][columna - 1] instanceof  Rey))){
+            movPrueba = new int[]{fila,columna,fila + 1, columna - 1};
+            diagonal2 = Utilidades.movimientoValido(movPrueba,tablero,estado);
+        }else if((fila > 0 && columna  < 7) && (tablero[fila - 1][columna + 1 ] == null || tablero[fila -1][columna + 1].esBlanca() != pieza.esBlanca()
+                && !(tablero[fila - 1][columna + 1] instanceof  Rey))){
+            movPrueba = new int[]{fila,columna,fila - 1, columna + 1};
+            diagonal2 = Utilidades.movimientoValido(movPrueba,tablero,estado);
+        }
+
+        var f = fila + 1;
+        var c = columna + 1;
+        if(diagonal1){
+            while (f < 8 && c < 8) {
+                posicionActual = tablero[f][c];
+
+                if (posicionActual != null) {
+                    if (posicionActual.esBlanca() == pieza.esBlanca() || posicionActual instanceof Rey) {
+                        break;
+                    }
+                }
+
+                lista.add(new int[]{fila, columna, f, c});
+
+                if (posicionActual != null && posicionActual.esBlanca() != pieza.esBlanca()) {
+                    break;
+                }
+
+                f++;
+                c++;
+            }
+
+            f = fila - 1;
+            c = columna - 1;
+            while (f >= 0 && c >= 0) {
+
+                posicionActual = tablero[f][c];
+
+                if (posicionActual != null) {
+                    if (posicionActual.esBlanca() == pieza.esBlanca() || posicionActual instanceof Rey) {
+                        break;
+                    }
+                }
+
+                lista.add(new int[]{fila, columna, f, c});
+
+                if (posicionActual != null && posicionActual.esBlanca() != pieza.esBlanca()) {
+                    break;
+                }
+
+                f--;
+                c--;
+            }
+        }
+
+        if(diagonal2){
+            f = fila + 1;
+            c = columna - 1;
+            while (f < 8 && c >= 0) {
+                posicionActual = tablero[f][c];
+
+                if (posicionActual != null) {
+                    if (posicionActual.esBlanca() == pieza.esBlanca() || posicionActual instanceof Rey) {
+                        break;
+                    }
+                }
+
+                lista.add(new int[]{fila, columna, f, c});
+
+                if (posicionActual != null && posicionActual.esBlanca() != pieza.esBlanca()) {
+                    break;
+                }
+
+                f++;
+                c--;
+            }
+
+            f = fila - 1;
+            c = columna + 1;
+            while (f >= 0 && c < 8) {
+                posicionActual = tablero[f][c];
+
+                if (posicionActual != null) {
+                    if (posicionActual.esBlanca() == pieza.esBlanca() || posicionActual instanceof Rey) {
+                        break;
+                    }
+                }
+
+                lista.add(new int[]{fila, columna, f, c});
+
+                if (posicionActual != null && posicionActual.esBlanca() != pieza.esBlanca()) {
+                    break;
+                }
+
+                f--;
+
+                c++;
+            }
+        }
+
+
+        return lista;
 
 
     }
