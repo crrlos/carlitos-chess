@@ -19,7 +19,7 @@ public class Generador {
     enum Trayectoria {Recta, Diagonal, Ninguna}
 
     public static int[] piezaJaque = null;
-    public  static  boolean jaqueDoble = false;
+    public static boolean jaqueDoble = false;
 
     public static List<int[]> generarMovimientos(Pieza[][] tablero, EstadoTablero estado) {
 
@@ -607,8 +607,7 @@ public class Generador {
                     tablero[piezaJaque[0]][piezaJaque[1]] instanceof Caballo) {
                 trayectoria = Trayectoria.Ninguna;
 
-            }
-            else if (piezaJaque[0] == posicionRey[0] || piezaJaque[1] == posicionRey[1]) {
+            } else if (piezaJaque[0] == posicionRey[0] || piezaJaque[1] == posicionRey[1]) {
                 trayectoria = Trayectoria.Recta;
 
             } else {
@@ -665,7 +664,7 @@ public class Generador {
 
                         boolean entrePuntos = Math.min(finalX, finalX1) <= m[3] && m[3] <= Math.max(finalX, finalX1);
 
-                        return !(remover && entrePuntos && Utilidades.movimientoValido(m,tablero,estado));
+                        return !(remover && entrePuntos && Utilidades.movimientoValido(m, tablero, estado));
 
                     });
 
@@ -679,12 +678,12 @@ public class Generador {
 
                         if (m[2] == piezaJaque[0]) {
                             return !(Math.min(piezaJaque[1], posicionRey[1]) <= m[3] && m[3] <= Math.max(piezaJaque[1], posicionRey[1])
-                            && Utilidades.movimientoValido(m,tablero,estado));
+                                    && Utilidades.movimientoValido(m, tablero, estado));
 
                         }
                         if (m[3] == piezaJaque[1]) {
                             return !(Math.min(piezaJaque[0], posicionRey[0]) <= m[2] && m[2] <= Math.max(piezaJaque[0], posicionRey[0])
-                                    && Utilidades.movimientoValido(m,tablero,estado));
+                                    && Utilidades.movimientoValido(m, tablero, estado));
 
                         }
 
@@ -694,7 +693,7 @@ public class Generador {
                     break;
 
                 case Ninguna:
-                    lista.removeIf(m -> !(m[2] == piezaJaque[0] && m[3] == piezaJaque[1] && Utilidades.movimientoValido(m,tablero,estado)));
+                    lista.removeIf(m -> !(m[2] == piezaJaque[0] && m[3] == piezaJaque[1] && Utilidades.movimientoValido(m, tablero, estado)));
                     break;
             }
             return lista;
@@ -722,7 +721,6 @@ public class Generador {
         var lista = new ArrayList<int[]>();
 
         if (reyEnJaque()) {
-            lista.clear();
             // alfil puede bloquear
 
             var posicionRey = estado.turnoBlanco ? estado.posicionReyBlanco : estado.posicionReyNegro;
@@ -788,11 +786,10 @@ public class Generador {
                         puntoX = (-constante2 + constante) / 2;
                         puntoY = -puntoX + constante;
 
-                    }else if(!x && !cq && !cc && constante == constante2){
+                    } else if (!x && !cq && !cc && constante == constante2) {
                         puntoX = piezaJaque[1];
                         puntoY = piezaJaque[0];
-                    }
-                    else if(!x && cq && cc && constante == constante2){
+                    } else if (!x && cq && cc && constante == constante2) {
                         puntoX = piezaJaque[1];
                         puntoY = piezaJaque[0];
                     }
@@ -820,7 +817,7 @@ public class Generador {
                         puntoX = (constante2 - constante) / 2;
                         puntoY = puntoX + constante;
 
-                    }else if(x && !cq && constante == constante2){
+                    } else if (x && !cq && constante == constante2) {
                         puntoX = piezaJaque[1];
                         puntoY = piezaJaque[0];
                     }
@@ -1016,7 +1013,7 @@ public class Generador {
                 }
 
 
-                return !Utilidades.movimientoValido(m,tablero,estado);
+                return !Utilidades.movimientoValido(m, tablero, estado);
             });
 
             return lista;
@@ -1027,29 +1024,29 @@ public class Generador {
 
         int[] movPrueba;
 
-        if((fila < 7 && columna < 7) && (tablero[fila + 1][columna + 1 ] == null || tablero[fila + 1][columna + 1].esBlanca() != pieza.esBlanca()
-        && !(tablero[fila + 1][columna + 1] instanceof  Rey))){
-            movPrueba = new int[]{fila,columna,fila + 1, columna + 1};
-            diagonal1 = Utilidades.movimientoValido(movPrueba,tablero,estado);
-        }else if((fila > 0 && columna  > 0) && (tablero[fila - 1][columna - 1 ] == null || tablero[fila -1][columna -1].esBlanca() != pieza.esBlanca()
-                && !(tablero[fila - 1][columna - 1] instanceof  Rey))){
-            movPrueba = new int[]{fila,columna,fila - 1, columna - 1};
-            diagonal1 = Utilidades.movimientoValido(movPrueba,tablero,estado);
+        if ((fila < 7 && columna < 7) && (tablero[fila + 1][columna + 1] == null || tablero[fila + 1][columna + 1].esBlanca() != pieza.esBlanca()
+                && !(tablero[fila + 1][columna + 1] instanceof Rey))) {
+            movPrueba = new int[]{fila, columna, fila + 1, columna + 1};
+            diagonal1 = Utilidades.movimientoValido(movPrueba, tablero, estado);
+        } else if ((fila > 0 && columna > 0) && (tablero[fila - 1][columna - 1] == null || tablero[fila - 1][columna - 1].esBlanca() != pieza.esBlanca()
+                && !(tablero[fila - 1][columna - 1] instanceof Rey))) {
+            movPrueba = new int[]{fila, columna, fila - 1, columna - 1};
+            diagonal1 = Utilidades.movimientoValido(movPrueba, tablero, estado);
         }
 
-        if((fila < 7 && columna > 0) && (tablero[fila + 1][columna - 1 ] == null ||  tablero[fila + 1][columna - 1].esBlanca() != pieza.esBlanca()
-                && !(tablero[fila + 1][columna - 1] instanceof  Rey))){
-            movPrueba = new int[]{fila,columna,fila + 1, columna - 1};
-            diagonal2 = Utilidades.movimientoValido(movPrueba,tablero,estado);
-        }else if((fila > 0 && columna  < 7) && (tablero[fila - 1][columna + 1 ] == null || tablero[fila -1][columna + 1].esBlanca() != pieza.esBlanca()
-                && !(tablero[fila - 1][columna + 1] instanceof  Rey))){
-            movPrueba = new int[]{fila,columna,fila - 1, columna + 1};
-            diagonal2 = Utilidades.movimientoValido(movPrueba,tablero,estado);
+        if ((fila < 7 && columna > 0) && (tablero[fila + 1][columna - 1] == null || tablero[fila + 1][columna - 1].esBlanca() != pieza.esBlanca()
+                && !(tablero[fila + 1][columna - 1] instanceof Rey))) {
+            movPrueba = new int[]{fila, columna, fila + 1, columna - 1};
+            diagonal2 = Utilidades.movimientoValido(movPrueba, tablero, estado);
+        } else if ((fila > 0 && columna < 7) && (tablero[fila - 1][columna + 1] == null || tablero[fila - 1][columna + 1].esBlanca() != pieza.esBlanca()
+                && !(tablero[fila - 1][columna + 1] instanceof Rey))) {
+            movPrueba = new int[]{fila, columna, fila - 1, columna + 1};
+            diagonal2 = Utilidades.movimientoValido(movPrueba, tablero, estado);
         }
 
         var f = fila + 1;
         var c = columna + 1;
-        if(diagonal1){
+        if (diagonal1) {
             while (f < 8 && c < 8) {
                 posicionActual = tablero[f][c];
 
@@ -1092,7 +1089,7 @@ public class Generador {
             }
         }
 
-        if(diagonal2){
+        if (diagonal2) {
             f = fila + 1;
             c = columna - 1;
             while (f < 8 && c >= 0) {
