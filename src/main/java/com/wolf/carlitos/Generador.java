@@ -12,6 +12,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import static java.lang.Math.abs;
+
 /**
  * @author carlos
  */
@@ -120,12 +122,12 @@ public class Generador {
 
                     }
 
-                    int constante = (x1 * (y2 - y1) - y1 * (x2 - x1)) / Math.abs(y2 - y1);
+                    int constante = (x1 * (y2 - y1) - y1 * (x2 - x1)) / abs(y2 - y1);
                     boolean x;
                     boolean c;
                     x = -(y2 - y1) > 0;
                     c = constante > 0;
-                    constante = Math.abs(constante);
+                    constante = abs(constante);
                     if (!x && !c) {
                         puntoX = fila + constante;
                         puntoY = columna + constante;
@@ -639,12 +641,12 @@ public class Generador {
 
                     }
 
-                    int constante = (x1 * (y2 - y1) - y1 * (x2 - x1)) / Math.abs(y2 - y1);
+                    int constante = (x1 * (y2 - y1) - y1 * (x2 - x1)) / abs(y2 - y1);
                     boolean x;
                     boolean c;
                     x = -(y2 - y1) > 0;
                     c = constante > 0;
-                    constante = Math.abs(constante);
+                    constante = abs(constante);
 
 
                     int finalConstante = constante;
@@ -739,8 +741,8 @@ public class Generador {
 
             }
 
-            double puntoX = 0;
-            double puntoY = 0;
+            double puntoX = -1000;
+            double puntoY = -1000;
 
             double x1 = piezaJaque[1];
             double y1 = piezaJaque[0];
@@ -752,162 +754,122 @@ public class Generador {
             switch (trayectoria) {
                 case Diagonal:
 
-                    double temp;
-                    //se invierte para que cuadre la formula de los puntos
-                    //punto x1 < x2
-                    if (x1 > x2) {
+                    var simplificador = abs(y2 - y1);
+                    var inversor = (x2 - x1) / simplificador;
 
-                        temp = x1;
-                        x1 = x2;
-                        x2 = temp;
-                        temp = y1;
-                        y1 = y2;
-                        y2 = temp;
+                    var constante = inversor * (x1 * (y2 - y1) - y1 * (x2 - x1)) / simplificador;
 
-                    }
-                    // ecuacion de la recta pieza ataque al rey
-                    double constante = (x1 * (y2 - y1) - y1 * (x2 - x1)) / Math.abs(y2 - y1);
-                    boolean x;
-                    boolean cq;
-                    x = -(y2 - y1) > 0;
-                    cq = constante > 0;
-                    constante = Math.abs(constante);
+                    boolean pendientePositiva = -inversor * (y2 - y1) > 0;
+                    boolean constantePositiva = constante > 0;
+
+                    constante = abs(constante);
 
                     // ecuacion de la recta pieza pendiente positiva
-                    double constante2 = (columna * ((fila + 10) - fila) - fila * ((columna + 10) - columna)) / Math.abs((fila + 10) - fila);
-                    boolean cc = constante2 > 0;
-                    constante2 = Math.abs(constante2);
+                    double constantePendientePositiva = (columna * ((fila + 10) - fila) - fila * ((columna + 10) - columna)) / abs((fila + 10) - fila);
+                    boolean cc = constantePendientePositiva > 0;
+                    constantePendientePositiva = abs(constantePendientePositiva);
 
 
-                    if (x && !cq && cc) {
-                        puntoX = (constante2 + constante) / 2;
+                    if (pendientePositiva && !constantePositiva && cc) {
+                        puntoX = (constantePendientePositiva + constante) / 2;
                         puntoY = -puntoX + constante;
-                    } else if (x && !cq) {
-                        puntoX = (-constante2 + constante) / 2;
+                    } else if (pendientePositiva && !constantePositiva) {
+                        puntoX = (-constantePendientePositiva + constante) / 2;
                         puntoY = -puntoX + constante;
 
-                    } else if (!x && !cq && !cc && constante == constante2) {
+                    } else if (!pendientePositiva && !constantePositiva && !cc && constante == constantePendientePositiva) {
                         puntoX = piezaJaque[1];
                         puntoY = piezaJaque[0];
-                    } else if (!x && cq && cc && constante == constante2) {
+                    } else if (!pendientePositiva && constantePositiva && cc && constante == constantePendientePositiva) {
                         puntoX = piezaJaque[1];
                         puntoY = piezaJaque[0];
                     }
 
-                    if (puntoX - (int) puntoX == 0 && puntoY - (int) puntoY == 0)
-                        if (Math.min(x1, x2) <= puntoX && puntoX <= Math.max(x1, x2) &&
-                                Math.min(y1, y2) <= puntoY && puntoY <= Math.max(y1, y2)
-                        ) {
-                            if (!(tablero[(int) puntoY][(int) puntoX] instanceof Rey)) {
-                                var mov = new int[]{fila, columna, (int) puntoY, (int) puntoX};
-                                if(diagonalDespejada(tablero,fila,columna,mov)
-                                        && Utilidades.movimientoValido(mov,tablero,estado))
-                                    lista.add(mov);
-                            }
+                    if (!(puntoX == -1000 && puntoY == puntoX))
+                        procesarPunto(tablero, estado, fila, columna, lista, puntoX, puntoY, x1, y1, x2, y2);
 
-                        }
-                    // TODO revisar esto
+
                     puntoX = puntoY = -1000;
                     // ecuacion de la recta pieza pendiente negativa
-                    constante2 = (-columna * ((fila + 10) - fila) + fila * ((columna - 10) - columna)) / Math.abs((fila + 10) - fila);
-                    boolean pendiente = -((fila + 10) - fila) > 0;
-                    cc = constante2 > 0;
-                    constante2 = Math.abs(constante2);
-                    if (!x && cq && !cc) {
-                        puntoX = (constante2 + constante) / 2;
+                    int constantePendienteNegativa = (-columna * ((fila + 10) - fila) + fila * ((columna - 10) - columna)) / abs((fila + 10) - fila);
+
+                    cc = constantePendienteNegativa > 0;
+                    constantePendienteNegativa = abs(constantePendienteNegativa);
+
+                    if (!pendientePositiva && constantePositiva && !cc) {
+                        puntoX = (constantePendienteNegativa + constante) / 2;
                         puntoY = puntoX - constante;
-                    } else if (!x && !cq && !cc) {
-                        puntoX = (constante2 - constante) / 2;
+                    } else if (!pendientePositiva && !constantePositiva && !cc) {
+                        puntoX = (constantePendienteNegativa - constante) / 2;
                         puntoY = puntoX + constante;
 
-                    } else if (x && !cq && constante == constante2) {
+                    } else if (pendientePositiva && !constantePositiva && constante == constantePendienteNegativa) {
                         puntoX = piezaJaque[1];
                         puntoY = piezaJaque[0];
                     }
-                    if (puntoX - (int) puntoX == 0 && puntoY - (int) puntoY == 0)
-                        if (Math.min(x1, x2) <= puntoX && puntoX <= Math.max(x1, x2) &&
-                                Math.min(y1, y2) <= puntoY && puntoY <= Math.max(y1, y2)
-                        ) {
-                            if (!(tablero[(int) puntoY][(int) puntoX] instanceof Rey)) {
-                                var mov = new int[]{fila, columna, (int) puntoY, (int) puntoX};
-                                if(diagonalDespejada(tablero,fila,columna,mov)
-                                        && Utilidades.movimientoValido(mov,tablero,estado))
-                                    lista.add(mov);
-                            }
 
-                        }
-
+                    if (!(puntoX == -1000 && puntoY == puntoX))
+                        procesarPunto(tablero, estado, fila, columna, lista, puntoX, puntoY, x1, y1, x2, y2);
 
                     break;
                 case Recta:
 
 
-                    int constante1 = (columna * ((fila + 10) - fila) - fila * ((columna + 10) - columna)) / Math.abs((fila + 10) - fila);
+                    int constante1 = (columna * ((fila + 10) - fila) - fila * ((columna + 10) - columna)) / abs((fila + 10) - fila);
 
                     boolean esPositiva = constante1 > 0;
 
-                    constante1 = Math.abs(constante1);
-
-                    // recta x
+                    constante1 = abs(constante1);
 
                     if (x1 == x2) {
 
                         if (esPositiva) {
                             puntoY = x1 - constante1;
-                            puntoX = x1;
 
                         } else {
                             puntoY = x1 + constante1;
-                            puntoX = x1;
                         }
+                        puntoX = x1;
 
                     } else if (y1 == y2) {
                         if (esPositiva) {
                             puntoX = y1 + constante1;
-                            puntoY = y1;
                         } else {
                             puntoX = y1 - constante1;
-                            puntoY = y1;
                         }
+                        puntoY = y1;
 
                     }
-                    if (Math.min(x1, x2) <= puntoX && puntoX <= Math.max(x1, x2) &&
-                            Math.min(y1, y2) <= puntoY && puntoY <= Math.max(y1, y2)
-                    ) {
-                        if (!(tablero[(int) puntoY][(int) puntoX] instanceof Rey)) {
+                    if (puntosEntreTrayectoria(puntoX, puntoY, x1, y1, x2, y2)) {
+                        if (siPiezaNoEsRey(tablero[(int) puntoY][(int) puntoX])) {
                             var mov = new int[]{fila, columna, (int) puntoY, (int) puntoX};
-                            if(diagonalDespejada(tablero,fila,columna,mov)
-                                    && Utilidades.movimientoValido(mov,tablero,estado))
+                            if (puedeLLegarEsValido(tablero, estado, fila, columna, mov))
                                 lista.add(mov);
                         }
 
                     }
 
-                    constante2 = (-columna * ((fila + 10) - fila) + fila * ((columna - 10) - columna)) / Math.abs((fila + 10) - fila);
+                    constantePendientePositiva = (-columna * ((fila + 10) - fila) + fila * ((columna - 10) - columna)) / abs((fila + 10) - fila);
 
-                    constante2 = Math.abs(constante2);
+                    constantePendientePositiva = abs(constantePendientePositiva);
 
                     // recta x
                     if (x1 == x2) {
-                        puntoY = -x1 + constante2;
+                        puntoY = -x1 + constantePendientePositiva;
                         puntoX = x1;
                     } else if (y1 == y2) {// recta y
-                        puntoX = -y1 + constante2;
+                        puntoX = -y1 + constantePendientePositiva;
                         puntoY = y1;
                     }
 
-                    if (Math.min(x1, x2) <= puntoX && puntoX <= Math.max(x1, x2) &&
-                            Math.min(y1, y2) <= puntoY && puntoY <= Math.max(y1, y2)
-                    ) {
-                        if (!(tablero[(int) puntoY][(int) puntoX] instanceof Rey)) {
+                    if (puntosEntreTrayectoria(puntoX, puntoY, x1, y1, x2, y2)) {
+                        if (siPiezaNoEsRey(tablero[(int) puntoY][(int) puntoX])) {
                             var mov = new int[]{fila, columna, (int) puntoY, (int) puntoX};
-                            if(diagonalDespejada(tablero,fila,columna,mov)
-                                    && Utilidades.movimientoValido(mov,tablero,estado))
+                            if (puedeLLegarEsValido(tablero, estado, fila, columna, mov))
                                 lista.add(mov);
                         }
 
                     }
-
 
                     break;
 
@@ -1108,39 +1070,72 @@ public class Generador {
 
     }
 
-    private static boolean diagonalDespejada(Pieza[][] tablero, int fila, int columna, int[] m) {
+    private static void procesarPunto(Pieza[][] tablero, EstadoTablero estado, int fila, int columna, ArrayList<int[]> lista, double puntoX, double puntoY, double x1, double y1, double x2, double y2) {
+        if (puntoEntero(puntoX, puntoY))
+            if (puntosEntreTrayectoria(puntoX, puntoY, x1, y1, x2, y2)) {
+                if (siPiezaNoEsRey(tablero[(int) puntoY][(int) puntoX])) {
+                    var mov = new int[]{fila, columna, (int) puntoY, (int) puntoX};
+                    if (puedeLLegarEsValido(tablero, estado, fila, columna, mov))
+                        lista.add(mov);
+                }
+
+            }
+    }
+
+    private static boolean siPiezaNoEsRey(Pieza pieza1) {
+        return !(pieza1 instanceof Rey);
+    }
+
+    private static boolean puedeLLegarEsValido(Pieza[][] tablero, EstadoTablero estado, int fila, int columna, int[] mov) {
+        return diagonalDespejada(tablero, fila, columna, mov)
+                && Utilidades.movimientoValido(mov, tablero, estado);
+    }
+
+    private static boolean puntosEntreTrayectoria(double puntoX, double puntoY, double x1, double y1, double x2, double y2) {
+        return Math.min(x1, x2) <= puntoX && puntoX <= Math.max(x1, x2) &&
+                Math.min(y1, y2) <= puntoY && puntoY <= Math.max(y1, y2);
+    }
+
+    private static boolean puntoEntero(double puntoX, double puntoY) {
+        return puntoX - (int) puntoX == 0 && puntoY - (int) puntoY == 0;
+    }
+
+    private static boolean diagonalDespejada(Pieza[][] tablero, int fila, int columna, int[] mov) {
+
+        int[] m = mov.length == 2 ? new int[]{mov[0], mov[1]} : new int[]{mov[2], mov[3]};
+        
         //diagonal despejada
-        if (m[2] > fila && m[3] < columna) {
+        if (m[0] > fila && m[1] < columna) {
             //izquierda arriba
 
-            for (int i = fila + 1; i < m[2]; i++) {
+            for (int i = fila + 1; i < m[0]; i++) {
                 if (tablero[i][columna - (i - fila)] != null) {
                     return false;
                 }
             }
 
-        } else if (m[2] > fila && m[3] > columna) {
+        } else if (m[0] > fila && m[1] > columna) {
             //derecha arriba
 
-            for (int i = fila + 1; i < m[2]; i++) {
+            for (int i = fila + 1; i < m[0]; i++) {
                 if (tablero[i][columna + (i - fila)] != null) {
                     return false;
                 }
             }
 
-        } else if (m[2] < fila && m[3] > columna) {
+        } else if (m[0] < fila && m[1] > columna) {
             //derecha abajo
 
-            for (int i = fila - 1; i > m[2]; i--) {
+            for (int i = fila - 1; i > m[0]; i--) {
                 if (tablero[i][columna + (fila - i)] != null) {
                     return false;
                 }
             }
 
-        } else if (m[2] < fila && m[3] < columna) {
+        } else if (m[0] < fila && m[1] < columna) {
             //izquierda abajo
 
-            for (int i = fila - 1; i > m[2]; i--) {
+            for (int i = fila - 1; i > m[0]; i--) {
                 if (tablero[i][columna - (fila - i)] != null) {
                     return false;
                 }
