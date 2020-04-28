@@ -56,37 +56,17 @@ public class Test{
     private  void JaquesAlfil(){
         Juego j = new Juego();
 
-        j.setFen("2b1k3/8/8/8/Q7/8/8/8 b - - 0 1");
-        Generador.piezaJaque = new int[]{3,0};
-        var result = Generador.movimientosDeAlfil(j.tablero,j.estadoTablero,7,2);
+        j.setFen("4k3/8/3q4/1B6/8/8/8/8 b - - 0 1");
+        Generador.piezaJaque = new int[]{4,1};
+        var result = Generador.movimientosDeTorre(j.tablero,j.estadoTablero,5,3);
 
         System.out.println(result.size());
     }
 
     public static void main(String... args)  {
 
-        var a1 = new Pieza[64];
-        var a2 = new Pieza[8][8];
-
-        var t1 = System.currentTimeMillis();
-
-        for (int i = 0; i < 5_000_000; i++) {
-
-//            for (int j = 0; j < a1.length; j++) {
-//                var b = a1[j];
-//            }
-
-//            for (int j = 0; j < 8; j++) {
-//                for (int k = 0; k < 8; k++) {
-//                    var b = a2[j][k];
-//                }
-//            }
-
-        }
-
-        System.out.println(System.currentTimeMillis() - t1);
-
-
+        Test t = new Test();
+        t.JaquesAlfil();
 
 
 

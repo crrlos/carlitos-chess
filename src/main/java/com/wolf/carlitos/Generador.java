@@ -99,7 +99,7 @@ public class Generador {
                     torreRecta(tablero, estado, fila, columna, lista, x1, y1, x2, y2);
                     break;
                 case Ninguna:
-                    torreNingunaTrayectoria(tablero, estado, fila, columna, lista, x1, y1);
+                    torreNinguna(tablero, estado, fila, columna, lista, x1, y1);
                     break;
             }
             return lista;
@@ -198,7 +198,7 @@ public class Generador {
 
     private static void torreDiagonal(Pieza[][] tablero, EstadoTablero estado, int fila, int columna, ArrayList<int[]> lista, int puntoX, int puntoY, int x1, int y1, int x2, int y2, int constante, boolean pendientePositiva, boolean contantePositiva) {
         if (!pendientePositiva && !contantePositiva) {
-            puntoX = fila + constante;
+            puntoX = fila - constante;
             puntoY = columna + constante;
         } else if (!pendientePositiva) {
             puntoX = fila + constante;
@@ -260,7 +260,7 @@ public class Generador {
         }
     }
 
-    private static void torreNingunaTrayectoria(Pieza[][] tablero, EstadoTablero estado, int fila, int columna, ArrayList<int[]> lista, int x1, int y1) {
+    private static void torreNinguna(Pieza[][] tablero, EstadoTablero estado, int fila, int columna, ArrayList<int[]> lista, int x1, int y1) {
         if (x1 - columna == 0) {
             var mov = new int[]{fila, columna, y1, columna};
             movimientoValidoYPuedeLlegar(tablero, estado, fila, columna, lista, mov);
@@ -350,16 +350,65 @@ public class Generador {
 
         pieza = tablero[fila][columna];
 
-
         if (reyEnJaque()) {
+            var posicionRey = estado.turnoBlanco ? estado.posicionReyBlanco : estado.posicionReyNegro;
+
+            Trayectoria trayectoria = getTrayectoria(tablero, posicionRey);
+
+
+            double puntoX = -1000;
+            double puntoY = -1000;
+
+            double x1 = piezaJaque[1];
+            double y1 = piezaJaque[0];
+
+            double x2 = posicionRey[1];
+            double y2 = posicionRey[0];
+
+            switch (trayectoria) {
+                case Diagonal:
+
+                    var simplificador = abs(y2 - y1);
+                    var inversor = (x2 - x1) / simplificador;
+
+                    var constante = inversor * (x1 * (y2 - y1) - y1 * (x2 - x1)) / simplificador;
+                    boolean pendientePositiva = -inversor * (y2 - y1) > 0;
+                    boolean constantePositiva = constante > 0;
+                    constante = abs(constante);
+
+
+                    torreDiagonal(tablero, estado, fila, columna, lista, (int)puntoX,(int)puntoY, (int)x1, (int)y1, (int)x2, (int)y2, (int)constante, pendientePositiva, constantePositiva);
+                    alfilDiagonal(tablero, estado, fila, columna, lista, puntoX, puntoY, x1, y1, x2, y2, constante, pendientePositiva, constantePositiva);
+                    break;
+                case Recta:
+                    torreRecta(tablero, estado, fila, columna, lista, (int)x1, (int)y1, (int)x2, (int)y2);
+                    alfilRecta(tablero,estado,fila,columna,lista,puntoX,puntoY,x1,y1,x2,y2);
+                    break;
+                case Ninguna:
+                    torreNinguna(tablero, estado, fila, columna, lista, (int)x1, (int)y1);
+                    alfilNinguna(tablero,estado,fila, columna,lista);
+                    break;
+            }
+
+
+            return lista;
 
         }
 
-        boolean vertical = true;
-        boolean horizontal = true;
-        boolean diagonal1 = true;
-        boolean diagonal2 = true;
 
+        boolean vertical;
+        boolean horizontal;
+        boolean diagonal1;
+        boolean diagonal2;
+
+        int filaPrueba = getFilaPrueba(tablero, fila, columna, pieza);
+        int columnaPrueba = getColumnaPrueba(tablero, fila, columna, pieza);
+
+        vertical = movimientoValido(new int[]{fila, columna, filaPrueba, columna}, tablero, estado);
+        horizontal = movimientoValido(new int[]{fila, columna, fila, columnaPrueba}, tablero, estado);
+
+        diagonal1 = isDiagonal1(tablero,estado,fila,columna,pieza);
+        diagonal2 = isDiagonal2(tablero,estado,fila,columna,pieza);
 
         var f = fila + 1;
         var c = columna + 1;
@@ -529,7 +578,7 @@ public class Generador {
         }
 
 
-        return new Base(estado).MovimientosValidos(lista, tablero, pieza.esBlanca());
+       return  lista;
     }
 
     private static List<int[]> movimientosDeCaballo(Pieza[][] tablero, EstadoTablero estado, int fila, int columna) {
