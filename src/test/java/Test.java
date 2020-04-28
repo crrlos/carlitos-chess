@@ -1,6 +1,7 @@
 import com.wolf.carlitos.EstadoTablero;
 import com.wolf.carlitos.Generador;
 import com.wolf.carlitos.Juego;
+import com.wolf.carlitos.Piezas.Pieza;
 import com.wolf.carlitos.Utilidades;
 
 import java.util.Arrays;
@@ -64,10 +65,26 @@ public class Test{
 
     public static void main(String... args)  {
 
+        var a1 = new Pieza[64];
+        var a2 = new Pieza[8][8];
 
-    Test t = new Test();
-   // t.Jaques();
-   t.JaquesAlfil();
+        var t1 = System.currentTimeMillis();
+
+        for (int i = 0; i < 5_000_000; i++) {
+
+//            for (int j = 0; j < a1.length; j++) {
+//                var b = a1[j];
+//            }
+
+//            for (int j = 0; j < 8; j++) {
+//                for (int k = 0; k < 8; k++) {
+//                    var b = a2[j][k];
+//                }
+//            }
+
+        }
+
+        System.out.println(System.currentTimeMillis() - t1);
 
 
 

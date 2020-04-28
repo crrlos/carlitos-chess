@@ -799,7 +799,10 @@ public class Generador {
                                 Math.min(y1, y2) <= puntoY && puntoY <= Math.max(y1, y2)
                         ) {
                             if (!(tablero[(int) puntoY][(int) puntoX] instanceof Rey)) {
-                                lista.add(new int[]{fila, columna, (int) puntoY, (int) puntoX});
+                                var mov = new int[]{fila, columna, (int) puntoY, (int) puntoX};
+                                if(diagonalDespejada(tablero,fila,columna,mov)
+                                        && Utilidades.movimientoValido(mov,tablero,estado))
+                                    lista.add(mov);
                             }
 
                         }
@@ -826,7 +829,10 @@ public class Generador {
                                 Math.min(y1, y2) <= puntoY && puntoY <= Math.max(y1, y2)
                         ) {
                             if (!(tablero[(int) puntoY][(int) puntoX] instanceof Rey)) {
-                                lista.add(new int[]{fila, columna, (int) puntoY, (int) puntoX});
+                                var mov = new int[]{fila, columna, (int) puntoY, (int) puntoX};
+                                if(diagonalDespejada(tablero,fila,columna,mov)
+                                        && Utilidades.movimientoValido(mov,tablero,estado))
+                                    lista.add(mov);
                             }
 
                         }
@@ -869,7 +875,10 @@ public class Generador {
                             Math.min(y1, y2) <= puntoY && puntoY <= Math.max(y1, y2)
                     ) {
                         if (!(tablero[(int) puntoY][(int) puntoX] instanceof Rey)) {
-                            lista.add(new int[]{fila, columna, (int) puntoY, (int) puntoX});
+                            var mov = new int[]{fila, columna, (int) puntoY, (int) puntoX};
+                            if(diagonalDespejada(tablero,fila,columna,mov)
+                                    && Utilidades.movimientoValido(mov,tablero,estado))
+                                lista.add(mov);
                         }
 
                     }
@@ -891,7 +900,10 @@ public class Generador {
                             Math.min(y1, y2) <= puntoY && puntoY <= Math.max(y1, y2)
                     ) {
                         if (!(tablero[(int) puntoY][(int) puntoX] instanceof Rey)) {
-                            lista.add(new int[]{fila, columna, (int) puntoY, (int) puntoX});
+                            var mov = new int[]{fila, columna, (int) puntoY, (int) puntoX};
+                            if(diagonalDespejada(tablero,fila,columna,mov)
+                                    && Utilidades.movimientoValido(mov,tablero,estado))
+                                lista.add(mov);
                         }
 
                     }
@@ -971,50 +983,6 @@ public class Generador {
                     break;
             }
 
-
-            lista.removeIf(m -> {
-                //diagonal despejada
-                if (m[2] > fila && m[3] < columna) {
-                    //izquierda arriba
-
-                    for (int i = fila + 1; i < m[2]; i++) {
-                        if (tablero[i][columna - (i - fila)] != null) {
-                            return true;
-                        }
-                    }
-
-                } else if (m[2] > fila && m[3] > columna) {
-                    //derecha arriba
-
-                    for (int i = fila + 1; i < m[2]; i++) {
-                        if (tablero[i][columna + (i - fila)] != null) {
-                            return true;
-                        }
-                    }
-
-                } else if (m[2] < fila && m[3] > columna) {
-                    //derecha abajo
-
-                    for (int i = fila - 1; i > m[2]; i--) {
-                        if (tablero[i][columna + (fila - i)] != null) {
-                            return true;
-                        }
-                    }
-
-                } else if (m[2] < fila && m[3] < columna) {
-                    //izquierda abajo
-
-                    for (int i = fila - 1; i > m[2]; i--) {
-                        if (tablero[i][columna - (fila - i)] != null) {
-                            return true;
-                        }
-                    }
-
-                }
-
-
-                return !Utilidades.movimientoValido(m, tablero, estado);
-            });
 
             return lista;
         }
@@ -1138,6 +1106,48 @@ public class Generador {
         return lista;
 
 
+    }
+
+    private static boolean diagonalDespejada(Pieza[][] tablero, int fila, int columna, int[] m) {
+        //diagonal despejada
+        if (m[2] > fila && m[3] < columna) {
+            //izquierda arriba
+
+            for (int i = fila + 1; i < m[2]; i++) {
+                if (tablero[i][columna - (i - fila)] != null) {
+                    return false;
+                }
+            }
+
+        } else if (m[2] > fila && m[3] > columna) {
+            //derecha arriba
+
+            for (int i = fila + 1; i < m[2]; i++) {
+                if (tablero[i][columna + (i - fila)] != null) {
+                    return false;
+                }
+            }
+
+        } else if (m[2] < fila && m[3] > columna) {
+            //derecha abajo
+
+            for (int i = fila - 1; i > m[2]; i--) {
+                if (tablero[i][columna + (fila - i)] != null) {
+                    return false;
+                }
+            }
+
+        } else if (m[2] < fila && m[3] < columna) {
+            //izquierda abajo
+
+            for (int i = fila - 1; i > m[2]; i--) {
+                if (tablero[i][columna - (fila - i)] != null) {
+                    return false;
+                }
+            }
+
+        }
+        return true;
     }
 
     private static List<int[]> movimientosDeRey(Pieza[][] tablero, EstadoTablero estado, int fila, int columna) {
