@@ -874,72 +874,12 @@ public class Generador {
                     break;
 
                 case Ninguna:
-                    boolean captura = false;
-                    // si alfil puede capturar
-                    if (piezaJaque[1] - columna == piezaJaque[0] - fila ||
-                            piezaJaque[1] - columna == fila - piezaJaque[0]) {
 
-                        captura = true;
+                    if (piezaPuedeCapturar(fila, columna) && diagonalDespejada(tablero,fila,columna,piezaJaque)) {
 
-                        //diagonal despejada
-                        if (piezaJaque[0] > fila && piezaJaque[1] < columna) {
-                            //izquierda arriba
-
-                            for (int i = fila + 1; i < piezaJaque[0]; i++) {
-                                if (tablero[i][columna - (i - fila)] != null) {
-                                    captura = false;
-                                    break;
-                                }
-                            }
-
-                        }
-
-                        if (piezaJaque[0] > fila && piezaJaque[1] > columna) {
-                            //derecha arriba
-
-                            for (int i = fila + 1; i < piezaJaque[0]; i++) {
-                                if (tablero[i][columna + (i - fila)] != null) {
-                                    captura = false;
-                                    break;
-                                }
-                            }
-
-                        }
-
-                        if (piezaJaque[0] < fila && piezaJaque[1] > columna) {
-                            //derecha abajo
-
-                            for (int i = fila - 1; i > piezaJaque[0]; i--) {
-                                if (tablero[i][columna + (fila - i)] != null) {
-                                    captura = false;
-                                    break;
-                                }
-                            }
-
-                        }
-
-                        if (piezaJaque[0] < fila && piezaJaque[1] < columna) {
-                            //izquierda abajo
-
-                            for (int i = fila - 1; i > piezaJaque[0]; i--) {
-                                if (tablero[i][columna - (fila - i)] != null) {
-                                    captura = false;
-                                    break;
-                                }
-                            }
-
-                        }
-
-
-                        //validar
-
-                        if (captura) {
-                            captura = Utilidades.movimientoValido(new int[]{fila, columna, piezaJaque[0], piezaJaque[1]}, tablero, estado);
-                        }
-                        //agregar
-                        if (captura)
+                        if (Utilidades.movimientoValido(new int[]{fila, columna, piezaJaque[0], piezaJaque[1]}, tablero, estado)) {
                             lista.add(new int[]{fila, columna, piezaJaque[0], piezaJaque[1]});
-
+                        }
                     }
 
                     break;
@@ -1068,6 +1008,11 @@ public class Generador {
         return lista;
 
 
+    }
+
+    private static boolean piezaPuedeCapturar(int fila, int columna) {
+        return piezaJaque[1] - columna == piezaJaque[0] - fila ||
+                piezaJaque[1] - columna == fila - piezaJaque[0];
     }
 
     private static void procesarPunto(Pieza[][] tablero, EstadoTablero estado, int fila, int columna, ArrayList<int[]> lista, double puntoX, double puntoY, double x1, double y1, double x2, double y2) {
