@@ -1,21 +1,203 @@
-///*
-// * To change pieza license header, choose License Headers in Project Properties.
-// * To change pieza template file, choose Tools | Templates
-// * and open the template in the editor.
-// */
-//package com.wolf.carlitos;
-//
-//import com.wolf.carlitos.Piezas.*;
-//
-//import java.util.*;
-//
-////import static com.wolf.carlitos.Utilidades.movimientoValido;
-//import static java.lang.Math.abs;
-//
-///**
-// * @author carlos
-// */
-//public class Generador {
+/*
+ * To change pieza license header, choose License Headers in Project Properties.
+ * To change pieza template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.wolf.carlitos;
+
+import com.wolf.carlitos.Piezas.*;
+
+import java.util.*;
+
+//import static com.wolf.carlitos.Utilidades.movimientoValido;
+import static java.lang.Math.abs;
+import static java.lang.Math.cbrt;
+
+/**
+ * @author carlos
+ */
+public class Generador {
+    public static final HashMap<Integer, List<List<Integer>>> movimientosAlfil = new HashMap<>();
+    public static final HashMap<Integer, List<List<Integer>>> movimientosTorre = new HashMap<>();
+    public static final HashMap<Integer, List<Integer>> movimientosCaballo = new HashMap<>();
+    public static final HashMap<Integer, List<Integer>> movimientosRey = new HashMap<>();
+
+    static {
+
+        llenarMovimientosDeAlfil();
+        llenarMovimientosDeTorre();
+        llenarMovimientosDeCaballo();
+        llenarMovimientosDeRey();
+
+    }
+
+    private static void llenarMovimientosDeRey() {
+        for (int i = 0; i < 64; i++) {
+            var lista = new ArrayList<Integer>();
+
+
+            boolean colorInicio = esCasillaBlanca(i);
+
+
+            if (i + 1 < 64 && colorInicio != esCasillaBlanca(i + 1))
+                lista.add(i + 1);
+            if (i + 7 < 64 && colorInicio == esCasillaBlanca(i + 7))
+                lista.add(i + 7);
+            if (i + 8 < 64 && colorInicio != esCasillaBlanca(i + 8))
+                lista.add(i + 8);
+            if (i + 9 < 64 && colorInicio == esCasillaBlanca(i + 9))
+                lista.add(i + 9);
+
+            if (i - 1 >= 0 && colorInicio != esCasillaBlanca(i - 1))
+                lista.add(i - 1);
+            if (i - 7 >= 0 && colorInicio == esCasillaBlanca(i - 7))
+                lista.add(i - 7);
+            if (i - 8 >= 0 && colorInicio != esCasillaBlanca(i - 8))
+                lista.add(i - 8);
+            if (i - 9 >= 0 && colorInicio == esCasillaBlanca(i - 9))
+                lista.add(i - 9);
+
+            movimientosRey.put(i, lista);
+        }
+    }
+
+    private static void llenarMovimientosDeCaballo() {
+        for (int i = 0; i < 64; i++) {
+            var lista = new ArrayList<Integer>();
+            var colorInicio = esCasillaBlanca(i);
+
+            if (i + 6 < 64 && colorInicio != esCasillaBlanca(i + 6))
+                lista.add(i + 6);
+            if (i + 10 < 64 && colorInicio != esCasillaBlanca(i + 10))
+                lista.add(i + 10);
+            if (i + 15 < 64 && colorInicio != esCasillaBlanca(i + 15))
+                lista.add(i + 15);
+            if (i + 17 < 64 && colorInicio != esCasillaBlanca(i + 17))
+                lista.add(i + 17);
+
+            if (i - 6 >= 0 && colorInicio != esCasillaBlanca(i - 6))
+                lista.add(i - 6);
+            if (i - 10 >= 0 && colorInicio != esCasillaBlanca(i - 10))
+                lista.add(i - 10);
+            if (i - 15 >= 0 && colorInicio != esCasillaBlanca(i - 15))
+                lista.add(i - 15);
+            if (i - 17 >= 0 && colorInicio != esCasillaBlanca(i - 17))
+                lista.add(i - 17);
+
+            movimientosCaballo.put(i, lista);
+        }
+    }
+
+    private static void llenarMovimientosDeTorre() {
+        for (int i = 0; i < 64; i++) {
+            var lista = new ArrayList<List<Integer>>(4);
+
+            var listaInterna = new ArrayList<Integer>();
+            int base = i + 8;
+
+            while (base < 64) {
+                listaInterna.add(base);
+                base += 8;
+            }
+            lista.add(0, listaInterna);
+
+            listaInterna = new ArrayList<>();
+            base = i - 8;
+            while (base >= 0) {
+                listaInterna.add(base);
+                base -= 8;
+            }
+
+            lista.add(1, listaInterna);
+
+            listaInterna = new ArrayList<>();
+
+
+            int residuo = i / 8;
+
+            int fin = 7 + (8 * residuo);
+
+            for (int j = i + 1; j <= fin; j++) {
+                listaInterna.add(j);
+            }
+            lista.add(2, listaInterna);
+
+            residuo = i / 8;
+
+            fin = 8 * residuo;
+
+            listaInterna = new ArrayList<Integer>();
+
+            for (int j = i - 1; j >= fin; j--) {
+                listaInterna.add(j);
+            }
+            lista.add(3, listaInterna);
+
+            movimientosTorre.put(i, lista);
+        }
+    }
+
+    private static void llenarMovimientosDeAlfil() {
+
+
+
+        for (int i = 0; i < 64; i++) {
+
+            boolean colorInicio = esCasillaBlanca(i);
+
+            var lista = new ArrayList<List<Integer>>(4);
+
+            var listaInterna = new ArrayList<Integer>();
+
+            int base = i + 9;
+
+            while (base < 64 && colorInicio == esCasillaBlanca(base)) {
+                listaInterna.add(base);
+                base += 9;
+            }
+            lista.add(0,listaInterna);
+
+            listaInterna = new ArrayList<Integer>();
+            base = i - 9 ;
+            while (base >= 0 && colorInicio == esCasillaBlanca(base)) {
+                listaInterna.add(base);
+                base -= 9;
+            }
+            lista.add(1,listaInterna);
+
+            listaInterna = new ArrayList<Integer>();
+            base = i + 7;
+            while (base < 64 && colorInicio == esCasillaBlanca(base)) {
+                listaInterna.add(base);
+                base += 7;
+            }
+            lista.add(2,listaInterna);
+
+
+
+            listaInterna = new ArrayList<Integer>();
+            base = i - 7 ;
+            while (base >= 0 && colorInicio == esCasillaBlanca(base)) {
+                listaInterna.add(base);
+                base -= 7;
+            }
+            lista.add(3,listaInterna);
+
+
+
+            movimientosAlfil.put(i, lista);
+
+        }
+    }
+
+    public static boolean esCasillaBlanca(int i) {
+        boolean filaImpar = (i / 8 + 1) % 2 != 0;
+
+        return filaImpar == ((i + 1) % 2 == 0);
+    }
+
+
+}
 //    enum Trayectoria {Recta, Diagonal, Ninguna}
 //
 //    public static int[] piezaJaque = null;
