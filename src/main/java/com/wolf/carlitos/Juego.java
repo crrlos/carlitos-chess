@@ -47,18 +47,15 @@ public class Juego {
             tablero[i + 8]= new Peon(true);
             tablero[i + 48]  = new Peon(false);
         }
-
-       Utilidades.imprimirPosicicion(tablero);
-    
     }
    
-//   public void establecerPosicion(String... movimientos){
-//        for (var movimiento : movimientos) {
-//            secuencia.add(Utilidades.convertirAPosicion(movimiento));
-//            Utilidades.actualizarTablero(tablero, estadoTablero, Utilidades.convertirAPosicion(movimiento));
-//            estadoTablero.turnoBlanco = !estadoTablero.turnoBlanco;
-//        }
-//    }
+   public void establecerPosicion(String... movimientos){
+        for (var movimiento : movimientos) {
+            secuencia.add(Utilidades.convertirAPosicion(movimiento));
+            Utilidades.actualizarTablero(tablero, estadoTablero, Utilidades.convertirAPosicion(movimiento));
+            estadoTablero.turnoBlanco = !estadoTablero.turnoBlanco;
+        }
+    }
 //    public void setFen(String linea){
 //        tablero = new Pieza[8][8];
 //        String[] filas = linea.replace("fen ", "").split("/");
