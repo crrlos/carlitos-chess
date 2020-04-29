@@ -69,8 +69,8 @@ public class search {
     }
     
     class Acumulador{
-        int contadorPerft;
-        int contador;
+        long contadorPerft;
+        long contador;
     }
      public void perft(int deep) throws CloneNotSupportedException, IOException{
          var acumulador = new Acumulador();

@@ -53,7 +53,8 @@ public class Generador {
 
     }
 
-    public static List<int[]> movimientosDeTorre(Pieza[][] tablero, EstadoTablero estado, int fila, int columna) {
+    public static List<int[]> movimientosDeTorre(Pieza[][] tablero, EstadoTablero estado, int fila, int columna)
+    {
 
         var lista = new ArrayList<int[]>();
 

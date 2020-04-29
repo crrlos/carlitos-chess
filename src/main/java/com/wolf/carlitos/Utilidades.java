@@ -18,17 +18,17 @@ import com.wolf.carlitos.Piezas.Torre;
  */
 public class Utilidades {
 
-    public static void imprimirPosicicion(Pieza[][] tablero) {
-        for (int i = 7; i >= 0; i--) {
+    public static void imprimirPosicicion(Pieza[] tablero) {
+
+        for (int i = 64; i > 0; i -= 8) {
             System.out.println("+---+---+---+---+---+---+---+---+");
-            for (int j = 0; j < 8; j++) {
-                var pieza = tablero[i][j];
+            for (int j = i - 8; j < (i - 8) + 8; j++) {
+                var pieza = tablero[j];
                 System.out.print("| " + (pieza != null ? pieza.nombre() : " ") + " ");
             }
             System.out.print("|");
             System.out.println();
         }
-
         System.out.println("+---+---+---+---+---+---+---+---+");
     }
 
@@ -181,13 +181,13 @@ public class Utilidades {
 
         } else if (pieza instanceof Torre) {
 
-            if(colInicio == 7 && filaInicio == 7){
+            if (colInicio == 7 && filaInicio == 7) {
                 estadoTablero.enroqueCNegro = false;
-            }else if(colInicio == 0 && filaInicio == 7){
+            } else if (colInicio == 0 && filaInicio == 7) {
                 estadoTablero.enroqueLNegro = false;
-            }else if(colInicio == 7 && filaInicio == 0){
+            } else if (colInicio == 7 && filaInicio == 0) {
                 estadoTablero.enroqueCBlanco = false;
-            }else if(colInicio == 0 && filaInicio == 0){
+            } else if (colInicio == 0 && filaInicio == 0) {
                 estadoTablero.enroqueLBlanco = false;
             }
         }
@@ -195,13 +195,13 @@ public class Utilidades {
         estadoTablero.piezaCapturada = tablero[filaFinal][colFinal];
         if (estadoTablero.piezaCapturada instanceof Torre) {
 
-            if(colFinal == 7 && filaFinal == 7){
+            if (colFinal == 7 && filaFinal == 7) {
                 estadoTablero.enroqueCNegro = false;
-            }else if(colFinal == 0 && filaFinal == 7){
+            } else if (colFinal == 0 && filaFinal == 7) {
                 estadoTablero.enroqueLNegro = false;
-            }else if(colFinal == 7 && filaFinal == 0){
+            } else if (colFinal == 7 && filaFinal == 0) {
                 estadoTablero.enroqueCBlanco = false;
-            }else if(colFinal == 0 && filaFinal == 0){
+            } else if (colFinal == 0 && filaFinal == 0) {
                 estadoTablero.enroqueLBlanco = false;
             }
         }
@@ -230,7 +230,7 @@ public class Utilidades {
         actualizarPosicion(tablero, estadoTablero, movimiento);
         //actualizarTrayectorias(movimiento[2], movimiento[3], estadoTablero, tablero, false);
 
-       // var despues =  analizarTablero(tablero,estadoTablero,movimiento);
+        // var despues =  analizarTablero(tablero,estadoTablero,movimiento);
 
 //        if(!antes && despues)
 //        {
@@ -258,30 +258,30 @@ public class Utilidades {
 
         if (columna + 1 < 8)
             if (tablero[fila][columna + 1] != null && (tablero[fila][columna + 1] instanceof Rey))
-                return new int[]{fila,columna + 1};
+                return new int[]{fila, columna + 1};
         if (columna - 1 >= 0)
             if (tablero[fila][columna - 1] != null && (tablero[fila][columna - 1] instanceof Rey))
-                return new int[]{fila,columna - 1};
+                return new int[]{fila, columna - 1};
 
         if (fila + 1 < 8) {
             if (tablero[fila + 1][columna] != null && (tablero[fila + 1][columna] instanceof Rey))
-                return new int[]{fila + 1 ,columna};
+                return new int[]{fila + 1, columna};
             if (columna + 1 < 8)
                 if (tablero[fila + 1][columna + 1] != null && (tablero[fila + 1][columna + 1] instanceof Rey))
-                    return new int[]{fila + 1,columna + 1};
+                    return new int[]{fila + 1, columna + 1};
             if (columna - 1 >= 0)
                 if (tablero[fila + 1][columna - 1] != null && (tablero[fila + 1][columna - 1] instanceof Rey))
-                    return new int[]{fila + 1,columna - 1};
+                    return new int[]{fila + 1, columna - 1};
         }
         if (fila - 1 >= 0) {
             if (tablero[fila - 1][columna] != null && (tablero[fila - 1][columna] instanceof Rey))
-                return new int[]{fila - 1,columna};
+                return new int[]{fila - 1, columna};
             if (columna + 1 < 8)
                 if (tablero[fila - 1][columna + 1] != null && (tablero[fila - 1][columna + 1] instanceof Rey))
-                    return new int[]{fila -1,columna + 1};
+                    return new int[]{fila - 1, columna + 1};
             if (columna - 1 >= 0)
                 if (tablero[fila - 1][columna - 1] != null && (tablero[fila - 1][columna - 1] instanceof Rey))
-                    return new int[]{fila - 1,columna - 1};
+                    return new int[]{fila - 1, columna - 1};
         }
 
         return null;
@@ -298,13 +298,13 @@ public class Utilidades {
             if (columna + 1 < 8)
                 if ((pieza = tablero[fila][columna + 1]) != null) {
                     if (pieza.esBlanca() != blanco && pieza instanceof Peon)
-                        return new int[]{fila,columna + 1};
+                        return new int[]{fila, columna + 1};
 
                 }
             if (columna - 1 >= 0)
                 if ((pieza = tablero[fila][columna - 1]) != null) {
                     if (pieza.esBlanca() != blanco && pieza instanceof Peon)
-                        return new int[]{fila,columna - 1};
+                        return new int[]{fila, columna - 1};
                 }
         }
 
@@ -320,7 +320,7 @@ public class Utilidades {
             posicionActual = tablero[i][columna];
             if (posicionActual != null)
                 if (posicionActual.esBlanca() != blanco && (posicionActual instanceof Torre || posicionActual instanceof Dama))
-                    return new int[]{i,columna};
+                    return new int[]{i, columna};
                 else break;
             i++;
         }
@@ -331,7 +331,7 @@ public class Utilidades {
             posicionActual = tablero[i][columna];
             if (posicionActual != null)
                 if (posicionActual.esBlanca() != blanco && (posicionActual instanceof Torre || posicionActual instanceof Dama))
-                    return new int[]{i,columna};
+                    return new int[]{i, columna};
                 else break;
             i--;
         }
@@ -341,7 +341,7 @@ public class Utilidades {
             posicionActual = tablero[fila][i];
             if (posicionActual != null)
                 if (posicionActual.esBlanca() != blanco && (posicionActual instanceof Torre || posicionActual instanceof Dama))
-                    return new int[]{fila,i};
+                    return new int[]{fila, i};
                 else break;
             i++;
         }
@@ -351,7 +351,7 @@ public class Utilidades {
             posicionActual = tablero[fila][i];
             if (posicionActual != null)
                 if (posicionActual.esBlanca() != blanco && (posicionActual instanceof Torre || posicionActual instanceof Dama))
-                    return new int[]{fila,i};
+                    return new int[]{fila, i};
                 else break;
             i--;
         }
@@ -368,7 +368,7 @@ public class Utilidades {
             posicionActual = tablero[f][c];
             if (posicionActual != null) {
                 if (posicionActual.esBlanca() != blanco && (posicionActual instanceof Dama || posicionActual instanceof Alfil))
-                    return new int[]{f,c};
+                    return new int[]{f, c};
                 else break;
             }
             ++f;
@@ -381,7 +381,7 @@ public class Utilidades {
             posicionActual = tablero[f][c];
             if (posicionActual != null) {
                 if (posicionActual.esBlanca() != blanco && (posicionActual instanceof Dama || posicionActual instanceof Alfil))
-                    return new int[]{f,c};
+                    return new int[]{f, c};
                 else break;
             }
             --f;
@@ -394,7 +394,7 @@ public class Utilidades {
             posicionActual = tablero[f][c];
             if (posicionActual != null) {
                 if (posicionActual.esBlanca() != blanco && (posicionActual instanceof Dama || posicionActual instanceof Alfil))
-                    return new int[]{f,c};
+                    return new int[]{f, c};
                 else break;
             }
             ++f;
@@ -407,7 +407,7 @@ public class Utilidades {
             posicionActual = tablero[f][c];
             if (posicionActual != null) {
                 if (posicionActual.esBlanca() != blanco && (posicionActual instanceof Dama || posicionActual instanceof Alfil))
-                    return new int[]{f,c};
+                    return new int[]{f, c};
                 else break;
             }
             --f;
@@ -425,7 +425,7 @@ public class Utilidades {
                 posicionActual = tablero[fila + 2][columna + 1];
                 if (posicionActual != null) {
                     if (posicionActual.esBlanca() != blanco && posicionActual instanceof Caballo)
-                        return new int[]{fila + 2,columna + 1};
+                        return new int[]{fila + 2, columna + 1};
                 }
 
             }
@@ -433,7 +433,7 @@ public class Utilidades {
                 posicionActual = tablero[fila + 2][columna - 1];
                 if (posicionActual != null) {
                     if (posicionActual.esBlanca() != blanco && posicionActual instanceof Caballo)
-                        return new int[]{fila + 2,columna - 1};
+                        return new int[]{fila + 2, columna - 1};
                 }
             }
         }
@@ -443,14 +443,14 @@ public class Utilidades {
                 posicionActual = tablero[fila - 2][columna + 1];
                 if (posicionActual != null) {
                     if (posicionActual.esBlanca() != blanco && posicionActual instanceof Caballo)
-                        return new int[]{fila - 2,columna + 1};
+                        return new int[]{fila - 2, columna + 1};
                 }
             }
             if (columna - 1 >= 0) {
                 posicionActual = tablero[fila - 2][columna - 1];
                 if (posicionActual != null) {
                     if (posicionActual.esBlanca() != blanco && posicionActual instanceof Caballo)
-                        return new int[]{fila - 2,columna - 1};
+                        return new int[]{fila - 2, columna - 1};
                 }
             }
         }
@@ -460,14 +460,14 @@ public class Utilidades {
                 posicionActual = tablero[fila + 1][columna - 2];
                 if (posicionActual != null) {
                     if (posicionActual.esBlanca() != blanco && posicionActual instanceof Caballo)
-                        return new int[]{fila + 1,columna - 2};
+                        return new int[]{fila + 1, columna - 2};
                 }
             }
             if (fila - 1 >= 0) {
                 posicionActual = tablero[fila - 1][columna - 2];
                 if (posicionActual != null) {
                     if (posicionActual.esBlanca() != blanco && posicionActual instanceof Caballo)
-                        return new int[]{fila - 1,columna - 2};
+                        return new int[]{fila - 1, columna - 2};
                 }
             }
         }
@@ -476,19 +476,20 @@ public class Utilidades {
                 posicionActual = tablero[fila + 1][columna + 2];
                 if (posicionActual != null) {
                     if (posicionActual.esBlanca() != blanco && posicionActual instanceof Caballo)
-                        return new int[]{fila + 1,columna + 2};
+                        return new int[]{fila + 1, columna + 2};
                 }
             }
             if (fila - 1 >= 0) {
                 posicionActual = tablero[fila - 1][columna + 2];
                 if (posicionActual != null) {
                     if (posicionActual.esBlanca() != blanco && posicionActual instanceof Caballo)
-                        return new int[]{fila - 1,columna + 2};
+                        return new int[]{fila - 1, columna + 2};
                 }
             }
         }
         return null;
     }
+
     public static boolean movimientoValido(int[] movimiento, Pieza[][] tablero, EstadoTablero estado) {
         var fo = movimiento[0];
         var co = movimiento[1];
