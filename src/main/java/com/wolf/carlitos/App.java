@@ -4,18 +4,16 @@ import java.util.Scanner;
 
 public class App {
     static Juego juego = new Juego();
-    
+
     public static void main(String[] args) throws Exception {
 
 
-        
-        
-       if(Config.debug){
-           new Hilos();
-       }
+        if (Config.debug) {
+            new Hilos();
+        }
 
         var scanner = new Scanner(System.in);
-        
+
 
         while (scanner.hasNext()) {
             var linea = scanner.nextLine();
@@ -47,15 +45,18 @@ public class App {
 //            } else if (linea.contains("stop")) {
 //                System.out.println("readyok");
 //
-//            } else if (linea.contains("fen")) {
-//                juego.setFen(linea);
-//            }else if(linea.contains("perft")){
-//                int n = 1;
-//
-//                try{n = Integer.parseInt(linea.replace("perft ",""));}catch(NumberFormatException ex){}
-//
-//                juego.perft(n);
-//            }
+            else if (linea.contains("fen")) {
+                juego.setFen(linea);
+            } else if (linea.contains("perft")) {
+                int n = 1;
+
+                try {
+                    n = Integer.parseInt(linea.replace("perft ", ""));
+                } catch (NumberFormatException ex) {
+                }
+
+                juego.perft(n);
+            }
 
         }
         scanner.close();

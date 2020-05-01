@@ -1,6 +1,6 @@
-package com.wolf.carlitos.Piezas;
+package com.wolf.carlitos;
 
-public class Casillas {
+public class Constantes {
 
     public static final int A1 = 0;
     public static final int B1 = 1;
@@ -73,4 +73,14 @@ public class Casillas {
     public static final int F8 = 61;
     public static final int G8 = 62;
     public static final int H8 = 63;
+
+    public static final int ENROQUE = 100;
+    public static final int MOVIMIENTO_NORMAL = 101;
+    public static final int AL_PASO = 102;
+    public static final int PROMOCION = 103;
+    public static final int MOVIMIENTO_REY = 104;
+    public static final int NO_ASIGNADO = 105;
+
+
+
 }

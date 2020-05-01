@@ -2,10 +2,7 @@
 package com.wolf.carlitos;
 
 import com.wolf.carlitos.Piezas.*;
-import  static  com.wolf.carlitos.Piezas.Casillas.*;
-import java.util.ArrayList;
-import java.util.List;
-
+import  static com.wolf.carlitos.Constantes.*;
 
 
 public  class EstadoTablero  implements Cloneable{

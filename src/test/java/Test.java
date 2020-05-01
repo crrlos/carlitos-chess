@@ -1,9 +1,8 @@
 import com.wolf.carlitos.Generador;
-import com.wolf.carlitos.Piezas.Caballo;
 
 import java.util.ArrayList;
 
-import static com.wolf.carlitos.Piezas.Casillas.*;
+import static com.wolf.carlitos.Constantes.*;
 
 public class Test{
 

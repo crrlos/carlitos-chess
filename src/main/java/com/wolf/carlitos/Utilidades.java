@@ -16,7 +16,7 @@ import com.wolf.carlitos.Piezas.Torre;
 import java.util.HashMap;
 
 import static java.lang.Math.abs;
-import static com.wolf.carlitos.Piezas.Casillas.*;
+import static com.wolf.carlitos.Constantes.*;
 
 /**
  * @author carlos
@@ -112,14 +112,14 @@ public class Utilidades {
 
     public static void actualizarTablero(Pieza[] tablero, EstadoTablero estadoTablero, int[] movimiento) {
 
+
         int inicio = movimiento[0];
         int destino = movimiento[1];
-
 
         var pieza = tablero[inicio];
 
         estadoTablero.piezaCapturada = null;
-        estadoTablero.tipoMovimiento = -1;
+        estadoTablero.tipoMovimiento = NO_ASIGNADO;
 
         if (pieza instanceof Peon) {
 
@@ -129,7 +129,7 @@ public class Utilidades {
 
                 tablero[destino] = pieza;
                 tablero[inicio] = null;
-                estadoTablero.tipoMovimiento = 0;
+                estadoTablero.tipoMovimiento = MOVIMIENTO_NORMAL;
                 return;
             }
             if (estadoTablero.alPaso) {
@@ -138,7 +138,7 @@ public class Utilidades {
 
                         // aqui se remueve la pieza al paso
                         tablero[inicio]= null;
-                        estadoTablero.tipoMovimiento = 1;
+                        estadoTablero.tipoMovimiento = AL_PASO;
                     }
                 }
 
@@ -160,32 +160,32 @@ public class Utilidades {
                         pieza = new Alfil(estadoTablero.turnoBlanco);
                         break;
                 }
-                estadoTablero.tipoMovimiento = 2;
+                estadoTablero.tipoMovimiento = PROMOCION;
             }
 
         } else if (pieza instanceof Rey) {
             // en los enroques solo se mueven las torres por ser el movimiento especial
             if (abs(inicio - destino) == 2) {
                 if (pieza.esBlanca()) {
-                    if (destino == G1) {//enroque corto
+                    if (destino == G1) {
                         tablero[F1] = tablero[H1];
                         tablero[H1] = null;
-                    } else {//enroque largo
+                    } else {
                         tablero[D1] = tablero[A1];
                         tablero[A1] = null;
                     }
                 } else {
-                    if (destino == G8) {//enroque corto
-                        tablero[F1] = tablero[H8];
+                    if (destino == G8) {
+                        tablero[F8] = tablero[H8];
                         tablero[H8] = null;
-                    } else {//enroque largo
+                    } else {
                         tablero[D8] = tablero[A8];
                         tablero[A8] = null;
                     }
                 }
-                estadoTablero.tipoMovimiento = 3;
+                estadoTablero.tipoMovimiento = ENROQUE;
             } else {
-                estadoTablero.tipoMovimiento = 100;
+                estadoTablero.tipoMovimiento = MOVIMIENTO_REY;
             }
             if (pieza.esBlanca()) {
                 estadoTablero.enroqueCBlanco = estadoTablero.enroqueLBlanco = false;
@@ -197,15 +197,21 @@ public class Utilidades {
 
         } else if (pieza instanceof Torre) {
 
-            if (inicio == H8) {
-                estadoTablero.enroqueCNegro = false;
-            } else if (inicio == A8) {
-                estadoTablero.enroqueLNegro = false;
-            } else if (inicio == H1) {
-                estadoTablero.enroqueCBlanco = false;
-            } else if (inicio == A1) {
-                estadoTablero.enroqueLBlanco = false;
+            switch (inicio){
+                case H8:
+                    estadoTablero.enroqueCNegro = false;
+                    break;
+                case A8:
+                    estadoTablero.enroqueLNegro = false;
+                    break;
+                case H1:
+                    estadoTablero.enroqueCBlanco = false;
+                    break;
+                case A1:
+                    estadoTablero.enroqueLBlanco = false;
+                    break;
             }
+
         }
 
         estadoTablero.piezaCapturada = tablero[destino];
@@ -233,8 +239,8 @@ public class Utilidades {
 
         estadoTablero.alPaso = false;
 
-        if (estadoTablero.tipoMovimiento == -1) {
-            estadoTablero.tipoMovimiento = 0;
+        if (estadoTablero.tipoMovimiento == NO_ASIGNADO) {
+            estadoTablero.tipoMovimiento = MOVIMIENTO_NORMAL;
         }
     }
 
@@ -247,48 +253,13 @@ public class Utilidades {
         if ((result = ataqueFilaColumna(posicionRey, tablero, blanco)) != 0) return result;
         if ((result = ataqueDiagonal(posicionRey,tablero, blanco)) != 0) return result;
         if ((result = ataqueCaballo(posicionRey, tablero, blanco)) != 0) return result;
-        if ((result = ataquePeon(posicionRey, tablero, blanco)) != 0) return result;
+       // if ((result = ataquePeon(posicionRey, tablero, blanco)) != 0) return result;
 
         return 0;
     }
-
-    private static int[] ataqueRey(int fila, int columna, Pieza[][] tablero, boolean blanco) {
-
-        if (columna + 1 < 8)
-            if (tablero[fila][columna + 1] != null && (tablero[fila][columna + 1] instanceof Rey))
-                return new int[]{fila, columna + 1};
-        if (columna - 1 >= 0)
-            if (tablero[fila][columna - 1] != null && (tablero[fila][columna - 1] instanceof Rey))
-                return new int[]{fila, columna - 1};
-
-        if (fila + 1 < 8) {
-            if (tablero[fila + 1][columna] != null && (tablero[fila + 1][columna] instanceof Rey))
-                return new int[]{fila + 1, columna};
-            if (columna + 1 < 8)
-                if (tablero[fila + 1][columna + 1] != null && (tablero[fila + 1][columna + 1] instanceof Rey))
-                    return new int[]{fila + 1, columna + 1};
-            if (columna - 1 >= 0)
-                if (tablero[fila + 1][columna - 1] != null && (tablero[fila + 1][columna - 1] instanceof Rey))
-                    return new int[]{fila + 1, columna - 1};
-        }
-        if (fila - 1 >= 0) {
-            if (tablero[fila - 1][columna] != null && (tablero[fila - 1][columna] instanceof Rey))
-                return new int[]{fila - 1, columna};
-            if (columna + 1 < 8)
-                if (tablero[fila - 1][columna + 1] != null && (tablero[fila - 1][columna + 1] instanceof Rey))
-                    return new int[]{fila - 1, columna + 1};
-            if (columna - 1 >= 0)
-                if (tablero[fila - 1][columna - 1] != null && (tablero[fila - 1][columna - 1] instanceof Rey))
-                    return new int[]{fila - 1, columna - 1};
-        }
-
-        return null;
-    }
-
     private static int ataquePeon(int posicion, Pieza[] tablero, boolean blanco) {
+            throw  new IllegalStateException("no implementado");
 
-
-        return 0;
     }
 
     private static int ataqueFilaColumna(int posicion, Pieza[] tablero, boolean blanco) {
@@ -299,7 +270,7 @@ public class Utilidades {
 
             for (int j = 0; j < movimientosTorre.get(i).size(); j++) {
                 var m = movimientosTorre.get(i);
-                var posicionActual = tablero[m.get(i)];
+                var posicionActual = tablero[m.get(j)];
                 if(posicionActual != null)
                     if(posicionActual.esBlanca() != blanco
                             && (posicionActual instanceof  Torre || posicionActual instanceof Dama)){
@@ -320,7 +291,7 @@ public class Utilidades {
 
             for (int j = 0; j < movimientosAlfil.get(i).size(); j++) {
                 var m = movimientosAlfil.get(i);
-                var posicionActual = tablero[m.get(i)];
+                var posicionActual = tablero[m.get(j)];
                 if(posicionActual != null)
                     if(posicionActual.esBlanca() != blanco
                             && (posicionActual instanceof  Alfil || posicionActual instanceof Dama)){
@@ -355,9 +326,13 @@ public class Utilidades {
         int inicio = movimiento[0];
         int destino = movimiento[1];
 
-
         Pieza piezaActual = tablero[inicio];
         Pieza piezaDestino = tablero[destino];
+
+        if(piezaActual instanceof  Rey){
+            var diferencia = abs(destino - (estado.turnoBlanco ? estado.posicionReyNegro : estado.posicionReyBlanco));
+            if(diferencia == 1 || diferencia == 7 || diferencia == 8 || diferencia == 9) return  false;
+        }
 
         tablero[inicio] = null;
         tablero[destino] = piezaActual;
@@ -399,4 +374,5 @@ public class Utilidades {
 
         return jaque == 0;
     }
+
 }
