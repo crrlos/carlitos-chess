@@ -99,6 +99,7 @@ public class Search {
         switch(estado.tipoMovimiento){
 
             case MOVIMIENTO_NORMAL:
+            case MOVIMIENTO_REY:
                 tablero[inicio] = tablero[destino];
                 break;
             case AL_PASO:
@@ -117,33 +118,16 @@ public class Search {
                 tablero[destino] = null;
 
                 if(destino == G1 || destino == G8){
-                    boolean tb = turnoBlanco;
-                    tablero[tb ? H1 : H8] = tablero[tb ? F1 : F8];
-                    tablero[tb? F1 : F8] = null;
+                    tablero[turnoBlanco ? H1 : H8] = tablero[turnoBlanco ? F1 : F8];
+                    tablero[turnoBlanco ? F1 : F8] = null;
                 }
 
                 if(destino == C1 || destino == C8){
-                    boolean tb = turnoBlanco;
-                    tablero[tb ? A1 : A8] = tablero[tb ? D1 : D8];
-                    tablero[tb? D1 : D8] = null;
-                }
-
-                if(turnoBlanco){
-                    estadoTablero.posicionReyBlanco = inicio;
-                }else{
-                    estadoTablero.posicionReyNegro = inicio;
+                    tablero[turnoBlanco ? A1 : A8] = tablero[turnoBlanco ? D1 : D8];
+                    tablero[turnoBlanco ? D1 : D8] = null;
                 }
 
                 break;
-            case MOVIMIENTO_REY:
-                tablero[inicio] = tablero[destino];
-
-                if(turnoBlanco){
-                    estadoTablero.posicionReyBlanco = inicio;
-                }else{
-                    estadoTablero.posicionReyNegro = inicio;
-                }
-
 
         }
 
