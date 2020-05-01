@@ -11,8 +11,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.wolf.carlitos.Constantes.E1;
-import static com.wolf.carlitos.Constantes.E8;
+import static com.wolf.carlitos.Constantes.*;
 
 
 public class Juego {
