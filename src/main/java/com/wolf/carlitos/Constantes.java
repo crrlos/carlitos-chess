@@ -81,6 +81,7 @@ public class Constantes {
     public static final int MOVIMIENTO_REY = 104;
     public static final int NO_ASIGNADO = 105;
 
+    public static final int NO_JAQUE = 1001;
 
 
 }

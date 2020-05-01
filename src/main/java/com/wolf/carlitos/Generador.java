@@ -647,6 +647,7 @@ public class Generador {
 
         }
 
+        lista.removeIf(m -> !movimientoValido(m,tablero,estado));
         return lista;
     }
 
@@ -1267,7 +1268,7 @@ public class Generador {
             }
         }
         if (estado.enroqueLBlanco || estado.enroqueCBlanco) {
-            if (reyEnJaque(tablero, estado) == 0) {
+            if (reyEnJaque(tablero, estado) == NO_JAQUE) {
                 if (estado.enroqueCBlanco && pieza.esBlanca() &&
                 estado.posicionReyNegro != G2) {
 
@@ -1275,9 +1276,9 @@ public class Generador {
                     if (posicion == E1) {
                         if (tablero[F1] == null && tablero[G1] == null) {
                             moverReyUnaCasilla(tablero, estado, E1, F1);
-                            if (reyEnJaque(tablero, estado) == 0) {
+                            if (reyEnJaque(tablero, estado) == NO_JAQUE) {
                                 moverReyUnaCasilla(tablero, estado, F1, G1);
-                                if (reyEnJaque(tablero, estado) == 0) {
+                                if (reyEnJaque(tablero, estado) == NO_JAQUE) {
                                     lista.add(new int[]{E1, G1});
                                 }
                                 moverReyUnaCasilla(tablero, estado, G1, F1);
@@ -1293,9 +1294,9 @@ public class Generador {
                     if (posicion == E1) {
                         if (tablero[D1] == null && tablero[C1] == null && tablero[B1] == null) {
                             moverReyUnaCasilla(tablero, estado, E1, D1);
-                            if (reyEnJaque(tablero, estado) == 0) {
+                            if (reyEnJaque(tablero, estado) == NO_JAQUE) {
                                 moverReyUnaCasilla(tablero, estado, D1, C1);
-                                if (reyEnJaque(tablero, estado) == 0) {
+                                if (reyEnJaque(tablero, estado) == NO_JAQUE) {
                                     lista.add(new int[]{E1, C1});
                                 }
                                 moverReyUnaCasilla(tablero, estado, C1, D1);

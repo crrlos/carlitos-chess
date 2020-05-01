@@ -23,15 +23,15 @@ import static com.wolf.carlitos.Constantes.*;
  */
 public class Utilidades {
 
-    private  static  final HashMap<String,Integer> casillaPosicion = new HashMap<>();
-    private  static  final HashMap<Integer,String> posicionCasilla = new HashMap<>();
+    private static final HashMap<String, Integer> casillaPosicion = new HashMap<>();
+    private static final HashMap<Integer, String> posicionCasilla = new HashMap<>();
 
 
     static {
         int correlativo = 0;
 
         for (int i = 1; i <= 8; i++) {
-            for(char c : "abcdefgh".toCharArray()){
+            for (char c : "abcdefgh".toCharArray()) {
                 casillaPosicion.put(String.valueOf(c) + i, correlativo);
                 posicionCasilla.put(correlativo++, String.valueOf(c) + i);
             }
@@ -64,8 +64,8 @@ public class Utilidades {
             posicion = new int[2];
         }
 
-        var inicio = movimiento.substring(0,2);
-        var destino = movimiento.substring(2,4);
+        var inicio = movimiento.substring(0, 2);
+        var destino = movimiento.substring(2, 4);
 
         posicion[0] = casillaPosicion.get(inicio);
         posicion[1] = casillaPosicion.get(destino);
@@ -133,11 +133,11 @@ public class Utilidades {
                 return;
             }
             if (estadoTablero.alPaso) {
-                if (abs(destino - inicio) == 7  || abs(destino - inicio) == 9) {
+                if (abs(destino - inicio) == 7 || abs(destino - inicio) == 9) {
                     if (tablero[destino] == estadoTablero.piezaALPaso) {
 
                         // aqui se remueve la pieza al paso
-                        tablero[inicio]= null;
+                        tablero[inicio] = null;
                         estadoTablero.tipoMovimiento = AL_PASO;
                     }
                 }
@@ -197,7 +197,7 @@ public class Utilidades {
 
         } else if (pieza instanceof Torre) {
 
-            switch (inicio){
+            switch (inicio) {
                 case H8:
                     estadoTablero.enroqueCNegro = false;
                     break;
@@ -217,7 +217,7 @@ public class Utilidades {
         estadoTablero.piezaCapturada = tablero[destino];
         if (estadoTablero.piezaCapturada instanceof Torre) {
 
-            switch (destino){
+            switch (destino) {
                 case H8:
                     estadoTablero.enroqueCNegro = false;
                     break;
@@ -250,15 +250,16 @@ public class Utilidades {
 
         int result;
 
-        if ((result = ataqueFilaColumna(posicionRey, tablero, blanco)) != 0) return result;
-        if ((result = ataqueDiagonal(posicionRey,tablero, blanco)) != 0) return result;
-        if ((result = ataqueCaballo(posicionRey, tablero, blanco)) != 0) return result;
-       // if ((result = ataquePeon(posicionRey, tablero, blanco)) != 0) return result;
+        if ((result = ataqueFilaColumna(posicionRey, tablero, blanco)) != NO_JAQUE) return result;
+        if ((result = ataqueDiagonal(posicionRey, tablero, blanco)) != NO_JAQUE) return result;
+        if ((result = ataqueCaballo(posicionRey, tablero, blanco)) != NO_JAQUE) return result;
+        // if ((result = ataquePeon(posicionRey, tablero, blanco)) != 0) return result;
 
-        return 0;
+        return NO_JAQUE;
     }
+
     private static int ataquePeon(int posicion, Pieza[] tablero, boolean blanco) {
-            throw  new IllegalStateException("no implementado");
+        throw new IllegalStateException("no implementado");
 
     }
 
@@ -268,19 +269,22 @@ public class Utilidades {
 
         for (int i = 0; i < movimientosTorre.size(); i++) {
 
-            for (int j = 0; j < movimientosTorre.get(i).size(); j++) {
-                var m = movimientosTorre.get(i);
+            var m = movimientosTorre.get(i);
+
+            for (int j = 0; j < m.size(); j++) {
                 var posicionActual = tablero[m.get(j)];
-                if(posicionActual != null)
-                    if(posicionActual.esBlanca() != blanco
-                            && (posicionActual instanceof  Torre || posicionActual instanceof Dama)){
-                        return m.get(i);
-                    }
+                if (posicionActual != null) {
+                    if (posicionActual.esBlanca() != blanco
+                            && (posicionActual instanceof Torre || posicionActual instanceof Dama)) {
+                        return m.get(j);
+                    } else break;
+                }
+
 
             }
 
         }
-        return 0;
+        return NO_JAQUE;
     }
 
     private static int ataqueDiagonal(int posicion, Pieza[] tablero, boolean blanco) {
@@ -288,20 +292,22 @@ public class Utilidades {
         var movimientosAlfil = Generador.movimientosAlfil.get(posicion);
 
         for (int i = 0; i < movimientosAlfil.size(); i++) {
+            var m = movimientosAlfil.get(i);
 
-            for (int j = 0; j < movimientosAlfil.get(i).size(); j++) {
-                var m = movimientosAlfil.get(i);
+            for (int j = 0; j < m.size(); j++) {
                 var posicionActual = tablero[m.get(j)];
-                if(posicionActual != null)
-                    if(posicionActual.esBlanca() != blanco
-                            && (posicionActual instanceof  Alfil || posicionActual instanceof Dama)){
-                        return m.get(i);
-                    }
+                if (posicionActual != null) {
+
+                    if (posicionActual.esBlanca() != blanco
+                            && (posicionActual instanceof Alfil || posicionActual instanceof Dama)) {
+                        return m.get(j);
+                    } else break;
+                }
 
             }
 
         }
-        return 0;
+        return NO_JAQUE;
     }
 
     private static int ataqueCaballo(int posicion, Pieza[] tablero, boolean blanco) {
@@ -311,14 +317,14 @@ public class Utilidades {
         for (int j = 0; j < movimientosCaballo.size(); j++) {
             var m = movimientosCaballo.get(j);
             var posicionActual = tablero[m];
-            if(posicionActual != null)
-                if(posicionActual.esBlanca() != blanco
-                        && (posicionActual instanceof Caballo)){
+            if (posicionActual != null)
+                if (posicionActual.esBlanca() != blanco
+                        && (posicionActual instanceof Caballo)) {
                     return m;
                 }
 
         }
-        return 0;
+        return NO_JAQUE;
     }
 
     public static boolean movimientoValido(int[] movimiento, Pieza[] tablero, EstadoTablero estado) {
@@ -337,16 +343,16 @@ public class Utilidades {
 
         if (piezaActual instanceof Peon && estado.alPaso) {
 
-            if(estado.turnoBlanco){
-                if(destino - inicio == 7){
+            if (estado.turnoBlanco) {
+                if (destino - inicio == 7) {
                     posicionPaso = inicio - 1;
-                }else if(destino - inicio == 9){
+                } else if (destino - inicio == 9) {
                     posicionPaso = inicio + 1;
                 }
-            }else{
-                if(destino - inicio == -7){
+            } else {
+                if (destino - inicio == -7) {
                     posicionPaso = inicio + 1;
-                }else if(destino - inicio == -9){
+                } else if (destino - inicio == -9) {
                     posicionPaso = inicio - 1;
                 }
             }
@@ -357,17 +363,31 @@ public class Utilidades {
             }
 
         }
+        if (piezaActual instanceof Rey) {
+            if (estado.turnoBlanco) {
+                estado.posicionReyBlanco = destino;
+            } else {
+                estado.posicionReyNegro = destino;
+            }
+        }
 
         var jaque = reyEnJaque(tablero, estado);
 
         if (piezaActual instanceof Peon && estado.alPaso && tomaAlPaso) {
             tablero[posicionPaso] = estado.piezaALPaso;
         }
+        if (piezaActual instanceof Rey) {
+            if (estado.turnoBlanco) {
+                estado.posicionReyBlanco = inicio;
+            } else {
+                estado.posicionReyNegro = inicio;
+            }
+        }
 
         tablero[destino] = piezaDestino;
         tablero[inicio] = piezaActual;
 
-        return jaque == 0;
+        return jaque == NO_JAQUE;
     }
 
 }

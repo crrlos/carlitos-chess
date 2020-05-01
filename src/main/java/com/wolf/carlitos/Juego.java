@@ -27,7 +27,7 @@ public class Juego {
 //       tablero[0] = new Torre(true);
 //       tablero[1] = new Caballo(true);
 //       tablero[2] = new Alfil(true);
-//       tablero[3] = new Dama(true);
+       tablero[D1] = new Dama(true);
 
        tablero[E1] = new Rey(true);
 //       tablero[5] = new Alfil(true);
@@ -39,7 +39,7 @@ public class Juego {
 //       tablero[58] = new Alfil(false);
 //       tablero[59] = new Dama(false);
 
-       tablero[E8] = new Rey(false);
+        tablero[E8] = new Rey(false);
 //       tablero[61] = new Alfil(false);
 //       tablero[62] = new Caballo(false);
 //       tablero[63] = new Torre(false);
