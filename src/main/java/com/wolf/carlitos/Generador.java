@@ -1243,51 +1243,73 @@ public class Generador {
 
         for (int i = 0; i < movimietosRey.size(); i++) {
 
-            var m = tablero[movimietosRey.get(i)];
+            int mov = movimietosRey.get(i);
+            var m = tablero[mov];
 
-            if (m == null || m.esBlanca() != pieza.esBlanca())
+            if (m == null || m.esBlanca() != pieza.esBlanca()) {
+
+                var posicionRey = estado.turnoBlanco ? estado.posicionReyNegro : estado.posicionReyBlanco;
+                var distancia = abs(mov - posicionRey);
+
+                // TODO optimizar estas condiciones
+                if (distancia == 1 || distancia == 7 || distancia == 8 || distancia == 9) {
+
+                    if (distancia == 1 && esCasillaBlanca(posicionRey) == esCasillaBlanca(mov))
+                        lista.add(new int[]{posicion, movimietosRey.get(i)});
+                    else if (distancia == 7 && esCasillaBlanca(posicionRey) != esCasillaBlanca(mov))
+                        lista.add(new int[]{posicion, movimietosRey.get(i)});
+                    else if (distancia == 9 && esCasillaBlanca(posicionRey) != esCasillaBlanca(mov))
+                        lista.add(new int[]{posicion, movimietosRey.get(i)});
+
+                    continue;
+                }
                 lista.add(new int[]{posicion, movimietosRey.get(i)});
+            }
         }
+        if (estado.enroqueLBlanco || estado.enroqueCBlanco) {
+            if (reyEnJaque(tablero, estado) == 0) {
+                if (estado.enroqueCBlanco && pieza.esBlanca() &&
+                estado.posicionReyNegro != G2) {
 
-        if (reyEnJaque(tablero, estado) == 0) {
-
-            if (estado.enroqueCBlanco && pieza.esBlanca()) {
-                // TODO revisar si la posicion sirve, puede estar de sobra
-                if (posicion == E1) {
-                    if (tablero[F1] == null && tablero[G1] == null) {
-                        moverReyUnaCasilla(tablero, estado, E1, F1);
-                        if (reyEnJaque(tablero, estado) == 0) {
-                            moverReyUnaCasilla(tablero, estado, F1, G1);
+                    // TODO revisar si la posicion sirve, puede estar de sobra
+                    if (posicion == E1) {
+                        if (tablero[F1] == null && tablero[G1] == null) {
+                            moverReyUnaCasilla(tablero, estado, E1, F1);
                             if (reyEnJaque(tablero, estado) == 0) {
-                                lista.add(new int[]{E1, G1});
+                                moverReyUnaCasilla(tablero, estado, F1, G1);
+                                if (reyEnJaque(tablero, estado) == 0) {
+                                    lista.add(new int[]{E1, G1});
+                                }
+                                moverReyUnaCasilla(tablero, estado, G1, F1);
                             }
-                            moverReyUnaCasilla(tablero,estado,G1,F1);
+                            moverReyUnaCasilla(tablero, estado, F1, E1);
                         }
-                        moverReyUnaCasilla(tablero,estado,F1,E1);
+                    }
+                }
+
+                if (estado.enroqueLBlanco && pieza.esBlanca()
+                && estado.posicionReyNegro != B2 && estado.posicionReyNegro != C2) {
+
+                    if (posicion == E1) {
+                        if (tablero[D1] == null && tablero[C1] == null && tablero[B1] == null) {
+                            moverReyUnaCasilla(tablero, estado, E1, D1);
+                            if (reyEnJaque(tablero, estado) == 0) {
+                                moverReyUnaCasilla(tablero, estado, D1, C1);
+                                if (reyEnJaque(tablero, estado) == 0) {
+                                    lista.add(new int[]{E1, C1});
+                                }
+                                moverReyUnaCasilla(tablero, estado, C1, D1);
+                            }
+                            moverReyUnaCasilla(tablero, estado, D1, E1);
+                        }
                     }
                 }
             }
-
-            if (estado.enroqueLBlanco && pieza.esBlanca()) {
-
-                if (posicion == E1) {
-                    if (tablero[D1] == null && tablero[C1] == null && tablero[B1] == null) {
-                        moverReyUnaCasilla(tablero, estado, E1, D1);
-                        if (reyEnJaque(tablero, estado) == 0) {
-                            moverReyUnaCasilla(tablero, estado, D1, C1);
-                            if (reyEnJaque(tablero, estado) == 0) {
-                                lista.add(new int[]{E1, C1});
-                            }
-                            moverReyUnaCasilla(tablero,estado,C1,D1);
-                        }
-                        moverReyUnaCasilla(tablero,estado,D1,E1);
-                    }
-                }
-            }
         }
 
-        lista.removeIf(m -> !movimientoValido(m,tablero,estado));
-        return  lista;
+
+        lista.removeIf(m -> !movimientoValido(m, tablero, estado));
+        return lista;
     }
 
 

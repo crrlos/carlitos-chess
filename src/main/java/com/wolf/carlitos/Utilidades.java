@@ -329,11 +329,6 @@ public class Utilidades {
         Pieza piezaActual = tablero[inicio];
         Pieza piezaDestino = tablero[destino];
 
-        if(piezaActual instanceof  Rey){
-            var diferencia = abs(destino - (estado.turnoBlanco ? estado.posicionReyNegro : estado.posicionReyBlanco));
-            if(diferencia == 1 || diferencia == 7 || diferencia == 8 || diferencia == 9) return  false;
-        }
-
         tablero[inicio] = null;
         tablero[destino] = piezaActual;
 
