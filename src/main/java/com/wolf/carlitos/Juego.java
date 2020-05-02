@@ -25,9 +25,9 @@ public class Juego {
         tablero = new Pieza[64];
 
 //       tablero[0] = new Torre(true);
-//       tablero[1] = new Caballo(true);
+       tablero[B1] = new Caballo(true);
 //       tablero[2] = new Alfil(true);
-       tablero[D1] = new Dama(true);
+    //   tablero[D1] = new Dama(true);
 
        tablero[E1] = new Rey(true);
 //       tablero[5] = new Alfil(true);

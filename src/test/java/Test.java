@@ -1,8 +1,16 @@
+import com.wolf.carlitos.Config;
 import com.wolf.carlitos.Generador;
+import com.wolf.carlitos.Juego;
+import com.wolf.carlitos.Piezas.Caballo;
+import com.wolf.carlitos.Piezas.Torre;
+import com.wolf.carlitos.Utilidades;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import static com.wolf.carlitos.Constantes.*;
+import static com.wolf.carlitos.Generador.esCasillaBlanca;
+import static java.lang.Math.abs;
 
 public class Test{
 
@@ -55,26 +63,24 @@ public class Test{
     }
 
     public static  void main(String... args){
-        var t1 = System.currentTimeMillis();
-        long total = 0;
 
-        var movimientosCaballo = Generador.movimientosCaballo.get(E4);
-       for (int i = 0; i < 1; i++) {
-            for (int l = 0; l < 8; l++) {
-                for (int j = 0; j < 8; j++) {
-                    total += movimientosAlfil(l,j);
-                }
+        System.out.println(Generador.movimientosCaballo.get(B1));
+
+        var array = new ArrayList<Integer>();
+
+        var pieza = Config.debug ? 1: 2;
+
+        var t1 = System.currentTimeMillis();
+
+
+        for (int i = 0; i < 1_000_000; i++) {
+
+            if(pieza == 1){
+                var dato = "abc";
             }
 
-//            for (int j = 0; j < 64; j++) {
-//                total += alfil1(j);
-//            }
-
-
         }
-
         System.out.println(System.currentTimeMillis() -t1);
-        System.out.println(total);
 
 
     }
