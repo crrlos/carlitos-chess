@@ -7,6 +7,7 @@ import com.wolf.carlitos.Piezas.Peon;
 import com.wolf.carlitos.Piezas.Pieza;
 import com.wolf.carlitos.Piezas.Rey;
 import com.wolf.carlitos.Piezas.Torre;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,52 +16,53 @@ import static com.wolf.carlitos.Constantes.*;
 
 
 public class Juego {
-    public  Pieza[] tablero;
-    public  EstadoTablero estadoTablero;
-    public  List<int[]> secuencia =  new ArrayList<>();
+    public Pieza[] tablero;
+    public EstadoTablero estadoTablero;
+    public List<int[]> secuencia = new ArrayList<>();
 
-    
-   public Juego(){
-        estadoTablero = new  EstadoTablero();
+
+    public Juego() {
+        estadoTablero = new EstadoTablero();
         tablero = new Pieza[64];
 
-//       tablero[0] = new Torre(true);
-       tablero[B1] = new Caballo(true);
-//       tablero[2] = new Alfil(true);
-    //   tablero[D1] = new Dama(true);
+        tablero[A1] = new Torre(true);
+        tablero[B1] = new Caballo(true);
+        tablero[C1] = new Alfil(true);
+        tablero[D1] = new Dama(true);
 
-       tablero[E1] = new Rey(true);
-//       tablero[5] = new Alfil(true);
-//       tablero[6] = new Caballo(true);
-//       tablero[7] = new Torre(true);
-//
-//       tablero[56] = new Torre(false);
-//       tablero[57] = new Caballo(false);
-//       tablero[58] = new Alfil(false);
-//       tablero[59] = new Dama(false);
+        tablero[E1] = new Rey(true);
+        tablero[F1] = new Alfil(true);
+        tablero[G1] = new Caballo(true);
+        tablero[H1] = new Torre(true);
+
+        tablero[A8] = new Torre(false);
+        tablero[B8] = new Caballo(false);
+        tablero[C8] = new Alfil(false);
+        tablero[D8] = new Dama(false);
 
         tablero[E8] = new Rey(false);
-//       tablero[61] = new Alfil(false);
-//       tablero[62] = new Caballo(false);
-//       tablero[63] = new Torre(false);
-//
-//       for(int i = 0 ; i < 8; i++){
-//            tablero[i + 8]= new Peon(true);
-//            tablero[i + 48]  = new Peon(false);
-//        }
+        tablero[F8] = new Alfil(false);
+        tablero[G8] = new Caballo(false);
+        tablero[H8] = new Torre(false);
 
-       estadoTablero.enroqueLBlanco = estadoTablero.enroqueCBlanco = estadoTablero.enroqueCNegro = estadoTablero.enroqueLNegro
-               =false;
+        for (int i = 0; i < 8; i++) {
+            tablero[i + 8] = new Peon(true);
+            tablero[i + 48] = new Peon(false);
+        }
+
+        estadoTablero.enroqueLBlanco = estadoTablero.enroqueCBlanco = estadoTablero.enroqueCNegro = estadoTablero.enroqueLNegro
+                = false;
     }
-   
-   public void establecerPosicion(String... movimientos){
+
+    public void establecerPosicion(String... movimientos) {
         for (var movimiento : movimientos) {
             secuencia.add(Utilidades.convertirAPosicion(movimiento));
             Utilidades.actualizarTablero(tablero, estadoTablero, Utilidades.convertirAPosicion(movimiento));
             estadoTablero.turnoBlanco = !estadoTablero.turnoBlanco;
         }
     }
-    public void setFen(String linea){
+
+    public void setFen(String linea) {
         tablero = new Pieza[64];
         String[] filas = linea.replace("fen ", "").split("/");
 
@@ -76,6 +78,12 @@ public class Juego {
                 estadoTablero.enroqueCBlanco = ops[2].contains("K");
                 estadoTablero.enroqueLNegro = ops[2].contains("q");
 
+                if (!ops[3].contains("-")) {
+                    var posicion = Utilidades.casillaANumero(ops[3]) + (estadoTablero.turnoBlanco ? -8 : 8);
+                    estadoTablero.piezaALPaso = tablero[posicion];
+                    estadoTablero.alPaso = true;
+                }
+
             } else {
                 iniciarFen(filas[i], 7 - i);
             }
@@ -85,10 +93,11 @@ public class Juego {
         System.out.println("fen procesado");
         Utilidades.imprimirPosicicion(tablero);
     }
-    private  void iniciarFen(String fila, int i) {
-       
-         int indexInicio = 8 * i;
-       
+
+    private void iniciarFen(String fila, int i) {
+
+        int indexInicio = 8 * i;
+
 
         for (char c : fila.toCharArray()) {
             if (c == 'k') {
@@ -140,12 +149,12 @@ public class Juego {
 
     }
 
-   public void perft(int n) throws CloneNotSupportedException, IOException{
-       var search = new Search(tablero, estadoTablero);
-       //search.setSecuencia(secuencia);
-       search.perft(n);
+    public void perft(int n) throws CloneNotSupportedException, IOException {
+        var search = new Search(tablero, estadoTablero);
+        //search.setSecuencia(secuencia);
+        search.perft(n);
 
-   }
+    }
 //   public String mover(int n) throws CloneNotSupportedException, IOException{
 //       var search = new search(tablero, estadoTablero);
 //       return Utilidades.convertirANotacion(search.search(n));

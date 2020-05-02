@@ -136,10 +136,11 @@ public class Utilidades {
             }
             if (estadoTablero.alPaso) {
                 if (abs(destino - inicio) == 7 || abs(destino - inicio) == 9) {
-                    if (tablero[destino] == estadoTablero.piezaALPaso) {
+                    var posicionAlPaso = destino + (estadoTablero.turnoBlanco? - 8 : 8);
+                    if (tablero[posicionAlPaso] == estadoTablero.piezaALPaso) {
 
                         // aqui se remueve la pieza al paso
-                        tablero[inicio] = null;
+                        tablero[posicionAlPaso] = null;
                         estadoTablero.tipoMovimiento = AL_PASO;
                     }
                 }
@@ -425,5 +426,12 @@ public class Utilidades {
 
         return jaque == NO_JAQUE;
     }
+
+    public static  int casillaANumero(String casilla){
+        int columna = "abcdefgh".indexOf(casilla.charAt(0));
+        int fila = "12345678".indexOf(casilla.charAt(1));
+        return  columna + 8 * fila;
+    }
+
 
 }

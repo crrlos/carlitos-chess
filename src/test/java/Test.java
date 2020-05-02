@@ -63,6 +63,11 @@ public class Test{
 
     public static  void main(String... args){
 
+        System.out.println(Utilidades.casillaANumero("a1"));
+        System.out.println(Utilidades.casillaANumero("a8"));
+        System.out.println(Utilidades.casillaANumero("h8"));
+        System.out.println(Utilidades.casillaANumero("h1"));
+
         System.out.println(Generador.movimientosCaballo.get(B1));
 
         var array = new ArrayList<Integer>();
