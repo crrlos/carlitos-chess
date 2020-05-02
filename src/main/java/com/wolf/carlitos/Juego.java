@@ -49,9 +49,6 @@ public class Juego {
             tablero[i + 8] = new Peon(true);
             tablero[i + 48] = new Peon(false);
         }
-
-        estadoTablero.enroqueLBlanco = estadoTablero.enroqueCBlanco = estadoTablero.enroqueCNegro = estadoTablero.enroqueLNegro
-                = false;
     }
 
     public void establecerPosicion(String... movimientos) {
