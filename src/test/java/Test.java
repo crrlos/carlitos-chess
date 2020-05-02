@@ -9,7 +9,6 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import static com.wolf.carlitos.Constantes.*;
-import static com.wolf.carlitos.Generador.esCasillaBlanca;
 import static java.lang.Math.abs;
 
 public class Test{

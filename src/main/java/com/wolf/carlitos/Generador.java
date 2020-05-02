@@ -11,8 +11,7 @@ import java.util.*;
 
 //import static com.wolf.carlitos.Utilidades.movimientoValido;
 import static com.wolf.carlitos.Constantes.*;
-import static com.wolf.carlitos.Utilidades.movimientoValido;
-import static com.wolf.carlitos.Utilidades.reyEnJaque;
+import static com.wolf.carlitos.Utilidades.*;
 import static java.lang.Math.abs;
 
 /**
@@ -200,11 +199,7 @@ public class Generador {
         }
     }
 
-    public static boolean esCasillaBlanca(int i) {
-        boolean filaImpar = (i / 8 + 1) % 2 != 0;
 
-        return filaImpar == ((i + 1) % 2 == 0);
-    }
 
 
     //    enum Trayectoria {Recta, Diagonal, Ninguna}
@@ -227,7 +222,7 @@ public class Generador {
                         : pieza instanceof Torre ? movimientosDeTorre(tablero, estado, i)
                         : pieza instanceof Alfil ? movimientosDeAlfil(tablero, estado, i)
                         : pieza instanceof Caballo ? movimientosDeCaballo(tablero, estado, i)
-//                        : pieza instanceof Peon ? movimientosDePeon(tablero, estado, fila, columna)
+                        : pieza instanceof Peon ? movimientosDePeon(tablero, estado, i)
                         : movimientosDeRey(tablero, estado, i);
                 movimientos.addAll(movs);
             }
@@ -238,8 +233,7 @@ public class Generador {
     }
 
     //
-    public static List<int[]> movimientosDeTorre(Pieza[] tablero, EstadoTablero estado, int posicion)
-    {
+    public static List<int[]> movimientosDeTorre(Pieza[] tablero, EstadoTablero estado, int posicion) {
 
         var lista = new ArrayList<int[]>();
 
@@ -255,26 +249,23 @@ public class Generador {
                 var mov = recorrido.get(j);
                 posicionActual = tablero[mov];
 
-                if(posicionActual == null){
-                    lista.add(new int[]{posicion,mov});
+                if (posicionActual == null) {
+                    lista.add(new int[]{posicion, mov});
                     continue;
                 }
 
                 var sonMismoColor = posicionActual.esBlanca() == pieza.esBlanca();
 
-                if(!sonMismoColor && !(posicionActual instanceof Rey)){
-                    lista.add(new int[]{posicion,mov});
+                if (!sonMismoColor && !(posicionActual instanceof Rey)) {
+                    lista.add(new int[]{posicion, mov});
                     break;
                 }
 
-                if(sonMismoColor) break;;
+                if (sonMismoColor) break;
+                ;
             }
 
         }
-
-
-
-
 
 
 //        if (reyEnJaque()) {
@@ -319,10 +310,11 @@ public class Generador {
 //            return lista;
 //        }
 
-        lista.removeIf(m -> !movimientoValido(m,tablero,estado));
+        lista.removeIf(m -> !movimientoValido(m, tablero, estado));
         return lista;
     }
-//
+
+    //
 //    private static void torreDiagonal(Pieza[][] tablero, EstadoTablero estado, int fila, int columna, ArrayList<int[]> lista, int puntoX, int puntoY, int x1, int y1, int x2, int y2, int constante, boolean pendientePositiva, boolean contantePositiva) {
 //        if (!pendientePositiva && !contantePositiva) {
 //            puntoX = fila - constante;
@@ -718,7 +710,7 @@ public class Generador {
 //        return piezaJaque != null;
 //    }
 //
-    public static List<int[]> movimientosDeAlfil(Pieza[] tablero, EstadoTablero estado, int  posicion) {
+    public static List<int[]> movimientosDeAlfil(Pieza[] tablero, EstadoTablero estado, int posicion) {
 
         Pieza posicionActual;
         Pieza pieza = tablero[posicion];
@@ -732,18 +724,19 @@ public class Generador {
                 var mov = diagonal.get(j);
                 posicionActual = tablero[mov];
 
-                if(posicionActual == null) {
+                if (posicionActual == null) {
                     lista.add(new int[]{posicion, mov});
                     continue;
                 }
                 var sonMismoColor = posicionActual.esBlanca() == pieza.esBlanca();
 
-                if(!sonMismoColor && !(posicionActual instanceof  Rey)){
-                    lista.add(new int[]{posicion,mov});
+                if (!sonMismoColor && !(posicionActual instanceof Rey)) {
+                    lista.add(new int[]{posicion, mov});
                     break;
                 }
 
-                if(sonMismoColor) break;;
+                if (sonMismoColor) break;
+                ;
 
 
             }
@@ -797,12 +790,13 @@ public class Generador {
 //        }
 
 
-        lista.removeIf(m ->!movimientoValido(m,tablero,estado));
+        lista.removeIf(m -> !movimientoValido(m, tablero, estado));
         return lista;
 
 
     }
-//
+
+    //
 //    private static boolean isDiagonal2(Pieza[][] tablero, EstadoTablero estado, int fila, int columna, Pieza pieza) {
 //        int[] movPrueba;
 //        if ((fila < 7 && columna > 0) && (tablero[fila + 1][columna - 1] == null || tablero[fila + 1][columna - 1].esBlanca() != pieza.esBlanca()
@@ -1060,8 +1054,7 @@ public class Generador {
                 lista.add(new int[]{posicion, movimietosRey.get(i)});
             }
         }
-        if(estado.turnoBlanco)
-        {
+        if (estado.turnoBlanco) {
             if (estado.enroqueLBlanco || estado.enroqueCBlanco) {
                 if (reyEnJaque(tablero, estado) == NO_JAQUE) {
                     if (estado.enroqueCBlanco && estado.posicionReyNegro != G2) {
@@ -1100,7 +1093,7 @@ public class Generador {
                     }
                 }
             }
-        }else{
+        } else {
             if (estado.enroqueLNegro || estado.enroqueCNegro) {
                 if (reyEnJaque(tablero, estado) == NO_JAQUE) {
                     if (estado.enroqueCNegro && estado.posicionReyBlanco != G7) {
@@ -1155,78 +1148,127 @@ public class Generador {
         else
             estado.posicionReyNegro = destino;
     }
+
+    //
+    private static List<int[]> movimientosDePeon(Pieza[] tablero, EstadoTablero estado, int posicion) {
+
+        var lista = new ArrayList<int[]>();
+
+        var turnoBlanco = estado.turnoBlanco;
+
+        Pieza posicionActual;
+        Pieza pieza = tablero[posicion];
+
+        if (posicion >= (turnoBlanco ? A2 : A7) && posicion <= (turnoBlanco ? H2 : H7)) {
+            if (tablero[posicion + (turnoBlanco ? 8 : -8)] == null && tablero[posicion + (turnoBlanco ? 16 : -16)] == null) {
+                lista.add(new int[]{posicion, posicion + (turnoBlanco ? 16 : -16)});
+            }
+        }
+
+        var destino = posicion + (turnoBlanco ? 8 : -8);
+
+        //avance una casilla
+        if (tablero[destino] == null) {
+            if (destino <= H1 || destino >= A8 && destino <= H8) {
+                lista.add(new int[]{posicion, destino, 1});
+                lista.add(new int[]{posicion, destino, 2});
+                lista.add(new int[]{posicion, destino, 3});
+                lista.add(new int[]{posicion, destino, 4});
+            } else {
+                lista.add(new int[]{posicion, destino});
+            }
+        }
+
+        if (turnoBlanco) {
+            destino = posicion + 9;
+            if (destino < 64 && esCasillaBlanca(destino) == esCasillaBlanca(posicion)) {
+                posicionActual = tablero[destino];
+                if (posicionActual != null) {
+                    if (posicionActual.esBlanca() != pieza.esBlanca() && !(posicionActual instanceof Rey)) {
+                        if (destino >= A8 && destino <= H8) {
+                            lista.add(new int[]{posicion, destino, 1});
+                            lista.add(new int[]{posicion, destino, 2});
+                            lista.add(new int[]{posicion, destino, 3});
+                            lista.add(new int[]{posicion, destino, 4});
+                        } else {
+                            lista.add(new int[]{posicion, destino});
+                        }
+                    }
+                } else if (estado.alPaso && posicion >= A5 && posicion <= H5) {
+                    if (tablero[destino - 8] == estado.piezaALPaso) {
+                        lista.add(new int[]{posicion, destino});
+                    }
+                }
+            }
+
+            destino = posicion + 7;
+            if (destino < 64 && esCasillaBlanca(destino) == esCasillaBlanca(posicion)) {
+                posicionActual = tablero[destino];
+                if (posicionActual != null) {
+                    if (posicionActual.esBlanca() != pieza.esBlanca() && !(posicionActual instanceof Rey)) {
+                        if (destino >= A8 && destino <= H8) {
+                            lista.add(new int[]{posicion, destino, 1});
+                            lista.add(new int[]{posicion, destino, 2});
+                            lista.add(new int[]{posicion, destino, 3});
+                            lista.add(new int[]{posicion, destino, 4});
+                        } else {
+                            lista.add(new int[]{posicion, destino});
+                        }
+                    }
+                } else if (estado.alPaso && posicion >= A5 && posicion <= H5) {
+                    if (tablero[destino - 8] == estado.piezaALPaso) {
+                        lista.add(new int[]{posicion, destino});
+                    }
+                }
+            }
+        } else {
+            destino = posicion - 9;
+            if (destino >= 0 && esCasillaBlanca(destino) == esCasillaBlanca(posicion)) {
+                posicionActual = tablero[destino];
+                if (posicionActual != null) {
+                    if (posicionActual.esBlanca() != pieza.esBlanca() && !(posicionActual instanceof Rey)) {
+                        if (destino >= A1 && destino <= H1) {
+                            lista.add(new int[]{posicion, destino, 1});
+                            lista.add(new int[]{posicion, destino, 2});
+                            lista.add(new int[]{posicion, destino, 3});
+                            lista.add(new int[]{posicion, destino, 4});
+                        } else {
+                            lista.add(new int[]{posicion, destino});
+                        }
+                    }
+                } else if (estado.alPaso && posicion >= A4 && posicion <= H4) {
+                    if (tablero[destino + 8] == estado.piezaALPaso) {
+                        lista.add(new int[]{posicion, destino});
+                    }
+                }
+            }
+
+            destino = posicion - 7;
+            if (destino >= 0 && esCasillaBlanca(destino) == esCasillaBlanca(posicion)) {
+                posicionActual = tablero[destino];
+                if (posicionActual != null) {
+                    if (posicionActual.esBlanca() != pieza.esBlanca() && !(posicionActual instanceof Rey)) {
+                        if (destino >= A1 && destino <= H1) {
+                            lista.add(new int[]{posicion, destino, 1});
+                            lista.add(new int[]{posicion, destino, 2});
+                            lista.add(new int[]{posicion, destino, 3});
+                            lista.add(new int[]{posicion, destino, 4});
+                        } else {
+                            lista.add(new int[]{posicion, destino});
+                        }
+                    }
+                } else if (estado.alPaso && posicion >= A4 && posicion <= H4) {
+                    if (tablero[destino + 8] == estado.piezaALPaso) {
+                        lista.add(new int[]{posicion, destino});
+                    }
+                }
+            }
+        }
+
+
+        lista.removeIf(m -> !movimientoValido(m, tablero, estado));
+        return lista;
+    }
 }
-//
-//    private static List<int[]> movimientosDePeon(Pieza[][] tablero, EstadoTablero estado, int fila, int columna) {
-//
-//        var lista = new ArrayList<int[]>();
-//
-//        Pieza posicionActual;
-//        Pieza pieza = tablero[fila][columna];
-//
-//
-//        int filaDestino;
-//
-//
-//        //avance dos casillas
-//        if (fila == (pieza.esBlanca() ? 1 : 6)) {
-//            if (tablero[pieza.esBlanca() ? 2 : 5][columna] == null && tablero[pieza.esBlanca() ? 3 : 4][columna] == null) {
-//                lista.add(new int[]{fila, columna, pieza.esBlanca() ? 3 : 4, columna});
-//            }
-//        }
-//
-//        //avance una casilla
-//        filaDestino = fila + (pieza.esBlanca() ? 1 : -1);
-//        if (tablero[filaDestino][columna] == null) {
-//            if (filaDestino == (pieza.esBlanca() ? 7 : 0)) {
-//                lista.add(new int[]{fila, columna, filaDestino, columna, 1});
-//                lista.add(new int[]{fila, columna, filaDestino, columna, 2});
-//                lista.add(new int[]{fila, columna, filaDestino, columna, 3});
-//                lista.add(new int[]{fila, columna, filaDestino, columna, 4});
-//            } else {
-//                lista.add(new int[]{fila, columna, filaDestino, columna});
-//            }
-//        }
-//        //avance diagonal
-//        if (columna > 0) {
-//            posicionActual = tablero[filaDestino][columna - 1];
-//            if (posicionActual != null) {
-//                if (posicionActual.esBlanca() != pieza.esBlanca() && !(posicionActual instanceof Rey)) {
-//                    if (filaDestino == (pieza.esBlanca() ? 7 : 0)) {
-//                        lista.add(new int[]{fila, columna, filaDestino, columna - 1, 1});
-//                        lista.add(new int[]{fila, columna, filaDestino, columna - 1, 2});
-//                        lista.add(new int[]{fila, columna, filaDestino, columna - 1, 3});
-//                        lista.add(new int[]{fila, columna, filaDestino, columna - 1, 4});
-//                    } else {
-//                        lista.add(new int[]{fila, columna, filaDestino, columna - 1});
-//                    }
-//                }
-//            } else if (estado.alPaso && fila == (pieza.esBlanca() ? 4 : 3)) {
-//                if (tablero[fila][columna - 1] == estado.piezaALPaso) {
-//                    lista.add(new int[]{fila, columna, filaDestino, columna - 1});
-//                }
-//            }
-//        }
-//        if (columna < 7) {
-//            posicionActual = tablero[filaDestino][columna + 1];
-//            if (posicionActual != null) {
-//                if (posicionActual.esBlanca() != pieza.esBlanca() && !(posicionActual instanceof Rey)) {
-//                    if (filaDestino == (pieza.esBlanca() ? 7 : 0)) {
-//                        lista.add(new int[]{fila, columna, filaDestino, columna + 1, 1});
-//                        lista.add(new int[]{fila, columna, filaDestino, columna + 1, 2});
-//                        lista.add(new int[]{fila, columna, filaDestino, columna + 1, 3});
-//                        lista.add(new int[]{fila, columna, filaDestino, columna + 1, 4});
-//                    } else {
-//                        lista.add(new int[]{fila, columna, filaDestino, columna + 1});
-//                    }
-//                }
-//            } else if (estado.alPaso && fila == (pieza.esBlanca() ? 4 : 3)) {
-//                if (tablero[fila][columna + 1] == estado.piezaALPaso) {
-//                    lista.add(new int[]{fila, columna, filaDestino, columna + 1});
-//                }
-//            }
-//        }
-//        return new Base(estado).MovimientosValidos(lista, tablero, pieza.esBlanca());
-//    }
 //
 //}

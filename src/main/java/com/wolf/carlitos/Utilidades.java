@@ -13,6 +13,8 @@ import com.wolf.carlitos.Piezas.Pieza;
 import com.wolf.carlitos.Piezas.Rey;
 import com.wolf.carlitos.Piezas.Torre;
 
+import javax.swing.*;
+import java.security.spec.ECParameterSpec;
 import java.util.HashMap;
 
 import static java.lang.Math.abs;
@@ -253,14 +255,48 @@ public class Utilidades {
         if ((result = ataqueFilaColumna(posicionRey, tablero, blanco)) != NO_JAQUE) return result;
         if ((result = ataqueDiagonal(posicionRey, tablero, blanco)) != NO_JAQUE) return result;
         if ((result = ataqueCaballo(posicionRey, tablero, blanco)) != NO_JAQUE) return result;
-        // if ((result = ataquePeon(posicionRey, tablero, blanco)) != 0) return result;
+        if ((result = ataquePeon(posicionRey, tablero, blanco)) != NO_JAQUE) return result;
 
         return NO_JAQUE;
     }
+    public static boolean esCasillaBlanca(int i) {
+        boolean filaImpar = (i / 8 + 1) % 2 != 0;
 
+        return filaImpar == ((i + 1) % 2 == 0);
+    }
     private static int ataquePeon(int posicion, Pieza[] tablero, boolean blanco) {
-        throw new IllegalStateException("no implementado");
-
+        if(blanco){
+            var destino = posicion + 9;
+            if(destino < 64){
+                var pieza = tablero[destino];
+                if(pieza instanceof Peon && !pieza.esBlanca() && esCasillaBlanca(posicion) == esCasillaBlanca(destino)){
+                    return destino;
+                }
+            }
+            destino = posicion + 7;
+            if(destino < 64){
+                var pieza = tablero[destino];
+                if(pieza instanceof Peon && !pieza.esBlanca() && esCasillaBlanca(posicion) == esCasillaBlanca(destino)){
+                    return destino;
+                }
+            }
+        }else{
+            var destino = posicion - 9;
+            if(destino >= 0){
+                var pieza = tablero[destino];
+                if(pieza instanceof Peon && pieza.esBlanca() && esCasillaBlanca(posicion) == esCasillaBlanca(destino)){
+                    return destino;
+                }
+            }
+            destino = posicion - 7;
+            if(destino >= 0){
+                var pieza = tablero[destino];
+                if(pieza instanceof Peon && pieza.esBlanca() && esCasillaBlanca(posicion) == esCasillaBlanca(destino)){
+                    return destino;
+                }
+            }
+        }
+    return NO_JAQUE;
     }
 
     private static int ataqueFilaColumna(int posicion, Pieza[] tablero, boolean blanco) {
