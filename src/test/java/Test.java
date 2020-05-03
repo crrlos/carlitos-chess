@@ -5,8 +5,10 @@ import com.wolf.carlitos.Piezas.Caballo;
 import com.wolf.carlitos.Piezas.Torre;
 import com.wolf.carlitos.Utilidades;
 
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.List;
 
 import static com.wolf.carlitos.Constantes.*;
 import static java.lang.Math.abs;
@@ -61,29 +63,45 @@ public class Test{
 
     }
 
-    public static  void main(String... args){
+    public static  void main(String... args) throws IOException, CloneNotSupportedException {
 
-        System.out.println(Utilidades.casillaANumero("a1"));
-        System.out.println(Utilidades.casillaANumero("a8"));
-        System.out.println(Utilidades.casillaANumero("h8"));
-        System.out.println(Utilidades.casillaANumero("h1"));
-
-        System.out.println(Generador.movimientosCaballo.get(B1));
-
-        var array = new ArrayList<Integer>();
-
-        var pieza = Config.debug ? 1: 2;
+//
+//        System.out.println(Generador.movimientosTorre.get(G8));
+//
+//        var array = new ArrayList<Integer>();
+//
+//        var pieza = Config.debug ? 1: 2;
+//
+//        var lista = new ArrayList<Integer>();
+//
+//        for (int i = 0; i < 16; i++) {
+//            lista.add(i);
+//        }
+//
+//        var lista2 = new ArrayList<List<Integer>>();
+//
+//        for (int i = 0; i < 4; i++) {
+//            lista = new ArrayList<>();
+//            for (int j = 0; j < 4; j++) {
+//                lista.add(j);
+//            }
+//            lista2.add(lista);
+//        }
 
         var t1 = System.currentTimeMillis();
 
+//        for (int i = 0; i < 1_000_000; i++) {
+//            for (int j = 0; j < lista2.size(); j++) {
+//                var l = lista2.get(j);
+//                for (int k = 0; k < l.size(); k++) {
+//                    var d = l.get(k);
+//                }
+//            }
+//        }
+        Juego j = new Juego();
+        //j.setFen("fen r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1");
+        j.perft(6);
 
-        for (int i = 0; i < 1_000_000; i++) {
-
-            if(pieza == 1){
-                var dato = "abc";
-            }
-
-        }
         System.out.println(System.currentTimeMillis() -t1);
 
 
