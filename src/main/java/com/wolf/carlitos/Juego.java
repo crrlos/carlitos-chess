@@ -49,6 +49,7 @@ public class Juego {
             tablero[i + 8] = new Peon(true);
             tablero[i + 48] = new Peon(false);
         }
+
     }
 
     public void establecerPosicion(String... movimientos) {
@@ -152,8 +153,8 @@ public class Juego {
         search.perft(n);
 
     }
-//   public String mover(int n) throws CloneNotSupportedException, IOException{
-//       var search = new search(tablero, estadoTablero);
-//       return Utilidades.convertirANotacion(search.search(n));
-//   }
+   public String mover(int n) throws CloneNotSupportedException, IOException{
+       var search = new Search(tablero, estadoTablero);
+       return Utilidades.convertirANotacion(search.search(n));
+   }
 }

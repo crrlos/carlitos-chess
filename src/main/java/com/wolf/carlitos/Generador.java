@@ -974,7 +974,9 @@ public class Generador {
             }
 
             var destino = posicion + (turnoBlanco ? 8 : -8);
-
+            if(destino == 67){
+                System.out.println();
+            }
             //avance una casilla
             if (tablero[destino] == null) {
                 if (destino <= H1 || destino >= A8 && destino <= H8) {

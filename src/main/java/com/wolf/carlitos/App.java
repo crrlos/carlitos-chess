@@ -25,17 +25,18 @@ public class App {
                     Utilidades.imprimirPosicicion(juego.tablero);
                 }
             }
-//            else if (linea.contains("go")) {
-//                int n = 1;
-//                try {
-//
-//                    n= Integer.parseInt(linea.replaceAll("go ", ""));
-//
-//                } catch (Exception e) {
-//                }
-//                System.out.println("bestmove " + juego.mover(n));
-//
-//            } else if (linea.contains("isready")) {
+            else if (linea.contains("go")) {
+                int n = 1;
+                try {
+
+                    n = Integer.parseInt(linea.replaceAll("go ", ""));
+
+                } catch (Exception e) {
+                }
+                System.out.println("bestmove " + juego.mover(n));
+
+            }
+            //else if (linea.contains("isready")) {
 //                System.out.println("readyok");
 //            } else if (linea.contains("ucinewgame")) {
 //                juego = new Juego();

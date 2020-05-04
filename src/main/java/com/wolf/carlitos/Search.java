@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.wolf.carlitos.Constantes.*;
+import static com.wolf.carlitos.Utilidades.actualizarTablero;
 import static java.lang.Math.abs;
 
 /**
@@ -57,7 +58,7 @@ public class Search {
 
             secuencia.add(mov);
 
-            Utilidades.actualizarTablero(tablero, estadoTablero, mov);
+            actualizarTablero(tablero, estadoTablero, mov);
 
             estadoTablero.turnoBlanco = !estadoTablero.turnoBlanco;
 
@@ -133,101 +134,100 @@ public class Search {
 
         tablero[destino] = estado.piezaCapturada;
     }
-//    public int mini(int nivel, EstadoTablero estado) throws CloneNotSupportedException, IOException{
-//
-//
-//
-//        if(nivel == 0) return 0;
-//
-//        int eval = 1000;
-//        var movimientos = Generador.generarMovimientos(tablero, estado);
-//
-//        estadoTablero = estado.clone();
-//
-//        for(var mov : movimientos){
-//
-//           Utilidades.actualizarTablero(tablero, estadoTablero, mov);
-//
-//            estadoTablero.turnoBlanco = !estado.turnoBlanco;
-//
-//            int evaluacion = maxi(nivel -1,estadoTablero.clone());
-//
-//            if(evaluacion < eval)
-//                eval = evaluacion;
-//
-//            revertirMovimiento(mov[0],mov[1],mov[2],mov[3],estado.turnoBlanco,estadoTablero);
-//            estadoTablero = (EstadoTablero) estado.clone();
-//        }
-//
-//        return eval;
-//    }
-//
-//
-//    public int maxi(int nivel, EstadoTablero estado) throws CloneNotSupportedException, IOException{
-//
-//        if(nivel == 0) return 0;
-//
-//        int eval = -1000;
-//
-//
-//        var movimientos = Generador.generarMovimientos(tablero, estado);
-//
-//        estadoTablero = estado.clone();
-//
-//        for(var mov : movimientos){
-//
-//            Utilidades.actualizarTablero(tablero, estadoTablero, mov);
-//
-//            estadoTablero.turnoBlanco = !estado.turnoBlanco;
-//
-//            int evaluacion = mini(nivel -1,estadoTablero.clone());
-//
-//            if(evaluacion > eval)
-//                eval = evaluacion;
-//
-//            revertirMovimiento(mov[0],mov[1],mov[2],mov[3],estado.turnoBlanco,estadoTablero);
-//            estadoTablero = (EstadoTablero) estado.clone();
-//        }
-//        return eval;
-//    }
-//    public int[] search(int n) throws CloneNotSupportedException, IOException{
-//
-//       var estadoOriginal = estadoTablero.clone();//copia original
-//       int valoracion = estadoOriginal.turnoBlanco ? -1000 : 1000;
-//       int pos = 0;
-//
-//       var movimientos = Generador.generarMovimientos(tablero, estadoOriginal);
-//       for (int i = 0; i < movimientos.size() ; i++) {
-//
-//            var mov = movimientos.get(i);
-//
-//            Utilidades.actualizarTablero(tablero, estadoTablero, mov);
-//
-//
-//            estadoTablero.turnoBlanco = !estadoTablero.turnoBlanco;
-//
-//            var estadoLocal = (EstadoTablero) estadoTablero.clone();
-//
-//            int eval = estadoOriginal.turnoBlanco ? mini(n,estadoLocal) : maxi(n,estadoLocal);
-//
-//            if(estadoOriginal.turnoBlanco){
-//                if(eval > valoracion){
-//                   valoracion = eval;
-//                   pos = i;
-//                }
-//            }
-//            else{
-//                 if(eval < valoracion){
-//                   valoracion = eval;
-//                   pos = i;
-//                }
-//            }
-//
-//           revertirMovimiento(mov[0],mov[1],mov[2],mov[3],estadoOriginal.turnoBlanco,estadoLocal);
-//           estadoTablero =  estadoOriginal.clone(); //vuelve a ser el original
-//       }
-//       return movimientos.get(pos);
-//   }
+    public int mini(int nivel, EstadoTablero estado) throws CloneNotSupportedException, IOException{
+
+
+        if(nivel == 0) return 0;
+
+        int eval = 1000;
+        var movimientos = Generador.generarMovimientos(tablero, estado);
+
+        estadoTablero = estado.clone();
+
+        for(var mov : movimientos){
+
+           Utilidades.actualizarTablero(tablero, estadoTablero, mov);
+
+            estadoTablero.turnoBlanco = !estadoTablero.turnoBlanco;
+
+            int evaluacion = maxi(nivel -1,estadoTablero.clone());
+
+            if(evaluacion < eval)
+                eval = evaluacion;
+            estadoTablero.turnoBlanco = !estadoTablero.turnoBlanco;
+            revertirMovimiento(mov,estadoTablero);
+            estadoTablero =  estado.clone();
+        }
+
+        return eval;
+    }
+
+
+    public int maxi(int nivel, EstadoTablero estado) throws CloneNotSupportedException, IOException{
+
+        if(nivel == 0) return 0;
+
+        int eval = -1000;
+
+
+        var movimientos = Generador.generarMovimientos(tablero, estado);
+
+        estadoTablero = estado.clone();
+
+        for(var mov : movimientos){
+
+            Utilidades.actualizarTablero(tablero, estadoTablero, mov);
+
+            estadoTablero.turnoBlanco = !estadoTablero.turnoBlanco;
+
+            int evaluacion = mini(nivel -1,estadoTablero.clone());
+
+            if(evaluacion > eval)
+                eval = evaluacion;
+            estadoTablero.turnoBlanco = !estadoTablero.turnoBlanco;
+            revertirMovimiento(mov,estadoTablero);
+            estadoTablero =  estado.clone();
+        }
+        return eval;
+    }
+    public int[] search(int n) throws CloneNotSupportedException, IOException{
+
+       var estadoOriginal = estadoTablero.clone();//copia original
+       int valoracion = estadoOriginal.turnoBlanco ? -1000 : 1000;
+       int pos = 0;
+
+       var movimientos = Generador.generarMovimientos(tablero, estadoTablero);
+       for (int i = 0; i < movimientos.size() ; i++) {
+
+            var mov = movimientos.get(i);
+
+            Utilidades.actualizarTablero(tablero, estadoTablero, mov);
+
+
+            estadoTablero.turnoBlanco = !estadoTablero.turnoBlanco;
+
+            var estadoLocal = (EstadoTablero) estadoTablero.clone();
+
+            int eval = estadoOriginal.turnoBlanco ? mini(n,estadoLocal) : maxi(n,estadoLocal);
+
+            if(estadoOriginal.turnoBlanco){
+                if(eval > valoracion){
+                   valoracion = eval;
+                   pos = i;
+                }
+            }
+            else{
+                 if(eval < valoracion){
+                   valoracion = eval;
+                   pos = i;
+                }
+            }
+           estadoTablero.turnoBlanco = !estadoTablero.turnoBlanco;
+           revertirMovimiento(mov,estadoTablero);
+           estadoTablero =  estadoOriginal.clone(); //vuelve a ser el original
+       }
+       return movimientos.get(pos);
+   }
 //    private void comprobar(List<int[]> movimientos, List<int[]> secuencia){
 //        var movimientosCopia = movimientos.stream().map( e -> {
 //

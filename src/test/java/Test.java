@@ -100,7 +100,10 @@ public class Test{
 //        }
         Juego j = new Juego();
         //j.setFen("fen r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1");
-        j.perft(6);
+        j.perft(5);
+        j.perft(5);
+        j.perft(5);
+        j.perft(5);
 
         System.out.println(System.currentTimeMillis() -t1);
 
