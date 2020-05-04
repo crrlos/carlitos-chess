@@ -5,16 +5,14 @@
  */
 package com.wolf.carlitos;
 
-import com.wolf.carlitos.Piezas.Peon;
-import com.wolf.carlitos.Piezas.Pieza;
-import com.wolf.carlitos.Piezas.Rey;
+import com.wolf.carlitos.Piezas.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-
+import  static com.wolf.carlitos.Ponderaciones.*;
 import static com.wolf.carlitos.Constantes.*;
 import static com.wolf.carlitos.Utilidades.actualizarTablero;
 import static java.lang.Math.abs;
@@ -31,6 +29,8 @@ public class Search {
     public static List<int[]> secuencia =  new ArrayList<>();
     private final Pieza[] tablero;
     private EstadoTablero estadoTablero;
+
+
 
     public Search(Pieza[] tablero, EstadoTablero estado) throws CloneNotSupportedException {
         this.tablero = tablero;
@@ -137,9 +137,9 @@ public class Search {
     public int mini(int nivel, EstadoTablero estado) throws CloneNotSupportedException, IOException{
 
 
-        if(nivel == 0) return 0;
+        if(nivel == 0) return evaluar();
 
-        int eval = 1000;
+        int eval = 1_000_000;
         var movimientos = Generador.generarMovimientos(tablero, estado);
 
         estadoTablero = estado.clone();
@@ -162,12 +162,42 @@ public class Search {
         return eval;
     }
 
+    private  int evaluar(){
 
+        int valorBlancas = 0;
+        int valorNegras = 0;
+
+        for (int i = 0; i < 64; i++) {
+            var pieza = tablero[i];
+            if(pieza != null)
+            if(pieza.esBlanca()){
+                if (pieza instanceof Peon) valorBlancas += ponderacionPeon[flip[i]];
+                else if (pieza instanceof Caballo) valorBlancas += ponderacionCaballo[flip[i]];
+                else if (pieza instanceof Alfil) valorBlancas += ponderacionAlfil[flip[i]];
+                else if (pieza instanceof Dama) valorBlancas += ponderacionDama[flip[i]];
+                else if (pieza instanceof Torre) valorBlancas += ponderacionTorre[flip[i]];
+                else if (pieza instanceof Rey) valorBlancas += ponderacionRey[flip[i]];
+
+                valorBlancas += pieza.valor();
+            }else{
+                if (pieza instanceof Peon) valorNegras -= ponderacionPeon[i];
+                else if (pieza instanceof Caballo) valorNegras -= ponderacionCaballo[i];
+                else if (pieza instanceof Alfil) valorNegras -= ponderacionAlfil[i];
+                else if (pieza instanceof Dama) valorNegras -= ponderacionDama[i];
+                else if (pieza instanceof Torre) valorNegras -= ponderacionTorre[i];
+                else if (pieza instanceof Rey) valorNegras -= ponderacionRey[i];
+
+                valorNegras += pieza.valor();
+            }
+        }
+        return  valorBlancas + valorNegras;
+
+    }
     public int maxi(int nivel, EstadoTablero estado) throws CloneNotSupportedException, IOException{
 
-        if(nivel == 0) return 0;
+        if(nivel == 0) return evaluar();
 
-        int eval = -1000;
+        int eval = -1_000_000;
 
 
         var movimientos = Generador.generarMovimientos(tablero, estado);
@@ -194,8 +224,8 @@ public class Search {
 
        var estadoOriginal = estadoTablero.clone();//copia original
        int valoracion = estadoOriginal.turnoBlanco ? -1000 : 1000;
-       int pos = 0;
 
+       int pos = 0;
        var movimientos = Generador.generarMovimientos(tablero, estadoTablero);
        for (int i = 0; i < movimientos.size() ; i++) {
 
@@ -208,7 +238,7 @@ public class Search {
 
             var estadoLocal = (EstadoTablero) estadoTablero.clone();
 
-            int eval = estadoOriginal.turnoBlanco ? mini(n,estadoLocal) : maxi(n,estadoLocal);
+            int eval = estadoOriginal.turnoBlanco ? mini(n - 1,estadoLocal) : maxi(n - 1,estadoLocal);
 
             if(estadoOriginal.turnoBlanco){
                 if(eval > valoracion){

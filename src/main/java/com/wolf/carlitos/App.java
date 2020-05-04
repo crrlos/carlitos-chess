@@ -26,7 +26,7 @@ public class App {
                 }
             }
             else if (linea.contains("go")) {
-                int n = 1;
+                int n = 5;
                 try {
 
                     n = Integer.parseInt(linea.replaceAll("go ", ""));
@@ -36,16 +36,16 @@ public class App {
                 System.out.println("bestmove " + juego.mover(n));
 
             }
-            //else if (linea.contains("isready")) {
-//                System.out.println("readyok");
-//            } else if (linea.contains("ucinewgame")) {
-//                juego = new Juego();
-//                System.out.println("uciok");
-//            } else if (linea.contains("uci")) {
-//                System.out.println("uciok");
-//            } else if (linea.contains("stop")) {
-//                System.out.println("readyok");
-//
+            else if (linea.contains("isready")) {
+                System.out.println("readyok");
+            } else if (linea.contains("ucinewgame")) {
+                juego = new Juego();
+                System.out.println("uciok");
+            } else if (linea.contains("uci")) {
+                System.out.println("uciok");
+            } else if (linea.contains("stop")) {
+                System.out.println("readyok");
+            }
             else if (linea.contains("fen")) {
                 juego.setFen(linea);
             } else if (linea.contains("perft")) {
