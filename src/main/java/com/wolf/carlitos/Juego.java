@@ -62,7 +62,7 @@ public class Juego {
 
     public void setFen(String linea) {
         tablero = new Pieza[64];
-        String[] filas = linea.replace("fen ", "").split("/");
+        String[] filas = linea.split("/");
 
         for (int i = 0; i < filas.length; i++) {
 

@@ -1,6 +1,8 @@
 package com.wolf.carlitos;
 
 import java.util.Scanner;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class App {
     static Juego juego = new Juego();
@@ -17,26 +19,34 @@ public class App {
 
         while (scanner.hasNext()) {
             var linea = scanner.nextLine();
-            if (linea.contains("position startpos")) {
-                if (linea.contains("moves")) {
-                    var movimientos = linea.replaceAll("position startpos moves ", "").split(" ");
-                    juego = new Juego();
-                    juego.establecerPosicion(movimientos);
-                    Utilidades.imprimirPosicicion(juego.tablero);
-                }
+
+            if(linea.contains("fen")){
+                var fen = linea.split("fen")[1].split("moves")[0].trim();
+
+                juego = new Juego();
+                juego.setFen(fen);
+
+                var regex = Pattern.compile("(([a-h][1-8]){2}([qrbn])?)");
+                var movimientos = regex.matcher(linea).results().map(r -> r.group(0)).toArray(String[]::new);
+                juego.establecerPosicion(movimientos);
             }
-            else if (linea.contains("go")) {
+            else
+            if (linea.contains("startpos")) {
+                juego = new Juego();
+
+                var regex = Pattern.compile("(([a-h][1-8]){2}([qrbn])?)");
+                var movimientos = regex.matcher(linea).results().map(r -> r.group(0)).toArray(String[]::new);
+                juego.establecerPosicion(movimientos);
+
+            } else if (linea.contains("go")) {
                 int n = 5;
                 try {
-
                     n = Integer.parseInt(linea.replaceAll("go ", ""));
-
-                } catch (Exception e) {
+                } catch (Exception ignored) {
                 }
                 System.out.println("bestmove " + juego.mover(n));
 
-            }
-            else if (linea.contains("isready")) {
+            } else if (linea.contains("isready")) {
                 System.out.println("readyok");
             } else if (linea.contains("ucinewgame")) {
                 juego = new Juego();
@@ -46,9 +56,7 @@ public class App {
             } else if (linea.contains("stop")) {
                 System.out.println("readyok");
             }
-            else if (linea.contains("fen")) {
-                juego.setFen(linea);
-            } else if (linea.contains("perft")) {
+            else if (linea.contains("perft")) {
                 int n = 1;
 
                 try {
