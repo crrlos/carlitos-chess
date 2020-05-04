@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import  static com.wolf.carlitos.Ponderaciones.*;
 import static com.wolf.carlitos.Constantes.*;
 import static com.wolf.carlitos.Utilidades.actualizarTablero;
+import static com.wolf.carlitos.Utilidades.reyEnJaque;
 import static java.lang.Math.abs;
 
 /**
@@ -142,6 +143,10 @@ public class Search {
         int eval = 1_000_000;
         var movimientos = Generador.generarMovimientos(tablero, estado);
 
+        if(movimientos.isEmpty() && reyEnJaque(tablero,estado) != NO_JAQUE){
+            return MATE;
+        }
+
         estadoTablero = estado.clone();
 
         for(var mov : movimientos){
@@ -201,6 +206,10 @@ public class Search {
 
 
         var movimientos = Generador.generarMovimientos(tablero, estado);
+
+        if(movimientos.isEmpty() && reyEnJaque(tablero,estado) != NO_JAQUE){
+            return -MATE;
+        }
 
         estadoTablero = estado.clone();
 

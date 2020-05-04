@@ -83,5 +83,7 @@ public class Constantes {
 
     public static final int NO_JAQUE = 1001;
 
+    public static final int MATE = 1_000_000;
+
 
 }
