@@ -23,6 +23,6 @@ public class Dama implements Pieza {
 
     @Override
     public int valor() {
-        return esBlanco ? 9 : -9;
+        return esBlanco ? 900 : -900;
     }
 }

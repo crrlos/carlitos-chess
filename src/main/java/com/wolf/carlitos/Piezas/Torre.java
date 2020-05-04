@@ -23,7 +23,7 @@ public class Torre implements Pieza {
 
     @Override
     public int valor() {
-        return esBlanco ? 5 : -5;
+        return esBlanco ? 500 : -500;
     }
 
 }

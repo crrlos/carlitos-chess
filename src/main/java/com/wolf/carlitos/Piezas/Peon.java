@@ -20,6 +20,6 @@ public class Peon implements Pieza {
 
     @Override
     public int valor() {
-        return esBlanco ? 1 : -1;
+        return esBlanco ? 100 : -100;
     }
 }

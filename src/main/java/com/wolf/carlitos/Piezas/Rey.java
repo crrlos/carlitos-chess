@@ -24,7 +24,7 @@ public class Rey  implements Pieza {
 
     @Override
     public int valor() {
-        return esBlanco ? 10 : -10;
+        return esBlanco ? 20_000 : -20_000;
     }
 
 }

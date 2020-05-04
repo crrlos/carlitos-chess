@@ -23,7 +23,7 @@ public class Caballo implements Pieza {
 
     @Override
     public int valor() {
-        return esBlanco ? 3 : -3;
+        return esBlanco ? 320 : -320;
     }
 
 }
