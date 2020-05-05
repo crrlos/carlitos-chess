@@ -213,7 +213,7 @@ public class Search {
         var movimientos = new Generador().generarMovimientos(tablero, estado);
 
         if (movimientos.isEmpty()) {
-            if (reyEnJaque(tablero, estado) != NO_JAQUE) return MATE;
+            if (reyEnJaque(tablero, estado) != NO_JAQUE) return -MATE;
             else return AHOGADO;
         }
 
@@ -237,7 +237,7 @@ public class Search {
         return eval;
     }
 
-    public int[] search(int n) throws CloneNotSupportedException, InterruptedException, ExecutionException {
+    public int[] search(int n) throws CloneNotSupportedException, InterruptedException, ExecutionException, IOException {
 
         var estadoOriginal = estadoTablero.clone();
         int valoracion = estadoOriginal.turnoBlanco ? -1000 : 1000;
@@ -248,47 +248,43 @@ public class Search {
 
         var movimientos = new Generador().generarMovimientos(tablero, estadoTablero);
 
-        for (int i = 0; i < movimientos.size(); i++) {
-            var mov = movimientos.get(i);
-            Utilidades.actualizarTablero(tablero, estadoTablero, mov);
-            estadoTablero.turnoBlanco = !estadoTablero.turnoBlanco;
-            var arregloCopia = Arrays.copyOf(tablero, tablero.length);
+            for (int i = 0; i < movimientos.size(); i++) {
+                var mov = movimientos.get(i);
+                Utilidades.actualizarTablero(tablero, estadoTablero, mov);
+                estadoTablero.turnoBlanco = !estadoTablero.turnoBlanco;
+                var arregloCopia = Arrays.copyOf(tablero, tablero.length);
 
-            var clon = estadoTablero.clone();
-            callables.add(() -> estadoOriginal.turnoBlanco ? mini(n - 1, clon, arregloCopia) : maxi(n - 1, clon, arregloCopia));
+                var clon = estadoTablero.clone();
+                callables.add(() -> estadoOriginal.turnoBlanco ? mini(n , clon, arregloCopia) : maxi(n, clon, arregloCopia));
 
-            estadoTablero.turnoBlanco = !estadoTablero.turnoBlanco;
-            revertirMovimiento(mov,estadoTablero,tablero);
-            estadoTablero = estadoOriginal.clone();
+                estadoTablero.turnoBlanco = !estadoTablero.turnoBlanco;
+                revertirMovimiento(mov, estadoTablero, tablero);
+                estadoTablero = estadoOriginal.clone();
 
-        }
-
-        estadoTablero = estadoOriginal.clone();
-
-        var resultados = WORKER_THREAD_POOL.invokeAll(callables);
-
-        awaitTerminationAfterShutdown(WORKER_THREAD_POOL);
-
-
-
-
-
-        for (int i = 0; i < resultados.size(); i++) {
-            var eval = resultados.get(i).get();
-
-            if (estadoOriginal.turnoBlanco) {
-                if (eval > valoracion) {
-                    valoracion = eval;
-                    pos = i;
-                }
-            } else {
-                if (eval < valoracion) {
-                    valoracion = eval;
-                    pos = i;
-                }
             }
 
-        }
+            estadoTablero = estadoOriginal.clone();
+
+            var resultados = WORKER_THREAD_POOL.invokeAll(callables);
+            awaitTerminationAfterShutdown(WORKER_THREAD_POOL);
+
+
+            for (int i = 0; i < resultados.size(); i++) {
+                var eval = resultados.get(i).get();
+
+                if (estadoOriginal.turnoBlanco) {
+                    if (eval > valoracion) {
+                        valoracion = eval;
+                        pos = i;
+                    }
+                } else {
+                    if (eval < valoracion) {
+                        valoracion = eval;
+                        pos = i;
+                    }
+                }
+
+            }
 
 
 //       for (int i = 0; i < movimientos.size() ; i++) {
@@ -300,7 +296,7 @@ public class Search {
 //
 //            var estadoLocal = (EstadoTablero) estadoTablero.clone();
 //
-//            int eval = estadoOriginal.turnoBlanco ? mini(n - 1,estadoLocal) : maxi(n - 1,estadoLocal);
+//            int eval = estadoOriginal.turnoBlanco ? mini(n,estadoLocal,tablero) : maxi(n,estadoLocal,tablero);
 //
 //            if(estadoOriginal.turnoBlanco){
 //                if(eval > valoracion){
@@ -315,7 +311,7 @@ public class Search {
 //                }
 //            }
 //           estadoTablero.turnoBlanco = !estadoTablero.turnoBlanco;
-//           revertirMovimiento(mov,estadoTablero);
+//           revertirMovimiento(mov,estadoTablero,tablero);
 //           estadoTablero =  estadoOriginal.clone();
 //       }
         return movimientos.get(pos);

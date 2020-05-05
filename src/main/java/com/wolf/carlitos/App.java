@@ -39,7 +39,7 @@ public class App {
                 juego.establecerPosicion(movimientos);
 
             } else if (linea.contains("go")) {
-                int n = 5;
+                int n = 4;
                 try {
                     n = Integer.parseInt(linea.replaceAll("go ", ""));
                 } catch (Exception ignored) {
