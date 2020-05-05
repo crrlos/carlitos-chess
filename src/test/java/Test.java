@@ -1,17 +1,8 @@
-import com.wolf.carlitos.Config;
 import com.wolf.carlitos.Generador;
 import com.wolf.carlitos.Juego;
-import com.wolf.carlitos.Piezas.Caballo;
-import com.wolf.carlitos.Piezas.Peon;
-import com.wolf.carlitos.Piezas.Pieza;
-import com.wolf.carlitos.Piezas.Torre;
-import com.wolf.carlitos.Utilidades;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import static com.wolf.carlitos.Constantes.*;
 import static java.lang.Math.abs;
@@ -68,16 +59,12 @@ public class Test{
 
     public static  void main(String... args) throws IOException, CloneNotSupportedException {
 
-        var arreglo = new Pieza[]{new Caballo(true),new Peon(false)};
-        var copia = Arrays.copyOf(arreglo,arreglo.length);
+        System.out.println(Generador.movimientosTorre.get(G8));
 
-        copia[0] = null;
-
-        System.out.println(arreglo[0].nombre());
-
-
-//
-//        System.out.println(Generador.movimientosTorre.get(G8));
+        Stack<ArrayList<Integer>> e = new Stack<>();
+        for (int i = 0; i < 100; i++) {
+            e.add(new ArrayList<>());
+        }
 //
 //        var array = new ArrayList<Integer>();
 //
@@ -100,7 +87,7 @@ public class Test{
 //        }
 
         var t1 = System.currentTimeMillis();
-
+//
 //        for (int i = 0; i < 1_000_000; i++) {
 //            for (int j = 0; j < lista2.size(); j++) {
 //                var l = lista2.get(j);
@@ -111,10 +98,8 @@ public class Test{
 //        }
         Juego j = new Juego();
         //j.setFen("fen r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1");
-        j.perft(5);
-        j.perft(5);
-        j.perft(5);
-        j.perft(5);
+        j.perft(6);
+
 
         System.out.println(System.currentTimeMillis() -t1);
 

@@ -5,7 +5,6 @@
  */
 package com.wolf.carlitos;
 
-import com.wolf.carlitos.Piezas.*;
 
 import java.io.IOException;
 import java.sql.Time;
@@ -113,7 +112,7 @@ public class Search {
 
                 break;
             case PROMOCION:
-                tablero[inicio] = new Peon(turnoBlanco);
+                tablero[inicio] = new Pieza(turnoBlanco,PEON);
                 break;
             case ENROQUE:
 
@@ -179,24 +178,24 @@ public class Search {
         for (int i = 0; i < 64; i++) {
             var pieza = tablero[i];
             if (pieza != null)
-                if (pieza.esBlanca()) {
-                    if (pieza instanceof Peon) valorBlancas += ponderacionPeon[flip[i]];
-                    else if (pieza instanceof Caballo) valorBlancas += ponderacionCaballo[flip[i]];
-                    else if (pieza instanceof Alfil) valorBlancas += ponderacionAlfil[flip[i]];
-                    else if (pieza instanceof Dama) valorBlancas += ponderacionDama[flip[i]];
-                    else if (pieza instanceof Torre) valorBlancas += ponderacionTorre[flip[i]];
-                    else if (pieza instanceof Rey) valorBlancas += ponderacionRey[flip[i]];
+                if (pieza.esBlanca) {
+                    if (pieza.tipo ==  PEON) valorBlancas += ponderacionPeon[flip[i]];
+                    else if (pieza.tipo ==  CABALLO) valorBlancas += ponderacionCaballo[flip[i]];
+                    else if (pieza.tipo ==  ALFIL) valorBlancas += ponderacionAlfil[flip[i]];
+                    else if (pieza.tipo ==  DAMA) valorBlancas += ponderacionDama[flip[i]];
+                    else if (pieza.tipo ==  TORRE) valorBlancas += ponderacionTorre[flip[i]];
+                    else if (pieza.tipo ==  REY) valorBlancas += ponderacionRey[flip[i]];
 
-                    valorBlancas += pieza.valor();
+                    valorBlancas += pieza.valor;
                 } else {
-                    if (pieza instanceof Peon) valorNegras -= ponderacionPeon[i];
-                    else if (pieza instanceof Caballo) valorNegras -= ponderacionCaballo[i];
-                    else if (pieza instanceof Alfil) valorNegras -= ponderacionAlfil[i];
-                    else if (pieza instanceof Dama) valorNegras -= ponderacionDama[i];
-                    else if (pieza instanceof Torre) valorNegras -= ponderacionTorre[i];
-                    else if (pieza instanceof Rey) valorNegras -= ponderacionRey[i];
+                    if (pieza.tipo ==  PEON) valorNegras -= ponderacionPeon[i];
+                    else if (pieza.tipo ==  CABALLO) valorNegras -= ponderacionCaballo[i];
+                    else if (pieza.tipo ==  ALFIL) valorNegras -= ponderacionAlfil[i];
+                    else if (pieza.tipo ==  DAMA) valorNegras -= ponderacionDama[i];
+                    else if (pieza.tipo ==  TORRE) valorNegras -= ponderacionTorre[i];
+                    else if (pieza.tipo ==  REY) valorNegras -= ponderacionRey[i];
 
-                    valorNegras += pieza.valor();
+                    valorNegras += pieza.valor;
                 }
         }
         return valorBlancas + valorNegras;

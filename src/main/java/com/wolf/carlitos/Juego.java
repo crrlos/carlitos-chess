@@ -1,12 +1,5 @@
 package com.wolf.carlitos;
 
-import com.wolf.carlitos.Piezas.Alfil;
-import com.wolf.carlitos.Piezas.Caballo;
-import com.wolf.carlitos.Piezas.Dama;
-import com.wolf.carlitos.Piezas.Peon;
-import com.wolf.carlitos.Piezas.Pieza;
-import com.wolf.carlitos.Piezas.Rey;
-import com.wolf.carlitos.Piezas.Torre;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,29 +19,29 @@ public class Juego {
         estadoTablero = new EstadoTablero();
         tablero = new Pieza[64];
 
-        tablero[A1] = new Torre(true);
-        tablero[B1] = new Caballo(true);
-        tablero[C1] = new Alfil(true);
-        tablero[D1] = new Dama(true);
+        tablero[A1] = new Pieza(true,TORRE);
+        tablero[B1] = new Pieza(true,CABALLO);
+        tablero[C1] = new Pieza(true,ALFIL);
+        tablero[D1] = new Pieza(true,DAMA);
 
-        tablero[E1] = new Rey(true);
-        tablero[F1] = new Alfil(true);
-        tablero[G1] = new Caballo(true);
-        tablero[H1] = new Torre(true);
+        tablero[E1] = new Pieza(true,REY);
+        tablero[F1] = new Pieza(true,ALFIL);
+        tablero[G1] = new Pieza(true,CABALLO);
+        tablero[H1] = new Pieza(true,TORRE);
 
-        tablero[A8] = new Torre(false);
-        tablero[B8] = new Caballo(false);
-        tablero[C8] = new Alfil(false);
-        tablero[D8] = new Dama(false);
+        tablero[A8] = new Pieza(false,TORRE);
+        tablero[B8] = new Pieza(false,CABALLO);
+        tablero[C8] = new Pieza(false,ALFIL);
+        tablero[D8] = new Pieza(false,DAMA);
 
-        tablero[E8] = new Rey(false);
-        tablero[F8] = new Alfil(false);
-        tablero[G8] = new Caballo(false);
-        tablero[H8] = new Torre(false);
+        tablero[E8] = new Pieza(false,REY);
+        tablero[F8] = new Pieza(false,ALFIL);
+        tablero[G8] = new Pieza(false,CABALLO);
+        tablero[H8] = new Pieza(false,TORRE);
 
         for (int i = 0; i < 8; i++) {
-            tablero[i + 8] = new Peon(true);
-            tablero[i + 48] = new Peon(false);
+            tablero[i + 8] = new Pieza(true,PEON);
+            tablero[i + 48] = new Pieza(false,PEON);
         }
 
     }
@@ -100,43 +93,43 @@ public class Juego {
 
         for (char c : fila.toCharArray()) {
             if (c == 'k') {
-                tablero[indexInicio] = new Rey(false);
+                tablero[indexInicio] = new Pieza(false,REY);
                 estadoTablero.posicionReyNegro = indexInicio;
             }
             if (c == 'q') {
-                tablero[indexInicio] = new Dama(false);
+                tablero[indexInicio] = new Pieza(false,DAMA);
             }
             if (c == 'r') {
-                tablero[indexInicio] = new Torre(false);
+                tablero[indexInicio] = new Pieza(false,TORRE);
             }
             if (c == 'b') {
-                tablero[indexInicio] = new Alfil(false);
+                tablero[indexInicio] = new Pieza(false,ALFIL);
             }
             if (c == 'n') {
-                tablero[indexInicio] = new Caballo(false);
+                tablero[indexInicio] = new Pieza(false,CABALLO);
             }
             if (c == 'p') {
-                tablero[indexInicio] = new Peon(false);
+                tablero[indexInicio] = new Pieza(false,PEON);
             }
 
             if (c == 'K') {
-                tablero[indexInicio] = new Rey(true);
+                tablero[indexInicio] = new Pieza(true,REY);
                 estadoTablero.posicionReyBlanco = indexInicio;
             }
             if (c == 'Q') {
-                tablero[indexInicio] = new Dama(true);
+                tablero[indexInicio] = new Pieza(true,DAMA);
             }
             if (c == 'R') {
-                tablero[indexInicio] = new Torre(true);
+                tablero[indexInicio] = new Pieza(true,TORRE);
             }
             if (c == 'B') {
-                tablero[indexInicio] = new Alfil(true);
+                tablero[indexInicio] = new Pieza(true,ALFIL);
             }
             if (c == 'N') {
-                tablero[indexInicio] = new Caballo(true);
+                tablero[indexInicio] = new Pieza(true,CABALLO);
             }
             if (c == 'P') {
-                tablero[indexInicio] = new Peon(true);
+                tablero[indexInicio] = new Pieza(true,PEON);
             }
 
             if (Character.isDigit(c)) {
