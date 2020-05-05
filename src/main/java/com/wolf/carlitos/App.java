@@ -9,6 +9,8 @@ public class App {
 
     public static void main(String[] args) throws Exception {
 
+        int fuerza = 0;
+
 
         if (Config.debug) {
             new Hilos();
@@ -19,6 +21,9 @@ public class App {
 
         while (scanner.hasNext()) {
             var linea = scanner.nextLine();
+            if(linea.contains("fuerza")){
+                fuerza = Integer.parseInt(linea.replace("fuerza",""));
+            }
 
             if(linea.contains("fen")){
                 var fen = linea.split("fen")[1].split("moves")[0].trim();
@@ -39,12 +44,7 @@ public class App {
                 juego.establecerPosicion(movimientos);
 
             } else if (linea.contains("go")) {
-                int n = 4;
-                try {
-                    n = Integer.parseInt(linea.replaceAll("go ", ""));
-                } catch (Exception ignored) {
-                }
-                System.out.println("bestmove " + juego.mover(n));
+                System.out.println("bestmove " + juego.mover(fuerza == 0? 4 : fuerza));
 
             } else if (linea.contains("isready")) {
                 System.out.println("readyok");
