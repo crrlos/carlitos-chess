@@ -7,6 +7,7 @@ package com.wolf.carlitos;
 
 import com.wolf.carlitos.Piezas.*;
 
+import java.lang.annotation.Target;
 import java.util.*;
 
 //import static com.wolf.carlitos.Utilidades.movimientoValido;
@@ -19,7 +20,7 @@ import static java.lang.Math.abs;
  */
 public class Generador {
 
-    private static int piezaJaque;
+    private  int piezaJaque;
 
     public static final HashMap<Integer, List<List<Integer>>> movimientosAlfil = new HashMap<>();
     public static final HashMap<Integer, List<List<Integer>>> movimientosTorre = new HashMap<>();
@@ -205,7 +206,7 @@ public class Generador {
 //    public static int[] piezaJaque = null;
 //    public static boolean jaqueDoble = false;
 //
-    public static List<int[]> generarMovimientos(Pieza[] tablero, EstadoTablero estado) {
+    public  List<int[]> generarMovimientos(Pieza[] tablero, EstadoTablero estado) {
 
         piezaJaque = reyEnJaque(tablero, estado);
 
@@ -231,7 +232,7 @@ public class Generador {
     }
 
     //
-    public static List<int[]> movimientosDeTorre(Pieza[] tablero, EstadoTablero estado, int posicion) {
+    public  List<int[]> movimientosDeTorre(Pieza[] tablero, EstadoTablero estado, int posicion) {
 
         var lista = new ArrayList<int[]>();
 
@@ -333,7 +334,7 @@ public class Generador {
         return true;
     }
 
-        private static List<int[]> movimientosDeDama (Pieza[]tablero, EstadoTablero estado,int posicion){
+        private  List<int[]> movimientosDeDama (Pieza[]tablero, EstadoTablero estado,int posicion){
             var lista = new ArrayList<int[]>();
 
             Pieza posicionActual;
@@ -449,7 +450,7 @@ public class Generador {
             return lista;
         }
 
-        private static List<int[]> movimientosDeCaballo (Pieza[]tablero, EstadoTablero estado,int posicion){
+        private  List<int[]> movimientosDeCaballo (Pieza[]tablero, EstadoTablero estado,int posicion){
             Pieza posicionActual;
             Pieza pieza = tablero[posicion];
 
@@ -485,11 +486,11 @@ public class Generador {
         }
 
         //
-        private static boolean enJaque () {
+        private  boolean enJaque () {
             return piezaJaque != NO_JAQUE;
         }
 //
-        public static List<int[]> movimientosDeAlfil (Pieza[]tablero, EstadoTablero estado,int posicion){
+        public  List<int[]> movimientosDeAlfil (Pieza[]tablero, EstadoTablero estado,int posicion){
 
             Pieza posicionActual;
             Pieza pieza = tablero[posicion];
@@ -948,7 +949,7 @@ public class Generador {
         }
 
 
-        private static void moverReyUnaCasilla (Pieza[]tablero, EstadoTablero estado,int inicio, int destino){
+        private  static void moverReyUnaCasilla (Pieza[]tablero, EstadoTablero estado,int inicio, int destino){
             tablero[destino] = tablero[inicio];
             tablero[inicio] = null;
             if (estado.turnoBlanco)
@@ -958,9 +959,10 @@ public class Generador {
         }
 
         //
-        private static List<int[]> movimientosDePeon (Pieza[]tablero, EstadoTablero estado,int posicion){
+        private  List<int[]> movimientosDePeon (Pieza[]tablero, EstadoTablero estado,int posicion){
 
             var lista = new ArrayList<int[]>();
+
 
             var turnoBlanco = estado.turnoBlanco;
 
@@ -974,9 +976,7 @@ public class Generador {
             }
 
             var destino = posicion + (turnoBlanco ? 8 : -8);
-            if(destino == 67){
-                System.out.println();
-            }
+
             //avance una casilla
             if (tablero[destino] == null) {
                 if (destino <= H1 || destino >= A8 && destino <= H8) {

@@ -11,6 +11,7 @@ import com.wolf.carlitos.Piezas.Torre;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import static com.wolf.carlitos.Constantes.*;
 
@@ -153,7 +154,7 @@ public class Juego {
         search.perft(n);
 
     }
-   public String mover(int n) throws CloneNotSupportedException, IOException{
+   public String mover(int n) throws CloneNotSupportedException, IOException, InterruptedException, ExecutionException {
        var search = new Search(tablero, estadoTablero);
        return Utilidades.convertirANotacion(search.search(n));
    }

@@ -2,12 +2,15 @@ import com.wolf.carlitos.Config;
 import com.wolf.carlitos.Generador;
 import com.wolf.carlitos.Juego;
 import com.wolf.carlitos.Piezas.Caballo;
+import com.wolf.carlitos.Piezas.Peon;
+import com.wolf.carlitos.Piezas.Pieza;
 import com.wolf.carlitos.Piezas.Torre;
 import com.wolf.carlitos.Utilidades;
 
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static com.wolf.carlitos.Constantes.*;
@@ -64,6 +67,14 @@ public class Test{
     }
 
     public static  void main(String... args) throws IOException, CloneNotSupportedException {
+
+        var arreglo = new Pieza[]{new Caballo(true),new Peon(false)};
+        var copia = Arrays.copyOf(arreglo,arreglo.length);
+
+        copia[0] = null;
+
+        System.out.println(arreglo[0].nombre());
+
 
 //
 //        System.out.println(Generador.movimientosTorre.get(G8));
