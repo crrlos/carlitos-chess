@@ -60,11 +60,6 @@ public class Test{
     public static  void main(String... args) throws IOException, CloneNotSupportedException {
 
         System.out.println(Generador.movimientosTorre.get(G8));
-
-        Stack<ArrayList<Integer>> e = new Stack<>();
-        for (int i = 0; i < 100; i++) {
-            e.add(new ArrayList<>());
-        }
 //
 //        var array = new ArrayList<Integer>();
 //

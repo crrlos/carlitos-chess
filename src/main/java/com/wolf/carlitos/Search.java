@@ -55,9 +55,10 @@ public class Search {
             //comprobar(movimientos, secuencia);
         }
 
-        for (var mov : movimientos) {
+        for (int i = 0; i < movimientos.size(); i++) {
+            var mov = movimientos.get(i);
 
-            secuencia.add(mov);
+            //secuencia.add(mov);
 
             actualizarTablero(tablero, estadoTablero, mov);
 
@@ -75,7 +76,7 @@ public class Search {
                 System.out.println(Utilidades.convertirANotacion(mov) + " " + acumulador.contadorPerft);
                 acumulador.contadorPerft = 0;
             }
-            secuencia.remove(secuencia.size() - 1);
+            //secuencia.remove(secuencia.size() - 1);
         }
 
     }
@@ -123,7 +124,7 @@ public class Search {
                     tablero[turnoBlanco ? H1 : H8] = tablero[turnoBlanco ? F1 : F8];
                     tablero[turnoBlanco ? F1 : F8] = null;
                 }
-
+                else
                 if (destino == C1 || destino == C8) {
                     tablero[turnoBlanco ? A1 : A8] = tablero[turnoBlanco ? D1 : D8];
                     tablero[turnoBlanco ? D1 : D8] = null;
@@ -152,8 +153,8 @@ public class Search {
 
         var estadoLocal = estado.clone();
 
-        for (var mov : movimientos) {
-
+        for (int i = 0; i < movimientos.size(); i++) {
+            var mov = movimientos.get(i);
             Utilidades.actualizarTablero(tablero, estadoLocal, mov);
 
             estadoLocal.turnoBlanco = !estadoLocal.turnoBlanco;
@@ -165,6 +166,7 @@ public class Search {
             estadoLocal.turnoBlanco = !estadoLocal.turnoBlanco;
             revertirMovimiento(mov, estadoLocal,tablero);
             estadoLocal = estado.clone();
+
         }
 
         return eval;
@@ -218,8 +220,8 @@ public class Search {
 
         var estadoLocal = estado.clone();
 
-        for (var mov : movimientos) {
-
+        for (int i = 0; i < movimientos.size(); i++) {
+            var mov = movimientos.get(i);
             Utilidades.actualizarTablero(tablero, estadoLocal, mov);
 
             estadoLocal.turnoBlanco = !estadoLocal.turnoBlanco;
