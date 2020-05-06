@@ -174,32 +174,37 @@ public class Search {
 
     private int evaluar(Pieza[] tablero) {
 
+
+
         int valorBlancas = 0;
         int valorNegras = 0;
 
         for (int i = 0; i < 64; i++) {
             var pieza = tablero[i];
-            if (pieza != null)
-                if (pieza.esBlanca) {
-                    if (pieza.tipo ==  PEON) valorBlancas += ponderacionPeon[flip[i]];
-                    else if (pieza.tipo ==  CABALLO) valorBlancas += ponderacionCaballo[flip[i]];
-                    else if (pieza.tipo ==  ALFIL) valorBlancas += ponderacionAlfil[flip[i]];
-                    else if (pieza.tipo ==  DAMA) valorBlancas += ponderacionDama[flip[i]];
-                    else if (pieza.tipo ==  TORRE) valorBlancas += ponderacionTorre[flip[i]];
-                    else if (pieza.tipo ==  REY) valorBlancas += ponderacionRey[flip[i]];
+            if(pieza == null) continue;
 
-                    valorBlancas += pieza.valor;
-                } else {
-                    if (pieza.tipo ==  PEON) valorNegras -= ponderacionPeon[i];
-                    else if (pieza.tipo ==  CABALLO) valorNegras -= ponderacionCaballo[i];
-                    else if (pieza.tipo ==  ALFIL) valorNegras -= ponderacionAlfil[i];
-                    else if (pieza.tipo ==  DAMA) valorNegras -= ponderacionDama[i];
-                    else if (pieza.tipo ==  TORRE) valorNegras -= ponderacionTorre[i];
-                    else if (pieza.tipo ==  REY) valorNegras -= ponderacionRey[i];
-
-                    valorNegras += pieza.valor;
-                }
+            switch (pieza.tipo){
+                case PEON:
+                    valorBlancas += (pieza.esBlanca ? ponderacionPeon[flip[i]] : -ponderacionPeon[i]);
+                    break;
+                case CABALLO:
+                    valorBlancas += (pieza.esBlanca ? ponderacionCaballo[flip[i]] : -ponderacionCaballo[i]);
+                    break;
+                case ALFIL:
+                    valorBlancas += (pieza.esBlanca ? ponderacionAlfil[flip[i]] : -ponderacionAlfil[i]);
+                    break;
+                case TORRE:
+                    valorBlancas += (pieza.esBlanca ? ponderacionTorre[flip[i]] : -ponderacionTorre[i]);
+                    break;
+                case DAMA:
+                    valorBlancas += (pieza.esBlanca ? ponderacionDama[flip[i]] : -ponderacionDama[i]);
+                    break;
+                case REY:
+                    valorBlancas += (pieza.esBlanca ? ponderacionRey[flip[i]] : -ponderacionRey[i]);
+                    break;
+            }
         }
+
         return valorBlancas + valorNegras;
 
     }
