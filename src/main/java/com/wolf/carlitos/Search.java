@@ -68,7 +68,7 @@ public class Search {
 
             estadoTablero.turnoBlanco = !estadoTablero.turnoBlanco;
 
-            revertirMovimiento(mov, estadoTablero,tablero);
+            revertirMovimiento(mov, estadoTablero, tablero);
 
             estadoTablero = estado.clone(); //vuelve a ser el original
 
@@ -92,7 +92,7 @@ public class Search {
     }
 
 
-    private void revertirMovimiento(int[] movimiento, EstadoTablero estado,Pieza[] tablero) {
+    private void revertirMovimiento(int[] movimiento, EstadoTablero estado, Pieza[] tablero) {
 
         int inicio = movimiento[0];
         int destino = movimiento[1];
@@ -113,7 +113,7 @@ public class Search {
 
                 break;
             case PROMOCION:
-                tablero[inicio] = new Pieza(turnoBlanco,PEON);
+                tablero[inicio] = new Pieza(turnoBlanco, PEON);
                 break;
             case ENROQUE:
 
@@ -123,9 +123,7 @@ public class Search {
                 if (destino == G1 || destino == G8) {
                     tablero[turnoBlanco ? H1 : H8] = tablero[turnoBlanco ? F1 : F8];
                     tablero[turnoBlanco ? F1 : F8] = null;
-                }
-                else
-                if (destino == C1 || destino == C8) {
+                } else if (destino == C1 || destino == C8) {
                     tablero[turnoBlanco ? A1 : A8] = tablero[turnoBlanco ? D1 : D8];
                     tablero[turnoBlanco ? D1 : D8] = null;
                 }
@@ -164,7 +162,7 @@ public class Search {
             if (evaluacion < eval)
                 eval = evaluacion;
             estadoLocal.turnoBlanco = !estadoLocal.turnoBlanco;
-            revertirMovimiento(mov, estadoLocal,tablero);
+            revertirMovimiento(mov, estadoLocal, tablero);
             estadoLocal = estado.clone();
 
         }
@@ -175,15 +173,14 @@ public class Search {
     private int evaluar(Pieza[] tablero) {
 
 
-
         int valorBlancas = 0;
         int valorNegras = 0;
 
-        for (int i = 0; i < 64; i++) {
+        for (int i = 0; i < 16; i++) {
             var pieza = tablero[i];
-            if(pieza == null) continue;
+            if (pieza == null) continue;
 
-            switch (pieza.tipo){
+            switch (pieza.tipo) {
                 case PEON:
                     valorBlancas += (pieza.esBlanca ? ponderacionPeon[flip[i]] : -ponderacionPeon[i]);
                     break;
@@ -203,6 +200,8 @@ public class Search {
                     valorBlancas += (pieza.esBlanca ? ponderacionRey[flip[i]] : -ponderacionRey[i]);
                     break;
             }
+            if (pieza.esBlanca) valorBlancas += pieza.valor;
+            else valorNegras += pieza.valor;
         }
 
         return valorBlancas + valorNegras;
@@ -237,7 +236,7 @@ public class Search {
                 eval = evaluacion;
 
             estadoLocal.turnoBlanco = !estadoLocal.turnoBlanco;
-            revertirMovimiento(mov, estadoLocal,tablero);
+            revertirMovimiento(mov, estadoLocal, tablero);
             estadoLocal = estado.clone();
         }
         return eval;
@@ -254,43 +253,43 @@ public class Search {
 
         var movimientos = new Generador().generarMovimientos(tablero, estadoTablero);
 
-            for (int i = 0; i < movimientos.size(); i++) {
-                var mov = movimientos.get(i);
-                Utilidades.actualizarTablero(tablero, estadoTablero, mov);
-                estadoTablero.turnoBlanco = !estadoTablero.turnoBlanco;
-                var arregloCopia = Arrays.copyOf(tablero, tablero.length);
+        for (int i = 0; i < movimientos.size(); i++) {
+            var mov = movimientos.get(i);
+            Utilidades.actualizarTablero(tablero, estadoTablero, mov);
+            estadoTablero.turnoBlanco = !estadoTablero.turnoBlanco;
+            var arregloCopia = Arrays.copyOf(tablero, tablero.length);
 
-                var clon = estadoTablero.clone();
-                callables.add(() -> estadoOriginal.turnoBlanco ? mini(n , clon, arregloCopia) : maxi(n, clon, arregloCopia));
+            var clon = estadoTablero.clone();
+            callables.add(() -> estadoOriginal.turnoBlanco ? mini(n, clon, arregloCopia) : maxi(n, clon, arregloCopia));
 
-                estadoTablero.turnoBlanco = !estadoTablero.turnoBlanco;
-                revertirMovimiento(mov, estadoTablero, tablero);
-                estadoTablero = estadoOriginal.clone();
-
-            }
-
+            estadoTablero.turnoBlanco = !estadoTablero.turnoBlanco;
+            revertirMovimiento(mov, estadoTablero, tablero);
             estadoTablero = estadoOriginal.clone();
 
-            var resultados = WORKER_THREAD_POOL.invokeAll(callables);
-            awaitTerminationAfterShutdown(WORKER_THREAD_POOL);
+        }
+
+        estadoTablero = estadoOriginal.clone();
+
+        var resultados = WORKER_THREAD_POOL.invokeAll(callables);
+        awaitTerminationAfterShutdown(WORKER_THREAD_POOL);
 
 
-            for (int i = 0; i < resultados.size(); i++) {
-                var eval = resultados.get(i).get();
+        for (int i = 0; i < resultados.size(); i++) {
+            var eval = resultados.get(i).get();
 
-                if (estadoOriginal.turnoBlanco) {
-                    if (eval > valoracion) {
-                        valoracion = eval;
-                        pos = i;
-                    }
-                } else {
-                    if (eval < valoracion) {
-                        valoracion = eval;
-                        pos = i;
-                    }
+            if (estadoOriginal.turnoBlanco) {
+                if (eval > valoracion) {
+                    valoracion = eval;
+                    pos = i;
                 }
-
+            } else {
+                if (eval < valoracion) {
+                    valoracion = eval;
+                    pos = i;
+                }
             }
+
+        }
 
 
 //       for (int i = 0; i < movimientos.size() ; i++) {
