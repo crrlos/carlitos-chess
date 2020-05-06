@@ -284,10 +284,8 @@ public class Generador {
 
             if (!sonMismoColor && !(posicionActual.tipo == REY)) {
                 movimientos.add(new int[]{posicion, mov});
-                break;
             }
-
-            if (sonMismoColor) break;
+            break;
         }
     }
 
@@ -309,7 +307,7 @@ public class Generador {
                 break;
             }
 
-            if (sonMismoColor) break;
+            break;
         }
     }
 
