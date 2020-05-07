@@ -59,7 +59,14 @@ public class Test{
 
     public static  void main(String... args) throws IOException, CloneNotSupportedException {
 
-        System.out.println(Generador.movimientosTorre.get(G8));
+      Scanner entrada = new Scanner(System.in);
+        System.out.println("Ingrese el nombre del producto: ");
+        String nombre = entrada.nextLine();
+        entrada.nextLine();
+        System.out.println("Ingrese la descripción del producto: ");
+        String descrip = entrada.nextLine();
+
+        System.out.println(nombre + descrip);
 //
 //        var array = new ArrayList<Integer>();
 //

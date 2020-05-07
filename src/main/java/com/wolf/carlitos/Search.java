@@ -176,7 +176,7 @@ public class Search {
         int valorBlancas = 0;
         int valorNegras = 0;
 
-        for (int i = 0; i < 16; i++) {
+        for (int i = 0; i < 64; i++) {
             var pieza = tablero[i];
             if (pieza == null) continue;
 
