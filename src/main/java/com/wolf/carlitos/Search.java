@@ -22,10 +22,7 @@ import static java.lang.Math.abs;
 /**
  * @author carlos
  */
-class Acumulador {
-    long contadorPerft;
-    long contador;
-}
+
 
 public class Search {
     public static List<int[]> secuencia = new ArrayList<>();
