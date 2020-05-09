@@ -86,13 +86,18 @@ public class Constantes {
     public static final int MATE = 1_000_000;
     public static final int AHOGADO = 0;
 
-    public static final  int TORRE = 2000;
-    public static final  int ALFIL = 2001;
-    public static final  int CABALLO = 2002;
-    public static final  int DAMA = 2003;
-    public static final  int PEON = 2004;
-    public static final  int REY = 2005;
+    public static final  int PEON = 0;
+    public static final  int CABALLO = 1;
+    public static final  int ALFIL = 2;
+    public static final  int TORRE = 3;
+    public static final  int DAMA = 4;
+    public static final  int REY = 5;
+    public static final  int NOPIEZA = 6;
 
+    public static  final int BLANCO = 10;
+    public static final int NEGRO = 11;
+    public static final int NOCOLOR = 12;
 
+    public static char[] PIEZAS = {'P','C','A','T','D','R',' '};
 
 }

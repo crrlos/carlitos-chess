@@ -36,15 +36,15 @@ public class Utilidades {
 
     }
 
-    public static void imprimirPosicicion(Pieza[] tablero) {
+    public static void imprimirPosicicion(int[] tablero,int[] color) {
 
         for (int i = 64; i > 0; i -= 8) {
             System.out.println("+---+---+---+---+---+---+---+---+");
             for (int j = i - 8; j < (i - 8) + 8; j++) {
-                var pieza = tablero[j];
-                System.out.print("| " + (pieza != null ? pieza.nombre : " ") + " ");
+                System.out.print("| " + (color[j] == BLANCO ? String.valueOf(PIEZAS[tablero[j]]) : String.valueOf(PIEZAS[tablero[j]]).toLowerCase()) + " ");
             }
             System.out.print("|");
+
             System.out.println();
         }
         System.out.println("+---+---+---+---+---+---+---+---+");
@@ -106,7 +106,7 @@ public class Utilidades {
         return mov;
     }
 
-    public static  void actualizarTablero(Pieza[] tablero, EstadoTablero estadoTablero, int[] movimiento) {
+    public static  void actualizarTablero(int[] tablero,int[]color, EstadoTablero estadoTablero, int[] movimiento) {
 
 
         int inicio = movimiento[0];
@@ -114,27 +114,36 @@ public class Utilidades {
 
         var pieza = tablero[inicio];
 
-        estadoTablero.piezaCapturada = null;
+        estadoTablero.piezaCapturada = NOPIEZA;
+        estadoTablero.colorCaptura = NOCOLOR;
         estadoTablero.tipoMovimiento = NO_ASIGNADO;
 
-        if (pieza.tipo  == PEON) {
+        if (pieza  == PEON) {
 
             if (abs(inicio - destino) == 16) {
                 estadoTablero.alPaso = true;
-                estadoTablero.piezaALPaso = pieza;
+                estadoTablero.piezaALPaso = destino + (estadoTablero.turnoBlanco ? -8 : 8);
+                estadoTablero.colorAlPaso = color[inicio];
 
                 tablero[destino] = pieza;
-                tablero[inicio] = null;
+                tablero[inicio] = NOPIEZA;
+
+                color[destino] = color[inicio];
+                color[inicio] = NOCOLOR;
+
                 estadoTablero.tipoMovimiento = MOVIMIENTO_NORMAL;
                 return;
             }
             if (estadoTablero.alPaso) {
                 if (abs(destino - inicio) == 7 || abs(destino - inicio) == 9) {
                     var posicionAlPaso = destino + (estadoTablero.turnoBlanco? - 8 : 8);
-                    if (tablero[posicionAlPaso] == estadoTablero.piezaALPaso) {
+                    if (destino == estadoTablero.piezaALPaso) {
 
                         // aqui se remueve la pieza al paso
-                        tablero[posicionAlPaso] = null;
+                        tablero[posicionAlPaso] = NOPIEZA;
+                        estadoTablero.colorAlPaso = color[posicionAlPaso];
+                        color[posicionAlPaso] = NOCOLOR;
+
                         estadoTablero.tipoMovimiento = AL_PASO;
                     }
                 }
@@ -145,46 +154,58 @@ public class Utilidades {
             if (destino >= A1 && destino <= H1 || destino >= A8 && destino <= H8) {
                 switch (movimiento[2]) {
                     case 1:
-                        pieza = new Pieza(estadoTablero.turnoBlanco,DAMA);
+                        tablero[destino] = DAMA;
+                        color[destino] = estadoTablero.turnoBlanco ?BLANCO:NEGRO;
                         break;
                     case 2:
-                        pieza = new Pieza(estadoTablero.turnoBlanco,TORRE);
+                        tablero[destino] = TORRE;
+                        color[destino] = estadoTablero.turnoBlanco ?BLANCO:NEGRO;
                         break;
                     case 3:
-                        pieza = new Pieza(estadoTablero.turnoBlanco,CABALLO);
+                        tablero[destino] = CABALLO;
+                        color[destino] = estadoTablero.turnoBlanco ?BLANCO:NEGRO;
                         break;
                     case 4:
-                        pieza = new Pieza(estadoTablero.turnoBlanco,ALFIL);
+                        tablero[destino] = ALFIL;
+                        color[destino] = estadoTablero.turnoBlanco ?BLANCO:NEGRO;
                         break;
                 }
                 estadoTablero.tipoMovimiento = PROMOCION;
             }
 
-        } else if (pieza.tipo == REY) {
+        } else if (pieza == REY) {
             // en los enroques solo se mueven las torres por ser el movimiento especial
             if (abs(inicio - destino) == 2) {
-                if (pieza.esBlanca) {
+                if (color[inicio] == BLANCO) {
                     if (destino == G1) {
                         tablero[F1] = tablero[H1];
-                        tablero[H1] = null;
+                        tablero[H1] = NOPIEZA;
+                        color[F1] = color[H1];
+                        color[H1] = NOCOLOR;
                     } else {
                         tablero[D1] = tablero[A1];
-                        tablero[A1] = null;
+                        tablero[A1] = NOPIEZA;
+                        color[D1] = color[A1];
+                        color[A1] = NOCOLOR;
                     }
                 } else {
                     if (destino == G8) {
                         tablero[F8] = tablero[H8];
-                        tablero[H8] = null;
+                        tablero[H8] = NOPIEZA;
+                        color[F8] = color[H8];
+                        color[H8] = NOCOLOR;
                     } else {
                         tablero[D8] = tablero[A8];
-                        tablero[A8] = null;
+                        tablero[A8] = NOPIEZA;
+                        color[D8] = color[A8];
+                        color[A8] = NOCOLOR;
                     }
                 }
                 estadoTablero.tipoMovimiento = ENROQUE;
             } else {
                 estadoTablero.tipoMovimiento = MOVIMIENTO_REY;
             }
-            if (pieza.esBlanca) {
+            if (estadoTablero.turnoBlanco) {
                 estadoTablero.enroqueCBlanco = estadoTablero.enroqueLBlanco = false;
                 estadoTablero.posicionReyBlanco = destino;
             } else {
@@ -192,7 +213,7 @@ public class Utilidades {
                 estadoTablero.posicionReyNegro = destino;
             }
 
-        } else if (pieza.tipo == TORRE) {
+        } else if (pieza == TORRE) {
 
             switch (inicio) {
                 case H8:
@@ -212,8 +233,9 @@ public class Utilidades {
         }
 
         estadoTablero.piezaCapturada = tablero[destino];
-        if(Objects.nonNull(estadoTablero.piezaCapturada))
-        if (estadoTablero.piezaCapturada.tipo == TORRE) {
+        estadoTablero.colorCaptura = color[destino];
+
+        if (tablero[destino] == TORRE) {
             switch (destino) {
                 case H8:
                     estadoTablero.enroqueCNegro = false;
@@ -232,7 +254,9 @@ public class Utilidades {
         }
 
         tablero[destino] = pieza;
-        tablero[inicio] = null;
+        tablero[inicio] = NOPIEZA;
+        color[destino] = color[inicio];
+        color[inicio] = NOCOLOR;
 
         estadoTablero.alPaso = false;
 
@@ -241,16 +265,16 @@ public class Utilidades {
         }
     }
 
-    public static int reyEnJaque(Pieza[] tablero, EstadoTablero estado) {
+    public static int reyEnJaque(int[]pieza, int[] color, EstadoTablero estado) {
         var blanco = estado.turnoBlanco;
         var posicionRey = blanco ? estado.posicionReyBlanco : estado.posicionReyNegro;
 
         int result;
 
-        if ((result = ataqueFilaColumna(posicionRey, tablero, blanco)) != NO_JAQUE) return result;
-        if ((result = ataqueDiagonal(posicionRey, tablero, blanco)) != NO_JAQUE) return result;
-        if ((result = ataqueCaballo(posicionRey, tablero, blanco)) != NO_JAQUE) return result;
-        if ((result = ataquePeon(posicionRey, tablero, blanco)) != NO_JAQUE) return result;
+        if ((result = ataqueFilaColumna(posicionRey, pieza,color, blanco)) != NO_JAQUE) return result;
+        if ((result = ataqueDiagonal(posicionRey, pieza,color, blanco)) != NO_JAQUE) return result;
+        if ((result = ataqueCaballo(posicionRey, pieza,color, blanco)) != NO_JAQUE) return result;
+        if ((result = ataquePeon(posicionRey, pieza,color, blanco)) != NO_JAQUE) return result;
 
         return NO_JAQUE;
     }
@@ -259,34 +283,34 @@ public class Utilidades {
 
         return filaImpar == ((i + 1) % 2 == 0);
     }
-    private static int ataquePeon(int posicion, Pieza[] tablero, boolean blanco) {
+    private static int ataquePeon(int posicion, int[] pieza, int[] color, boolean blanco) {
         if(blanco){
             var destino = posicion + 9;
             if(destino < 64){
-                var pieza = tablero[destino];
-                if(pieza != null && pieza.tipo == PEON && !pieza.esBlanca && esCasillaBlanca(posicion) == esCasillaBlanca(destino)){
+                int posicionActual = pieza[destino];
+                if(posicionActual != NOPIEZA && pieza[destino] == PEON && !(color[destino] == BLANCO) && esCasillaBlanca(posicion) == esCasillaBlanca(destino)){
                     return destino;
                 }
             }
             destino = posicion + 7;
             if(destino < 64){
-                var pieza = tablero[destino];
-                if(pieza != null && pieza.tipo == PEON && !pieza.esBlanca && esCasillaBlanca(posicion) == esCasillaBlanca(destino)){
+                var posicionActual = pieza[destino];
+                if(posicionActual != NOPIEZA && posicionActual == PEON && !(color[destino] == BLANCO) && esCasillaBlanca(posicion) == esCasillaBlanca(destino)){
                     return destino;
                 }
             }
         }else{
             var destino = posicion - 9;
             if(destino >= 0){
-                var pieza = tablero[destino];
-                if(pieza != null && pieza.tipo == PEON && pieza.esBlanca && esCasillaBlanca(posicion) == esCasillaBlanca(destino)){
+                var posicionActual = pieza[destino];
+                if(posicionActual != NOPIEZA && pieza[destino] == PEON && color[destino] == BLANCO && esCasillaBlanca(posicion) == esCasillaBlanca(destino)){
                     return destino;
                 }
             }
             destino = posicion - 7;
             if(destino >= 0){
-                var pieza = tablero[destino];
-                if(pieza != null && pieza.tipo == PEON && pieza.esBlanca && esCasillaBlanca(posicion) == esCasillaBlanca(destino)){
+                var posicionActual = pieza[destino];
+                if(posicionActual != NOPIEZA && pieza[destino] == PEON && color[destino] == BLANCO && esCasillaBlanca(posicion) == esCasillaBlanca(destino)){
                     return destino;
                 }
             }
@@ -294,7 +318,7 @@ public class Utilidades {
     return NO_JAQUE;
     }
 
-    private static int ataqueFilaColumna(int posicion, Pieza[] tablero, boolean blanco) {
+    private static int ataqueFilaColumna(int posicion, int[] pieza,int[] color, boolean blanco) {
 
         var movimientosTorre = Generador.movimientosTorre.get(posicion);
 
@@ -303,10 +327,10 @@ public class Utilidades {
             var m = movimientosTorre.get(i);
 
             for (int j = 0; j < m.size(); j++) {
-                var posicionActual = tablero[m.get(j)];
-                if (posicionActual != null) {
-                    if (posicionActual.esBlanca != blanco
-                            && (posicionActual.tipo == TORRE || posicionActual.tipo == DAMA)) {
+                int posicionActual = pieza[m.get(j)];
+                if (posicionActual != NOPIEZA) {
+                    if (color[m.get(j)] == BLANCO != blanco
+                            && (posicionActual == TORRE || posicionActual == DAMA)) {
                         return m.get(j);
                     } else break;
                 }
@@ -318,7 +342,7 @@ public class Utilidades {
         return NO_JAQUE;
     }
 
-    private static int ataqueDiagonal(int posicion, Pieza[] tablero, boolean blanco) {
+    private static int ataqueDiagonal(int posicion, int[] pieza,int[] color, boolean blanco) {
 
         var movimientosAlfil = Generador.movimientosAlfil.get(posicion);
 
@@ -326,11 +350,11 @@ public class Utilidades {
             var m = movimientosAlfil.get(i);
 
             for (int j = 0; j < m.size(); j++) {
-                var posicionActual = tablero[m.get(j)];
-                if (posicionActual != null) {
+                int posicionActual = pieza[m.get(j)];
+                if (posicionActual != NOPIEZA) {
 
-                    if (posicionActual.esBlanca != blanco
-                            && (posicionActual.tipo == ALFIL || posicionActual.tipo == DAMA)) {
+                    if (color[m.get(j)] == BLANCO != blanco
+                            && (posicionActual == ALFIL || posicionActual == DAMA)) {
                         return m.get(j);
                     } else break;
                 }
@@ -341,16 +365,16 @@ public class Utilidades {
         return NO_JAQUE;
     }
 
-    private static int ataqueCaballo(int posicion, Pieza[] tablero, boolean blanco) {
+    private static int ataqueCaballo(int posicion, int[] pieza,int[] color, boolean blanco) {
 
         var movimientosCaballo = Generador.movimientosCaballo.get(posicion);
 
         for (int j = 0; j < movimientosCaballo.size(); j++) {
             var m = movimientosCaballo.get(j);
-            var posicionActual = tablero[m];
-            if (posicionActual != null)
-                if (posicionActual.esBlanca != blanco
-                        && (posicionActual.tipo == CABALLO)) {
+            int posicionActual = pieza[m];
+            if (posicionActual != NOPIEZA)
+                if (color[m] == BLANCO != blanco
+                        && (posicionActual == CABALLO)) {
                     return m;
                 }
 
@@ -358,21 +382,25 @@ public class Utilidades {
         return NO_JAQUE;
     }
 
-    public static boolean movimientoValido(int[] movimiento, Pieza[] tablero, EstadoTablero estado) {
+    public static boolean movimientoValido(int[] movimiento, int[] tablero,int[]color, EstadoTablero estado) {
 
         int inicio = movimiento[0];
         int destino = movimiento[1];
 
-        Pieza piezaActual = tablero[inicio];
-        Pieza piezaDestino = tablero[destino];
+        int piezaActual = tablero[inicio];
+        int piezaDestino = tablero[destino];
+        int colorDestino = color[destino];
 
-        tablero[inicio] = null;
+        tablero[inicio] = NOPIEZA;
         tablero[destino] = piezaActual;
+
+        color[destino] = color[inicio];
+        color[inicio] = NOCOLOR;
 
         boolean tomaAlPaso = false;
         int posicionPaso = 0;
 
-        if (piezaActual.tipo == PEON && estado.alPaso) {
+        if (piezaActual == PEON && estado.alPaso) {
 
             if (estado.turnoBlanco) {
                 if (destino - inicio == 7) {
@@ -390,11 +418,11 @@ public class Utilidades {
 
             if (tablero[posicionPaso] == estado.piezaALPaso) {
                 tomaAlPaso = true;
-                tablero[posicionPaso] = null;
+                tablero[posicionPaso] = NOPIEZA;
             }
 
         }
-        if (piezaActual.tipo == REY) {
+        if (piezaActual == REY) {
             if (estado.turnoBlanco) {
                 estado.posicionReyBlanco = destino;
             } else {
@@ -402,12 +430,12 @@ public class Utilidades {
             }
         }
 
-        var jaque = reyEnJaque(tablero, estado);
+        var jaque = reyEnJaque(tablero,color, estado);
 
-        if (piezaActual.tipo == PEON && estado.alPaso && tomaAlPaso) {
+        if (piezaActual == PEON && estado.alPaso && tomaAlPaso) {
             tablero[posicionPaso] = estado.piezaALPaso;
         }
-        if (piezaActual.tipo == REY) {
+        if (piezaActual== REY) {
             if (estado.turnoBlanco) {
                 estado.posicionReyBlanco = inicio;
             } else {
@@ -417,6 +445,9 @@ public class Utilidades {
 
         tablero[destino] = piezaDestino;
         tablero[inicio] = piezaActual;
+
+        color[inicio] = color[destino];
+        color[destino] = colorDestino;
 
         return jaque == NO_JAQUE;
     }

@@ -2,8 +2,6 @@ package com.wolf.carlitos;
 
 import java.util.Scanner;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
 public class App {
     static Juego juego = new Juego();
 
@@ -29,11 +27,11 @@ public class App {
                 var fen = linea.split("fen")[1].split("moves")[0].trim();
 
                 juego = new Juego();
-                juego.setFen(fen);
+               // juego.setFen(fen);
 
                 var regex = Pattern.compile("(([a-h][1-8]){2}([qrbn])?)");
                 var movimientos = regex.matcher(linea).results().map(r -> r.group(0)).toArray(String[]::new);
-                juego.establecerPosicion(movimientos);
+                //juego.establecerPosicion(movimientos);
             }
             else
             if (linea.contains("startpos")) {
@@ -44,7 +42,7 @@ public class App {
                 juego.establecerPosicion(movimientos);
 
             } else if (linea.contains("go")) {
-                System.out.println("bestmove " + juego.mover(fuerza == 0? 4 : fuerza));
+               // System.out.println("bestmove " + juego.mover(fuerza == 0? 4 : fuerza));
 
             } else if (linea.contains("isready")) {
                 System.out.println("readyok");

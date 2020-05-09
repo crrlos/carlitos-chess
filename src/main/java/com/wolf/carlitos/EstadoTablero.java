@@ -14,8 +14,11 @@ public  class EstadoTablero  implements Cloneable{
     public  boolean alPaso;
     public  boolean turnoBlanco = true;
     
-    public  Pieza piezaALPaso;
-    public  Pieza piezaCapturada;
+    public  int piezaALPaso;
+    public int colorAlPaso;
+
+    public  int piezaCapturada;
+    public int colorCaptura;
     
     public  int tipoMovimiento = -1;
     

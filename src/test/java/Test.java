@@ -59,10 +59,13 @@ public class Test{
 
     public static  void main(String... args) throws IOException, CloneNotSupportedException {
 
-        int estadoTablero = 0b0111100_0000100_000_1_0_1111;
 
-        System.out.println(estadoTablero);
+        var t1 = System.currentTimeMillis();
 
+        Juego j =  new Juego();
+        j.perft(6);
+
+        System.out.println(System.currentTimeMillis() - t1);
 
 
 
