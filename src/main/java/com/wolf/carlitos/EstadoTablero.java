@@ -9,11 +9,14 @@ public  class EstadoTablero  implements Cloneable{
     
     public  boolean enroqueCBlanco = true;
     public  boolean enroqueLBlanco = true;
+
     public  boolean enroqueCNegro = true;
     public  boolean enroqueLNegro = true;
-    public  boolean alPaso;
+
     public  boolean turnoBlanco = true;
-    
+
+    public  boolean alPaso;
+
     public  int piezaALPaso;
     public int colorAlPaso;
 

@@ -106,7 +106,7 @@ public class Utilidades {
         return mov;
     }
 
-    public static  void actualizarTablero(int[] tablero,int[]color, EstadoTablero estadoTablero, int[] movimiento) {
+    public static void actualizarTablero(int[] tablero,int[]color, EstadoTablero estadoTablero, int[] movimiento) {
 
 
         int inicio = movimiento[0];

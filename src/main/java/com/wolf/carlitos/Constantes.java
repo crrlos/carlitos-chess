@@ -74,12 +74,12 @@ public class Constantes {
     public static final int G8 = 62;
     public static final int H8 = 63;
 
-    public static final int ENROQUE = 100;
-    public static final int MOVIMIENTO_NORMAL = 101;
-    public static final int AL_PASO = 102;
-    public static final int PROMOCION = 103;
-    public static final int MOVIMIENTO_REY = 104;
-    public static final int NO_ASIGNADO = 105;
+    public static final int ENROQUE = 0;
+    public static final int MOVIMIENTO_NORMAL = 1;
+    public static final int AL_PASO = 2;
+    public static final int PROMOCION = 3;
+    public static final int MOVIMIENTO_REY = 4;
+    public static final int NO_ASIGNADO = 5;
 
     public static final int NO_JAQUE = 1001;
 
@@ -94,9 +94,9 @@ public class Constantes {
     public static final  int REY = 5;
     public static final  int NOPIEZA = 6;
 
-    public static  final int BLANCO = 10;
-    public static final int NEGRO = 11;
-    public static final int NOCOLOR = 12;
+    public static  final int BLANCO = 0;
+    public static final int NEGRO = 1;
+    public static final int NOCOLOR = 2;
 
     public static char[] PIEZAS = {'P','C','A','T','D','R',' '};
 
