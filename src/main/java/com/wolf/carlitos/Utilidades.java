@@ -105,25 +105,36 @@ public class Utilidades {
         }
         return mov;
     }
-
-    public static void actualizarTablero(int[] tablero,int[]color, EstadoTablero estadoTablero, int[] movimiento) {
-
+//position startpos moves e2e4 e7e5 g1f3 g8f6 f1e2 f8e7 e1g1 e8g8
+    public static long actualizarTablero(int[] tablero,int[]color, long estadoTablero, int[] movimiento) {
 
         int inicio = movimiento[0];
         int destino = movimiento[1];
 
         var pieza = tablero[inicio];
 
-        estadoTablero.piezaCapturada = NOPIEZA;
-        estadoTablero.colorCaptura = NOCOLOR;
-        estadoTablero.tipoMovimiento = NO_ASIGNADO;
+        // pieza capturada
+        estadoTablero =  estadoTablero & 0b111111_111111_111_11_000_1_111111_1_1_11_11L | (long)NOPIEZA << 13;
+        // color captura
+        estadoTablero =  estadoTablero & 0b111111_111111_111_00_111_1_111111_1_1_11_11L | (long)NOCOLOR << 16;
+        // tipo movimiento
+        estadoTablero =  estadoTablero & 0b111111_111111_000_11_111_1_111111_1_1_11_11L | (long)NO_ASIGNADO << 18;
+
+
 
         if (pieza  == PEON) {
 
             if (abs(inicio - destino) == 16) {
-                estadoTablero.alPaso = true;
-                estadoTablero.piezaALPaso = destino + (estadoTablero.turnoBlanco ? -8 : 8);
-                estadoTablero.colorAlPaso = color[inicio];
+
+                // al paso = true
+                estadoTablero |= 0b1_00_000;
+
+                // pieza al paso
+                int posicionPiezaAlPAso = destino + (esTurnoBlanco(estadoTablero) ? -8 : 8);
+                estadoTablero =  estadoTablero & 0b111111_111111_111_11_111_1_000000_1_1_11_11L | (long)posicionPiezaAlPAso << 6;
+
+                // color al paso
+                estadoTablero =  estadoTablero & 0b111111_111111_111_11_111_0_111111_1_1_11_11L | (long)color[inicio] << 12;
 
                 tablero[destino] = pieza;
                 tablero[inicio] = NOPIEZA;
@@ -131,46 +142,50 @@ public class Utilidades {
                 color[destino] = color[inicio];
                 color[inicio] = NOCOLOR;
 
-                estadoTablero.tipoMovimiento = MOVIMIENTO_NORMAL;
-                return;
+                // tipo de movimiento
+                estadoTablero = setTipoMovimiento(estadoTablero,MOVIMIENTO_NORMAL);
+
+                return estadoTablero;
             }
-            if (estadoTablero.alPaso) {
+            if (alPaso(estadoTablero)) {
                 if (abs(destino - inicio) == 7 || abs(destino - inicio) == 9) {
-                    var posicionAlPaso = destino + (estadoTablero.turnoBlanco? - 8 : 8);
-                    if (destino == estadoTablero.piezaALPaso) {
+                    var posicionAlPaso = destino + (esTurnoBlanco(estadoTablero) ? - 8 : 8);
+                    if (destino == (estadoTablero >> 6 & 0b111111)) {
 
                         // aqui se remueve la pieza al paso
                         tablero[posicionAlPaso] = NOPIEZA;
-                        estadoTablero.colorAlPaso = color[posicionAlPaso];
+                        // color al paso
+                        estadoTablero =  estadoTablero & 0b111111_111111_111_11_111_0_111111_1_1_11_11L | (long)color[posicionAlPaso] << 12;
+
                         color[posicionAlPaso] = NOCOLOR;
 
-                        estadoTablero.tipoMovimiento = AL_PASO;
+                        estadoTablero = setTipoMovimiento(estadoTablero,AL_PASO);
                     }
                 }
-
-                estadoTablero.alPaso = false;
+                // al paso = false
+                estadoTablero  &=  0b111111_111111_111_11_111_1_111111_0_1_11_11L;
             }
 
             if (destino >= A1 && destino <= H1 || destino >= A8 && destino <= H8) {
                 switch (movimiento[2]) {
                     case 1:
                         tablero[destino] = DAMA;
-                        color[destino] = estadoTablero.turnoBlanco ?BLANCO:NEGRO;
+                        color[destino] = esTurnoBlanco(estadoTablero) ?BLANCO:NEGRO;
                         break;
                     case 2:
                         tablero[destino] = TORRE;
-                        color[destino] = estadoTablero.turnoBlanco ?BLANCO:NEGRO;
+                        color[destino] =esTurnoBlanco(estadoTablero) ?BLANCO:NEGRO;
                         break;
                     case 3:
                         tablero[destino] = CABALLO;
-                        color[destino] = estadoTablero.turnoBlanco ?BLANCO:NEGRO;
+                        color[destino] =esTurnoBlanco(estadoTablero) ?BLANCO:NEGRO;
                         break;
                     case 4:
                         tablero[destino] = ALFIL;
-                        color[destino] = estadoTablero.turnoBlanco ?BLANCO:NEGRO;
+                        color[destino] =esTurnoBlanco(estadoTablero) ?BLANCO:NEGRO;
                         break;
                 }
-                estadoTablero.tipoMovimiento = PROMOCION;
+               estadoTablero = setTipoMovimiento(estadoTablero,PROMOCION);
             }
 
         } else if (pieza == REY) {
@@ -201,53 +216,60 @@ public class Utilidades {
                         color[A8] = NOCOLOR;
                     }
                 }
-                estadoTablero.tipoMovimiento = ENROQUE;
+                estadoTablero = setTipoMovimiento(estadoTablero,ENROQUE);
             } else {
-                estadoTablero.tipoMovimiento = MOVIMIENTO_REY;
+                estadoTablero = setTipoMovimiento(estadoTablero,MOVIMIENTO_REY);
             }
-            if (estadoTablero.turnoBlanco) {
-                estadoTablero.enroqueCBlanco = estadoTablero.enroqueLBlanco = false;
-                estadoTablero.posicionReyBlanco = destino;
+            if (esTurnoBlanco(estadoTablero)) {
+                // enroques blancos false
+                estadoTablero &= 0b111111_111111_111_11_111_1_111111_1_1_11_00L;
+                // posicion rey blanco
+                estadoTablero = estadoTablero & 0b111111_000000_111_11_111_1_111111_1_1_11_11L | (long)destino << 21;
             } else {
-                estadoTablero.enroqueCNegro = estadoTablero.enroqueLNegro = false;
-                estadoTablero.posicionReyNegro = destino;
+                // enroques negros false
+                estadoTablero &= 0b111111_111111_111_11_111_1_111111_1_1_00_11L;
+                // posicion rey negro
+                estadoTablero = estadoTablero & 0b000000_111111_111_11_111_1_111111_1_1_11_11L | (long)destino << 27;
             }
 
         } else if (pieza == TORRE) {
 
             switch (inicio) {
                 case H8:
-                    estadoTablero.enroqueCNegro = false;
+                    estadoTablero &= 0b111111_111111_111_11_111_1_111111_1_1_10_11L;
                     break;
                 case A8:
-                    estadoTablero.enroqueLNegro = false;
+                    estadoTablero &= 0b111111_111111_111_11_111_1_111111_1_1_01_11L;
                     break;
                 case H1:
-                    estadoTablero.enroqueCBlanco = false;
+                    estadoTablero &= 0b111111_111111_111_11_111_1_111111_1_1_11_10L;
                     break;
                 case A1:
-                    estadoTablero.enroqueLBlanco = false;
+                    estadoTablero &= 0b111111_111111_111_11_111_1_111111_1_1_11_01L;
                     break;
             }
 
         }
 
-        estadoTablero.piezaCapturada = tablero[destino];
-        estadoTablero.colorCaptura = color[destino];
+        // pieza capturada
+        estadoTablero =  estadoTablero & 0b111111_111111_111_11_000_1_111111_1_1_11_11L | (long)tablero[destino] << 13;
+        // color captura
+        estadoTablero =  estadoTablero & 0b111111_111111_111_00_111_1_111111_1_1_11_11L | (long)color[destino] << 16;
 
         if (tablero[destino] == TORRE) {
             switch (destino) {
                 case H8:
-                    estadoTablero.enroqueCNegro = false;
+                    estadoTablero &= 0b111111_111111_111_11_111_1_111111_1_1_10_11L;
                     break;
                 case A8:
-                    estadoTablero.enroqueLNegro = false;
+                    estadoTablero &= 0b111111_111111_111_11_111_1_111111_1_1_01_11L;
                     break;
                 case H1:
-                    estadoTablero.enroqueCBlanco = false;
+                    estadoTablero &= 0b111111_111111_111_11_111_1_111111_1_1_11_10L;
                     break;
                 case A1:
-                    estadoTablero.enroqueLBlanco = false;
+                    estadoTablero &= 0b111111_111111_111_11_111_1_111111_1_1_11_01L;
+                    break;
 
             }
 
@@ -258,16 +280,35 @@ public class Utilidades {
         color[destino] = color[inicio];
         color[inicio] = NOCOLOR;
 
-        estadoTablero.alPaso = false;
 
-        if (estadoTablero.tipoMovimiento == NO_ASIGNADO) {
-            estadoTablero.tipoMovimiento = MOVIMIENTO_NORMAL;
+        // al paso  = false
+        estadoTablero  &=  0b111111_111111_111_11_111_1_111111_0_1_11_11L;
+
+        if ((estadoTablero >> 18 & 0b111) == NO_ASIGNADO) {
+            estadoTablero = setTipoMovimiento(estadoTablero,MOVIMIENTO_NORMAL);
         }
+        return  estadoTablero;
     }
 
-    public static int reyEnJaque(int[]pieza, int[] color, EstadoTablero estado) {
-        var blanco = estado.turnoBlanco;
-        var posicionRey = blanco ? estado.posicionReyBlanco : estado.posicionReyNegro;
+    static boolean alPaso(long estadoTablero) {
+        return (estadoTablero & 0b000000_000000_000_00_000_0_000000_1_0_00_00L) > 0;
+    }
+
+    private static long setTipoMovimiento(long estadoTablero, int movimiento) {
+        return estadoTablero & 0b111111_111111_000_11_111_1_111111_1_1_11_11L | (long)movimiento << 18;
+    }
+
+    public static boolean esTurnoBlanco(long estadoTablero) {
+        return (estadoTablero & 0b000000_000000_000_00_000_0_000000_0_1_00_00L) > 0;
+    }
+
+    public static int posicionRey(long estado, int desplazamiento){
+        return (int) (estado >> desplazamiento & 0b111111);
+    }
+    public static int reyEnJaque(int[]pieza, int[] color, long estado) {
+        var blanco = esTurnoBlanco(estado);
+
+        var posicionRey = blanco ? posicionRey(estado,21) : posicionRey(estado,27);
 
         int result;
 
@@ -382,7 +423,7 @@ public class Utilidades {
         return NO_JAQUE;
     }
 
-    public static boolean movimientoValido(int[] movimiento, int[] tablero,int[]color, EstadoTablero estado) {
+    public static boolean movimientoValido(int[] movimiento, int[] tablero,int[]color, long estado) {
 
         int inicio = movimiento[0];
         int destino = movimiento[1];
@@ -400,9 +441,9 @@ public class Utilidades {
         boolean tomaAlPaso = false;
         int posicionPaso = 0;
 
-        if (piezaActual == PEON && estado.alPaso) {
+        if (piezaActual == PEON && alPaso(estado)) {
 
-            if (estado.turnoBlanco) {
+            if (esTurnoBlanco(estado)) {
                 if (destino - inicio == 7) {
                     posicionPaso = inicio - 1;
                 } else if (destino - inicio == 9) {
@@ -416,31 +457,24 @@ public class Utilidades {
                 }
             }
 
-            if (tablero[posicionPaso] == estado.piezaALPaso) {
+            if (tablero[posicionPaso] == (estado >> 6 & 0b111111)) {
                 tomaAlPaso = true;
                 tablero[posicionPaso] = NOPIEZA;
             }
 
         }
         if (piezaActual == REY) {
-            if (estado.turnoBlanco) {
-                estado.posicionReyBlanco = destino;
+            if (esTurnoBlanco(estado)) {
+                estado = estado & 0b111111_000000_111_11_111_1_111111_1_1_11_11L | (long)destino << 21;
             } else {
-                estado.posicionReyNegro = destino;
+                estado = estado & 0b000000_111111_111_11_111_1_111111_1_1_11_11L | (long)destino << 27;
             }
         }
 
         var jaque = reyEnJaque(tablero,color, estado);
 
-        if (piezaActual == PEON && estado.alPaso && tomaAlPaso) {
-            tablero[posicionPaso] = estado.piezaALPaso;
-        }
-        if (piezaActual== REY) {
-            if (estado.turnoBlanco) {
-                estado.posicionReyBlanco = inicio;
-            } else {
-                estado.posicionReyNegro = inicio;
-            }
+        if (piezaActual == PEON && alPaso(estado) && tomaAlPaso) {
+            tablero[posicionPaso] = (int) (estado >> 6 & 0b111111);
         }
 
         tablero[destino] = piezaDestino;

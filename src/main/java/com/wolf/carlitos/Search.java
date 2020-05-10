@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -23,22 +24,20 @@ import static java.lang.Math.tan;
  * @author carlos
  */
 
-
 public class Search {
     public static List<int[]> secuencia = new ArrayList<>();
     private  int[] pieza;
     private  int[] color;
-    private EstadoTablero estadoTablero;
+    private long estadoTablero;
 
-
-    public Search(int[] pieza, int[] color, EstadoTablero estado) throws CloneNotSupportedException {
+    public Search(int[] pieza, int[] color, long estado) {
         this.pieza = pieza;
         this.color = color;
-        this.estadoTablero = estado.clone();
+        this.estadoTablero = estado;
     }
 
 
-    private void perftSearch(int deep, EstadoTablero estado, Acumulador acumulador, boolean reset) throws CloneNotSupportedException {
+    private void perftSearch(int deep, long estado, Acumulador acumulador, boolean reset) {
 
         if (deep == 0) {
             acumulador.contador++;
@@ -46,39 +45,33 @@ public class Search {
             return;
         }
 
-        estadoTablero = estado.clone();
+       var movimientos = new Generador().generarMovimientos(pieza,color, estado);
 
-
-        var movimientos = new Generador().generarMovimientos(pieza,color, estadoTablero);
-
-        if (Config.debug) {
-            //comprobar(movimientos, secuencia);
-        }
         for (int i = 0; i < movimientos.size(); i++) {
             var mov = movimientos.get(i);
-            actualizarTablero(pieza,color, estadoTablero, mov);
 
-            estadoTablero.turnoBlanco = !estadoTablero.turnoBlanco;
+            long estadoActualizodo = actualizarTablero(pieza,color, estado, mov);
 
-            perftSearch(deep - 1, estadoTablero.clone(), acumulador, false);
-
-            estadoTablero.turnoBlanco = !estadoTablero.turnoBlanco;
-
-            revertirMovimiento(mov, estadoTablero, pieza,color);
+            // cambiar bando
+            estadoActualizodo ^= 0b10000;
 
 
-            estadoTablero = estado.clone(); //vuelve a ser el original
+
+            perftSearch(deep - 1, estadoActualizodo, acumulador, false);
+
+            // cambiar bando
+            estadoActualizodo ^= 0b10000;
+
+            revertirMovimiento(mov, estadoActualizodo, pieza,color);
 
             if (reset) {
                 System.out.println(Utilidades.convertirANotacion(mov) + " " + acumulador.contadorPerft);
                 acumulador.contadorPerft = 0;
             }
-            //secuencia.remove(secuencia.size() - 1);
         }
-
     }
 
-    public void perft(int deep) throws CloneNotSupportedException, IOException {
+    public void perft(int deep){
         var acumulador = new Acumulador();
         var tinicio = System.currentTimeMillis();
         perftSearch(deep, estadoTablero, acumulador, true);
@@ -89,14 +82,14 @@ public class Search {
     }
 
 
-    private void revertirMovimiento(int[] movimiento, EstadoTablero estado, int[] tablero,int[]color) {
+    private void revertirMovimiento(int[] movimiento, long estado, int[] tablero,int[]color) {
 
         int inicio = movimiento[0];
         int destino = movimiento[1];
 
-        boolean turnoBlanco = estado.turnoBlanco;
+        boolean turnoBlanco = esTurnoBlanco(estado);
 
-        switch (estado.tipoMovimiento) {
+        switch ((int) (estado >> 18 & 0b111)) {
 
             case MOVIMIENTO_NORMAL:
             case MOVIMIENTO_REY:
@@ -104,10 +97,10 @@ public class Search {
                 color[inicio] = color[destino];
                 break;
             case AL_PASO:
-                int posicionPaso = estado.turnoBlanco ? destino - 8 : destino + 8;
+                int posicionPaso = turnoBlanco ? destino - 8 : destino + 8;
 
                 tablero[posicionPaso] = PEON;
-                color[posicionPaso] = estadoTablero.colorAlPaso;
+                color[posicionPaso] = (int) (estado >> 12 & 0b1);
 
                 tablero[inicio] = tablero[destino];
                 color[inicio] = color[destino];
@@ -115,7 +108,7 @@ public class Search {
                 break;
             case PROMOCION:
                 tablero[inicio] = PEON;
-                color[inicio] = estadoTablero.turnoBlanco ? BLANCO : NEGRO;
+                color[inicio] = turnoBlanco ? BLANCO : NEGRO;
                 break;
             case ENROQUE:
 
@@ -143,9 +136,10 @@ public class Search {
 
         }
 
+        // pieza capturada
+        tablero[destino] = (int) (estado >> 13 & 0b111);
 
-        tablero[destino] = estado.piezaCapturada;
-        color[destino] = estado.piezaCapturada  == NOPIEZA ? NOCOLOR : estado.colorCaptura;
+        color[destino] = (int) (estado >> 13 & 0b111)  == NOPIEZA ? NOCOLOR : (int) (estado >> 16 & 0b11);
 
     }
 

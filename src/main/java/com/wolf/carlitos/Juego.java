@@ -1,10 +1,14 @@
 package com.wolf.carlitos;
 
 
+import javax.print.DocFlavor;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import static com.wolf.carlitos.Constantes.*;
+import static com.wolf.carlitos.Utilidades.actualizarTablero;
+import static com.wolf.carlitos.Utilidades.convertirAPosicion;
 
 
 public class Juego {
@@ -12,12 +16,12 @@ public class Juego {
     public int[] pieza = new int[64];
     public int [] color = new int[64];
     
-    public EstadoTablero estadoTablero;
+    public long estadoTablero;
     public List<int[]> secuencia = new ArrayList<>();
 
 
     public Juego() {
-        estadoTablero = new EstadoTablero();
+        estadoTablero = 0b111100_000100_000_00_000_0_000000_0_1_11_11L;
 
         for (int i = 0; i < 64; i++) {
             pieza[i] = NOPIEZA;
@@ -52,16 +56,34 @@ public class Juego {
             color[i + 48] = NEGRO;
 
         }
-        estadoTablero.posicionReyNegro = E8;
-        estadoTablero.posicionReyBlanco = E1;
     }
 
     public void establecerPosicion(String... movimientos) {
         for (var movimiento : movimientos) {
-            secuencia.add(Utilidades.convertirAPosicion(movimiento));
-            Utilidades.actualizarTablero(pieza,color, estadoTablero, Utilidades.convertirAPosicion(movimiento));
-            estadoTablero.turnoBlanco = !estadoTablero.turnoBlanco;
+            secuencia.add(convertirAPosicion(movimiento));
+            estadoTablero = actualizarTablero(pieza,color, estadoTablero, convertirAPosicion(movimiento));
+            estadoTablero ^= 0b10000;
         }
+        String formateado = Long.toBinaryString(estadoTablero);
+
+
+        String formato = "";
+        formato = formateado.substring(formateado.length() - 2);
+        formato = formateado.substring(formateado.length() - 4, formateado.length() -2) + "_" + formato;
+        formato = formateado.substring(formateado.length() - 5, formateado.length() -4) + "_" + formato;
+        formato = formateado.substring(formateado.length() - 6, formateado.length() -5) + "_" + formato;
+        formato = formateado.substring(formateado.length() - 12, formateado.length() -6) + "_" + formato;
+        formato = formateado.substring(formateado.length() - 13, formateado.length() -12) + "_" + formato;
+        formato = formateado.substring(formateado.length() - 16, formateado.length() -13) + "_" + formato;
+        formato = formateado.substring(formateado.length() - 18, formateado.length() -16) + "_" + formato;
+        formato = formateado.substring(formateado.length() - 21, formateado.length() -18) + "_" + formato;
+        formato = formateado.substring(formateado.length() - 27, formateado.length() -21) + "_" + formato;
+        formato = formateado.substring(0, formateado.length() -27) + "_" + formato;
+
+
+        System.out.println(formato);
+
+
     }
 
 //    public void setFen(String linea) {
@@ -151,7 +173,7 @@ public class Juego {
 //
 //    }
 
-    public void perft(int n) throws CloneNotSupportedException, IOException {
+    public void perft(int n){
         var search = new Search(pieza,color, estadoTablero);
         search.perft(n);
 
