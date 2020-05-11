@@ -8,10 +8,7 @@ package com.wolf.carlitos;
 
 import java.io.IOException;
 import java.sql.Time;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.*;
 
 import static com.wolf.carlitos.Ponderaciones.*;
@@ -24,16 +21,46 @@ import static java.lang.Math.tan;
  * @author carlos
  */
 
+class Movimientos{
+    private  final  int[][] movimientosPorNivel = new int[10][256];
+    private  final  int[] cantidadMovimientos = new int[10];
+
+    private  int nivel;
+    private  int posicion;
+
+    public void iniciar(int nivel){
+        this.nivel = nivel;
+        cantidadMovimientos[nivel] = 0;
+        this.posicion = 0;
+    }
+
+    public void add(int movimiento){
+        movimientosPorNivel[nivel][posicion++] = movimiento;
+        cantidadMovimientos[nivel] = posicion;
+    }
+
+    public int[] getMovimientos(){
+        return movimientosPorNivel[nivel];
+    }
+    public  int getPosicionFinal(){
+        return cantidadMovimientos[nivel];
+    }
+
+}
+
 public class Search {
-    public static List<int[]> secuencia = new ArrayList<>();
-    private  int[] pieza;
-    private  int[] color;
-    private long estadoTablero;
+    private final int[] pieza;
+    private final int[] color;
+    private final long estadoTablero;
+    private final Generador generador = new Generador();
+
+    private final Movimientos movimientos = new Movimientos();
 
     public Search(int[] pieza, int[] color, long estado) {
         this.pieza = pieza;
         this.color = color;
         this.estadoTablero = estado;
+
     }
 
 
@@ -45,17 +72,20 @@ public class Search {
             return;
         }
 
-       var movimientos = new Generador().generarMovimientos(pieza,color, estado);
+        this.movimientos.iniciar(deep);
 
-        for (int i = 0; i < movimientos.size(); i++) {
-            var mov = movimientos.get(i);
+       generador.generarMovimientos(pieza,color, estado, this.movimientos);
 
+       int fin = this.movimientos.getPosicionFinal();
+
+       var movimientos = this.movimientos.getMovimientos();
+
+        for (int i = 0; i < fin; i++) {
+            var mov = movimientos[i];
             long estadoActualizodo = actualizarTablero(pieza,color, estado, mov);
 
             // cambiar bando
             estadoActualizodo ^= 0b10000;
-
-
 
             perftSearch(deep - 1, estadoActualizodo, acumulador, false);
 
@@ -82,10 +112,10 @@ public class Search {
     }
 
 
-    private void revertirMovimiento(int[] movimiento, long estado, int[] tablero,int[]color) {
+    private void revertirMovimiento(int movimiento, long estado, int[] tablero,int[]color) {
 
-        int inicio = movimiento[0];
-        int destino = movimiento[1];
+        int inicio = movimiento >> 6 &0b111111;
+        int destino = movimiento & 0b111111;
 
         boolean turnoBlanco = esTurnoBlanco(estado);
 

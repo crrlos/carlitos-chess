@@ -87,12 +87,12 @@ public class Utilidades {
         return posicion;
     }
 
-    public static String convertirANotacion(int[] movimiento) {
+    public static String convertirANotacion(int movimiento) {
 
-        var mov = posicionCasilla.get(movimiento[0]) + posicionCasilla.get(movimiento[1]);
+        var mov = posicionCasilla.get(movimiento >> 6 & 0b111111) + posicionCasilla.get(movimiento & 0b111111);
 
-        if (movimiento.length == 3) {
-            switch (movimiento[2]) {
+        if (movimiento >> 12 > 0) {
+            switch (movimiento >> 7) {
                 case 1:
                     return mov + "q";
                 case 2:
@@ -106,10 +106,10 @@ public class Utilidades {
         return mov;
     }
 //position startpos moves e2e4 e7e5 g1f3 g8f6 f1e2 f8e7 e1g1 e8g8
-    public static long actualizarTablero(int[] tablero,int[]color, long estadoTablero, int[] movimiento) {
+    public static long actualizarTablero(int[] tablero,int[]color, long estadoTablero, int movimiento) {
 
-        int inicio = movimiento[0];
-        int destino = movimiento[1];
+        int inicio = movimiento >> 6 & 0b111111;
+        int destino = movimiento & 0b111111;
 
         var pieza = tablero[inicio];
 
@@ -166,8 +166,8 @@ public class Utilidades {
                 estadoTablero  &=  0b111111_111111_111_11_111_1_111111_0_1_11_11L;
             }
 
-            if (destino >= A1 && destino <= H1 || destino >= A8 && destino <= H8) {
-                switch (movimiento[2]) {
+            if (destino <= H1 || destino >= A8) {
+                switch (movimiento >> 7) {
                     case 1:
                         tablero[destino] = DAMA;
                         color[destino] = esTurnoBlanco(estadoTablero) ?BLANCO:NEGRO;
@@ -423,10 +423,10 @@ public class Utilidades {
         return NO_JAQUE;
     }
 
-    public static boolean movimientoValido(int[] movimiento, int[] tablero,int[]color, long estado) {
+    public static boolean movimientoValido(int movimiento, int[] tablero,int[]color, long estado) {
 
-        int inicio = movimiento[0];
-        int destino = movimiento[1];
+        int inicio = movimiento >> 6 & 0b111111;
+        int destino = movimiento & 0b111111;
 
         int piezaActual = tablero[inicio];
         int piezaDestino = tablero[destino];

@@ -20,7 +20,7 @@ import static java.lang.Math.log;
 public class Generador {
 
     private int piezaJaque;
-    private final List<int[]> movimientos = new ArrayList<>();
+    private Movimientos movimientos;
 
     public static final HashMap<Integer, List<List<Integer>>> movimientosAlfil = new HashMap<>();
     public static final HashMap<Integer, List<List<Integer>>> movimientosTorre = new HashMap<>();
@@ -192,9 +192,12 @@ public class Generador {
     }
 
 
-    public List<int[]> generarMovimientos(int[] pieza, int[] color, long estado) {
-        piezaJaque = reyEnJaque(pieza,color, estado);
+    public void generarMovimientos(int[] pieza, int[] color, long estado,Movimientos movimientos) {
         
+        this.movimientos = movimientos;
+
+        piezaJaque = reyEnJaque(pieza,color, estado);
+
         for (int i = 0; i < pieza.length; i++) {
 
             var piezaActual = pieza[i];
@@ -224,7 +227,6 @@ public class Generador {
 
         }
         piezaJaque = 0;
-        return movimientos;
     }
 
     public void movimientosDeTorre(int[] tablero,int[]color, long estado, int posicion) {
@@ -276,19 +278,18 @@ public class Generador {
             posicionActual = tablero[mov];
 
             if (posicionActual == NOPIEZA) {
-                movimientos.add(new int[]{posicion, mov});
+                movimientos.add(posicion << 6 | mov);
                 continue;
             }
 
             var sonMismoColor = color[mov] == color[posicion];
 
             if (!sonMismoColor && !(posicionActual == REY)) {
-                movimientos.add(new int[]{posicion, mov});
+                movimientos.add(posicion << 6 | mov);
             }
             break;
         }
     }
-
     private  void procesarLineaValidado(int[] tablero,int[]color, int posicion, List<Integer> horizontal1, long estado) {
         int posicionActual;
         for (int j = 0; j < horizontal1.size(); j++) {
@@ -317,14 +318,14 @@ public class Generador {
             var pi = tablero[mov];
 
             if (pi == NOPIEZA || color[mov] != color[posicion] && !(pi == REY)) {
-                var m = new int[]{posicion, mov};
+                var m = posicion << 6 | mov;
                 return movimientoValido(m, tablero,color,estado);
             } else if (!vertical2.isEmpty()) {
                 mov = vertical2.get(0);
                 pi = tablero[mov];
 
                 if (pi == NOPIEZA || color[mov] != color[posicion] && !(pi == REY)) {
-                    var m = new int[]{posicion, mov};
+                    var m = posicion << 6 | mov;
                     return movimientoValido(m, tablero,color, estado);
 
                 }
@@ -335,7 +336,7 @@ public class Generador {
             var pi = tablero[mov];
 
             if (pi == NOPIEZA || color[mov] != color[posicion] && !(pi == REY)) {
-                var m = new int[]{posicion, mov};
+                var m = posicion << 6 | mov;
                 return movimientoValido(m, tablero,color,estado);
 
             }
@@ -533,7 +534,7 @@ public class Generador {
                                 if (reyEnJaque(tablero,color, estadoCopia) == NO_JAQUE) {
                                     estadoCopia = moverReyUnaCasilla(tablero,color, estado, F1, G1);
                                     if (reyEnJaque(tablero,color, estadoCopia) == NO_JAQUE) {
-                                        movimientos.add(new int[]{E1, G1});
+                                        movimientos.add(E1 << 6 | G1);
                                     }
                                     moverReyUnaCasilla(tablero,color, estado, G1, F1);
                                 }
@@ -550,7 +551,7 @@ public class Generador {
                                 if (reyEnJaque(tablero,color, ec) == NO_JAQUE) {
                                     ec = moverReyUnaCasilla(tablero,color, estado, D1, C1);
                                     if (reyEnJaque(tablero,color, ec) == NO_JAQUE) {
-                                        movimientos.add(new int[]{E1, C1});
+                                        movimientos.add(E1 << 6 | C1);
                                     }
                                     moverReyUnaCasilla(tablero,color, estado, C1, D1);
                                 }
@@ -572,7 +573,7 @@ public class Generador {
                                 if (reyEnJaque(tablero,color, ec) == NO_JAQUE) {
                                     ec = moverReyUnaCasilla(tablero,color, estado, F8, G8);
                                     if (reyEnJaque(tablero,color, ec) == NO_JAQUE) {
-                                        movimientos.add(new int[]{E8, G8});
+                                        movimientos.add(E8 << 6 | G8);
                                     }
                                     moverReyUnaCasilla(tablero,color, estado, G8, F8);
                                 }
@@ -589,7 +590,7 @@ public class Generador {
                                 if (reyEnJaque(tablero,color, ec) == NO_JAQUE) {
                                     ec = moverReyUnaCasilla(tablero,color, estado, D8, C8);
                                     if (reyEnJaque(tablero,color, ec) == NO_JAQUE) {
-                                        movimientos.add(new int[]{E8, C8});
+                                        movimientos.add(E8 << 6 | C8);
                                     }
                                     moverReyUnaCasilla(tablero,color, estado, C8, D8);
                                 }
@@ -630,13 +631,13 @@ public class Generador {
         var destino = posicion + (turnoBlanco ? 8 : -8);
         //avance una casilla
         if (tablero[destino] == NOPIEZA) {
-            var m = new int[]{posicion,destino};
+            var m = posicion << 6 | destino;
             if (destino <= H1 || destino >= A8 && destino <= H8) {
                 if(movimientoValido(m,tablero,color,estado)){
-                    movimientos.add(new int[]{posicion, destino, 1});
-                    movimientos.add(new int[]{posicion, destino, 2});
-                    movimientos.add(new int[]{posicion, destino, 3});
-                    movimientos.add(new int[]{posicion, destino, 4});
+                    movimientos.add(posicion << 6  | destino | 1 << 12);
+                    movimientos.add(posicion << 6  | destino | 2 << 12);
+                    movimientos.add(posicion << 6  | destino | 3 << 12);
+                    movimientos.add(posicion << 6  | destino | 4 << 12);
                 }
 
             } else {
@@ -655,15 +656,15 @@ public class Generador {
         destino = posicion + (turnoBlanco ? i : -i);
         if ((destino >= 0 && destino < 64) && esCasillaBlanca(destino) == esCasillaBlanca(posicion)) {
             posicionActual = tablero[destino];
-            var m = new int[]{posicion, destino};
+            var m = posicion << 6 | destino;
             if (posicionActual != NOPIEZA) {
                 if (color[destino] == BLANCO != (color[posicion] == BLANCO) && !(posicionActual == REY)) {
                     if (destino >= A8 || destino <= H1) {
                         if (movimientoValido(m, tablero,color, estado)) {
-                            movimientos.add(new int[]{posicion, destino, 1});
-                            movimientos.add(new int[]{posicion, destino, 2});
-                            movimientos.add(new int[]{posicion, destino, 3});
-                            movimientos.add(new int[]{posicion, destino, 4});
+                            movimientos.add(posicion << 6  | destino | 1 << 12);
+                            movimientos.add(posicion << 6  | destino | 2 << 12);
+                            movimientos.add(posicion << 6  | destino | 3 << 12);
+                            movimientos.add(posicion << 6  | destino | 4 << 12);
                         }
                     } else {
                         validarYAgregar(tablero,color, estado, posicion,  destino);
@@ -678,7 +679,7 @@ public class Generador {
     }
 
     private  void validarYAgregar(int[] tablero,int[]color, long estado, int posicion, int i) {
-        var mm = new int[]{posicion, i};
+        var mm = posicion << 6 | i;
         if (movimientoValido(mm, tablero,color, estado))
             movimientos.add(mm);
     }

@@ -11,6 +11,7 @@ public class Test{
 
         Juego j = new Juego();
         j.perft(6);
+        j.perft(6);
 
         System.out.println(System.currentTimeMillis() - t);
 
