@@ -57,12 +57,17 @@ public class App {
             else if (linea.contains("perft")) {
                 int n = 1;
 
-                try {
-                    n = Integer.parseInt(linea.replace("perft ", ""));
-                } catch (NumberFormatException ex) {
-                }
+               var patter = Pattern.compile("\\d+");
+               var matcher = patter.matcher(linea);
 
+               if(matcher.find()){
+                   n = Integer.parseInt(matcher.group(0));
+               }
+
+                var t = System.currentTimeMillis();
                 juego.perft(n);
+
+                System.out.println(System.currentTimeMillis() - t);
             }
 
         }
