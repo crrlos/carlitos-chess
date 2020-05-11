@@ -50,36 +50,29 @@ public class Utilidades {
         System.out.println("+---+---+---+---+---+---+---+---+");
     }
 
-    public static int[] convertirAPosicion(String movimiento) {
-        int[] posicion;
-
-        if (movimiento.length() == 5) {
-            posicion = new int[3];
-
-        } else {
-            posicion = new int[2];
-        }
+    public static int convertirAPosicion(String movimiento) {
+        int posicion = 0;
 
         var inicio = movimiento.substring(0, 2);
         var destino = movimiento.substring(2, 4);
 
-        posicion[0] = casillaPosicion.get(inicio);
-        posicion[1] = casillaPosicion.get(destino);
+        posicion |= casillaPosicion.get(inicio) << 6;
+        posicion |= casillaPosicion.get(destino);
 
 
         if (movimiento.length() == 5) {
             switch (movimiento.charAt(4)) {
                 case 'q':
-                    posicion[2] = 1;
+                    posicion |= 1 << 12;
                     break;
                 case 'r':
-                    posicion[2] = 2;
+                    posicion |= 2 << 12;
                     break;
                 case 'n':
-                    posicion[2] = 3;
+                    posicion |= 3 << 12;
                     break;
                 case 'b':
-                    posicion[2] = 4;
+                    posicion |= 4 << 12;
                     break;
             }
         }

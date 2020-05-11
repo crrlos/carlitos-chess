@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+
 import static com.wolf.carlitos.Constantes.*;
 import static com.wolf.carlitos.Utilidades.actualizarTablero;
 import static com.wolf.carlitos.Utilidades.convertirAPosicion;
@@ -17,7 +19,7 @@ public class Juego {
     public int [] color = new int[64];
     
     public long estadoTablero;
-    public List<int[]> secuencia = new ArrayList<>();
+    public List<Integer> secuencia = new ArrayList<>();
 
 
     public Juego() {
@@ -59,11 +61,11 @@ public class Juego {
     }
 
     public void establecerPosicion(String... movimientos) {
-//        for (var movimiento : movimientos) {
-//            secuencia.add(convertirAPosicion(movimiento));
-//            estadoTablero = actualizarTablero(pieza,color, estadoTablero, convertirAPosicion(movimiento));
-//            estadoTablero ^= 0b10000;
-//        }
+        for (var movimiento : movimientos) {
+            secuencia.add(convertirAPosicion(movimiento));
+            estadoTablero = actualizarTablero(pieza,color, estadoTablero, convertirAPosicion(movimiento));
+            estadoTablero ^= 0b10000;
+        }
 //        String formateado = Long.toBinaryString(estadoTablero);
 //
 //
@@ -178,8 +180,8 @@ public class Juego {
         search.perft(n);
 
     }
-//   public String mover(int n) throws CloneNotSupportedException, IOException, InterruptedException, ExecutionException {
-//       var search = new Search(tablero, estadoTablero);
-//       return Utilidades.convertirANotacion(search.search(n));
-//   }
+   public String mover(int n) {
+       var search = new Search(pieza,color, estadoTablero);
+       return Utilidades.convertirANotacion(search.search(n));
+   }
 }

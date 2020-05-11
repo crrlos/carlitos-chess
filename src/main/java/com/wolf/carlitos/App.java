@@ -42,7 +42,7 @@ public class App {
                 juego.establecerPosicion(movimientos);
 
             } else if (linea.contains("go")) {
-               // System.out.println("bestmove " + juego.mover(fuerza == 0? 4 : fuerza));
+               System.out.println("bestmove " + juego.mover(fuerza == 0? 4 : fuerza));
 
             } else if (linea.contains("isready")) {
                 System.out.println("readyok");

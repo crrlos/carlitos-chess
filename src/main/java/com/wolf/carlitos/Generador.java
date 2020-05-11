@@ -629,6 +629,13 @@ public class Generador {
         }
 
         var destino = posicion + (turnoBlanco ? 8 : -8);
+
+        if(destino< A1 || destino > H8){
+            Utilidades.imprimirPosicicion(tablero,color);
+            Search.secuencia.stream().map(Utilidades::convertirANotacion)
+                    .forEach(s -> System.out.print(s + " "));
+            System.out.println();
+        }
         //avance una casilla
         if (tablero[destino] == NOPIEZA) {
             var m = posicion << 6 | destino;
