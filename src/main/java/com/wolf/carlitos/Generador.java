@@ -519,8 +519,8 @@ public class Generador {
 
             }
         }
-        // retornar si no hay enroques disponibles
-        if((estado & 0b1111) > 0) return;
+        // retornar si no hay enroques disponible
+        if((estado & 0b1111) ==  0) return;
 
         if (esTurnoBlanco(estado)) {
             if ((estado & 0b000000_000000_000_00_000_0_000000_0_0_00_11L) > 0) {
@@ -630,12 +630,6 @@ public class Generador {
 
         var destino = posicion + (turnoBlanco ? 8 : -8);
 
-        if(destino< A1 || destino > H8){
-            Utilidades.imprimirPosicicion(tablero,color);
-            Search.secuencia.stream().map(Utilidades::convertirANotacion)
-                    .forEach(s -> System.out.print(s + " "));
-            System.out.println();
-        }
         //avance una casilla
         if (tablero[destino] == NOPIEZA) {
             var m = posicion << 6 | destino;
