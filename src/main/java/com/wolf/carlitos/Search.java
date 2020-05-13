@@ -237,7 +237,7 @@ public class Search {
                     valorBlancas += (color[i] == BLANCO ? ponderacionDama[flip[i]] : -ponderacionDama[i]);
                     break;
                 case REY:
-                    valorBlancas += (color[i] == BLANCO ? ponderacionRey[flip[i]] * -1 : -ponderacionRey[i] *-1);
+                    valorBlancas += (color[i] == BLANCO ? ponderacionRey[flip[i]]: -ponderacionRey[i]);
                     break;
             }
             if (color[i] == BLANCO)
