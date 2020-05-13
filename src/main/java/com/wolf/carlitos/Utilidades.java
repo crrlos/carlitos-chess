@@ -84,7 +84,7 @@ public class Utilidades {
         var mov = posicionCasilla.get(movimiento >> 6 & 0b111111) + posicionCasilla.get(movimiento & 0b111111);
 
         if (movimiento >> 12 > 0) {
-            switch (movimiento >> 7) {
+            switch (movimiento >> 12 & 0b111) {
                 case 1:
                     return mov + "q";
                 case 2:
@@ -161,6 +161,25 @@ public class Utilidades {
                     estadoTablero = estadoTablero & 0b111111_111111_111_11_000_1_111111_1_1_11_11L | (long) tablero[destino] << 13;
                     // color captura
                     estadoTablero = estadoTablero & 0b111111_111111_111_00_111_1_111111_1_1_11_11L | (long) color[destino] << 16;
+
+                    if (tablero[destino] == TORRE) {
+                        switch (destino) {
+                            case H8:
+                                estadoTablero &= 0b111111_111111_111_11_111_1_111111_1_1_10_11L;
+                                break;
+                            case A8:
+                                estadoTablero &= 0b111111_111111_111_11_111_1_111111_1_1_01_11L;
+                                break;
+                            case H1:
+                                estadoTablero &= 0b111111_111111_111_11_111_1_111111_1_1_11_10L;
+                                break;
+                            case A1:
+                                estadoTablero &= 0b111111_111111_111_11_111_1_111111_1_1_11_01L;
+                                break;
+
+                        }
+
+                    }
                 }
                 switch (movimiento >> 12 & 0b111) {
                     case 1:
