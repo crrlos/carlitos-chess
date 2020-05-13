@@ -1,21 +1,18 @@
 package com.wolf.carlitos;
 
 
-import javax.print.DocFlavor;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import static com.wolf.carlitos.Constantes.*;
-import static com.wolf.carlitos.Utilidades.actualizarTablero;
-import static com.wolf.carlitos.Utilidades.convertirAPosicion;
+import static com.wolf.carlitos.Utilidades.*;
 
 
 public class Juego {
     
-    public int[] pieza = new int[64];
+    public int[] tablero = new int[64];
     public int [] color = new int[64];
     
     public long estadoTablero;
@@ -26,31 +23,31 @@ public class Juego {
         estadoTablero = 0b111100_000100_000_00_000_0_000000_0_1_11_11L;
 
         for (int i = 0; i < 64; i++) {
-            pieza[i] = NOPIEZA;
+            tablero[i] = NOPIEZA;
             color[i] = NOCOLOR;
         }
 
-        pieza[A1] = TORRE;
-        pieza[B1] = CABALLO;
-        pieza[C1] = ALFIL;
-        pieza[D1] = DAMA;
-        pieza[E1] = REY;
-        pieza[F1] = ALFIL;
-        pieza[G1] = CABALLO;
-        pieza[H1] = TORRE;
+        tablero[A1] = TORRE;
+        tablero[B1] = CABALLO;
+        tablero[C1] = ALFIL;
+        tablero[D1] = DAMA;
+        tablero[E1] = REY;
+        tablero[F1] = ALFIL;
+        tablero[G1] = CABALLO;
+        tablero[H1] = TORRE;
 
-        pieza[A8] = TORRE;
-        pieza[B8] = CABALLO;
-        pieza[C8] = ALFIL;
-        pieza[D8] = DAMA;
-        pieza[E8] = REY;
-        pieza[F8] = ALFIL;
-        pieza[G8] = CABALLO;
-        pieza[H8] = TORRE;
+        tablero[A8] = TORRE;
+        tablero[B8] = CABALLO;
+        tablero[C8] = ALFIL;
+        tablero[D8] = DAMA;
+        tablero[E8] = REY;
+        tablero[F8] = ALFIL;
+        tablero[G8] = CABALLO;
+        tablero[H8] = TORRE;
 
         for (int i = 0; i < 8; i++) {
-            pieza[8 + i] = PEON;
-            pieza[48 + i] = PEON;
+            tablero[8 + i] = PEON;
+            tablero[48 + i] = PEON;
         }
 
         for (int i = 0; i < 16; i++) {
@@ -63,7 +60,7 @@ public class Juego {
     public void establecerPosicion(String... movimientos) {
         for (var movimiento : movimientos) {
             secuencia.add(convertirAPosicion(movimiento));
-            estadoTablero = actualizarTablero(pieza,color, estadoTablero, convertirAPosicion(movimiento));
+            estadoTablero = actualizarTablero(tablero,color, estadoTablero, convertirAPosicion(movimiento));
             estadoTablero ^= 0b10000;
         }
 //        String formateado = Long.toBinaryString(estadoTablero);
@@ -88,100 +85,126 @@ public class Juego {
 
     }
 
-//    public void setFen(String linea) {
-//        tablero = new Pieza[64];
-//        String[] filas = linea.split("/");
-//
-//        for (int i = 0; i < filas.length; i++) {
-//
-//            if (i == 7) {
-//                String[] ops = filas[i].split(" ");
-//                iniciarFen(ops[0], 7 - i);
-//
-//                estadoTablero.turnoBlanco = ops[1].equals("w");
-//                estadoTablero.enroqueLBlanco = ops[2].contains("Q");
-//                estadoTablero.enroqueCNegro = ops[2].contains("k");
-//                estadoTablero.enroqueCBlanco = ops[2].contains("K");
-//                estadoTablero.enroqueLNegro = ops[2].contains("q");
-//
-//                if (!ops[3].contains("-")) {
-//                    var posicion = Utilidades.casillaANumero(ops[3]) + (estadoTablero.turnoBlanco ? -8 : 8);
-//                    estadoTablero.piezaALPaso = tablero[posicion];
-//                    estadoTablero.alPaso = true;
-//                }
-//
-//            } else {
-//                iniciarFen(filas[i], 7 - i);
-//            }
-//
-//        }
-//
-//        System.out.println("fen procesado");
-//        Utilidades.imprimirPosicicion(tablero);
-//    }
-//
-//    private void iniciarFen(String fila, int i) {
-//
-//        int indexInicio = 8 * i;
-//
-//
-//        for (char c : fila.toCharArray()) {
-//            if (c == 'k') {
-//                tablero[indexInicio] = new Pieza(false,REY);
-//                estadoTablero.posicionReyNegro = indexInicio;
-//            }
-//            if (c == 'q') {
-//                tablero[indexInicio] = new Pieza(false,DAMA);
-//            }
-//            if (c == 'r') {
-//                tablero[indexInicio] = new Pieza(false,TORRE);
-//            }
-//            if (c == 'b') {
-//                tablero[indexInicio] = new Pieza(false,ALFIL);
-//            }
-//            if (c == 'n') {
-//                tablero[indexInicio] = new Pieza(false,CABALLO);
-//            }
-//            if (c == 'p') {
-//                tablero[indexInicio] = new Pieza(false,PEON);
-//            }
-//
-//            if (c == 'K') {
-//                tablero[indexInicio] = new Pieza(true,REY);
-//                estadoTablero.posicionReyBlanco = indexInicio;
-//            }
-//            if (c == 'Q') {
-//                tablero[indexInicio] = new Pieza(true,DAMA);
-//            }
-//            if (c == 'R') {
-//                tablero[indexInicio] = new Pieza(true,TORRE);
-//            }
-//            if (c == 'B') {
-//                tablero[indexInicio] = new Pieza(true,ALFIL);
-//            }
-//            if (c == 'N') {
-//                tablero[indexInicio] = new Pieza(true,CABALLO);
-//            }
-//            if (c == 'P') {
-//                tablero[indexInicio] = new Pieza(true,PEON);
-//            }
-//
-//            if (Character.isDigit(c)) {
-//                indexInicio += Integer.parseInt(String.valueOf(c));
-//            } else {
-//                indexInicio++;
-//            }
-//        }
-//
-//    }
+    public void setFen(String fen) {
 
+        tablero = new int[64];
+        color = new int[64];
+        estadoTablero = 0;
+
+        Arrays.fill(tablero,NOPIEZA);
+        Arrays.fill(color,NOCOLOR);
+
+        String[] filas = fen.split("/");
+
+        for (int i = 0; i < filas.length; i++) {
+
+            if (i == 7) {
+                String[] ops = filas[i].split(" ");
+                iniciarFen(ops[0], 7 - i);
+                
+                // turno
+                estadoTablero |= (ops[1].equals("w") ? 1 : 0) << 4;
+                
+                int enroques = 0;
+                
+                if(ops[2].contains("K"))  enroques |= 1;
+                if(ops[2].contains("Q"))  enroques |= 2;
+                if(ops[2].contains("k"))  enroques |= 4;
+                if(ops[2].contains("q"))  enroques |= 8;
+                
+                estadoTablero |= enroques;
+                
+
+                if (!ops[3].contains("-")) {
+                    var posicion = Utilidades.casillaANumero(ops[3]) + (esTurnoBlanco(estadoTablero) ? -8 : 8);
+                    estadoTablero |= posicion << 6;
+                    // al paso
+                    estadoTablero |= 0b100000;
+                }
+
+            } else {
+                iniciarFen(filas[i], 7 - i);
+            }
+
+        }
+
+        System.out.println("fen procesado");
+        Utilidades.imprimirPosicicion(tablero,color);
+    }
+
+    private void iniciarFen(String fila, int i) {
+
+        int indexInicio = 8 * i;
+
+
+        for (char c : fila.toCharArray()) {
+            if (c == 'k') {
+                tablero[indexInicio] = REY;
+                color[indexInicio] = NEGRO;
+                estadoTablero |=  indexInicio << 27;
+            }
+            if (c == 'q') {
+                tablero[indexInicio] = DAMA;
+                color[indexInicio] = NEGRO;
+            }
+            if (c == 'r') {
+                tablero[indexInicio] = TORRE;
+                color[indexInicio] = NEGRO;
+            }
+            if (c == 'b') {
+                tablero[indexInicio] = ALFIL;
+                color[indexInicio] = NEGRO;
+            }
+            if (c == 'n') {
+                tablero[indexInicio] = CABALLO;
+                color[indexInicio] = NEGRO;
+            }
+            if (c == 'p') {
+                tablero[indexInicio] = PEON;
+                color[indexInicio] = NEGRO;
+            }
+
+            if (c == 'K') {
+                tablero[indexInicio] = REY;
+                color[indexInicio] = BLANCO;
+                estadoTablero |= indexInicio << 21;
+            }
+            if (c == 'Q') {
+                tablero[indexInicio] = DAMA;
+                color[indexInicio] = BLANCO;
+            }
+            if (c == 'R') {
+                tablero[indexInicio] = TORRE;
+                color[indexInicio] = BLANCO;
+            }
+            if (c == 'B') {
+                tablero[indexInicio] = ALFIL;
+                color[indexInicio] = BLANCO;
+            }
+            if (c == 'N') {
+                tablero[indexInicio] = CABALLO;
+                color[indexInicio] = BLANCO;
+            }
+            if (c == 'P') {
+                tablero[indexInicio] = PEON;
+                color[indexInicio] = BLANCO;
+            }
+
+            if (Character.isDigit(c)) {
+                indexInicio += Integer.parseInt(String.valueOf(c));
+            } else {
+                indexInicio++;
+            }
+        }
+
+    }
     public void perft(int n){
-        var search = new Search(pieza,color, estadoTablero);
+        var search = new Search(tablero,color, estadoTablero);
         search.perft(n);
 
     }
    public String mover(int n) throws InterruptedException, CloneNotSupportedException, ExecutionException {
-       var search = new Search(pieza,color, estadoTablero);
+       var search = new Search(tablero,color, estadoTablero);
        return Utilidades.convertirANotacion(search.search(n));
    }
 }
