@@ -333,11 +333,10 @@ public class Search {
 
     public int search(int n) throws InterruptedException, CloneNotSupportedException, ExecutionException {
 
-        int valoracion = esTurnoBlanco(estadoTablero) ? -1000 : 1000;
         int pos = 0;
 
-        int alfa =  -1_000_000;
-        int beta =   1_000_000;
+        int alfa =  -10_000;
+        int beta =   10_000;
 
 //        ExecutorService WORKER_THREAD_POOL = Executors.newFixedThreadPool(2);
 //        List<Callable<Integer>> callables = new ArrayList<>();
@@ -399,6 +398,14 @@ public class Search {
        for (int i = 0; i < fin ; i++) {
 
             var mov = movimientos[i];
+
+
+ //           var m = Utilidades.convertirANotacion(mov);
+//            if(m.equals("e1e8")){
+//                Utilidades.imprimirPosicicion(pieza,color);
+//                System.out.println();
+//            }
+
             long estadoActualizado = actualizarTablero(pieza,color, estadoTablero, mov);
 
             estadoActualizado ^= 0b10000;
@@ -407,14 +414,14 @@ public class Search {
                     maxi(n -1,estadoActualizado,pieza,color,alfa,beta);
 
             if(esTurnoBlanco(estadoTablero)){
-                if(eval > valoracion){
-                   valoracion = eval;
+                if(eval > alfa){
+                   alfa = eval;
                    pos = i;
                 }
             }
             else{
-                 if(eval < valoracion){
-                   valoracion = eval;
+                 if(eval < beta){
+                   beta = eval;
                    pos = i;
                 }
             }
