@@ -63,25 +63,6 @@ public class Juego {
             estadoTablero = actualizarTablero(tablero,color, estadoTablero, convertirAPosicion(movimiento));
             estadoTablero ^= 0b10000;
         }
-//        String formateado = Long.toBinaryString(estadoTablero);
-//
-//
-//        String formato = "";
-//        formato = formateado.substring(formateado.length() - 2);
-//        formato = formateado.substring(formateado.length() - 4, formateado.length() -2) + "_" + formato;
-//        formato = formateado.substring(formateado.length() - 5, formateado.length() -4) + "_" + formato;
-//        formato = formateado.substring(formateado.length() - 6, formateado.length() -5) + "_" + formato;
-//        formato = formateado.substring(formateado.length() - 12, formateado.length() -6) + "_" + formato;
-//        formato = formateado.substring(formateado.length() - 13, formateado.length() -12) + "_" + formato;
-//        formato = formateado.substring(formateado.length() - 16, formateado.length() -13) + "_" + formato;
-//        formato = formateado.substring(formateado.length() - 18, formateado.length() -16) + "_" + formato;
-//        formato = formateado.substring(formateado.length() - 21, formateado.length() -18) + "_" + formato;
-//        formato = formateado.substring(formateado.length() - 27, formateado.length() -21) + "_" + formato;
-//        formato = formateado.substring(0, formateado.length() -27) + "_" + formato;
-//
-//
-//        System.out.println(formato);
-
 
     }
 
@@ -129,6 +110,7 @@ public class Juego {
         }
 
         System.out.println("fen procesado");
+       Utilidades.imprimirBinario(estadoTablero);
         Utilidades.imprimirPosicicion(tablero,color);
     }
 
@@ -141,7 +123,7 @@ public class Juego {
             if (c == 'k') {
                 tablero[indexInicio] = REY;
                 color[indexInicio] = NEGRO;
-                estadoTablero |=  indexInicio << 27;
+                estadoTablero |=  (long)indexInicio << 27;
             }
             if (c == 'q') {
                 tablero[indexInicio] = DAMA;

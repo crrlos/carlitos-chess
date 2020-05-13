@@ -116,8 +116,19 @@ public class Search {
 
        var movimientos = this.movimientos.getMovimientos();
 
+//        for (int i = 0; i < fin; i++) {
+//            System.out.print(Utilidades.convertirANotacion(movimientos[i]) + " ");
+//        }
+
         for (int i = 0; i < fin; i++) {
             var mov = movimientos[i];
+
+//            var m = Utilidades.convertirANotacion(mov);
+//
+//            if(m.equals("e2e4")){
+//                System.out.println();
+//            }
+
             long estadoActualizodo = actualizarTablero(pieza,color, estado, mov);
 
             // cambiar bando

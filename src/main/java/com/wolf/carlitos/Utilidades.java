@@ -457,27 +457,15 @@ public class Utilidades {
         color[inicio] = NOCOLOR;
 
         boolean tomaAlPaso = false;
-        int posicionPaso = 0;
+        int posicionPiezaALPaso = 0;
 
         if (piezaActual == PEON && alPaso(estado)) {
 
-            if (esTurnoBlanco(estado)) {
-                if (destino - inicio == 7) {
-                    posicionPaso = inicio - 1;
-                } else if (destino - inicio == 9) {
-                    posicionPaso = inicio + 1;
-                }
-            } else {
-                if (destino - inicio == -7) {
-                    posicionPaso = inicio + 1;
-                } else if (destino - inicio == -9) {
-                    posicionPaso = inicio - 1;
-                }
-            }
+            posicionPiezaALPaso = destino + (esTurnoBlanco(estado) ? -8 : 8);
 
-            if (tablero[posicionPaso] == (estado >> 6 & 0b111111)) {
+            if (destino == (estado >> 6 & 0b111111)) {
                 tomaAlPaso = true;
-                tablero[posicionPaso] = NOPIEZA;
+                tablero[posicionPiezaALPaso] = NOPIEZA;
             }
 
         }
@@ -488,11 +476,11 @@ public class Utilidades {
                 estado = estado & 0b000000_111111_111_11_111_1_111111_1_1_11_11L | (long) destino << 27;
             }
         }
-
         var jaque = reyEnJaque(tablero, color, estado);
 
-        if (piezaActual == PEON && alPaso(estado) && tomaAlPaso) {
-            tablero[posicionPaso] = (int) (estado >> 6 & 0b111111);
+        if (tomaAlPaso) {
+            tablero[posicionPiezaALPaso] = PEON;
+            color[posicionPiezaALPaso] = esTurnoBlanco(estado) ? NEGRO :BLANCO;
         }
 
         tablero[destino] = piezaDestino;
@@ -508,6 +496,25 @@ public class Utilidades {
         int columna = "abcdefgh".indexOf(casilla.charAt(0));
         int fila = "12345678".indexOf(casilla.charAt(1));
         return columna + 8 * fila;
+    }
+
+    public static void imprimirBinario(long estadoTablero){
+                String formateado = Long.toBinaryString(estadoTablero);
+        String formato = "";
+        formato = formateado.substring(formateado.length() - 2);
+        formato = formateado.substring(formateado.length() - 4, formateado.length() -2) + "_" + formato;
+        formato = formateado.substring(formateado.length() - 5, formateado.length() -4) + "_" + formato;
+        formato = formateado.substring(formateado.length() - 6, formateado.length() -5) + "_" + formato;
+        formato = formateado.substring(formateado.length() - 12, formateado.length() -6) + "_" + formato;
+        formato = formateado.substring(formateado.length() - 13, formateado.length() -12) + "_" + formato;
+        formato = formateado.substring(formateado.length() - 16, formateado.length() -13) + "_" + formato;
+        formato = formateado.substring(formateado.length() - 18, formateado.length() -16) + "_" + formato;
+        formato = formateado.substring(formateado.length() - 21, formateado.length() -18) + "_" + formato;
+        formato = formateado.substring(formateado.length() - 27, formateado.length() -21) + "_" + formato;
+        formato = formateado.substring(0, formateado.length() -27) + "_" + formato;
+
+
+        System.out.println(formato);
     }
 
 
