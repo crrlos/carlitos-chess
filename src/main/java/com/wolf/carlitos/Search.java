@@ -14,16 +14,15 @@ import java.util.concurrent.*;
 import static com.wolf.carlitos.Ponderaciones.*;
 import static com.wolf.carlitos.Constantes.*;
 import static com.wolf.carlitos.Utilidades.*;
-import static java.lang.Math.abs;
-import static java.lang.Math.tan;
+import static java.lang.Math.*;
 
 /**
  * @author carlos
  */
 
-class Movimientos{
-    private  final  int[][] movimientosPorNivel = new int[10][256];
-    private  final  int[] cantidadMovimientos = new int[10];
+class Movimientos implements Cloneable{
+    private    int[][] movimientosPorNivel = new int[10][256];
+    private    int[] cantidadMovimientos = new int[10];
 
     private  int nivel;
     private  int posicion;
@@ -46,6 +45,15 @@ class Movimientos{
         return cantidadMovimientos[nivel];
     }
 
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+
+        Movimientos m = (Movimientos) super.clone();
+        m.movimientosPorNivel = new int[10][256];
+        m.cantidadMovimientos = Arrays.copyOf(cantidadMovimientos,cantidadMovimientos.length);
+
+        return m;
+    }
 }
 
 public class Search {
@@ -54,10 +62,10 @@ public class Search {
     private final long estadoTablero;
     private final Generador generador = new Generador();
 
-    public static List<Integer> secuencia = new ArrayList<>();
+    //public static List<Integer> secuencia = new ArrayList<>();
 
     public static int[] valorPiezas = new int[]
-            {100, 320, 330, 500, 900, 10000};
+            {100, 320, 330, 500, 900, 1000,0};
 
     private final Movimientos movimientos = new Movimientos();
 
@@ -66,6 +74,29 @@ public class Search {
         this.color = color;
         this.estadoTablero = estado;
 
+    }
+    public  void  puntajeMVVLVA(int[] movimientos, int limite){
+
+        for (int i = 0; i < limite; i++) {
+            int inicio = movimientos[i] >> 6 & 0b111111;
+            int destino = movimientos[i] & 0b111111;
+
+            movimientos[i] |= (valorPiezas[pieza[inicio]] + 10 * valorPiezas[pieza[destino]]) << 14;
+        }
+
+    }
+
+    public static void insertionSort(int array[], int limite) {
+        int n = limite;
+        for (int j = 1; j < n; j++) {
+            int key = array[j];
+            int i = j-1;
+            while ( (i > -1) && ( array [i] >> 14 < key >> 14 ) ) {
+                array [i+1] = array [i];
+                i--;
+            }
+            array[i+1] = key;
+        }
     }
 
 
@@ -178,48 +209,7 @@ public class Search {
 
     }
 
-    public int mini(int nivel, long estado, int[] tablero, int[] color) {
 
-
-        if (nivel == 0) return evaluar(tablero,color);
-
-        int eval = 1_000_000;
-
-        this.movimientos.iniciar(nivel);
-
-        generador.generarMovimientos(tablero,color,estado,this.movimientos);
-
-        int fin = this.movimientos.getPosicionFinal();
-
-        if (fin == 0) {
-            if (reyEnJaque(tablero,color, estado) != NO_JAQUE) return MATE;
-            else return AHOGADO;
-        }
-
-        var movimientos = this.movimientos.getMovimientos();
-
-        for (int i = 0; i < fin; i++) {
-
-            var mov = movimientos[i];
-secuencia.add(mov);
-            long estadoActualizado = actualizarTablero(tablero,color, estado, mov);
-
-            estadoActualizado ^= 0b10000;
-
-            int evaluacion = maxi(nivel - 1, estadoActualizado, tablero,color);
-
-            if (evaluacion < eval)
-                eval = evaluacion;
-
-            estadoActualizado ^= 0b10000;
-
-            revertirMovimiento(mov, estadoActualizado, tablero,color);
-            secuencia.remove(secuencia.size() -1);
-
-        }
-
-        return eval;
-    }
 
     private int evaluar(int[] tablero,int[] color) {
 
@@ -259,19 +249,63 @@ secuencia.add(mov);
 
     }
 
-    public int maxi(int nivel, long estado, int[] tablero,int[] color) {
+    public int mini(int nivel, long estado, int[] tablero, int[] color, int alfa , int beta) {
+
+        if (nivel == 0) return evaluar(tablero,color);
+
+        movimientos.iniciar(nivel);
+
+        generador.generarMovimientos(tablero,color,estado,movimientos);
+
+        int fin = movimientos.getPosicionFinal();
+
+        if (fin == 0) {
+            if (reyEnJaque(tablero,color, estado) != NO_JAQUE) return MATE;
+            else return AHOGADO;
+        }
+
+        var movs = movimientos.getMovimientos();
+
+        puntajeMVVLVA(movs,fin);
+        insertionSort(movs,fin);
+
+        for (int i = 0; i < fin; i++) {
+
+            var mov = movs[i];
+            long estadoActualizado = actualizarTablero(tablero,color, estado, mov);
+
+            estadoActualizado ^= 0b10000;
+
+            int evaluacion = maxi(nivel - 1, estadoActualizado, tablero,color,alfa,beta);
+
+            estadoActualizado ^= 0b10000;
+
+            revertirMovimiento(mov, estadoActualizado, tablero,color);
+
+            if (evaluacion <= alfa) return  alfa;
+
+            if(evaluacion < beta)  beta = evaluacion;
+
+           // System.out.println("nivel: " + nivel + " mini " + "movimiento " + Utilidades.convertirANotacion(mov) + " evaluacion:" + evaluacion);
+
+        }
+
+        return beta;
+    }
+
+    public int maxi(int nivel, long estado, int[] tablero, int[] color, int alfa, int beta) {
 
         if (nivel == 0) return evaluar(tablero, color);
 
-        int eval = -1_000_000;
+        movimientos.iniciar(nivel);
+        generador.generarMovimientos(tablero, color, estado, movimientos);
 
+        var movs = movimientos.getMovimientos();
 
-        this.movimientos.iniciar(nivel);
-        generador.generarMovimientos(tablero, color, estado, this.movimientos);
+        int fin = movimientos.getPosicionFinal();
 
-        var movimientos = this.movimientos.getMovimientos();
-
-        int fin = this.movimientos.getPosicionFinal();
+        puntajeMVVLVA(movs,fin);
+        insertionSort(movs,fin);
 
         if (fin == 0) {
             if (reyEnJaque(tablero, color, estado) != NO_JAQUE) return -MATE;
@@ -279,33 +313,35 @@ secuencia.add(mov);
         }
 
         for (int i = 0; i < fin; i++) {
-            var mov = movimientos[i];
-            secuencia.add(mov);
+            var mov = movs[i];
             long estadoCopia = actualizarTablero(tablero, color, estado, mov);
 
             estadoCopia ^= 0b10000;
 
-            int evaluacion = mini(nivel - 1, estadoCopia, tablero, color);
-
-            if (evaluacion > eval)
-                eval = evaluacion;
+            int evaluacion = mini(nivel - 1, estadoCopia, tablero, color,alfa,beta);
 
             estadoCopia ^= 0b10000;
 
             revertirMovimiento(mov, estadoCopia, tablero, color);
-            secuencia.remove(secuencia.size() - 1);
 
+            if (evaluacion >= beta) return  beta;
+
+            if(evaluacion > alfa) alfa = evaluacion;
+            //System.out.println("nivel: " + nivel + " maxi " + "movimiento " + Utilidades.convertirANotacion(mov) + " evaluacion:" + evaluacion);
         }
-        return eval;
+        return alfa;
     }
 
-    public int search(int n)  {
+    public int search(int n) throws InterruptedException, CloneNotSupportedException, ExecutionException {
 
         int valoracion = esTurnoBlanco(estadoTablero) ? -1000 : 1000;
         int pos = 0;
 
-        ExecutorService WORKER_THREAD_POOL = Executors.newFixedThreadPool(10);
-        List<Callable<Integer>> callables = new ArrayList<>();
+        int alfa =  -1_000_000;
+        int beta =   1_000_000;
+
+//        ExecutorService WORKER_THREAD_POOL = Executors.newFixedThreadPool(2);
+//        List<Callable<Integer>> callables = new ArrayList<>();
 
         this.movimientos.iniciar(n);
         this.generador.generarMovimientos(pieza,color, estadoTablero,this.movimientos);
@@ -314,23 +350,32 @@ secuencia.add(mov);
 
         var movimientos = this.movimientos.getMovimientos();
 
-//        for (int i = 0; i < movimientos.size(); i++) {
-//            var mov = movimientos.get(i);
-//            Utilidades.actualizarTablero(tablero, estadoTablero, mov);
-//            estadoTablero.turnoBlanco = !estadoTablero.turnoBlanco;
-//            var arregloCopia = Arrays.copyOf(tablero, tablero.length);
+        puntajeMVVLVA(movimientos,fin);
+        insertionSort(movimientos,fin);
+
+//        for (int i = 0; i < fin; i++) {
+//            var mov = movimientos[i];
+//            long estadoActualizado = actualizarTablero(pieza,color, estadoTablero, mov);
 //
-//            var clon = estadoTablero.clone();
-//            callables.add(() -> estadoOriginal.turnoBlanco ? mini(n, clon, arregloCopia) : maxi(n, clon, arregloCopia));
+//            estadoActualizado ^= 10000;
 //
-//            estadoTablero.turnoBlanco = !estadoTablero.turnoBlanco;
-//            revertirMovimiento(mov, estadoTablero, tablero);
-//            estadoTablero = estadoOriginal.clone();
+//            Movimientos clonMovimientos = (Movimientos) this.movimientos.clone();
+//
+//            long finalEstadoActualizado = estadoActualizado;
+//
+//            var piezaClon = Arrays.copyOf(pieza,pieza.length);
+//            var colorClon = Arrays.copyOf(color,color.length);
+//
+//            callables.add(() -> esTurnoBlanco(estadoTablero) ?
+//                    mini(n -1, finalEstadoActualizado, piezaClon,colorClon,alfa,beta,clonMovimientos, new Generador()) :
+//                    maxi(n -1, finalEstadoActualizado, piezaClon,colorClon,alfa,beta,clonMovimientos,new Generador()));
+//
+//            estadoActualizado ^= 10000;
+//
+//            revertirMovimiento(mov, estadoActualizado, pieza,color);
+//
 //
 //        }
-//
-//        estadoTablero = estadoOriginal.clone();
-//
 //        var resultados = WORKER_THREAD_POOL.invokeAll(callables);
 //        awaitTerminationAfterShutdown(WORKER_THREAD_POOL);
 //
@@ -338,7 +383,7 @@ secuencia.add(mov);
 //        for (int i = 0; i < resultados.size(); i++) {
 //            var eval = resultados.get(i).get();
 //
-//            if (estadoOriginal.turnoBlanco) {
+//            if (esTurnoBlanco(estadoTablero)) {
 //                if (eval > valoracion) {
 //                    valoracion = eval;
 //                    pos = i;
@@ -352,19 +397,16 @@ secuencia.add(mov);
 //
 //        }
 
-
        for (int i = 0; i < fin ; i++) {
 
-
             var mov = movimientos[i];
-
-           secuencia.add(mov);
 
             long estadoActualizado = actualizarTablero(pieza,color, estadoTablero, mov);
 
             estadoActualizado ^= 0b10000;
 
-            int eval = esTurnoBlanco(estadoTablero) ? mini(n -1,estadoActualizado,pieza,color) : maxi(n -1,estadoActualizado,pieza,color);
+            int eval = esTurnoBlanco(estadoTablero) ? mini(n -1,estadoActualizado,pieza,color,alfa, beta) :
+                    maxi(n -1,estadoActualizado,pieza,color,alfa,beta);
 
             if(esTurnoBlanco(estadoTablero)){
                 if(eval > valoracion){
@@ -381,7 +423,6 @@ secuencia.add(mov);
            estadoActualizado ^= 0b10000;
 
            revertirMovimiento(mov,estadoActualizado,pieza,color);
-           secuencia.remove(secuencia.size() - 1);
 
        }
         return movimientos[pos];

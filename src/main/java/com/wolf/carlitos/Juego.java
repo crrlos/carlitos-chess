@@ -180,7 +180,7 @@ public class Juego {
         search.perft(n);
 
     }
-   public String mover(int n) {
+   public String mover(int n) throws InterruptedException, CloneNotSupportedException, ExecutionException {
        var search = new Search(pieza,color, estadoTablero);
        return Utilidades.convertirANotacion(search.search(n));
    }

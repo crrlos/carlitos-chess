@@ -1,34 +1,60 @@
 import com.wolf.carlitos.Juego;
 
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class Test {
 
 
     public static void main(String[] args) {
-        Scanner lector = new Scanner(System.in);
-        System.out.println("Escriba una frase");
-        String cadena = lector.next();
 
-        StringBuilder caracteres = new StringBuilder();
+        // la cantidad de números de la secuencia a generar
+        int cantidadAGenerar = 10;
+        // el inicio de los número pares
+        int inicioPares = 2;
+        //el inicio de los números impares
+        int inicioImpares = -3;
 
-        var t = System.currentTimeMillis();
+        // arreglo para almacenar los números generados
+        int[] numerosGenerados = new int[cantidadAGenerar];
 
+        // contador para dar seguimiento a los números generados
+        int contador = 0;
+        // en cada iteración se imprimen n + 1 números pares
+        // esta variable permite llevar la secuencia
+        int cantidadPares = 1;
 
-        Juego j = new Juego();
-        j.perft(6);
-        j.perft(6);
+        // iterar mientras no se hayan generado todos lo números
+        while(contador < cantidadAGenerar){
 
-        System.out.println(System.currentTimeMillis() - t);
+            // imprimir secuencia de números pares, en la primera iteración imprime solo un número
+            // en la segunda dos números ...
+            for (int i = 0; i < cantidadPares; i++) {
+                 // si ya se generaron todos lo números terminar
+                if(contador == cantidadAGenerar) break;
+                // guardar el número generado en el arreglo
+                numerosGenerados[contador++] = inicioPares;
+                // incrementar el siguiente número par
+                inicioPares +=2;
+            }
 
-        for (int i = 0; i < cadena.length(); i++) {
-            if(caracteres.toString().indexOf(cadena.charAt(i)) == -1){
-                System.out.println("Caracter: " + cadena.charAt(i));
-                break;
+            // en la siguiente iteración se imprimirán  cantidadPares + 1 números pares
+            cantidadPares++;
+
+            // siempre se imprimen tres números impares
+            for (int i = 0; i < 3; i++) {
+                // si ya se generaron todos lo números terminar
+                if(contador == cantidadAGenerar) break;
+                // guardar el número generado en el arreglo
+                numerosGenerados[contador++] = inicioImpares;
+                // incrementar el siguiente número impar
+                inicioImpares -=2;
             }
 
         }
 
+        // imprimir la secuencia generada
+        System.out.println(Arrays.toString(numerosGenerados));
 
     }
 }
