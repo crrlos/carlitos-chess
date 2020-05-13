@@ -237,7 +237,7 @@ public class Search {
                     valorBlancas += (color[i] == BLANCO ? ponderacionDama[flip[i]] : -ponderacionDama[i]);
                     break;
                 case REY:
-                    valorBlancas += (color[i] == BLANCO ? ponderacionRey[flip[i]] : -ponderacionRey[i]);
+                    valorBlancas += (color[i] == BLANCO ? ponderacionRey[flip[i]] * -1 : -ponderacionRey[i] *-1);
                     break;
             }
             if (color[i] == BLANCO)
@@ -315,7 +315,6 @@ public class Search {
         for (int i = 0; i < fin; i++) {
             var mov = movs[i];
             long estadoCopia = actualizarTablero(tablero, color, estado, mov);
-
             estadoCopia ^= 0b10000;
 
             int evaluacion = mini(nivel - 1, estadoCopia, tablero, color,alfa,beta);
@@ -400,6 +399,11 @@ public class Search {
        for (int i = 0; i < fin ; i++) {
 
             var mov = movimientos[i];
+
+            if(pieza[B7] == PEON && Utilidades.convertirANotacion(mov).equals("b7b8")){
+                Utilidades.imprimirPosicicion(pieza,color);
+                System.out.println();
+            }
 
             long estadoActualizado = actualizarTablero(pieza,color, estadoTablero, mov);
 
