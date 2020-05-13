@@ -110,7 +110,7 @@ public class Utilidades {
         // color captura
         estadoTablero = estadoTablero & 0b111111_111111_111_00_111_1_111111_1_1_11_11L | (long) NOCOLOR << 16;
         // tipo movimiento
-        estadoTablero = estadoTablero & 0b111111_111111_000_11_111_1_111111_1_1_11_11L | (long) NO_ASIGNADO << 18;
+        estadoTablero = estadoTablero & 0b111111_111111_000_11_111_1_111111_1_1_11_11L | (long) MOVIMIENTO_NORMAL << 18;
 
 
         if (pieza == PEON) {
@@ -263,12 +263,10 @@ public class Utilidades {
 
         }
 
-        if((estadoTablero >> 18 & 0b111) != PROMOCION){
-
+        if((estadoTablero >> 18 & 0b111)  != PROMOCION){
             tablero[destino] = tablero[inicio];
-            color[destino] = color[inicio];
         }
-
+        color[destino] = color[inicio];
         tablero[inicio] = NOPIEZA;
         color[inicio] = NOCOLOR;
 
@@ -276,9 +274,6 @@ public class Utilidades {
         // al paso  = false
         estadoTablero &= 0b111111_111111_111_11_111_1_111111_0_1_11_11L;
 
-        if ((estadoTablero >> 18 & 0b111) == NO_ASIGNADO) {
-            estadoTablero = setTipoMovimiento(estadoTablero, MOVIMIENTO_NORMAL);
-        }
         return estadoTablero;
     }
 
