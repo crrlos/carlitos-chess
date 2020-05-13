@@ -635,10 +635,10 @@ public class Generador {
             var m = posicion << 6 | destino;
             if (destino <= H1 || destino >= A8 && destino <= H8) {
                 if(movimientoValido(m,tablero,color,estado)){
-                    movimientos.add(posicion << 6  | destino | 1 << 12);
-                    movimientos.add(posicion << 6  | destino | 2 << 12);
-                    movimientos.add(posicion << 6  | destino | 3 << 12);
-                    movimientos.add(posicion << 6  | destino | 4 << 12);
+                    movimientos.add(m | 1 << 12);
+                    movimientos.add(m | 2 << 12);
+                    movimientos.add(m | 3 << 12);
+                    movimientos.add(m | 4 << 12);
                 }
 
             } else {
@@ -662,10 +662,10 @@ public class Generador {
                 if (color[destino] == BLANCO != (color[posicion] == BLANCO) && !(posicionActual == REY)) {
                     if (destino >= A8 || destino <= H1) {
                         if (movimientoValido(m, tablero,color, estado)) {
-                            movimientos.add(posicion << 6  | destino | 1 << 12);
-                            movimientos.add(posicion << 6  | destino | 2 << 12);
-                            movimientos.add(posicion << 6  | destino | 3 << 12);
-                            movimientos.add(posicion << 6  | destino | 4 << 12);
+                            movimientos.add(m | 1 << 12);
+                            movimientos.add(m | 2 << 12);
+                            movimientos.add(m | 3 << 12);
+                            movimientos.add(m | 4 << 12);
                         }
                     } else {
                         validarYAgregar(tablero,color, estado, posicion,  destino);

@@ -160,7 +160,7 @@ public class Utilidades {
             }
 
             if (destino <= H1 || destino >= A8) {
-                switch (movimiento >> 7) {
+                switch (movimiento >> 12 & 0b111) {
                     case 1:
                         tablero[destino] = DAMA;
                         color[destino] = esTurnoBlanco(estadoTablero) ?BLANCO:NEGRO;
