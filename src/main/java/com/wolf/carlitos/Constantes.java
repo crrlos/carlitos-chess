@@ -100,4 +100,9 @@ public class Constantes {
 
     public static char[] PIEZAS = {'P','C','A','T','D','R',' '};
 
+    public static final long MASK_LIMPIAR_PIEZA_CAPTURADA = 0b111111_111111_111_11_000_1_111111_1_1_11_11L;
+    public static final long MASK_LIMPIAR_COLOR_CAPTURA = 0b111111_111111_111_00_111_1_111111_1_1_11_11L;
+    public static final long MASK_LIMPIAR_TIPO_MOVIMIENTO = 0b111111_111111_000_11_111_1_111111_1_1_11_11L;
+    public static final long MASK_LIMPIAR_AL_PASO = 0b111111_111111_111_11_111_1_111111_0_1_11_11L;
+
 }

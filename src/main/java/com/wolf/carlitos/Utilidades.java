@@ -21,7 +21,6 @@ public class Utilidades {
     private static final HashMap<String, Integer> casillaPosicion = new HashMap<>();
     private static final HashMap<Integer, String> posicionCasilla = new HashMap<>();
 
-
     static {
         int correlativo = 0;
 
@@ -106,57 +105,34 @@ public class Utilidades {
         var pieza = tablero[inicio];
 
         // pieza capturada
-        estadoTablero = estadoTablero & 0b111111_111111_111_11_000_1_111111_1_1_11_11L | (long) NOPIEZA << 13;
+        estadoTablero = estadoTablero & MASK_LIMPIAR_PIEZA_CAPTURADA | (long) NOPIEZA << 13;
         // color captura
-        estadoTablero = estadoTablero & 0b111111_111111_111_00_111_1_111111_1_1_11_11L | (long) NOCOLOR << 16;
+        estadoTablero = estadoTablero & MASK_LIMPIAR_COLOR_CAPTURA | (long) NOCOLOR << 16;
         // tipo movimiento
-        estadoTablero = estadoTablero & 0b111111_111111_000_11_111_1_111111_1_1_11_11L | (long) MOVIMIENTO_NORMAL << 18;
+        estadoTablero = estadoTablero & MASK_LIMPIAR_TIPO_MOVIMIENTO | (long) MOVIMIENTO_NORMAL << 18;
 
 
         if (pieza == PEON) {
 
-            if (abs(inicio - destino) == 16) {
+            if (alPaso(estadoTablero) && destino == (estadoTablero >> 6 & 0b111111)) {
 
-                // al paso = true
-                estadoTablero |= 0b1_00_000;
+                var posicionAlPaso = destino + (esTurnoBlanco(estadoTablero) ? -8 : 8);
 
-                // pieza al paso
-                int posicionPiezaAlPAso = destino + (esTurnoBlanco(estadoTablero) ? -8 : 8);
-                estadoTablero = estadoTablero & 0b111111_111111_111_11_111_1_000000_1_1_11_11L | (long) posicionPiezaAlPAso << 6;
+                    // aqui se remueve la pieza al paso
+                    tablero[posicionAlPaso] = NOPIEZA;
+                    // color al paso
+                    estadoTablero = estadoTablero & 0b111111_111111_111_11_111_0_111111_1_1_11_11L | (long) color[posicionAlPaso] << 12;
 
-                // color al paso
-                estadoTablero = estadoTablero & 0b111111_111111_111_11_111_0_111111_1_1_11_11L | (long) color[inicio] << 12;
+                    color[posicionAlPaso] = NOCOLOR;
 
-                tablero[destino] = pieza;
-                tablero[inicio] = NOPIEZA;
+                    estadoTablero = setTipoMovimiento(estadoTablero, AL_PASO);
 
-                color[destino] = color[inicio];
-                color[inicio] = NOCOLOR;
-
-                // tipo de movimiento
-                estadoTablero = setTipoMovimiento(estadoTablero, MOVIMIENTO_NORMAL);
-
-                return estadoTablero;
-            } else if (alPaso(estadoTablero)) {
-                if (abs(destino - inicio) == 7 || abs(destino - inicio) == 9) {
-                    var posicionAlPaso = destino + (esTurnoBlanco(estadoTablero) ? -8 : 8);
-                    if (destino == (estadoTablero >> 6 & 0b111111)) {
-
-                        // aqui se remueve la pieza al paso
-                        tablero[posicionAlPaso] = NOPIEZA;
-                        // color al paso
-                        estadoTablero = estadoTablero & 0b111111_111111_111_11_111_0_111111_1_1_11_11L | (long) color[posicionAlPaso] << 12;
-
-                        color[posicionAlPaso] = NOCOLOR;
-
-                        estadoTablero = setTipoMovimiento(estadoTablero, AL_PASO);
-                    }
-                }
                 // al paso = false
                 estadoTablero &= 0b111111_111111_111_11_111_1_111111_0_1_11_11L;
-            } else if (destino <= H1 || destino >= A8) {
+            }
+            else if (destino <= H1 || destino >= A8) {
 
-                if(tablero[destino] != NOPIEZA){
+                if (tablero[destino] != NOPIEZA) {
                     // pieza capturada
                     estadoTablero = estadoTablero & 0b111111_111111_111_11_000_1_111111_1_1_11_11L | (long) tablero[destino] << 13;
                     // color captura
@@ -184,31 +160,49 @@ public class Utilidades {
                 switch (movimiento >> 12 & 0b111) {
                     case 1:
                         tablero[destino] = DAMA;
-                        color[destino] = esTurnoBlanco(estadoTablero) ? BLANCO : NEGRO;
                         break;
                     case 2:
                         tablero[destino] = TORRE;
-                        color[destino] = esTurnoBlanco(estadoTablero) ? BLANCO : NEGRO;
                         break;
                     case 3:
                         tablero[destino] = CABALLO;
-                        color[destino] = esTurnoBlanco(estadoTablero) ? BLANCO : NEGRO;
                         break;
                     case 4:
                         tablero[destino] = ALFIL;
-                        color[destino] = esTurnoBlanco(estadoTablero) ? BLANCO : NEGRO;
                         break;
                 }
+                color[destino] = esTurnoBlanco(estadoTablero) ? BLANCO : NEGRO;
                 estadoTablero = setTipoMovimiento(estadoTablero, PROMOCION);
 
                 tablero[inicio] = NOPIEZA;
                 color[inicio] = NOCOLOR;
 
+                estadoTablero &= MASK_LIMPIAR_AL_PASO;
 
-                // al paso  = false
-                estadoTablero &= 0b111111_111111_111_11_111_1_111111_0_1_11_11L;
+                return estadoTablero;
 
-                return  estadoTablero;
+            }else if (abs(inicio - destino) == 16) {
+
+                // al paso = true
+                estadoTablero |= 0b1_00_000;
+
+                // pieza al paso
+                int posicionPiezaAlPAso = destino + (esTurnoBlanco(estadoTablero) ? -8 : 8);
+                estadoTablero = estadoTablero & 0b111111_111111_111_11_111_1_000000_1_1_11_11L | (long) posicionPiezaAlPAso << 6;
+
+                // color al paso
+                estadoTablero = estadoTablero & 0b111111_111111_111_11_111_0_111111_1_1_11_11L | (long) color[inicio] << 12;
+
+                tablero[destino] = pieza;
+                tablero[inicio] = NOPIEZA;
+
+                color[destino] = color[inicio];
+                color[inicio] = NOCOLOR;
+
+                // tipo de movimiento
+                estadoTablero = setTipoMovimiento(estadoTablero, MOVIMIENTO_NORMAL);
+
+                return estadoTablero;
             }
 
         } else if (pieza == REY) {
