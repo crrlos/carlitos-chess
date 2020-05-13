@@ -2,7 +2,7 @@ package com.wolf.carlitos;
 
 public class Ponderaciones {
 
-    public static  final int flip[] = new int[]{
+    public static  final int[] flip = new int[]{
                 56,  57,  58,  59,  60,  61,  62,  63,
                 48,  49,  50,  51,  52,  53,  54,  55,
                 40,  41,  42,  43,  44,  45,  46,  47,

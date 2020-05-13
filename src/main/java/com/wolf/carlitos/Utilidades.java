@@ -268,10 +268,7 @@ public class Utilidades {
 
         }
 
-        if((estadoTablero >> 18 & 0b111) !=  PROMOCION){
-            tablero[destino] = tablero[inicio];
-        }
-
+        tablero[destino] = tablero[inicio];
         tablero[inicio] = NOPIEZA;
         color[destino] = color[inicio];
         color[inicio] = NOCOLOR;

@@ -399,12 +399,6 @@ public class Search {
        for (int i = 0; i < fin ; i++) {
 
             var mov = movimientos[i];
-
-            if(pieza[B7] == PEON && Utilidades.convertirANotacion(mov).equals("b7b8")){
-                Utilidades.imprimirPosicicion(pieza,color);
-                System.out.println();
-            }
-
             long estadoActualizado = actualizarTablero(pieza,color, estadoTablero, mov);
 
             estadoActualizado ^= 0b10000;
