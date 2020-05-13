@@ -332,7 +332,7 @@ public class Search {
     }
 
     public int search(int n) throws InterruptedException, CloneNotSupportedException, ExecutionException {
-
+       //n = 1;
         int pos = 0;
 
         int alfa =  -10_000;
@@ -400,14 +400,14 @@ public class Search {
             var mov = movimientos[i];
 
 
- //           var m = Utilidades.convertirANotacion(mov);
-//            if(m.equals("e1e8")){
+//            var m = Utilidades.convertirANotacion(mov);
+//            if(m.contains("g2g1")){
 //                Utilidades.imprimirPosicicion(pieza,color);
 //                System.out.println();
 //            }
 
             long estadoActualizado = actualizarTablero(pieza,color, estadoTablero, mov);
-
+           //Utilidades.imprimirPosicicion(pieza,color);
             estadoActualizado ^= 0b10000;
 
             int eval = esTurnoBlanco(estadoTablero) ? mini(n -1,estadoActualizado,pieza,color,alfa, beta) :
@@ -428,6 +428,7 @@ public class Search {
            estadoActualizado ^= 0b10000;
 
            revertirMovimiento(mov,estadoActualizado,pieza,color);
+          // Utilidades.imprimirPosicicion(pieza,color);
 
        }
         return movimientos[pos];

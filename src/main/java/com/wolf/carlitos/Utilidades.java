@@ -155,6 +155,13 @@ public class Utilidades {
                 // al paso = false
                 estadoTablero &= 0b111111_111111_111_11_111_1_111111_0_1_11_11L;
             } else if (destino <= H1 || destino >= A8) {
+
+                if(tablero[destino] != NOPIEZA){
+                    // pieza capturada
+                    estadoTablero = estadoTablero & 0b111111_111111_111_11_000_1_111111_1_1_11_11L | (long) tablero[destino] << 13;
+                    // color captura
+                    estadoTablero = estadoTablero & 0b111111_111111_111_00_111_1_111111_1_1_11_11L | (long) color[destino] << 16;
+                }
                 switch (movimiento >> 12 & 0b111) {
                     case 1:
                         tablero[destino] = DAMA;
@@ -174,6 +181,15 @@ public class Utilidades {
                         break;
                 }
                 estadoTablero = setTipoMovimiento(estadoTablero, PROMOCION);
+
+                tablero[inicio] = NOPIEZA;
+                color[inicio] = NOCOLOR;
+
+
+                // al paso  = false
+                estadoTablero &= 0b111111_111111_111_11_111_1_111111_0_1_11_11L;
+
+                return  estadoTablero;
             }
 
         } else if (pieza == REY) {
@@ -263,9 +279,8 @@ public class Utilidades {
 
         }
 
-        if((estadoTablero >> 18 & 0b111)  != PROMOCION){
-            tablero[destino] = tablero[inicio];
-        }
+
+        tablero[destino] = tablero[inicio];
         color[destino] = color[inicio];
         tablero[inicio] = NOPIEZA;
         color[inicio] = NOCOLOR;
