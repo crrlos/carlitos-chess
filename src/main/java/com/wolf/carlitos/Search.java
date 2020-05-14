@@ -6,15 +6,12 @@
 package com.wolf.carlitos;
 
 
-import java.io.IOException;
-import java.sql.Time;
 import java.util.*;
 import java.util.concurrent.*;
 
 import static com.wolf.carlitos.Ponderaciones.*;
 import static com.wolf.carlitos.Constantes.*;
 import static com.wolf.carlitos.Utilidades.*;
-import static java.lang.Math.*;
 
 /**
  * @author carlos
@@ -59,7 +56,7 @@ class Movimientos implements Cloneable{
 public class Search {
     private final int[] pieza;
     private final int[] color;
-    private final long estadoTablero;
+    private final int estadoTablero;
     private final Generador generador = new Generador();
 
     //public static List<Integer> secuencia = new ArrayList<>();
@@ -69,7 +66,7 @@ public class Search {
 
     private final Movimientos movimientos = new Movimientos();
 
-    public Search(int[] pieza, int[] color, long estado) {
+    public Search(int[] pieza, int[] color, int estado) {
         this.pieza = pieza;
         this.color = color;
         this.estadoTablero = estado;
@@ -100,7 +97,7 @@ public class Search {
     }
 
 
-    private void perftSearch(int deep, long estado, Acumulador acumulador, boolean reset) {
+    private void perftSearch(int deep, int estado, Acumulador acumulador, boolean reset) {
 
         if (deep == 0) {
             acumulador.contador++;
@@ -116,28 +113,12 @@ public class Search {
 
        var movimientos = this.movimientos.getMovimientos();
 
-//        for (int i = 0; i < fin; i++) {
-//            System.out.print(Utilidades.convertirANotacion(movimientos[i]) + " ");
-//        }
-
         for (int i = 0; i < fin; i++) {
             var mov = movimientos[i];
 
-//            var m = Utilidades.convertirANotacion(mov);
-//
-//            if(m.equals("e2e4")){
-//                System.out.println();
-//            }
-
-            long estadoActualizodo = actualizarTablero(pieza,color, estado, mov);
-
-            // cambiar bando
-            estadoActualizodo ^= 0b10000;
+            int estadoActualizodo = hacerMovimiento(pieza,color, estado, mov);
 
             perftSearch(deep - 1, estadoActualizodo, acumulador, false);
-
-            // cambiar bando
-            estadoActualizodo ^= 0b10000;
 
             revertirMovimiento(mov, estadoActualizodo, pieza,color);
 
@@ -159,14 +140,16 @@ public class Search {
     }
 
 
-    private void revertirMovimiento(int movimiento, long estado, int[] tablero,int[]color) {
+    private void revertirMovimiento(int movimiento, int estado, int[] tablero,int[]color) {
+
+        estado ^= 0b10000;
 
         int inicio = movimiento >> 6 &0b111111;
         int destino = movimiento & 0b111111;
 
         boolean turnoBlanco = esTurnoBlanco(estado);
 
-        switch ((int) (estado >> 18 & 0b111)) {
+        switch ((estado >> POSICION_TIPO_MOVIMIENTO & 0b111)) {
 
             case MOVIMIENTO_NORMAL:
             case MOVIMIENTO_REY:
@@ -177,7 +160,7 @@ public class Search {
                 int posicionPaso = turnoBlanco ? destino - 8 : destino + 8;
 
                 tablero[posicionPaso] = PEON;
-                color[posicionPaso] = (int) (estado >> 12 & 0b1);
+                color[posicionPaso] = esTurnoBlanco(estado) ? NEGRO : BLANCO;
 
                 tablero[inicio] = tablero[destino];
                 color[inicio] = color[destino];
@@ -213,10 +196,8 @@ public class Search {
 
         }
 
-        // pieza capturada
-        tablero[destino] = (int) (estado >> 13 & 0b111);
-
-        color[destino] = (int) (estado >> 13 & 0b111)  == NOPIEZA ? NOCOLOR : (int) (estado >> 16 & 0b11);
+        tablero[destino] = (estado >> POSICION_PIEZA_CAPTURADA & 0b111);
+        color[destino] =  tablero[destino] == NOPIEZA ? NOCOLOR : esTurnoBlanco(estado) ? NEGRO :BLANCO;
 
     }
 
@@ -260,7 +241,7 @@ public class Search {
 
     }
 
-    public int mini(int nivel, long estado, int[] tablero, int[] color, int alfa , int beta) {
+    public int mini(int nivel, int estado, int[] tablero, int[] color, int alfa , int beta) {
 
         if (nivel == 0) return evaluar(tablero,color);
 
@@ -283,7 +264,7 @@ public class Search {
         for (int i = 0; i < fin; i++) {
 
             var mov = movs[i];
-            long estadoActualizado = actualizarTablero(tablero,color, estado, mov);
+            int estadoActualizado = hacerMovimiento(tablero,color, estado, mov);
 
             estadoActualizado ^= 0b10000;
 
@@ -304,7 +285,7 @@ public class Search {
         return beta;
     }
 
-    public int maxi(int nivel, long estado, int[] tablero, int[] color, int alfa, int beta) {
+    public int maxi(int nivel, int estado, int[] tablero, int[] color, int alfa, int beta) {
 
         if (nivel == 0) return evaluar(tablero, color);
 
@@ -325,7 +306,7 @@ public class Search {
 
         for (int i = 0; i < fin; i++) {
             var mov = movs[i];
-            long estadoCopia = actualizarTablero(tablero, color, estado, mov);
+            int estadoCopia = hacerMovimiento(tablero, color, estado, mov);
             estadoCopia ^= 0b10000;
 
             int evaluacion = mini(nivel - 1, estadoCopia, tablero, color,alfa,beta);
@@ -417,7 +398,7 @@ public class Search {
 //                System.out.println();
 //            }
 
-            long estadoActualizado = actualizarTablero(pieza,color, estadoTablero, mov);
+            int estadoActualizado = hacerMovimiento(pieza,color, estadoTablero, mov);
            //Utilidades.imprimirPosicicion(pieza,color);
             estadoActualizado ^= 0b10000;
 

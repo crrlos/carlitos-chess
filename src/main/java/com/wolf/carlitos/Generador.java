@@ -192,7 +192,7 @@ public class Generador {
     }
 
 
-    public void generarMovimientos(int[] pieza, int[] color, long estado,Movimientos movimientos) {
+    public void generarMovimientos(int[] pieza, int[] color, int estado,Movimientos movimientos) {
         
         this.movimientos = movimientos;
 
@@ -229,7 +229,7 @@ public class Generador {
         piezaJaque = 0;
     }
 
-    public void movimientosDeTorre(int[] tablero,int[]color, long estado, int posicion) {
+    public void movimientosDeTorre(int[] tablero,int[]color, int estado, int posicion) {
         int pieza = tablero[posicion];
 
         var movimientosDeTorre = Generador.movimientosTorre.get(posicion);
@@ -290,7 +290,7 @@ public class Generador {
             break;
         }
     }
-    private  void procesarLineaValidado(int[] tablero,int[]color, int posicion, List<Integer> horizontal1, long estado) {
+    private  void procesarLineaValidado(int[] tablero,int[]color, int posicion, List<Integer> horizontal1, int estado) {
         int posicionActual;
         for (int j = 0; j < horizontal1.size(); j++) {
             var mov = horizontal1.get(j);
@@ -312,7 +312,7 @@ public class Generador {
         }
     }
 
-    private static boolean isVertical(int[] tablero,int[]color, long estado, int posicion, int pieza, List<Integer> vertical1, List<Integer> vertical2) {
+    private static boolean isVertical(int[] tablero,int[]color, int estado, int posicion, int pieza, List<Integer> vertical1, List<Integer> vertical2) {
         if (!vertical1.isEmpty()) {
             var mov = vertical1.get(0);
             var pi = tablero[mov];
@@ -344,7 +344,7 @@ public class Generador {
         return true;
     }
 
-    private void movimientosDeDama(int[] tablero,int[]color, long estado, int posicion) {
+    private void movimientosDeDama(int[] tablero,int[]color, int estado, int posicion) {
         int pieza;
 
         pieza = tablero[posicion];
@@ -419,7 +419,7 @@ public class Generador {
         
     }
 
-    private void movimientosDeCaballo(int[] tablero,int[]color, long estado, int posicion) {
+    private void movimientosDeCaballo(int[] tablero,int[]color, int estado, int posicion) {
         int posicionActual;
 
         var movimientosCaballo = Generador.movimientosCaballo.get(posicion);
@@ -441,7 +441,7 @@ public class Generador {
         return piezaJaque != NO_JAQUE;
     }
     
-    public void movimientosDeAlfil(int[] tablero,int[] color, long estado, int posicion) {
+    public void movimientosDeAlfil(int[] tablero,int[] color, int estado, int posicion) {
 
         int pieza = tablero[posicion];
 
@@ -487,7 +487,7 @@ public class Generador {
 
     }
 
-    private  void movimientosDeRey(int[] tablero,int[]color, long estado, int posicion) {
+    private  void movimientosDeRey(int[] tablero,int[]color, int estado, int posicion) {
 
         var movimietosRey = Generador.movimientosRey.get(posicion);
 
@@ -498,7 +498,7 @@ public class Generador {
 
             if (m == NOPIEZA || color[mov] != color[posicion]) {
 
-                var posicionRey = esTurnoBlanco(estado) ? posicionRey(estado,27) : posicionRey(estado,21);
+                var posicionRey = esTurnoBlanco(estado) ? posicionRey(estado,POSICION_REY_NEGRO) : posicionRey(estado,POSICION_REY_BLANCO);
                 var distancia = abs(mov - posicionRey);
 
                 // TODO optimizar estas condiciones
@@ -523,14 +523,14 @@ public class Generador {
         if((estado & 0b1111) ==  0) return;
 
         if (esTurnoBlanco(estado)) {
-            if ((estado & 0b000000_000000_000_00_000_0_000000_0_0_00_11L) > 0) {
+            if ((estado & 0b000000_000000_000_000_000000_0_00_11) > 0) {
                 if (reyEnJaque(tablero,color, estado) == NO_JAQUE) {
-                    if ((estado & 1) > 0 && posicionRey(estado, 27) != G2) {
+                    if ((estado & 1) > 0 && posicionRey(estado, POSICION_REY_NEGRO) != G2) {
 
                         // TODO revisar si la posicion sirve, puede estar de sobra
                         if (posicion == E1) {
                             if (tablero[F1] == NOPIEZA && tablero[G1] == NOPIEZA) {
-                                long estadoCopia = moverReyUnaCasilla(tablero,color, estado, E1, F1);
+                                int estadoCopia = moverReyUnaCasilla(tablero,color, estado, E1, F1);
                                 if (reyEnJaque(tablero,color, estadoCopia) == NO_JAQUE) {
                                     estadoCopia = moverReyUnaCasilla(tablero,color, estado, F1, G1);
                                     if (reyEnJaque(tablero,color, estadoCopia) == NO_JAQUE) {
@@ -543,11 +543,11 @@ public class Generador {
                         }
                     }
 
-                    if ((estado & 2) > 0 && posicionRey(estado,27) != B2 && posicionRey(estado,27) != C2) {
+                    if ((estado & 2) > 0 && posicionRey(estado,POSICION_REY_NEGRO) != B2 && posicionRey(estado,POSICION_REY_NEGRO) != C2) {
 
                         if (posicion == E1) {
                             if (tablero[D1] == NOPIEZA && tablero[C1] == NOPIEZA && tablero[B1] == NOPIEZA) {
-                                long ec = moverReyUnaCasilla(tablero,color, estado, E1, D1);
+                                int ec = moverReyUnaCasilla(tablero,color, estado, E1, D1);
                                 if (reyEnJaque(tablero,color, ec) == NO_JAQUE) {
                                     ec = moverReyUnaCasilla(tablero,color, estado, D1, C1);
                                     if (reyEnJaque(tablero,color, ec) == NO_JAQUE) {
@@ -562,14 +562,14 @@ public class Generador {
                 }
             }
         } else {
-            if ((estado & 0b000000_000000_000_00_000_0_000000_0_0_11_00L) > 0) {
+            if ((estado & 0b000000_000000_000_000_000000_0_11_00) > 0) {
                 if (reyEnJaque(tablero,color, estado) == NO_JAQUE) {
-                    if ((estado & 4) > 0 && posicionRey(estado,21) != G7) {
+                    if ((estado & 4) > 0 && posicionRey(estado,POSICION_REY_BLANCO) != G7) {
 
                         // TODO revisar si la posicion sirve, puede estar de sobra
                         if (posicion == E8) {
                             if (tablero[F8] == NOPIEZA && tablero[G8] == NOPIEZA) {
-                                long ec = moverReyUnaCasilla(tablero,color, estado, E8, F8);
+                                int ec = moverReyUnaCasilla(tablero,color, estado, E8, F8);
                                 if (reyEnJaque(tablero,color, ec) == NO_JAQUE) {
                                     ec = moverReyUnaCasilla(tablero,color, estado, F8, G8);
                                     if (reyEnJaque(tablero,color, ec) == NO_JAQUE) {
@@ -582,11 +582,11 @@ public class Generador {
                         }
                     }
 
-                    if ((estado & 8)>0 && posicionRey(estado,21) != B7 && posicionRey(estado,21) != C7) {
+                    if ((estado & 8)>0 && posicionRey(estado,POSICION_REY_BLANCO) != B7 && posicionRey(estado,POSICION_REY_BLANCO) != C7) {
 
                         if (posicion == E8) {
                             if (tablero[D8] == NOPIEZA && tablero[C8] == NOPIEZA && tablero[B8] == NOPIEZA) {
-                                long ec = moverReyUnaCasilla(tablero,color, estado, E8, D8);
+                                int ec = moverReyUnaCasilla(tablero,color, estado, E8, D8);
                                 if (reyEnJaque(tablero,color, ec) == NO_JAQUE) {
                                     ec = moverReyUnaCasilla(tablero,color, estado, D8, C8);
                                     if (reyEnJaque(tablero,color, ec) == NO_JAQUE) {
@@ -605,19 +605,19 @@ public class Generador {
     }
 
 
-    private static long moverReyUnaCasilla(int[] tablero,int[]color, long estado, int inicio, int destino) {
+    private static int moverReyUnaCasilla(int[] tablero,int[]color, int estado, int inicio, int destino) {
         tablero[destino] = tablero[inicio];
         tablero[inicio] = NOPIEZA;
         color[destino] = color[inicio];
         color[inicio] = NOCOLOR;
         if (esTurnoBlanco(estado))
-            estado = estado & 0b111111_000000_111_11_111_1_111111_1_1_11_11L | (long)destino << 21;
+            estado = estado & MASK_LIMPIAR_POSICION_REY_BLANCO | destino << POSICION_REY_BLANCO;
         else
-            estado = estado & 0b000000_111111_111_11_111_1_111111_1_1_11_11L | (long)destino << 27;
+            estado = estado & MASK_LIMPIAR_POSICION_REY_NEGRO | destino << POSICION_REY_NEGRO;
         return  estado;
     }
 
-    private void movimientosDePeon(int[] tablero,int[]color, long estado, int posicion) {
+    private void movimientosDePeon(int[] tablero,int[]color, int estado, int posicion) {
         
         var turnoBlanco = esTurnoBlanco(estado);
         int pieza = tablero[posicion];
@@ -651,7 +651,7 @@ public class Generador {
         
     }
 
-    private void avanceDiagonal(int[] tablero,int[]color, long estado, int posicion,  boolean turnoBlanco, int pieza, int i) {
+    private void avanceDiagonal(int[] tablero,int[]color, int estado, int posicion,  boolean turnoBlanco, int pieza, int i) {
         int destino;
         int posicionActual;
         destino = posicion + (turnoBlanco ? i : -i);
@@ -671,15 +671,15 @@ public class Generador {
                         validarYAgregar(tablero,color, estado, posicion,  destino);
                     }
                 }
-            } else if (alPaso(estado) && posicion >= (turnoBlanco ? A5 : A4) && posicion <= (turnoBlanco ? H5 : H4)) {
-                if (destino == (estado >> 6 & 0b111111)) {
+            } else if (alPaso(estado,destino) && posicion >= (turnoBlanco ? A5 : A4) && posicion <= (turnoBlanco ? H5 : H4)) {
+                if (destino == (estado >> POSICION_PIEZA_AL_PASO & 0b111111)) {
                     validarYAgregar(tablero,color, estado, posicion,  destino);
                 }
             }
         }
     }
 
-    private  void validarYAgregar(int[] tablero,int[]color, long estado, int posicion, int i) {
+    private  void validarYAgregar(int[] tablero,int[]color, int estado, int posicion, int i) {
         var mm = posicion << 6 | i;
         if (movimientoValido(mm, tablero,color, estado))
             movimientos.add(mm);

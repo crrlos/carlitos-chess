@@ -6,9 +6,7 @@
 package com.wolf.carlitos;
 
 
-import java.time.Period;
 import java.util.HashMap;
-import java.util.Objects;
 
 import static java.lang.Math.abs;
 import static com.wolf.carlitos.Constantes.*;
@@ -39,7 +37,7 @@ public class Utilidades {
         for (int i = 64; i > 0; i -= 8) {
             System.out.println("+---+---+---+---+---+---+---+---+");
             for (int j = i - 8; j < (i - 8) + 8; j++) {
-                System.out.print("| " + (color[j] == BLANCO ? String.valueOf(PIEZAS[tablero[j]]) : String.valueOf(PIEZAS[tablero[j]]).toLowerCase()) + " ");
+                System.out.print("| " + (color[j] == NOCOLOR ? "." : (color[j] == BLANCO ? String.valueOf(PIEZAS[tablero[j]]) : String.valueOf(PIEZAS[tablero[j]]).toLowerCase())) + " ");
             }
             System.out.print("|");
 
@@ -97,60 +95,50 @@ public class Utilidades {
         return mov;
     }
 
-    public static long actualizarTablero(int[] tablero, int[] color, long estadoTablero, int movimiento) {
+    public static int hacerMovimiento(int[] tablero, int[] color, int estadoTablero, int movimiento) {
 
         int inicio = movimiento >> 6 & 0b111111;
         int destino = movimiento & 0b111111;
 
         var pieza = tablero[inicio];
 
-        // pieza capturada
-        estadoTablero = estadoTablero & MASK_LIMPIAR_PIEZA_CAPTURADA | (long) NOPIEZA << 13;
-        // color captura
-        estadoTablero = estadoTablero & MASK_LIMPIAR_COLOR_CAPTURA | (long) NOCOLOR << 16;
-        // tipo movimiento
-        estadoTablero = estadoTablero & MASK_LIMPIAR_TIPO_MOVIMIENTO | (long) MOVIMIENTO_NORMAL << 18;
-
+        estadoTablero = colocarValor(estadoTablero,NOPIEZA,POSICION_PIEZA_CAPTURADA,MASK_LIMPIAR_PIEZA_CAPTURADA);
+        estadoTablero = colocarValor(estadoTablero,MOVIMIENTO_NORMAL,POSICION_TIPO_MOVIMIENTO,MASK_LIMPIAR_TIPO_MOVIMIENTO);
 
         if (pieza == PEON) {
 
-            if (alPaso(estadoTablero) && destino == (estadoTablero >> 6 & 0b111111)) {
+            if (alPaso(estadoTablero,destino)) {
 
                 var posicionAlPaso = destino + (esTurnoBlanco(estadoTablero) ? -8 : 8);
 
                     // aqui se remueve la pieza al paso
                     tablero[posicionAlPaso] = NOPIEZA;
-                    // color al paso
-                    estadoTablero = estadoTablero & 0b111111_111111_111_11_111_0_111111_1_1_11_11L | (long) color[posicionAlPaso] << 12;
-
                     color[posicionAlPaso] = NOCOLOR;
 
-                    estadoTablero = setTipoMovimiento(estadoTablero, AL_PASO);
+                    estadoTablero = colocarValor(estadoTablero, AL_PASO,POSICION_TIPO_MOVIMIENTO,MASK_LIMPIAR_TIPO_MOVIMIENTO);
 
                 // al paso = false
-                estadoTablero &= 0b111111_111111_111_11_111_1_111111_0_1_11_11L;
+                estadoTablero &= MASK_LIMPIAR_AL_PASO;
             }
             else if (destino <= H1 || destino >= A8) {
 
                 if (tablero[destino] != NOPIEZA) {
-                    // pieza capturada
-                    estadoTablero = estadoTablero & 0b111111_111111_111_11_000_1_111111_1_1_11_11L | (long) tablero[destino] << 13;
-                    // color captura
-                    estadoTablero = estadoTablero & 0b111111_111111_111_00_111_1_111111_1_1_11_11L | (long) color[destino] << 16;
+
+                    estadoTablero = colocarValor(estadoTablero,tablero[destino],POSICION_PIEZA_CAPTURADA,MASK_LIMPIAR_PIEZA_CAPTURADA);
 
                     if (tablero[destino] == TORRE) {
                         switch (destino) {
                             case H8:
-                                estadoTablero &= 0b111111_111111_111_11_111_1_111111_1_1_10_11L;
+                                estadoTablero &= MASK_LIMPIAR_ENROQUES_NEGROS | 8;
                                 break;
                             case A8:
-                                estadoTablero &= 0b111111_111111_111_11_111_1_111111_1_1_01_11L;
+                                estadoTablero &= MASK_LIMPIAR_ENROQUES_NEGROS | 4;
                                 break;
                             case H1:
-                                estadoTablero &= 0b111111_111111_111_11_111_1_111111_1_1_11_10L;
+                                estadoTablero &= MASK_LIMPIAR_ENROQUES_BLANCOS | 2;
                                 break;
                             case A1:
-                                estadoTablero &= 0b111111_111111_111_11_111_1_111111_1_1_11_01L;
+                                estadoTablero &= MASK_LIMPIAR_ENROQUES_BLANCOS | 1;
                                 break;
 
                         }
@@ -172,26 +160,21 @@ public class Utilidades {
                         break;
                 }
                 color[destino] = esTurnoBlanco(estadoTablero) ? BLANCO : NEGRO;
-                estadoTablero = setTipoMovimiento(estadoTablero, PROMOCION);
+                estadoTablero = colocarValor(estadoTablero, PROMOCION,POSICION_TIPO_MOVIMIENTO,MASK_LIMPIAR_TIPO_MOVIMIENTO);
 
                 tablero[inicio] = NOPIEZA;
                 color[inicio] = NOCOLOR;
 
                 estadoTablero &= MASK_LIMPIAR_AL_PASO;
 
+                estadoTablero ^= 0b10000;
+
                 return estadoTablero;
 
             }else if (abs(inicio - destino) == 16) {
 
-                // al paso = true
-                estadoTablero |= 0b1_00_000;
-
-                // pieza al paso
                 int posicionPiezaAlPAso = destino + (esTurnoBlanco(estadoTablero) ? -8 : 8);
-                estadoTablero = estadoTablero & 0b111111_111111_111_11_111_1_000000_1_1_11_11L | (long) posicionPiezaAlPAso << 6;
-
-                // color al paso
-                estadoTablero = estadoTablero & 0b111111_111111_111_11_111_0_111111_1_1_11_11L | (long) color[inicio] << 12;
+                estadoTablero = estadoTablero & MASK_LIMPIAR_AL_PASO | posicionPiezaAlPAso << POSICION_PIEZA_AL_PASO;
 
                 tablero[destino] = pieza;
                 tablero[inicio] = NOPIEZA;
@@ -199,8 +182,7 @@ public class Utilidades {
                 color[destino] = color[inicio];
                 color[inicio] = NOCOLOR;
 
-                // tipo de movimiento
-                estadoTablero = setTipoMovimiento(estadoTablero, MOVIMIENTO_NORMAL);
+                estadoTablero ^= 0b10000;
 
                 return estadoTablero;
             }
@@ -233,59 +215,55 @@ public class Utilidades {
                         color[A8] = NOCOLOR;
                     }
                 }
-                estadoTablero = setTipoMovimiento(estadoTablero, ENROQUE);
+                estadoTablero = colocarValor(estadoTablero, ENROQUE,POSICION_TIPO_MOVIMIENTO,MASK_LIMPIAR_TIPO_MOVIMIENTO);
             } else {
-                estadoTablero = setTipoMovimiento(estadoTablero, MOVIMIENTO_REY);
+                estadoTablero = colocarValor(estadoTablero, MOVIMIENTO_REY,POSICION_TIPO_MOVIMIENTO,MASK_LIMPIAR_TIPO_MOVIMIENTO);
             }
             if (esTurnoBlanco(estadoTablero)) {
                 // enroques blancos false
-                estadoTablero &= 0b111111_111111_111_11_111_1_111111_1_1_11_00L;
+                estadoTablero &= MASK_LIMPIAR_ENROQUES_BLANCOS;
                 // posicion rey blanco
-                estadoTablero = estadoTablero & 0b111111_000000_111_11_111_1_111111_1_1_11_11L | (long) destino << 21;
+                estadoTablero = estadoTablero & MASK_LIMPIAR_POSICION_REY_BLANCO |  destino << POSICION_REY_BLANCO;
             } else {
                 // enroques negros false
-                estadoTablero &= 0b111111_111111_111_11_111_1_111111_1_1_00_11L;
+                estadoTablero &= MASK_LIMPIAR_ENROQUES_NEGROS;
                 // posicion rey negro
-                estadoTablero = estadoTablero & 0b000000_111111_111_11_111_1_111111_1_1_11_11L | (long) destino << 27;
+                estadoTablero = estadoTablero & MASK_LIMPIAR_POSICION_REY_NEGRO | destino << POSICION_REY_NEGRO;
             }
 
         } else if (pieza == TORRE) {
 
             switch (inicio) {
                 case H8:
-                    estadoTablero &= 0b111111_111111_111_11_111_1_111111_1_1_10_11L;
+                    estadoTablero &= MASK_LIMPIAR_ENROQUES_NEGROS | 8;
                     break;
                 case A8:
-                    estadoTablero &= 0b111111_111111_111_11_111_1_111111_1_1_01_11L;
+                    estadoTablero &= MASK_LIMPIAR_ENROQUES_NEGROS | 4;
                     break;
                 case H1:
-                    estadoTablero &= 0b111111_111111_111_11_111_1_111111_1_1_11_10L;
+                    estadoTablero &= MASK_LIMPIAR_ENROQUES_BLANCOS | 2;
                     break;
                 case A1:
-                    estadoTablero &= 0b111111_111111_111_11_111_1_111111_1_1_11_01L;
+                    estadoTablero &= MASK_LIMPIAR_ENROQUES_BLANCOS | 1;
                     break;
             }
 
         }
-
-        // pieza capturada
-        estadoTablero = estadoTablero & 0b111111_111111_111_11_000_1_111111_1_1_11_11L | (long) tablero[destino] << 13;
-        // color captura
-        estadoTablero = estadoTablero & 0b111111_111111_111_00_111_1_111111_1_1_11_11L | (long) color[destino] << 16;
+        estadoTablero = colocarValor(estadoTablero,tablero[destino],POSICION_PIEZA_CAPTURADA,MASK_LIMPIAR_PIEZA_CAPTURADA);
 
         if (tablero[destino] == TORRE) {
             switch (destino) {
                 case H8:
-                    estadoTablero &= 0b111111_111111_111_11_111_1_111111_1_1_10_11L;
+                    estadoTablero &= MASK_LIMPIAR_ENROQUES_NEGROS | 8;
                     break;
                 case A8:
-                    estadoTablero &= 0b111111_111111_111_11_111_1_111111_1_1_01_11L;
+                    estadoTablero &= MASK_LIMPIAR_ENROQUES_NEGROS | 4;
                     break;
                 case H1:
-                    estadoTablero &= 0b111111_111111_111_11_111_1_111111_1_1_11_10L;
+                    estadoTablero &= MASK_LIMPIAR_ENROQUES_BLANCOS | 2;
                     break;
                 case A1:
-                    estadoTablero &= 0b111111_111111_111_11_111_1_111111_1_1_11_01L;
+                    estadoTablero &= MASK_LIMPIAR_ENROQUES_BLANCOS | 1;
                     break;
 
             }
@@ -298,33 +276,35 @@ public class Utilidades {
         tablero[inicio] = NOPIEZA;
         color[inicio] = NOCOLOR;
 
-
-        // al paso  = false
-        estadoTablero &= 0b111111_111111_111_11_111_1_111111_0_1_11_11L;
-
+        estadoTablero &= MASK_LIMPIAR_AL_PASO;
+        estadoTablero ^= 0b10000;
         return estadoTablero;
     }
 
-    static boolean alPaso(long estadoTablero) {
-        return (estadoTablero & 0b000000_000000_000_00_000_0_000000_1_0_00_00L) > 0;
+    static boolean alPaso(int estadoTablero, int destino) {
+
+        if(destino >= A3 && destino <= H3 || destino >= A6 && destino <= H6)
+            return (estadoTablero >> POSICION_PIEZA_AL_PASO & 0b111111) == destino;
+
+        return  false;
     }
 
-    private static long setTipoMovimiento(long estadoTablero, int movimiento) {
-        return estadoTablero & 0b111111_111111_000_11_111_1_111111_1_1_11_11L | (long) movimiento << 18;
+    private static int colocarValor(int estadoTablero, int valor, int posicion, int mascara) {
+        return estadoTablero & mascara | valor << posicion;
     }
 
-    public static boolean esTurnoBlanco(long estadoTablero) {
-        return (estadoTablero & 0b000000_000000_000_00_000_0_000000_0_1_00_00L) > 0;
+    public static boolean esTurnoBlanco(int estadoTablero) {
+        return (estadoTablero & 0b000000_000000_000_000_000000_1_00_00) > 0;
     }
 
-    public static int posicionRey(long estado, int desplazamiento) {
-        return (int) (estado >> desplazamiento & 0b111111);
+    public static int posicionRey(int estado, int desplazamiento) {
+        return  estado >> desplazamiento & 0b111111;
     }
 
-    public static int reyEnJaque(int[] pieza, int[] color, long estado) {
+    public static int reyEnJaque(int[] pieza, int[] color, int estado) {
         var blanco = esTurnoBlanco(estado);
 
-        var posicionRey = blanco ? posicionRey(estado, 21) : posicionRey(estado, 27);
+        var posicionRey = blanco ? posicionRey(estado, POSICION_REY_BLANCO) : posicionRey(estado, POSICION_REY_NEGRO);
 
         int result;
 
@@ -441,7 +421,7 @@ public class Utilidades {
         return NO_JAQUE;
     }
 
-    public static boolean movimientoValido(int movimiento, int[] tablero, int[] color, long estado) {
+    public static boolean movimientoValido(int movimiento, int[] tablero, int[] color, int estado) {
 
         int inicio = movimiento >> 6 & 0b111111;
         int destino = movimiento & 0b111111;
@@ -459,21 +439,17 @@ public class Utilidades {
         boolean tomaAlPaso = false;
         int posicionPiezaALPaso = 0;
 
-        if (piezaActual == PEON && alPaso(estado)) {
-
+        if (piezaActual == PEON && alPaso(estado,destino)) {
             posicionPiezaALPaso = destino + (esTurnoBlanco(estado) ? -8 : 8);
-
-            if (destino == (estado >> 6 & 0b111111)) {
-                tomaAlPaso = true;
-                tablero[posicionPiezaALPaso] = NOPIEZA;
-            }
+            tomaAlPaso = true;
+            tablero[posicionPiezaALPaso] = NOPIEZA;
 
         }
         if (piezaActual == REY) {
             if (esTurnoBlanco(estado)) {
-                estado = estado & 0b111111_000000_111_11_111_1_111111_1_1_11_11L | (long) destino << 21;
+                estado = estado & MASK_LIMPIAR_POSICION_REY_BLANCO | destino << POSICION_REY_BLANCO;
             } else {
-                estado = estado & 0b000000_111111_111_11_111_1_111111_1_1_11_11L | (long) destino << 27;
+                estado = estado & MASK_LIMPIAR_POSICION_REY_NEGRO | destino << POSICION_REY_NEGRO;
             }
         }
         var jaque = reyEnJaque(tablero, color, estado);
@@ -498,21 +474,17 @@ public class Utilidades {
         return columna + 8 * fila;
     }
 
-    public static void imprimirBinario(long estadoTablero){
-                String formateado = Long.toBinaryString(estadoTablero);
+    public static void imprimirBinario(int estadoTablero){
+        String formateado = Integer.toBinaryString(estadoTablero);
         String formato = "";
         formato = formateado.substring(formateado.length() - 2);
         formato = formateado.substring(formateado.length() - 4, formateado.length() -2) + "_" + formato;
         formato = formateado.substring(formateado.length() - 5, formateado.length() -4) + "_" + formato;
-        formato = formateado.substring(formateado.length() - 6, formateado.length() -5) + "_" + formato;
-        formato = formateado.substring(formateado.length() - 12, formateado.length() -6) + "_" + formato;
-        formato = formateado.substring(formateado.length() - 13, formateado.length() -12) + "_" + formato;
-        formato = formateado.substring(formateado.length() - 16, formateado.length() -13) + "_" + formato;
-        formato = formateado.substring(formateado.length() - 18, formateado.length() -16) + "_" + formato;
-        formato = formateado.substring(formateado.length() - 21, formateado.length() -18) + "_" + formato;
-        formato = formateado.substring(formateado.length() - 27, formateado.length() -21) + "_" + formato;
-        formato = formateado.substring(0, formateado.length() -27) + "_" + formato;
-
+        formato = formateado.substring(formateado.length() - 11, formateado.length() -5) + "_" + formato;
+        formato = formateado.substring(formateado.length() - 14, formateado.length() -11) + "_" + formato;
+        formato = formateado.substring(formateado.length() - 17, formateado.length() -14) + "_" + formato;
+        formato = formateado.substring(formateado.length() - 23, formateado.length() -17) + "_" + formato;
+        formato = formateado.substring(0, formateado.length() -23) + "_" + formato;
 
         System.out.println(formato);
     }

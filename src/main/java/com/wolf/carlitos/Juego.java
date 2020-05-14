@@ -11,16 +11,16 @@ import static com.wolf.carlitos.Utilidades.*;
 
 
 public class Juego {
-    
+
     public int[] tablero = new int[64];
-    public int [] color = new int[64];
-    
-    public long estadoTablero;
+    public int[] color = new int[64];
+
+    public int estadoTablero;
     public List<Integer> secuencia = new ArrayList<>();
 
 
     public Juego() {
-        estadoTablero = 0b111100_000100_000_00_000_0_000000_0_1_11_11L;
+        estadoTablero = POSICION_INICIAL;
 
         for (int i = 0; i < 64; i++) {
             tablero[i] = NOPIEZA;
@@ -60,7 +60,7 @@ public class Juego {
     public void establecerPosicion(String... movimientos) {
         for (var movimiento : movimientos) {
             secuencia.add(convertirAPosicion(movimiento));
-            estadoTablero = actualizarTablero(tablero,color, estadoTablero, convertirAPosicion(movimiento));
+            estadoTablero = hacerMovimiento(tablero, color, estadoTablero, convertirAPosicion(movimiento));
             estadoTablero ^= 0b10000;
         }
 
@@ -72,8 +72,8 @@ public class Juego {
         color = new int[64];
         estadoTablero = 0;
 
-        Arrays.fill(tablero,NOPIEZA);
-        Arrays.fill(color,NOCOLOR);
+        Arrays.fill(tablero, NOPIEZA);
+        Arrays.fill(color, NOCOLOR);
 
         String[] filas = fen.split("/");
 
@@ -82,25 +82,23 @@ public class Juego {
             if (i == 7) {
                 String[] ops = filas[i].split(" ");
                 iniciarFen(ops[0], 7 - i);
-                
+
                 // turno
                 estadoTablero |= (ops[1].equals("w") ? 1 : 0) << 4;
-                
+
                 int enroques = 0;
-                
-                if(ops[2].contains("K"))  enroques |= 1;
-                if(ops[2].contains("Q"))  enroques |= 2;
-                if(ops[2].contains("k"))  enroques |= 4;
-                if(ops[2].contains("q"))  enroques |= 8;
-                
+
+                if (ops[2].contains("K")) enroques |= 1;
+                if (ops[2].contains("Q")) enroques |= 2;
+                if (ops[2].contains("k")) enroques |= 4;
+                if (ops[2].contains("q")) enroques |= 8;
+
                 estadoTablero |= enroques;
-                
+
 
                 if (!ops[3].contains("-")) {
                     var posicion = Utilidades.casillaANumero(ops[3]) + (esTurnoBlanco(estadoTablero) ? -8 : 8);
-                    estadoTablero |= posicion << 6;
-                    // al paso
-                    estadoTablero |= 0b100000;
+                    estadoTablero |= posicion << POSICION_PIEZA_AL_PASO;
                 }
 
             } else {
@@ -110,8 +108,8 @@ public class Juego {
         }
 
         System.out.println("fen procesado");
-       Utilidades.imprimirBinario(estadoTablero);
-        Utilidades.imprimirPosicicion(tablero,color);
+        Utilidades.imprimirBinario(estadoTablero);
+        Utilidades.imprimirPosicicion(tablero, color);
     }
 
     private void iniciarFen(String fila, int i) {
@@ -123,7 +121,7 @@ public class Juego {
             if (c == 'k') {
                 tablero[indexInicio] = REY;
                 color[indexInicio] = NEGRO;
-                estadoTablero |=  (long)indexInicio << 27;
+                estadoTablero |=  indexInicio << POSICION_REY_NEGRO;
             }
             if (c == 'q') {
                 tablero[indexInicio] = DAMA;
@@ -149,7 +147,7 @@ public class Juego {
             if (c == 'K') {
                 tablero[indexInicio] = REY;
                 color[indexInicio] = BLANCO;
-                estadoTablero |= indexInicio << 21;
+                estadoTablero |= indexInicio << POSICION_REY_BLANCO;
             }
             if (c == 'Q') {
                 tablero[indexInicio] = DAMA;
@@ -180,13 +178,15 @@ public class Juego {
         }
 
     }
-    public void perft(int n){
-        var search = new Search(tablero,color, estadoTablero);
+
+    public void perft(int n) {
+        var search = new Search(tablero, color, estadoTablero);
         search.perft(n);
 
     }
-   public String mover(int n) throws InterruptedException, CloneNotSupportedException, ExecutionException {
-       var search = new Search(tablero,color, estadoTablero);
-       return Utilidades.convertirANotacion(search.search(n));
-   }
+
+    public String mover(int n) throws InterruptedException, CloneNotSupportedException, ExecutionException {
+        var search = new Search(tablero, color, estadoTablero);
+        return Utilidades.convertirANotacion(search.search(n));
+    }
 }
