@@ -452,7 +452,10 @@ public class Utilidades {
                 estado = estado & MASK_LIMPIAR_POSICION_REY_NEGRO | destino << POSICION_REY_NEGRO;
             }
         }
-        var jaque = reyEnJaque(tablero, color, estado);
+
+        //var jaque = reyEnJaque(tablero, color, estado);
+
+        var jaque = Tablero.casillaAtacada(posicionRey(estado, (esTurnoBlanco(estado) ? POSICION_REY_BLANCO : POSICION_REY_NEGRO)),tablero,color, esTurnoBlanco(estado) ? NEGRO : BLANCO );
 
         if (tomaAlPaso) {
             tablero[posicionPiezaALPaso] = PEON;
@@ -465,7 +468,8 @@ public class Utilidades {
         color[inicio] = color[destino];
         color[destino] = colorDestino;
 
-        return jaque == NO_JAQUE;
+        //return jaque == NO_JAQUE;
+        return  !jaque;
     }
 
     public static int casillaANumero(String casilla) {

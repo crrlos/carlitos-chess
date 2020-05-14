@@ -5,21 +5,19 @@
  */
 package com.wolf.carlitos;
 
-import java.lang.annotation.Target;
 import java.util.*;
 
 //import static com.wolf.carlitos.Utilidades.movimientoValido;
 import static com.wolf.carlitos.Constantes.*;
 import static com.wolf.carlitos.Utilidades.*;
 import static java.lang.Math.abs;
-import static java.lang.Math.log;
 
 /**
  * @author carlos
  */
 public class Generador {
 
-    private int piezaJaque;
+    private boolean reyEnJaque;
     private Movimientos movimientos;
 
     public static final HashMap<Integer, List<List<Integer>>> movimientosAlfil = new HashMap<>();
@@ -196,7 +194,9 @@ public class Generador {
         
         this.movimientos = movimientos;
 
-        piezaJaque = reyEnJaque(pieza,color, estado);
+        int posicionRey = posicionRey(estado, esTurnoBlanco(estado) ? POSICION_REY_BLANCO : POSICION_REY_NEGRO);
+
+        reyEnJaque = Tablero.casillaAtacada(posicionRey,pieza,color,esTurnoBlanco(estado) ? NEGRO :BLANCO);
 
         for (int i = 0; i < pieza.length; i++) {
 
@@ -226,7 +226,7 @@ public class Generador {
             }
 
         }
-        piezaJaque = 0;
+        reyEnJaque = false;
     }
 
     public void movimientosDeTorre(int[] tablero,int[]color, int estado, int posicion) {
@@ -438,7 +438,7 @@ public class Generador {
     }
     
     private boolean enJaque() {
-        return piezaJaque != NO_JAQUE;
+        return reyEnJaque;
     }
     
     public void movimientosDeAlfil(int[] tablero,int[] color, int estado, int posicion) {
