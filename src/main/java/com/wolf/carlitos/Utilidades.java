@@ -8,6 +8,7 @@ package com.wolf.carlitos;
 
 import java.util.HashMap;
 
+import static com.wolf.carlitos.Tablero.casillaAtacada;
 import static java.lang.Math.abs;
 import static com.wolf.carlitos.Constantes.*;
 
@@ -102,29 +103,28 @@ public class Utilidades {
 
         var pieza = tablero[inicio];
 
-        estadoTablero = colocarValor(estadoTablero,NOPIEZA,POSICION_PIEZA_CAPTURADA,MASK_LIMPIAR_PIEZA_CAPTURADA);
-        estadoTablero = colocarValor(estadoTablero,MOVIMIENTO_NORMAL,POSICION_TIPO_MOVIMIENTO,MASK_LIMPIAR_TIPO_MOVIMIENTO);
+        estadoTablero = colocarValor(estadoTablero, NOPIEZA, POSICION_PIEZA_CAPTURADA, MASK_LIMPIAR_PIEZA_CAPTURADA);
+        estadoTablero = colocarValor(estadoTablero, MOVIMIENTO_NORMAL, POSICION_TIPO_MOVIMIENTO, MASK_LIMPIAR_TIPO_MOVIMIENTO);
 
         if (pieza == PEON) {
 
-            if (alPaso(estadoTablero,destino)) {
+            if (alPaso(estadoTablero, destino)) {
 
                 var posicionAlPaso = destino + (esTurnoBlanco(estadoTablero) ? -8 : 8);
 
-                    // aqui se remueve la pieza al paso
-                    tablero[posicionAlPaso] = NOPIEZA;
-                    color[posicionAlPaso] = NOCOLOR;
+                // aqui se remueve la pieza al paso
+                tablero[posicionAlPaso] = NOPIEZA;
+                color[posicionAlPaso] = NOCOLOR;
 
-                    estadoTablero = colocarValor(estadoTablero, AL_PASO,POSICION_TIPO_MOVIMIENTO,MASK_LIMPIAR_TIPO_MOVIMIENTO);
+                estadoTablero = colocarValor(estadoTablero, AL_PASO, POSICION_TIPO_MOVIMIENTO, MASK_LIMPIAR_TIPO_MOVIMIENTO);
 
                 // al paso = false
                 estadoTablero &= MASK_LIMPIAR_AL_PASO;
-            }
-            else if (destino <= H1 || destino >= A8) {
+            } else if (destino <= H1 || destino >= A8) {
 
                 if (tablero[destino] != NOPIEZA) {
 
-                    estadoTablero = colocarValor(estadoTablero,tablero[destino],POSICION_PIEZA_CAPTURADA,MASK_LIMPIAR_PIEZA_CAPTURADA);
+                    estadoTablero = colocarValor(estadoTablero, tablero[destino], POSICION_PIEZA_CAPTURADA, MASK_LIMPIAR_PIEZA_CAPTURADA);
 
                     if (tablero[destino] == TORRE) {
                         switch (destino) {
@@ -160,7 +160,7 @@ public class Utilidades {
                         break;
                 }
                 color[destino] = esTurnoBlanco(estadoTablero) ? BLANCO : NEGRO;
-                estadoTablero = colocarValor(estadoTablero, PROMOCION,POSICION_TIPO_MOVIMIENTO,MASK_LIMPIAR_TIPO_MOVIMIENTO);
+                estadoTablero = colocarValor(estadoTablero, PROMOCION, POSICION_TIPO_MOVIMIENTO, MASK_LIMPIAR_TIPO_MOVIMIENTO);
 
                 tablero[inicio] = NOPIEZA;
                 color[inicio] = NOCOLOR;
@@ -171,7 +171,7 @@ public class Utilidades {
 
                 return estadoTablero;
 
-            }else if (abs(inicio - destino) == 16) {
+            } else if (abs(inicio - destino) == 16) {
 
                 int posicionPiezaAlPAso = destino + (esTurnoBlanco(estadoTablero) ? -8 : 8);
                 estadoTablero = estadoTablero & MASK_LIMPIAR_AL_PASO | posicionPiezaAlPAso << POSICION_PIEZA_AL_PASO;
@@ -215,15 +215,15 @@ public class Utilidades {
                         color[A8] = NOCOLOR;
                     }
                 }
-                estadoTablero = colocarValor(estadoTablero, ENROQUE,POSICION_TIPO_MOVIMIENTO,MASK_LIMPIAR_TIPO_MOVIMIENTO);
+                estadoTablero = colocarValor(estadoTablero, ENROQUE, POSICION_TIPO_MOVIMIENTO, MASK_LIMPIAR_TIPO_MOVIMIENTO);
             } else {
-                estadoTablero = colocarValor(estadoTablero, MOVIMIENTO_REY,POSICION_TIPO_MOVIMIENTO,MASK_LIMPIAR_TIPO_MOVIMIENTO);
+                estadoTablero = colocarValor(estadoTablero, MOVIMIENTO_REY, POSICION_TIPO_MOVIMIENTO, MASK_LIMPIAR_TIPO_MOVIMIENTO);
             }
             if (esTurnoBlanco(estadoTablero)) {
                 // enroques blancos false
                 estadoTablero &= MASK_LIMPIAR_ENROQUES_BLANCOS;
                 // posicion rey blanco
-                estadoTablero = estadoTablero & MASK_LIMPIAR_POSICION_REY_BLANCO |  destino << POSICION_REY_BLANCO;
+                estadoTablero = estadoTablero & MASK_LIMPIAR_POSICION_REY_BLANCO | destino << POSICION_REY_BLANCO;
             } else {
                 // enroques negros false
                 estadoTablero &= MASK_LIMPIAR_ENROQUES_NEGROS;
@@ -249,7 +249,7 @@ public class Utilidades {
             }
 
         }
-        estadoTablero = colocarValor(estadoTablero,tablero[destino],POSICION_PIEZA_CAPTURADA,MASK_LIMPIAR_PIEZA_CAPTURADA);
+        estadoTablero = colocarValor(estadoTablero, tablero[destino], POSICION_PIEZA_CAPTURADA, MASK_LIMPIAR_PIEZA_CAPTURADA);
 
         if (tablero[destino] == TORRE) {
             switch (destino) {
@@ -283,10 +283,10 @@ public class Utilidades {
 
     static boolean alPaso(int estadoTablero, int destino) {
 
-        if(destino >= A3 && destino <= H3 || destino >= A6 && destino <= H6)
+        if (destino >= A3 && destino <= H3 || destino >= A6 && destino <= H6)
             return (estadoTablero >> POSICION_PIEZA_AL_PASO & 0b111111) == destino;
 
-        return  false;
+        return false;
     }
 
     private static int colocarValor(int estadoTablero, int valor, int posicion, int mascara) {
@@ -296,132 +296,19 @@ public class Utilidades {
     public static boolean esTurnoBlanco(int estadoTablero) {
         return (estadoTablero & 0b000000_000000_000_000_000000_1_00_00) > 0;
     }
-   public  static int colorContrario(int estado){
-        return  esTurnoBlanco(estado) ? NEGRO : BLANCO;
-   }
-    public static int  posicionRey(int estado, int desplazamiento) {
-        return  estado >> desplazamiento & 0b111111;
+
+    public static int colorContrario(int estado) {
+        return esTurnoBlanco(estado) ? NEGRO : BLANCO;
     }
 
-    public static int reyEnJaque(int[] pieza, int[] color, int estado) {
+    public static int posicionRey(int estado, int desplazamiento) {
+        return estado >> desplazamiento & 0b111111;
+    }
+
+    public static boolean reyEnJaque(int[] pieza, int[] color, int estado) {
         var blanco = esTurnoBlanco(estado);
-
         var posicionRey = blanco ? posicionRey(estado, POSICION_REY_BLANCO) : posicionRey(estado, POSICION_REY_NEGRO);
-
-
-        int result;
-
-        if ((result = ataqueFilaColumna(posicionRey, pieza, color, blanco)) != NO_JAQUE) return result;
-        if ((result = ataqueDiagonal(posicionRey, pieza, color, blanco)) != NO_JAQUE) return result;
-        if ((result = ataqueCaballo(posicionRey, pieza, color, blanco)) != NO_JAQUE) return result;
-        if ((result = ataquePeon(posicionRey, pieza, color, blanco)) != NO_JAQUE) return result;
-
-        return NO_JAQUE;
-    }
-
-    public static boolean esCasillaBlanca(int i) {
-        boolean filaImpar = (i / 8 + 1) % 2 != 0;
-
-        return filaImpar == ((i + 1) % 2 == 0);
-    }
-
-    private static int ataquePeon(int posicion, int[] pieza, int[] color, boolean blanco) {
-        if (blanco) {
-            var destino = posicion + 9;
-            if (destino < 64) {
-                int posicionActual = pieza[destino];
-                if (posicionActual != NOPIEZA && pieza[destino] == PEON && !(color[destino] == BLANCO) && esCasillaBlanca(posicion) == esCasillaBlanca(destino)) {
-                    return destino;
-                }
-            }
-            destino = posicion + 7;
-            if (destino < 64) {
-                var posicionActual = pieza[destino];
-                if (posicionActual != NOPIEZA && posicionActual == PEON && !(color[destino] == BLANCO) && esCasillaBlanca(posicion) == esCasillaBlanca(destino)) {
-                    return destino;
-                }
-            }
-        } else {
-            var destino = posicion - 9;
-            if (destino >= 0) {
-                var posicionActual = pieza[destino];
-                if (posicionActual != NOPIEZA && pieza[destino] == PEON && color[destino] == BLANCO && esCasillaBlanca(posicion) == esCasillaBlanca(destino)) {
-                    return destino;
-                }
-            }
-            destino = posicion - 7;
-            if (destino >= 0) {
-                var posicionActual = pieza[destino];
-                if (posicionActual != NOPIEZA && pieza[destino] == PEON && color[destino] == BLANCO && esCasillaBlanca(posicion) == esCasillaBlanca(destino)) {
-                    return destino;
-                }
-            }
-        }
-        return NO_JAQUE;
-    }
-
-    private static int ataqueFilaColumna(int posicion, int[] pieza, int[] color, boolean blanco) {
-
-        var movimientosTorre = Generador.movimientosTorre.get(posicion);
-
-        for (int i = 0; i < movimientosTorre.size(); i++) {
-
-            var m = movimientosTorre.get(i);
-
-            for (int j = 0; j < m.size(); j++) {
-                int posicionActual = pieza[m.get(j)];
-                if (posicionActual != NOPIEZA) {
-                    if (color[m.get(j)] == BLANCO != blanco
-                            && (posicionActual == TORRE || posicionActual == DAMA)) {
-                        return m.get(j);
-                    } else break;
-                }
-
-
-            }
-
-        }
-        return NO_JAQUE;
-    }
-
-    private static int ataqueDiagonal(int posicion, int[] pieza, int[] color, boolean blanco) {
-
-        var movimientosAlfil = Generador.movimientosAlfil.get(posicion);
-
-        for (int i = 0; i < movimientosAlfil.size(); i++) {
-            var m = movimientosAlfil.get(i);
-
-            for (int j = 0; j < m.size(); j++) {
-                int posicionActual = pieza[m.get(j)];
-                if (posicionActual != NOPIEZA) {
-
-                    if (color[m.get(j)] == BLANCO != blanco
-                            && (posicionActual == ALFIL || posicionActual == DAMA)) {
-                        return m.get(j);
-                    } else break;
-                }
-
-            }
-
-        }
-        return NO_JAQUE;
-    }
-
-    private static int ataqueCaballo(int posicion, int[] pieza, int[] color, boolean blanco) {
-
-        var movimientosCaballo = Generador.movimientosCaballo.get(posicion);
-
-        for (int j = 0; j < movimientosCaballo.size(); j++) {
-            var m = movimientosCaballo.get(j);
-            int posicionActual = pieza[m];
-            if (posicionActual != NOPIEZA)
-                if (color[m] == BLANCO != blanco
-                        && (posicionActual == CABALLO)) {
-                    return m;
-                }
-
-        }
-        return NO_JAQUE;
+        return casillaAtacada(posicionRey, pieza, color, colorContrario(estado));
     }
 
     public static boolean movimientoValido(int movimiento, int[] tablero, int[] color, int estado) {
@@ -442,13 +329,12 @@ public class Utilidades {
         boolean tomaAlPaso = false;
         int posicionPiezaALPaso = 0;
 
-        if (piezaActual == PEON && alPaso(estado,destino)) {
+        if (piezaActual == PEON && alPaso(estado, destino)) {
             posicionPiezaALPaso = destino + (esTurnoBlanco(estado) ? -8 : 8);
             tomaAlPaso = true;
             tablero[posicionPiezaALPaso] = NOPIEZA;
 
-        }else
-        if (piezaActual == REY) {
+        } else if (piezaActual == REY) {
             if (esTurnoBlanco(estado)) {
                 estado = estado & MASK_LIMPIAR_POSICION_REY_BLANCO | destino << POSICION_REY_BLANCO;
             } else {
@@ -458,11 +344,11 @@ public class Utilidades {
 
         //var jaque = reyEnJaque(tablero, color, estado);
 
-        var jaque = Tablero.casillaAtacada(posicionRey(estado, (esTurnoBlanco(estado) ? POSICION_REY_BLANCO : POSICION_REY_NEGRO)),tablero,color, esTurnoBlanco(estado) ? NEGRO : BLANCO );
+        var jaque = casillaAtacada(posicionRey(estado, (esTurnoBlanco(estado) ? POSICION_REY_BLANCO : POSICION_REY_NEGRO)), tablero, color, esTurnoBlanco(estado) ? NEGRO : BLANCO);
 
         if (tomaAlPaso) {
             tablero[posicionPiezaALPaso] = PEON;
-            color[posicionPiezaALPaso] = esTurnoBlanco(estado) ? NEGRO :BLANCO;
+            color[posicionPiezaALPaso] = esTurnoBlanco(estado) ? NEGRO : BLANCO;
         }
 
         tablero[destino] = piezaDestino;
@@ -472,7 +358,7 @@ public class Utilidades {
         color[destino] = colorDestino;
 
         //return jaque == NO_JAQUE;
-        return  !jaque;
+        return !jaque;
     }
 
     public static int casillaANumero(String casilla) {
@@ -481,17 +367,17 @@ public class Utilidades {
         return columna + 8 * fila;
     }
 
-    public static void imprimirBinario(int estadoTablero){
+    public static void imprimirBinario(int estadoTablero) {
         String formateado = Integer.toBinaryString(estadoTablero);
         String formato = "";
         formato = formateado.substring(formateado.length() - 2);
-        formato = formateado.substring(formateado.length() - 4, formateado.length() -2) + "_" + formato;
-        formato = formateado.substring(formateado.length() - 5, formateado.length() -4) + "_" + formato;
-        formato = formateado.substring(formateado.length() - 11, formateado.length() -5) + "_" + formato;
-        formato = formateado.substring(formateado.length() - 14, formateado.length() -11) + "_" + formato;
-        formato = formateado.substring(formateado.length() - 17, formateado.length() -14) + "_" + formato;
-        formato = formateado.substring(formateado.length() - 23, formateado.length() -17) + "_" + formato;
-        formato = formateado.substring(0, formateado.length() -23) + "_" + formato;
+        formato = formateado.substring(formateado.length() - 4, formateado.length() - 2) + "_" + formato;
+        formato = formateado.substring(formateado.length() - 5, formateado.length() - 4) + "_" + formato;
+        formato = formateado.substring(formateado.length() - 11, formateado.length() - 5) + "_" + formato;
+        formato = formateado.substring(formateado.length() - 14, formateado.length() - 11) + "_" + formato;
+        formato = formateado.substring(formateado.length() - 17, formateado.length() - 14) + "_" + formato;
+        formato = formateado.substring(formateado.length() - 23, formateado.length() - 17) + "_" + formato;
+        formato = formateado.substring(0, formateado.length() - 23) + "_" + formato;
 
         System.out.println(formato);
     }

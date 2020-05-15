@@ -252,7 +252,7 @@ public class Search {
         int fin = movimientos.getPosicionFinal();
 
         if (fin == 0) {
-            if (reyEnJaque(tablero,color, estado) != NO_JAQUE) return MATE;
+            if (reyEnJaque(tablero,color, estado)) return MATE;
             else return AHOGADO;
         }
 
@@ -300,7 +300,7 @@ public class Search {
         insertionSort(movs,fin);
 
         if (fin == 0) {
-            if (reyEnJaque(tablero, color, estado) != NO_JAQUE) return -MATE;
+            if (reyEnJaque(tablero, color, estado)) return -MATE;
             else return AHOGADO;
         }
 

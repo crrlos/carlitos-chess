@@ -24,30 +24,16 @@ public class Tablero {
     public static final int sureste = sur + este;
     public static final int suroeste = sur + oeste;
 
-    public static int[][] MOVIMIENTOS_PIEZA = new int[][]{
-            {NORESTE, NOROESTE},//p
-            {8, 12, 19, 21, -8, -12, -19, -21},// caballo
-            {SURESTE, NORESTE, SUROESTE, NOROESTE}, // alfil
-            {NORTE, SUR, ESTE, OESTE},// torre
-    };
-    public static int[][] movimientos_pieza = new int[][]{
-            {noreste, noroeste},
-            {6, 10, 15, 17, -6, -10, -15, -17},// caballo
-            {sureste, noreste, suroeste, noroeste}, // alfil
-            {norte, sur, este, oeste},// torre
-    };
-
-
     public static final int[][] offsetMailBox = new int[][]
             {
-                    {},
+                    {NORTE, NORESTE, NOROESTE},
                     {8, 12, 19, 21, -8, -12, -19, -21},
                     {SURESTE, NORESTE, SUROESTE, NOROESTE},
                     {NORTE, SUR, ESTE, OESTE}
             };
     public static final int[][] offset64 = new int[][]
             {
-                    {},
+                    {norte, noreste, noroeste},
                     {6, 10, 15, 17, -6, -10, -15, -17},
                     {sureste, noreste, suroeste, noroeste},
                     {norte, sur, este, oeste},
@@ -57,14 +43,14 @@ public class Tablero {
     public static final int[] mailBox = new int[]{
             -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
             -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-            -1, 0, 0, 0, 0, 0, 0, 0, 0, -1,
-            -1, 0, 0, 0, 0, 0, 0, 0, 0, -1,
-            -1, 0, 0, 0, 0, 0, 0, 0, 0, -1,
-            -1, 0, 0, 0, 0, 0, 0, 0, 0, -1,
-            -1, 0, 0, 0, 0, 0, 0, 0, 0, -1,
-            -1, 0, 0, 0, 0, 0, 0, 0, 0, -1,
-            -1, 0, 0, 0, 0, 0, 0, 0, 0, -1,
-            -1, 0, 0, 0, 0, 0, 0, 0, 0, -1,
+            -1, -0, -0, -0, -0, -0, -0, -0, -0, -1,
+            -1, -0, -0, -0, -0, -0, -0, -0, -0, -1,
+            -1, -0, -0, -0, -0, -0, -0, -0, -0, -1,
+            -1, -0, -0, -0, -0, -0, -0, -0, -0, -1,
+            -1, -0, -0, -0, -0, -0, -0, -0, -0, -1,
+            -1, -0, -0, -0, -0, -0, -0, -0, -0, -1,
+            -1, -0, -0, -0, -0, -0, -0, -0, -0, -1,
+            -1, -0, -0, -0, -0, -0, -0, -0, -0, -1,
             -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
             -1, -1, -1, -1, -1, -1, -1, -1, -1, -1
     };
@@ -85,12 +71,12 @@ public class Tablero {
 
         int pos;
 
-        for (int i = 0; i < MOVIMIENTOS_PIEZA[TORRE].length; i++) {
+        for (int i = 0; i < offsetMailBox[TORRE].length; i++) {
 
-            int dir = MOVIMIENTOS_PIEZA[TORRE][i];
+            int dir = offsetMailBox[TORRE][i];
             pos = posicion;
             while (mailBox[direccion[pos] + dir] != -1) {
-                pos += movimientos_pieza[TORRE][i];
+                pos += offset64[TORRE][i];
                 if (tablero[pos] != NOPIEZA) {
                     if (color[pos] == colorContrario && (tablero[pos] == TORRE || tablero[pos] == DAMA))
                         return true;
@@ -101,12 +87,12 @@ public class Tablero {
 
         }
 
-        for (int i = 0; i < MOVIMIENTOS_PIEZA[ALFIL].length; i++) {
+        for (int i = 0; i < offsetMailBox[ALFIL].length; i++) {
 
-            int dir = MOVIMIENTOS_PIEZA[ALFIL][i];
+            int dir = offsetMailBox[ALFIL][i];
             pos = posicion;
             while (mailBox[direccion[pos] + dir] != -1) {
-                pos += movimientos_pieza[ALFIL][i];
+                pos += offset64[ALFIL][i];
                 if (tablero[pos] != NOPIEZA) {
                     if (color[pos] == colorContrario && (tablero[pos] == ALFIL || tablero[pos] == DAMA))
                         return true;
@@ -117,12 +103,12 @@ public class Tablero {
 
         }
 
-        for (int i = 0; i < MOVIMIENTOS_PIEZA[CABALLO].length; i++) {
+        for (int i = 0; i < offsetMailBox[CABALLO].length; i++) {
 
-            int dir = MOVIMIENTOS_PIEZA[CABALLO][i];
+            int dir = offsetMailBox[CABALLO][i];
             pos = posicion;
             if (mailBox[direccion[pos] + dir] != -1) {
-                pos += movimientos_pieza[CABALLO][i];
+                pos += offset64[CABALLO][i];
                 if (tablero[pos] != NOPIEZA) {
                     if (color[pos] == colorContrario && (tablero[pos] == CABALLO))
                         return true;
@@ -132,12 +118,12 @@ public class Tablero {
 
         }
 
-        for (int i = 0; i < MOVIMIENTOS_PIEZA[PEON].length; i++) {
+        for (int i = 1; i < offsetMailBox[PEON].length; i++) {
 
-            int dir = MOVIMIENTOS_PIEZA[PEON][i];
+            int dir = offsetMailBox[PEON][i];
             pos = posicion;
             if (mailBox[direccion[pos] + (colorContrario == BLANCO ? -dir : dir)] != -1) {
-                pos += (colorContrario == BLANCO ? -movimientos_pieza[PEON][i] : movimientos_pieza[PEON][i]);
+                pos += (colorContrario == BLANCO ? -offset64[PEON][i] : offset64[PEON][i]);
                 if (tablero[pos] != NOPIEZA) {
                     if (color[pos] == colorContrario && tablero[pos] == PEON)
                         return true;
@@ -149,12 +135,12 @@ public class Tablero {
 
 
         // buscando al rey
-        for (int i = 0; i < MOVIMIENTOS_PIEZA[TORRE].length; i++) {
+        for (int i = 0; i < offsetMailBox[TORRE].length; i++) {
 
-            int dir = MOVIMIENTOS_PIEZA[TORRE][i];
+            int dir = offsetMailBox[TORRE][i];
             pos = posicion;
             if (mailBox[direccion[pos] + dir] != -1) {
-                pos += movimientos_pieza[TORRE][i];
+                pos += offset64[TORRE][i];
                 if (tablero[pos] != NOPIEZA) {
                     if (color[pos] == colorContrario && (tablero[pos] == REY))
                         return true;
@@ -164,12 +150,12 @@ public class Tablero {
 
         }
 
-        for (int i = 0; i < MOVIMIENTOS_PIEZA[ALFIL].length; i++) {
+        for (int i = 0; i < offsetMailBox[ALFIL].length; i++) {
 
-            int dir = MOVIMIENTOS_PIEZA[ALFIL][i];
+            int dir = offsetMailBox[ALFIL][i];
             pos = posicion;
             if (mailBox[direccion[pos] + dir] != -1) {
-                pos += movimientos_pieza[ALFIL][i];
+                pos += offset64[ALFIL][i];
                 if (tablero[pos] != NOPIEZA) {
                     if (color[pos] == colorContrario && (tablero[pos] == REY))
                         return true;
@@ -181,8 +167,6 @@ public class Tablero {
 
         return false;
     }
-
-
 
 
 }
