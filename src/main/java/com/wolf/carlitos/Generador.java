@@ -17,57 +17,44 @@ import static com.wolf.carlitos.Utilidades.*;
  */
 public class Generador {
 
-    static class Movimientos implements Cloneable {
-        private int[][] movimientosPorNivel = new int[10][256];
-        private int[] cantidadMovimientos = new int[10];
-
-        private int nivel;
+    static class Movimientos {
+        private final int[][] movimientosPorNivel = new int[10][256];
+        private int[] current;
         private int posicion;
 
         public void iniciar(int nivel) {
-            this.nivel = nivel;
-            cantidadMovimientos[nivel] = 0;
+            this.current = movimientosPorNivel[nivel];
             this.posicion = 0;
         }
 
         public void add(int movimiento) {
-            movimientosPorNivel[nivel][posicion++] = movimiento;
-            cantidadMovimientos[nivel] = posicion;
+            current[posicion++] = movimiento;
         }
 
         public int[] getMovimientos() {
-            return movimientosPorNivel[nivel];
+            return current;
         }
 
         public int getPosicionFinal() {
-            return cantidadMovimientos[nivel];
+            return posicion;
         }
 
-        @Override
-        protected Object clone() throws CloneNotSupportedException {
-
-            Movimientos m = (Movimientos) super.clone();
-            m.movimientosPorNivel = new int[10][256];
-            m.cantidadMovimientos = Arrays.copyOf(cantidadMovimientos, cantidadMovimientos.length);
-
-            return m;
-        }
     }
 
     static class Respuesta {
-        public  int[] movimientosGenerados;
-        public  int cantidadDeMovimientos;
+        public int[] movimientosGenerados;
+        public int cantidadDeMovimientos;
     }
 
     private boolean reyEnJaque;
-    private  boolean turnoBlanco;
+    private boolean turnoBlanco;
     private final Movimientos movimientos = new Movimientos();
     private final Respuesta respuesta = new Respuesta();
 
     public Respuesta generarMovimientos(int[] pieza, int[] color, int estado, int nivel) {
 
         this.movimientos.iniciar(nivel);
-        
+
         this.turnoBlanco = esTurnoBlanco(estado);
 
         int posicionRey = posicionRey(estado, turnoBlanco ? POSICION_REY_BLANCO : POSICION_REY_NEGRO);
@@ -403,7 +390,7 @@ public class Generador {
                 pos = posicion + offset64[DAMA][i];
 
                 int ec = turnoBlanco ?
-                        estado & MASK_LIMPIAR_POSICION_REY_BLANCO | pos << POSICION_REY_BLANCO:
+                        estado & MASK_LIMPIAR_POSICION_REY_BLANCO | pos << POSICION_REY_BLANCO :
                         estado & MASK_LIMPIAR_POSICION_REY_NEGRO | pos << POSICION_REY_NEGRO;
 
 
@@ -413,7 +400,7 @@ public class Generador {
 
             }
         }
-        
+
         if ((estado & 0b1111) == 0 || reyEnJaque) return;
 
         if (turnoBlanco) {
