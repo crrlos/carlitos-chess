@@ -6,7 +6,6 @@
 package com.wolf.carlitos;
 
 
-import java.util.*;
 import java.util.concurrent.*;
 
 import static com.wolf.carlitos.Ponderaciones.*;
@@ -18,50 +17,12 @@ import static com.wolf.carlitos.Tablero.*;
  * @author carlos
  */
 
-class Movimientos implements Cloneable {
-    private int[][] movimientosPorNivel = new int[10][256];
-    private int[] cantidadMovimientos = new int[10];
-
-    private int nivel;
-    private int posicion;
-
-    public void iniciar(int nivel) {
-        this.nivel = nivel;
-        cantidadMovimientos[nivel] = 0;
-        this.posicion = 0;
-    }
-
-    public void add(int movimiento) {
-        movimientosPorNivel[nivel][posicion++] = movimiento;
-        cantidadMovimientos[nivel] = posicion;
-    }
-
-    public int[] getMovimientos() {
-        return movimientosPorNivel[nivel];
-    }
-
-    public int getPosicionFinal() {
-        return cantidadMovimientos[nivel];
-    }
-
-    @Override
-    protected Object clone() throws CloneNotSupportedException {
-
-        Movimientos m = (Movimientos) super.clone();
-        m.movimientosPorNivel = new int[10][256];
-        m.cantidadMovimientos = Arrays.copyOf(cantidadMovimientos, cantidadMovimientos.length);
-
-        return m;
-    }
-}
 
 public class Search {
     private final int[] pieza;
     private final int[] color;
     private final int estadoTablero;
     private final Generador generador = new Generador();
-
-    private final Movimientos movimientos = new Movimientos();
 
     public Search(int[] pieza, int[] color, int estado) {
         this.pieza = pieza;
@@ -70,9 +31,9 @@ public class Search {
 
     }
 
-    public void puntajeMVVLVA(int[] movimientos, int limite) {
+    public void puntajeMVVLVA(int[] movimientos, int fin) {
 
-        for (int i = 0; i < limite; i++) {
+        for (int i = 0; i < fin; i++) {
             int inicio = movimientos[i] >> 6 & 0b111111;
             int destino = movimientos[i] & 0b111111;
 
@@ -81,9 +42,8 @@ public class Search {
 
     }
 
-    public static void insertionSort(int[] array, int limite) {
-        int n = limite;
-        for (int j = 1; j < n; j++) {
+    public static void insertionSort(int[] array,int fin) {
+        for (int j = 1; j < fin; j++) {
             int key = array[j];
             int i = j - 1;
             while ((i > -1) && (array[i] >> 14 < key >> 14)) {
@@ -101,14 +61,11 @@ public class Search {
             acumulador.contadorPerft++;
             return;
         }
+        var respuesta = generador.generarMovimientos(pieza, color, estado, deep);
 
-        this.movimientos.iniciar(deep);
+        var movimientos = respuesta.movimientosGenerados;
+        var fin = respuesta.cantidadDeMovimientos;
 
-        generador.generarMovimientos(pieza, color, estado, this.movimientos);
-
-        int fin = this.movimientos.getPosicionFinal();
-
-        var movimientos = this.movimientos.getMovimientos();
 
         for (int i = 0; i < fin; i++) {
             var mov = movimientos[i];
@@ -241,25 +198,24 @@ public class Search {
 
         if (nivel == 0) return evaluar(tablero, color);
 
-        movimientos.iniciar(nivel);
 
-        generador.generarMovimientos(tablero, color, estado, movimientos);
 
-        int fin = movimientos.getPosicionFinal();
+        var respuesta = generador.generarMovimientos(tablero, color, estado, nivel);
 
-        if (fin == 0) {
+        var movimientos = respuesta.movimientosGenerados;
+        var fin = respuesta.cantidadDeMovimientos;
+
+        if (movimientos.length == 0) {
             if (reyEnJaque(tablero, color, estado)) return MATE;
             else return AHOGADO;
         }
 
-        var movs = movimientos.getMovimientos();
+        puntajeMVVLVA(movimientos, fin);
+        insertionSort(movimientos, fin);
 
-        puntajeMVVLVA(movs, fin);
-        insertionSort(movs, fin);
+        for (int i = 0; i < movimientos.length; i++) {
 
-        for (int i = 0; i < fin; i++) {
-
-            var mov = movs[i];
+            var mov = movimientos[i];
             int estadoActualizado = hacerMovimiento(tablero, color, estado, mov);
 
             estadoActualizado ^= 0b10000;
@@ -285,23 +241,21 @@ public class Search {
 
         if (nivel == 0) return evaluar(tablero, color);
 
-        movimientos.iniciar(nivel);
-        generador.generarMovimientos(tablero, color, estado, movimientos);
+        var respuesta = generador.generarMovimientos(tablero, color, estado, nivel);
 
-        var movs = movimientos.getMovimientos();
+        var movimientos = respuesta.movimientosGenerados;
+        var fin = respuesta.cantidadDeMovimientos;
 
-        int fin = movimientos.getPosicionFinal();
+        puntajeMVVLVA(movimientos,fin);
+        insertionSort(movimientos,fin);
 
-        puntajeMVVLVA(movs, fin);
-        insertionSort(movs, fin);
-
-        if (fin == 0) {
+        if (movimientos.length == 0) {
             if (reyEnJaque(tablero, color, estado)) return -MATE;
             else return AHOGADO;
         }
 
-        for (int i = 0; i < fin; i++) {
-            var mov = movs[i];
+        for (int i = 0; i < movimientos.length; i++) {
+            var mov = movimientos[i];
             int estadoCopia = hacerMovimiento(tablero, color, estado, mov);
             estadoCopia ^= 0b10000;
 
@@ -329,15 +283,13 @@ public class Search {
 //        ExecutorService WORKER_THREAD_POOL = Executors.newFixedThreadPool(2);
 //        List<Callable<Integer>> callables = new ArrayList<>();
 
-        this.movimientos.iniciar(n);
-        this.generador.generarMovimientos(pieza, color, estadoTablero, this.movimientos);
+        var respuesta = this.generador.generarMovimientos(pieza, color, estadoTablero, n);
 
-        int fin = this.movimientos.getPosicionFinal();
+        var movimientos = respuesta.movimientosGenerados;
+        var fin = respuesta.cantidadDeMovimientos;
 
-        var movimientos = this.movimientos.getMovimientos();
-
-        puntajeMVVLVA(movimientos, fin);
-        insertionSort(movimientos, fin);
+        puntajeMVVLVA(movimientos,fin);
+        insertionSort(movimientos,fin);
 
 //        for (int i = 0; i < fin; i++) {
 //            var mov = movimientos[i];
@@ -383,7 +335,7 @@ public class Search {
 //
 //        }
 
-        for (int i = 0; i < fin; i++) {
+        for (int i = 0; i < movimientos.length; i++) {
 
             var mov = movimientos[i];
 

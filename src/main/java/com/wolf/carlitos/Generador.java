@@ -5,6 +5,8 @@
  */
 package com.wolf.carlitos;
 
+import java.util.Arrays;
+
 import static com.wolf.carlitos.Constantes.*;
 import static com.wolf.carlitos.Tablero.*;
 import static com.wolf.carlitos.Utilidades.*;
@@ -14,12 +16,55 @@ import static com.wolf.carlitos.Utilidades.*;
  */
 public class Generador {
 
+    static class Movimientos implements Cloneable {
+        private int[][] movimientosPorNivel = new int[10][256];
+        private int[] cantidadMovimientos = new int[10];
+
+        private int nivel;
+        private int posicion;
+
+        public void iniciar(int nivel) {
+            this.nivel = nivel;
+            cantidadMovimientos[nivel] = 0;
+            this.posicion = 0;
+        }
+
+        public void add(int movimiento) {
+            movimientosPorNivel[nivel][posicion++] = movimiento;
+            cantidadMovimientos[nivel] = posicion;
+        }
+
+        public int[] getMovimientos() {
+            return movimientosPorNivel[nivel];
+        }
+
+        public int getPosicionFinal() {
+            return cantidadMovimientos[nivel];
+        }
+
+        @Override
+        protected Object clone() throws CloneNotSupportedException {
+
+            Movimientos m = (Movimientos) super.clone();
+            m.movimientosPorNivel = new int[10][256];
+            m.cantidadMovimientos = Arrays.copyOf(cantidadMovimientos, cantidadMovimientos.length);
+
+            return m;
+        }
+    }
+
+    static class Respuesta {
+        public  int[] movimientosGenerados;
+        public  int cantidadDeMovimientos;
+    }
+
     private boolean reyEnJaque;
-    private Movimientos movimientos;
+    private final Movimientos movimientos = new Movimientos();
+    private final Respuesta respuesta = new Respuesta();
 
-    public void generarMovimientos(int[] pieza, int[] color, int estado, Movimientos movimientos) {
+    public Respuesta generarMovimientos(int[] pieza, int[] color, int estado, int nivel) {
 
-        this.movimientos = movimientos;
+        this.movimientos.iniciar(nivel);
 
         int posicionRey = posicionRey(estado, esTurnoBlanco(estado) ? POSICION_REY_BLANCO : POSICION_REY_NEGRO);
 
@@ -54,9 +99,13 @@ public class Generador {
 
         }
         reyEnJaque = false;
+
+        respuesta.movimientosGenerados = this.movimientos.getMovimientos();
+        respuesta.cantidadDeMovimientos = this.movimientos.getPosicionFinal();
+        return respuesta;
     }
 
-    public void movimientosDeTorre(int[] tablero, int[] color, int estado, int posicion) {
+    private void movimientosDeTorre(int[] tablero, int[] color, int estado, int posicion) {
 
 
         if (!reyEnJaque) {
@@ -152,7 +201,7 @@ public class Generador {
                 pos += dirLocal;
 
                 if (tablero[pos] == NOPIEZA) {
-                    if(movimientoValido(posicion << 6 | pos, tablero, color, estado))
+                    if (movimientoValido(posicion << 6 | pos, tablero, color, estado))
                         movimientos.add(posicion << 6 | pos);
 
                     continue;
@@ -180,32 +229,32 @@ public class Generador {
     private void movimientosDeCaballo(int[] tablero, int[] color, int estado, int posicion) {
         int pos;
 
-        if(!reyEnJaque){
+        if (!reyEnJaque) {
 
             boolean movimientosSinValidar = false;
 
             tablero[posicion] = NOPIEZA;
             color[posicion] = NOCOLOR;
 
-            if(!casillaAtacada(posicionRey(estado,esTurnoBlanco(estado) ? POSICION_REY_BLANCO : POSICION_REY_NEGRO),tablero,color,colorContrario(estado)))
+            if (!casillaAtacada(posicionRey(estado, esTurnoBlanco(estado) ? POSICION_REY_BLANCO : POSICION_REY_NEGRO), tablero, color, colorContrario(estado)))
                 movimientosSinValidar = true;
 
             tablero[posicion] = CABALLO;
             color[posicion] = esTurnoBlanco(estado) ? BLANCO : NEGRO;
 
-           if(movimientosSinValidar){
-               for (int i = 0; i < offsetMailBox[CABALLO].length; i++) {
-                   int mailOffset = offsetMailBox[CABALLO][i];
+            if (movimientosSinValidar) {
+                for (int i = 0; i < offsetMailBox[CABALLO].length; i++) {
+                    int mailOffset = offsetMailBox[CABALLO][i];
 
-                   if(mailBox[direccion[posicion] + mailOffset] != -1){
+                    if (mailBox[direccion[posicion] + mailOffset] != -1) {
 
-                       pos = posicion + offset64[CABALLO][i];
+                        pos = posicion + offset64[CABALLO][i];
 
-                       if((tablero[pos] == NOPIEZA || color[pos] != color[posicion]) && tablero[pos] != REY)
-                           movimientos.add(posicion << 6 | pos);
-                   }
-               }
-           }
+                        if ((tablero[pos] == NOPIEZA || color[pos] != color[posicion]) && tablero[pos] != REY)
+                            movimientos.add(posicion << 6 | pos);
+                    }
+                }
+            }
             return;
         }
 
@@ -213,18 +262,18 @@ public class Generador {
         for (int i = 0; i < offsetMailBox[CABALLO].length; i++) {
             int mailOffset = offsetMailBox[CABALLO][i];
 
-            if(mailBox[direccion[posicion] + mailOffset] != -1){
+            if (mailBox[direccion[posicion] + mailOffset] != -1) {
 
                 pos = posicion + offset64[CABALLO][i];
 
-                if((tablero[pos] == NOPIEZA || color[pos] != color[posicion])  && movimientoValido(posicion << 6 | pos,tablero,color,estado))
+                if ((tablero[pos] == NOPIEZA || color[pos] != color[posicion]) && movimientoValido(posicion << 6 | pos, tablero, color, estado))
                     movimientos.add(posicion << 6 | pos);
 
             }
         }
     }
 
-    public void movimientosDeAlfil(int[] tablero, int[] color, int estado, int posicion) {
+    private void movimientosDeAlfil(int[] tablero, int[] color, int estado, int posicion) {
 
 
         if (!reyEnJaque) {
@@ -317,7 +366,7 @@ public class Generador {
                 pos += dirLocal;
 
                 if (tablero[pos] == NOPIEZA) {
-                    if(movimientoValido(posicion << 6 | pos, tablero, color, estado))
+                    if (movimientoValido(posicion << 6 | pos, tablero, color, estado))
                         movimientos.add(posicion << 6 | pos);
 
                     continue;
@@ -345,12 +394,12 @@ public class Generador {
         for (int i = 0; i < offsetMailBox[TORRE].length; i++) {
             int mailOffset = offsetMailBox[TORRE][i];
 
-            if(mailBox[direccion[posicion] + mailOffset] != -1){
+            if (mailBox[direccion[posicion] + mailOffset] != -1) {
 
                 pos = posicion + offset64[TORRE][i];
 
-                if((tablero[pos] == NOPIEZA || color[pos] != color[posicion])  && movimientoValido(posicion << 6 | pos,tablero,color,estado))
-                        movimientos.add(posicion << 6 | pos);
+                if ((tablero[pos] == NOPIEZA || color[pos] != color[posicion]) && movimientoValido(posicion << 6 | pos, tablero, color, estado))
+                    movimientos.add(posicion << 6 | pos);
 
             }
         }
@@ -358,11 +407,11 @@ public class Generador {
         for (int i = 0; i < offsetMailBox[ALFIL].length; i++) {
             int mailOffset = offsetMailBox[ALFIL][i];
 
-            if(mailBox[direccion[posicion] + mailOffset] != -1){
+            if (mailBox[direccion[posicion] + mailOffset] != -1) {
 
                 pos = posicion + offset64[ALFIL][i];
 
-                if((tablero[pos] == NOPIEZA || color[pos] != color[posicion])  && movimientoValido(posicion << 6 | pos,tablero,color,estado))
+                if ((tablero[pos] == NOPIEZA || color[pos] != color[posicion]) && movimientoValido(posicion << 6 | pos, tablero, color, estado))
                     movimientos.add(posicion << 6 | pos);
 
             }
@@ -373,22 +422,22 @@ public class Generador {
         if (esTurnoBlanco(estado)) {
             if ((estado & 0b000000_000000_000_000_000000_0_00_11) > 0) {
 
-                    if ((estado & 1) > 0) {
-                        if ((tablero[F1] & tablero[G1]) == NOPIEZA
-                                && !casillaAtacada(F1, tablero, color, colorContrario(estado))
-                                && !casillaAtacada(G1, tablero, color, colorContrario(estado))) {
-                            movimientos.add(E1 << 6 | G1);
-                        }
+                if ((estado & 1) > 0) {
+                    if ((tablero[F1] & tablero[G1]) == NOPIEZA
+                            && !casillaAtacada(F1, tablero, color, colorContrario(estado))
+                            && !casillaAtacada(G1, tablero, color, colorContrario(estado))) {
+                        movimientos.add(E1 << 6 | G1);
                     }
+                }
 
-                    if ((estado & 2) > 0) {
+                if ((estado & 2) > 0) {
 
-                        if ((tablero[D1] & tablero[C1] & tablero[B1]) == NOPIEZA
-                                && !casillaAtacada(D1, tablero, color, colorContrario(estado))
-                                && !casillaAtacada(C1, tablero, color, colorContrario(estado))) {
-                            movimientos.add(E1 << 6 | C1);
-                        }
+                    if ((tablero[D1] & tablero[C1] & tablero[B1]) == NOPIEZA
+                            && !casillaAtacada(D1, tablero, color, colorContrario(estado))
+                            && !casillaAtacada(C1, tablero, color, colorContrario(estado))) {
+                        movimientos.add(E1 << 6 | C1);
                     }
+                }
 
             }
         } else {
@@ -443,8 +492,8 @@ public class Generador {
             }
         }
 
-        avanceDiagonal(tablero,color,estado,posicion,turnoBlanco,offset64[PEON][1]);
-        avanceDiagonal(tablero,color,estado,posicion,turnoBlanco,offset64[PEON][2]);
+        avanceDiagonal(tablero, color, estado, posicion, turnoBlanco, offset64[PEON][1]);
+        avanceDiagonal(tablero, color, estado, posicion, turnoBlanco, offset64[PEON][2]);
 
     }
 
@@ -452,7 +501,7 @@ public class Generador {
         int destino;
         int posicionActual;
         destino = posicion + (turnoBlanco ? i : -i);
-        if (mailBox[direccion[posicion] + (turnoBlanco ? i + 2 : (-i -2))] != -1) {
+        if (mailBox[direccion[posicion] + (turnoBlanco ? i + 2 : (-i - 2))] != -1) {
             posicionActual = tablero[destino];
             var m = posicion << 6 | destino;
             if (posicionActual != NOPIEZA) {
