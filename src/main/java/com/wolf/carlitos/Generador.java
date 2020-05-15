@@ -5,13 +5,9 @@
  */
 package com.wolf.carlitos;
 
-import java.util.*;
-
-//import static com.wolf.carlitos.Utilidades.movimientoValido;
 import static com.wolf.carlitos.Constantes.*;
 import static com.wolf.carlitos.Tablero.*;
 import static com.wolf.carlitos.Utilidades.*;
-import static java.lang.Math.abs;
 
 /**
  * @author carlos
@@ -20,24 +16,6 @@ public class Generador {
 
     private boolean reyEnJaque;
     private Movimientos movimientos;
-
-    private static final int[][] direccionesVertical = new int[][]{
-            {norte, sur},
-            {NORTE, SUR}
-    };
-    private static final int[][] direccionesHorizontal = new int[][]{
-            {este, oeste},
-            {ESTE, OESTE}
-    };
-
-    private static final int[][] direccionesDiagonal1 = new int[][]{
-            {noreste, suroeste},
-            {NORESTE, SUROESTE}
-    };
-    private static final int[][] direccionesDiagonal2 = new int[][]{
-            {noroeste, sureste},
-            {NOROESTE, SURESTE}
-    };
 
     public void generarMovimientos(int[] pieza, int[] color, int estado, Movimientos movimientos) {
 

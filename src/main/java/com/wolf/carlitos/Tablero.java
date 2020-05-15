@@ -38,7 +38,26 @@ public class Tablero {
                     {sureste, noreste, suroeste, noroeste},
                     {norte, sur, este, oeste},
             };
+    public static final int[][] direccionesVertical = new int[][]{
+            {norte, sur},
+            {NORTE, SUR}
+    };
+    public static final int[][] direccionesHorizontal = new int[][]{
+            {este, oeste},
+            {ESTE, OESTE}
+    };
 
+    public static final int[][] direccionesDiagonal1 = new int[][]{
+            {noreste, suroeste},
+            {NORESTE, SUROESTE}
+    };
+    public static final int[][] direccionesDiagonal2 = new int[][]{
+            {noroeste, sureste},
+            {NOROESTE, SURESTE}
+    };
+
+    public static int[] valorPiezas = new int[]
+            {100, 320, 330, 500, 900, 1000,0};
 
     public static final int[] mailBox = new int[]{
             -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,

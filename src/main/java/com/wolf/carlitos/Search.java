@@ -12,33 +12,35 @@ import java.util.concurrent.*;
 import static com.wolf.carlitos.Ponderaciones.*;
 import static com.wolf.carlitos.Constantes.*;
 import static com.wolf.carlitos.Utilidades.*;
+import static com.wolf.carlitos.Tablero.*;
 
 /**
  * @author carlos
  */
 
-class Movimientos implements Cloneable{
-    private    int[][] movimientosPorNivel = new int[10][256];
-    private    int[] cantidadMovimientos = new int[10];
+class Movimientos implements Cloneable {
+    private int[][] movimientosPorNivel = new int[10][256];
+    private int[] cantidadMovimientos = new int[10];
 
-    private  int nivel;
-    private  int posicion;
+    private int nivel;
+    private int posicion;
 
-    public void iniciar(int nivel){
+    public void iniciar(int nivel) {
         this.nivel = nivel;
         cantidadMovimientos[nivel] = 0;
         this.posicion = 0;
     }
 
-    public void add(int movimiento){
+    public void add(int movimiento) {
         movimientosPorNivel[nivel][posicion++] = movimiento;
         cantidadMovimientos[nivel] = posicion;
     }
 
-    public int[] getMovimientos(){
+    public int[] getMovimientos() {
         return movimientosPorNivel[nivel];
     }
-    public  int getPosicionFinal(){
+
+    public int getPosicionFinal() {
         return cantidadMovimientos[nivel];
     }
 
@@ -47,7 +49,7 @@ class Movimientos implements Cloneable{
 
         Movimientos m = (Movimientos) super.clone();
         m.movimientosPorNivel = new int[10][256];
-        m.cantidadMovimientos = Arrays.copyOf(cantidadMovimientos,cantidadMovimientos.length);
+        m.cantidadMovimientos = Arrays.copyOf(cantidadMovimientos, cantidadMovimientos.length);
 
         return m;
     }
@@ -59,11 +61,6 @@ public class Search {
     private final int estadoTablero;
     private final Generador generador = new Generador();
 
-    //public static List<Integer> secuencia = new ArrayList<>();
-
-    public static int[] valorPiezas = new int[]
-            {100, 320, 330, 500, 900, 1000,0};
-
     private final Movimientos movimientos = new Movimientos();
 
     public Search(int[] pieza, int[] color, int estado) {
@@ -72,7 +69,8 @@ public class Search {
         this.estadoTablero = estado;
 
     }
-    public  void  puntajeMVVLVA(int[] movimientos, int limite){
+
+    public void puntajeMVVLVA(int[] movimientos, int limite) {
 
         for (int i = 0; i < limite; i++) {
             int inicio = movimientos[i] >> 6 & 0b111111;
@@ -83,19 +81,18 @@ public class Search {
 
     }
 
-    public static void insertionSort(int array[], int limite) {
+    public static void insertionSort(int[] array, int limite) {
         int n = limite;
         for (int j = 1; j < n; j++) {
             int key = array[j];
-            int i = j-1;
-            while ( (i > -1) && ( array [i] >> 14 < key >> 14 ) ) {
-                array [i+1] = array [i];
+            int i = j - 1;
+            while ((i > -1) && (array[i] >> 14 < key >> 14)) {
+                array[i + 1] = array[i];
                 i--;
             }
-            array[i+1] = key;
+            array[i + 1] = key;
         }
     }
-
 
     private void perftSearch(int deep, int estado, Acumulador acumulador, boolean reset) {
 
@@ -107,20 +104,20 @@ public class Search {
 
         this.movimientos.iniciar(deep);
 
-       generador.generarMovimientos(pieza,color, estado, this.movimientos);
+        generador.generarMovimientos(pieza, color, estado, this.movimientos);
 
-       int fin = this.movimientos.getPosicionFinal();
+        int fin = this.movimientos.getPosicionFinal();
 
-       var movimientos = this.movimientos.getMovimientos();
+        var movimientos = this.movimientos.getMovimientos();
 
         for (int i = 0; i < fin; i++) {
             var mov = movimientos[i];
 
-            int estadoActualizodo = hacerMovimiento(pieza,color, estado, mov);
+            int estadoActualizodo = hacerMovimiento(pieza, color, estado, mov);
 
             perftSearch(deep - 1, estadoActualizodo, acumulador, false);
 
-            revertirMovimiento(mov, estadoActualizodo, pieza,color);
+            revertirMovimiento(mov, estadoActualizodo, pieza, color);
 
             if (reset) {
                 System.out.println(Utilidades.convertirANotacion(mov) + " " + acumulador.contadorPerft);
@@ -129,7 +126,7 @@ public class Search {
         }
     }
 
-    public void perft(int deep){
+    public void perft(int deep) {
         var acumulador = new Acumulador();
         var tinicio = System.currentTimeMillis();
         perftSearch(deep, estadoTablero, acumulador, true);
@@ -140,11 +137,11 @@ public class Search {
     }
 
 
-    private void revertirMovimiento(int movimiento, int estado, int[] tablero,int[]color) {
+    private void revertirMovimiento(int movimiento, int estado, int[] tablero, int[] color) {
 
         estado ^= 0b10000;
 
-        int inicio = movimiento >> 6 &0b111111;
+        int inicio = movimiento >> 6 & 0b111111;
         int destino = movimiento & 0b111111;
 
         boolean turnoBlanco = esTurnoBlanco(estado);
@@ -197,13 +194,12 @@ public class Search {
         }
 
         tablero[destino] = (estado >> POSICION_PIEZA_CAPTURADA & 0b111);
-        color[destino] =  tablero[destino] == NOPIEZA ? NOCOLOR : esTurnoBlanco(estado) ? NEGRO :BLANCO;
+        color[destino] = tablero[destino] == NOPIEZA ? NOCOLOR : esTurnoBlanco(estado) ? NEGRO : BLANCO;
 
     }
 
 
-
-    private int evaluar(int[] tablero,int[] color) {
+    private int evaluar(int[] tablero, int[] color) {
 
         int valorBlancas = 0;
         int valorNegras = 0;
@@ -229,7 +225,7 @@ public class Search {
                     valorBlancas += (color[i] == BLANCO ? ponderacionDama[flip[i]] : -ponderacionDama[i]);
                     break;
                 case REY:
-                    valorBlancas += (color[i] == BLANCO ? ponderacionRey[flip[i]]: -ponderacionRey[i]);
+                    valorBlancas += (color[i] == BLANCO ? ponderacionRey[flip[i]] : -ponderacionRey[i]);
                     break;
             }
             if (color[i] == BLANCO)
@@ -241,44 +237,44 @@ public class Search {
 
     }
 
-    public int mini(int nivel, int estado, int[] tablero, int[] color, int alfa , int beta) {
+    public int mini(int nivel, int estado, int[] tablero, int[] color, int alfa, int beta) {
 
-        if (nivel == 0) return evaluar(tablero,color);
+        if (nivel == 0) return evaluar(tablero, color);
 
         movimientos.iniciar(nivel);
 
-        generador.generarMovimientos(tablero,color,estado,movimientos);
+        generador.generarMovimientos(tablero, color, estado, movimientos);
 
         int fin = movimientos.getPosicionFinal();
 
         if (fin == 0) {
-            if (reyEnJaque(tablero,color, estado)) return MATE;
+            if (reyEnJaque(tablero, color, estado)) return MATE;
             else return AHOGADO;
         }
 
         var movs = movimientos.getMovimientos();
 
-        puntajeMVVLVA(movs,fin);
-        insertionSort(movs,fin);
+        puntajeMVVLVA(movs, fin);
+        insertionSort(movs, fin);
 
         for (int i = 0; i < fin; i++) {
 
             var mov = movs[i];
-            int estadoActualizado = hacerMovimiento(tablero,color, estado, mov);
+            int estadoActualizado = hacerMovimiento(tablero, color, estado, mov);
 
             estadoActualizado ^= 0b10000;
 
-            int evaluacion = maxi(nivel - 1, estadoActualizado, tablero,color,alfa,beta);
+            int evaluacion = maxi(nivel - 1, estadoActualizado, tablero, color, alfa, beta);
 
             estadoActualizado ^= 0b10000;
 
-            revertirMovimiento(mov, estadoActualizado, tablero,color);
+            revertirMovimiento(mov, estadoActualizado, tablero, color);
 
-            if (evaluacion <= alfa) return  alfa;
+            if (evaluacion <= alfa) return alfa;
 
-            if(evaluacion < beta)  beta = evaluacion;
+            if (evaluacion < beta) beta = evaluacion;
 
-           // System.out.println("nivel: " + nivel + " mini " + "movimiento " + Utilidades.convertirANotacion(mov) + " evaluacion:" + evaluacion);
+            // System.out.println("nivel: " + nivel + " mini " + "movimiento " + Utilidades.convertirANotacion(mov) + " evaluacion:" + evaluacion);
 
         }
 
@@ -296,8 +292,8 @@ public class Search {
 
         int fin = movimientos.getPosicionFinal();
 
-        puntajeMVVLVA(movs,fin);
-        insertionSort(movs,fin);
+        puntajeMVVLVA(movs, fin);
+        insertionSort(movs, fin);
 
         if (fin == 0) {
             if (reyEnJaque(tablero, color, estado)) return -MATE;
@@ -309,39 +305,39 @@ public class Search {
             int estadoCopia = hacerMovimiento(tablero, color, estado, mov);
             estadoCopia ^= 0b10000;
 
-            int evaluacion = mini(nivel - 1, estadoCopia, tablero, color,alfa,beta);
+            int evaluacion = mini(nivel - 1, estadoCopia, tablero, color, alfa, beta);
 
             estadoCopia ^= 0b10000;
 
             revertirMovimiento(mov, estadoCopia, tablero, color);
 
-            if (evaluacion >= beta) return  beta;
+            if (evaluacion >= beta) return beta;
 
-            if(evaluacion > alfa) alfa = evaluacion;
+            if (evaluacion > alfa) alfa = evaluacion;
             //System.out.println("nivel: " + nivel + " maxi " + "movimiento " + Utilidades.convertirANotacion(mov) + " evaluacion:" + evaluacion);
         }
         return alfa;
     }
 
     public int search(int n) throws InterruptedException, CloneNotSupportedException, ExecutionException {
-       //n = 1;
+        //n = 1;
         int pos = 0;
 
-        int alfa =  -10_000;
-        int beta =   10_000;
+        int alfa = -10_000;
+        int beta = 10_000;
 
 //        ExecutorService WORKER_THREAD_POOL = Executors.newFixedThreadPool(2);
 //        List<Callable<Integer>> callables = new ArrayList<>();
 
         this.movimientos.iniciar(n);
-        this.generador.generarMovimientos(pieza,color, estadoTablero,this.movimientos);
+        this.generador.generarMovimientos(pieza, color, estadoTablero, this.movimientos);
 
         int fin = this.movimientos.getPosicionFinal();
 
         var movimientos = this.movimientos.getMovimientos();
 
-        puntajeMVVLVA(movimientos,fin);
-        insertionSort(movimientos,fin);
+        puntajeMVVLVA(movimientos, fin);
+        insertionSort(movimientos, fin);
 
 //        for (int i = 0; i < fin; i++) {
 //            var mov = movimientos[i];
@@ -387,7 +383,7 @@ public class Search {
 //
 //        }
 
-       for (int i = 0; i < fin ; i++) {
+        for (int i = 0; i < fin; i++) {
 
             var mov = movimientos[i];
 
@@ -398,31 +394,30 @@ public class Search {
 //                System.out.println();
 //            }
 
-            int estadoActualizado = hacerMovimiento(pieza,color, estadoTablero, mov);
-           //Utilidades.imprimirPosicicion(pieza,color);
+            int estadoActualizado = hacerMovimiento(pieza, color, estadoTablero, mov);
+            //Utilidades.imprimirPosicicion(pieza,color);
             estadoActualizado ^= 0b10000;
 
-            int eval = esTurnoBlanco(estadoTablero) ? mini(n -1,estadoActualizado,pieza,color,alfa, beta) :
-                    maxi(n -1,estadoActualizado,pieza,color,alfa,beta);
+            int eval = esTurnoBlanco(estadoTablero) ? mini(n - 1, estadoActualizado, pieza, color, alfa, beta) :
+                    maxi(n - 1, estadoActualizado, pieza, color, alfa, beta);
 
-            if(esTurnoBlanco(estadoTablero)){
-                if(eval > alfa){
-                   alfa = eval;
-                   pos = i;
+            if (esTurnoBlanco(estadoTablero)) {
+                if (eval > alfa) {
+                    alfa = eval;
+                    pos = i;
+                }
+            } else {
+                if (eval < beta) {
+                    beta = eval;
+                    pos = i;
                 }
             }
-            else{
-                 if(eval < beta){
-                   beta = eval;
-                   pos = i;
-                }
-            }
-           estadoActualizado ^= 0b10000;
+            estadoActualizado ^= 0b10000;
 
-           revertirMovimiento(mov,estadoActualizado,pieza,color);
-          // Utilidades.imprimirPosicicion(pieza,color);
+            revertirMovimiento(mov, estadoActualizado, pieza, color);
+            // Utilidades.imprimirPosicicion(pieza,color);
 
-       }
+        }
         return movimientos[pos];
     }
 
