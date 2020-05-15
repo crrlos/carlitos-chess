@@ -180,13 +180,11 @@ public class Generador {
             return;
         }
 
-        int[] direccionesMail = new int[]{ESTE, OESTE, NORTE, SUR};
-        int[] direccionesLocal = new int[]{1, -1, 8, -8};
 
-        for (int i = 0; i < direccionesMail.length; i++) {
+        for (int i = 0; i < offsetMailBox[TORRE].length; i++) {
 
-            int dir = direccionesMail[i];
-            int dirLocal = direccionesLocal[i];
+            int dir = offsetMailBox[TORRE][i];
+            int dirLocal = offset64[TORRE][i];
             int pos = posicion;
             while (mailBox[direccion[pos] + dir] != -1) {
                 pos += dirLocal;
