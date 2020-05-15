@@ -297,7 +297,7 @@ public class Utilidades {
         return (estadoTablero & 0b000000_000000_000_000_000000_1_00_00) > 0;
     }
 
-    public static int posicionRey(int estado, int desplazamiento) {
+    public static int  posicionRey(int estado, int desplazamiento) {
         return  estado >> desplazamiento & 0b111111;
     }
 

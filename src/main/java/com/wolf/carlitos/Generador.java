@@ -9,6 +9,7 @@ import java.util.*;
 
 //import static com.wolf.carlitos.Utilidades.movimientoValido;
 import static com.wolf.carlitos.Constantes.*;
+import static com.wolf.carlitos.Tablero.*;
 import static com.wolf.carlitos.Utilidades.*;
 import static java.lang.Math.abs;
 
@@ -19,6 +20,28 @@ public class Generador {
 
     private boolean reyEnJaque;
     private Movimientos movimientos;
+
+    private static final int[][] direccionesVertical = new int[][]{
+            {8, -8},
+            {NORTE, SUR}
+    };
+    private static final int[][] direccionesHorizontal = new int[][]{
+            {1, -1},
+            {ESTE, OESTE}
+    };
+
+    private static final int[][] direccionesDiagonal1 = new int[][]{
+            {9, -9},
+            {NORESTE, SUROESTE}
+    };
+    private static final int[][] direccionesDiagonal2 = new int[][]{
+            {7, -7},
+            {NOROESTE, SURESTE}
+    };
+
+    private  static  final  int[] direccionesMail = new int[]{NORESTE, SUROESTE, NOROESTE, SURESTE};
+    private  static  final  int[] direccionesLocal = new int[]{9, -9, 7, -7};
+
 
     public static final HashMap<Integer, List<List<Integer>>> movimientosAlfil = new HashMap<>();
     public static final HashMap<Integer, List<List<Integer>>> movimientosTorre = new HashMap<>();
@@ -190,37 +213,37 @@ public class Generador {
     }
 
 
-    public void generarMovimientos(int[] pieza, int[] color, int estado,Movimientos movimientos) {
-        
+    public void generarMovimientos(int[] pieza, int[] color, int estado, Movimientos movimientos) {
+
         this.movimientos = movimientos;
 
         int posicionRey = posicionRey(estado, esTurnoBlanco(estado) ? POSICION_REY_BLANCO : POSICION_REY_NEGRO);
 
-        reyEnJaque = Tablero.casillaAtacada(posicionRey,pieza,color,esTurnoBlanco(estado) ? NEGRO :BLANCO);
+        reyEnJaque = Tablero.casillaAtacada(posicionRey, pieza, color, esTurnoBlanco(estado) ? NEGRO : BLANCO);
 
         for (int i = 0; i < pieza.length; i++) {
 
             var piezaActual = pieza[i];
 
             if (piezaActual != NOPIEZA && color[i] == BLANCO == esTurnoBlanco(estado)) {
-                switch (piezaActual){
+                switch (piezaActual) {
                     case PEON:
-                        movimientosDePeon(pieza,color,estado,i);
+                        movimientosDePeon(pieza, color, estado, i);
                         break;
                     case CABALLO:
-                        movimientosDeCaballo(pieza,color, estado, i);
+                        movimientosDeCaballo(pieza, color, estado, i);
                         break;
                     case ALFIL:
-                        movimientosDeAlfil(pieza,color, estado, i);
+                        movimientosDeAlfil(pieza, color, estado, i);
                         break;
                     case TORRE:
-                        movimientosDeTorre(pieza,color, estado, i);
+                        movimientosDeTorre(pieza, color, estado, i);
                         break;
                     case DAMA:
-                        movimientosDeDama(pieza,color, estado, i);
+                        movimientosDeDama(pieza, color, estado, i);
                         break;
                     case REY:
-                        movimientosDeRey(pieza,color, estado, i);
+                        movimientosDeRey(pieza, color, estado, i);
                         break;
                 }
             }
@@ -229,82 +252,137 @@ public class Generador {
         reyEnJaque = false;
     }
 
-    public void movimientosDeTorre(int[] tablero,int[]color, int estado, int posicion) {
-        int pieza = tablero[posicion];
+    public void movimientosDeTorre(int[] tablero, int[] color, int estado, int posicion) {
 
-        var movimientosDeTorre = Generador.movimientosTorre.get(posicion);
 
-        if (!enJaque()) {
+        if (!reyEnJaque) {
 
-            boolean vertical;
-            boolean horizontal;
+            boolean verticalSinValidar = false;
+            boolean horizontalSinValidar = false;
 
-            var vertical1 = movimientosDeTorre.get(0);
-            var vertical2 = movimientosDeTorre.get(1);
-            var horizontal1 = movimientosDeTorre.get(2);
-            var horizontal2 = movimientosDeTorre.get(3);
+            for (int i = 0; i < direccionesVertical[0].length; i++) {
+                int dir = direccionesVertical[0][i];
+                if (mailBox[direccion[posicion] + direccionesVertical[1][i]] != -1
+                        && (tablero[posicion + dir] == NOPIEZA
+                        || (color[posicion + dir] != color[posicion]
+                        && tablero[posicion + dir] != REY))
+                        && movimientoValido(posicion << 6 | posicion + dir, tablero, color, estado)) {
+                    verticalSinValidar = true;
+                    break;
+                }
+            }
 
-            vertical = isVertical(tablero,color, estado, posicion, pieza, vertical1, vertical2);
-            horizontal = isVertical(tablero,color, estado, posicion, pieza, horizontal1, horizontal2);
+            for (int i = 0; i < direccionesHorizontal[0].length; i++) {
+                int dir = direccionesHorizontal[0][i];
+                if (mailBox[direccion[posicion] + direccionesHorizontal[1][i]] != -1
+                        && (tablero[posicion + dir] == NOPIEZA
+                        || (color[posicion + dir] != color[posicion]
+                        && tablero[posicion + dir] != REY))
+                        && movimientoValido(posicion << 6 | posicion + dir, tablero, color, estado)) {
+                    horizontalSinValidar = true;
+                    break;
+                }
+            }
 
-            if (horizontal) {
+            int pos;
 
-                procesarLinea(tablero,color, posicion, horizontal1);
-                procesarLinea(tablero,color, posicion, horizontal2);
+            if (verticalSinValidar) {
+
+                for (int i = 0; i < direccionesVertical[0].length; i++) {
+                    pos = posicion;
+                    int dir = direccionesVertical[0][i];
+                    while (mailBox[direccion[pos] + direccionesVertical[1][i]] != -1) {
+                        pos += dir;
+
+                        if (tablero[pos] == NOPIEZA) {
+                            movimientos.add(posicion << 6 | pos);
+                            continue;
+                        }
+
+                        if (color[pos] == color[posicion] || tablero[pos] == REY) break;
+
+                        movimientos.add(posicion << 6 | pos);
+                        break;
+
+                    }
+
+                }
+            }
+
+            if (horizontalSinValidar) {
+
+                for (int i = 0; i < direccionesHorizontal[0].length; i++) {
+                    pos = posicion;
+                    int dir = direccionesHorizontal[0][i];
+                    while (mailBox[direccion[pos] + direccionesHorizontal[1][i]] != -1) {
+                        pos += dir;
+
+                        if (tablero[pos] == NOPIEZA) {
+                            movimientos.add(posicion << 6 | pos);
+                            continue;
+                        }
+
+                        if (color[pos] == color[posicion] || tablero[pos] == REY) break;
+
+                        movimientos.add(posicion << 6 | pos);
+                        break;
+
+                    }
+
+                }
 
             }
-            if (vertical) {
 
-                procesarLinea(tablero,color, posicion, vertical1);
-                procesarLinea(tablero,color, posicion, vertical2);
-
-            }
             return;
         }
 
+        int[] direccionesMail = new int[]{ESTE, OESTE, NORTE, SUR};
+        int[] direccionesLocal = new int[]{1, -1, 8, -8};
 
-        for (int i = 0; i < movimientosDeTorre.size(); i++) {
-            var recorrido = movimientosDeTorre.get(i);
-            procesarLineaValidado(tablero,color, posicion, recorrido, estado);
+        for (int i = 0; i < direccionesMail.length; i++) {
+
+            int dir = direccionesMail[i];
+            int dirLocal = direccionesLocal[i];
+            int pos = posicion;
+            while (mailBox[direccion[pos] + dir] != -1) {
+                pos += dirLocal;
+
+                if (tablero[pos] == NOPIEZA) {
+                    if(movimientoValido(posicion << 6 | pos, tablero, color, estado))
+                        movimientos.add(posicion << 6 | pos);
+
+                    continue;
+                }
+
+                if (color[pos] == color[posicion] || tablero[pos] == REY) break;
+
+                if (movimientoValido(posicion << 6 | pos, tablero, color, estado))
+                    movimientos.add(posicion << 6 | pos);
+
+                break;
+
+            }
+
 
         }
-        
+
     }
 
-    private  void procesarLinea(int[] tablero,int[]color, int posicion, List<Integer> horizontal1) {
+    private void procesarLineaValidado(int[] tablero, int[] color, int posicion, List<Integer> horizontal1, int estado) {
         int posicionActual;
         for (int j = 0; j < horizontal1.size(); j++) {
             var mov = horizontal1.get(j);
             posicionActual = tablero[mov];
 
             if (posicionActual == NOPIEZA) {
-                movimientos.add(posicion << 6 | mov);
+                validarYAgregar(tablero, color, estado, posicion, mov);
                 continue;
             }
 
             var sonMismoColor = color[mov] == color[posicion];
 
             if (!sonMismoColor && !(posicionActual == REY)) {
-                movimientos.add(posicion << 6 | mov);
-            }
-            break;
-        }
-    }
-    private  void procesarLineaValidado(int[] tablero,int[]color, int posicion, List<Integer> horizontal1, int estado) {
-        int posicionActual;
-        for (int j = 0; j < horizontal1.size(); j++) {
-            var mov = horizontal1.get(j);
-            posicionActual = tablero[mov];
-
-            if (posicionActual == NOPIEZA) {
-                validarYAgregar(tablero,color, estado, posicion, mov);
-                continue;
-            }
-
-            var sonMismoColor = color[mov] == color[posicion];
-
-            if (!sonMismoColor && !(posicionActual == REY)) {
-                validarYAgregar(tablero,color, estado, posicion, mov);
+                validarYAgregar(tablero, color, estado, posicion, mov);
                 break;
             }
 
@@ -312,114 +390,12 @@ public class Generador {
         }
     }
 
-    private static boolean isVertical(int[] tablero,int[]color, int estado, int posicion, int pieza, List<Integer> vertical1, List<Integer> vertical2) {
-        if (!vertical1.isEmpty()) {
-            var mov = vertical1.get(0);
-            var pi = tablero[mov];
-
-            if (pi == NOPIEZA || color[mov] != color[posicion] && !(pi == REY)) {
-                var m = posicion << 6 | mov;
-                return movimientoValido(m, tablero,color,estado);
-            } else if (!vertical2.isEmpty()) {
-                mov = vertical2.get(0);
-                pi = tablero[mov];
-
-                if (pi == NOPIEZA || color[mov] != color[posicion] && !(pi == REY)) {
-                    var m = posicion << 6 | mov;
-                    return movimientoValido(m, tablero,color, estado);
-
-                }
-
-            }
-        } else if (!vertical2.isEmpty()) {
-            var mov = vertical2.get(0);
-            var pi = tablero[mov];
-
-            if (pi == NOPIEZA || color[mov] != color[posicion] && !(pi == REY)) {
-                var m = posicion << 6 | mov;
-                return movimientoValido(m, tablero,color,estado);
-
-            }
-        }
-        return true;
+    private void movimientosDeDama(int[] tablero, int[] color, int estado, int posicion) {
+        movimientosDeAlfil(tablero, color, estado, posicion);
+        movimientosDeTorre(tablero, color, estado, posicion);
     }
 
-    private void movimientosDeDama(int[] tablero,int[]color, int estado, int posicion) {
-        int pieza;
-
-        pieza = tablero[posicion];
-
-        var movimientosAlfil = Generador.movimientosAlfil.get(posicion);
-        var movimietosDeTorre = Generador.movimientosTorre.get(posicion);
-
-        var digonal1Arriba = movimientosAlfil.get(0);
-        var diagonal1Abajo = movimientosAlfil.get(1);
-        var diagonal2Arriba = movimientosAlfil.get(2);
-        var diagonal2Abajo = movimientosAlfil.get(3);
-
-        var vertical1 = movimietosDeTorre.get(0);
-        var vertical2 = movimietosDeTorre.get(1);
-        var horizontal1 = movimietosDeTorre.get(2);
-        var horizontal2 = movimietosDeTorre.get(3);
-
-        if (!enJaque()) {
-
-            boolean diagonal1;
-            boolean diagonal2;
-
-            diagonal1 = isVertical(tablero,color, estado, posicion, pieza, digonal1Arriba, diagonal1Abajo);
-            diagonal2 = isVertical(tablero,color, estado, posicion, pieza, diagonal2Arriba, diagonal2Abajo);
-
-            if (diagonal2) {
-
-                procesarLinea(tablero,color, posicion, diagonal2Arriba);
-                procesarLinea(tablero,color, posicion, diagonal2Abajo);
-
-            }
-            if (diagonal1) {
-
-                procesarLinea(tablero,color, posicion, digonal1Arriba);
-                procesarLinea(tablero,color, posicion, diagonal1Abajo);
-            }
-
-
-            boolean vertical;
-            boolean horizontal;
-
-
-            vertical = isVertical(tablero,color, estado, posicion, pieza, vertical1, vertical2);
-            horizontal = isVertical(tablero,color, estado, posicion, pieza, horizontal1, horizontal2);
-
-            if (horizontal) {
-
-                procesarLinea(tablero,color, posicion, horizontal1);
-                procesarLinea(tablero,color, posicion, horizontal2);
-
-            }
-            if (vertical) {
-
-                procesarLinea(tablero,color, posicion, vertical1);
-                procesarLinea(tablero,color, posicion, vertical2);
-
-            }
-
-
-            return;
-        }
-
-        procesarLineaValidado(tablero,color, posicion, diagonal1Abajo, estado);
-        procesarLineaValidado(tablero,color, posicion, digonal1Arriba, estado);
-        procesarLineaValidado(tablero,color, posicion, diagonal2Abajo, estado);
-        procesarLineaValidado(tablero,color, posicion, diagonal2Arriba, estado);
-        procesarLineaValidado(tablero,color, posicion, vertical1, estado);
-        procesarLineaValidado(tablero,color, posicion, vertical2, estado);
-        procesarLineaValidado(tablero,color, posicion, horizontal1, estado);
-        procesarLineaValidado(tablero,color, posicion, horizontal2, estado);
-
-        
-    }
-
-    private void movimientosDeCaballo(int[] tablero,int[]color, int estado, int posicion) {
+    private void movimientosDeCaballo(int[] tablero, int[] color, int estado, int posicion) {
         int posicionActual;
 
         var movimientosCaballo = Generador.movimientosCaballo.get(posicion);
@@ -429,65 +405,129 @@ public class Generador {
             posicionActual = tablero[mov];
 
             if (posicionActual == NOPIEZA || (color[mov] != color[posicion] && !(posicionActual == REY))) {
-                validarYAgregar(tablero,color,estado,posicion,mov);
+                validarYAgregar(tablero, color, estado, posicion, mov);
             }
 
         }
-        
+
 
     }
-    
-    private boolean enJaque() {
-        return reyEnJaque;
-    }
-    
-    public void movimientosDeAlfil(int[] tablero,int[] color, int estado, int posicion) {
 
-        int pieza = tablero[posicion];
-
-        var movimientosAlfil = Generador.movimientosAlfil.get(posicion);
-
-        var digonal1Arriba = movimientosAlfil.get(0);
-        var diagonal1Abajo = movimientosAlfil.get(1);
-        var diagonal2Arriba = movimientosAlfil.get(2);
-        var diagonal2Abajo = movimientosAlfil.get(3);
+    public void movimientosDeAlfil(int[] tablero, int[] color, int estado, int posicion) {
 
 
-        if (!enJaque()) {
+        if (!reyEnJaque) {
 
-            boolean diagonal1;
-            boolean diagonal2;
+            boolean diagonal1SinValidar = false;
+            boolean diagonal2SinValidar = false;
 
-            diagonal1 = isVertical(tablero,color, estado, posicion, pieza, digonal1Arriba, diagonal1Abajo);
-            diagonal2 = isVertical(tablero,color, estado, posicion, pieza, diagonal2Arriba, diagonal2Abajo);
+            for (int i = 0; i < direccionesDiagonal1[0].length; i++) {
+                int dir = direccionesDiagonal1[0][i];
+                if (mailBox[direccion[posicion] + direccionesDiagonal1[1][i]] != -1
+                        && (tablero[posicion + dir] == NOPIEZA
+                        || (color[posicion + dir] != color[posicion]
+                        && tablero[posicion + dir] != REY))
+                        && movimientoValido(posicion << 6 | posicion + dir, tablero, color, estado)) {
+                    diagonal1SinValidar = true;
+                    break;
+                }
+            }
 
-            if (diagonal2) {
+            for (int i = 0; i < direccionesDiagonal2[0].length; i++) {
+                int dir = direccionesDiagonal2[0][i];
+                if (mailBox[direccion[posicion] + direccionesDiagonal2[1][i]] != -1
+                        && (tablero[posicion + dir] == NOPIEZA
+                        || (color[posicion + dir] != color[posicion]
+                        && tablero[posicion + dir] != REY))
+                        && movimientoValido(posicion << 6 | posicion + dir, tablero, color, estado)) {
+                    diagonal2SinValidar = true;
+                    break;
+                }
+            }
 
-                procesarLinea(tablero,color, posicion, diagonal2Arriba);
-                procesarLinea(tablero,color, posicion, diagonal2Abajo);
+            int pos;
+
+            if (diagonal1SinValidar) {
+
+                for (int i = 0; i < direccionesDiagonal1[0].length; i++) {
+                    pos = posicion;
+                    int dir = direccionesDiagonal1[0][i];
+                    while (mailBox[direccion[pos] + direccionesDiagonal1[1][i]] != -1) {
+                        pos += dir;
+
+                        if (tablero[pos] == NOPIEZA) {
+                            movimientos.add(posicion << 6 | pos);
+                            continue;
+                        }
+
+                        if (color[pos] == color[posicion] || tablero[pos] == REY) break;
+
+                        movimientos.add(posicion << 6 | pos);
+                        break;
+
+                    }
+
+                }
+            }
+
+            if (diagonal2SinValidar) {
+
+                for (int i = 0; i < direccionesDiagonal2[0].length; i++) {
+                    pos = posicion;
+                    int dir = direccionesDiagonal2[0][i];
+                    while (mailBox[direccion[pos] + direccionesDiagonal2[1][i]] != -1) {
+                        pos += dir;
+
+                        if (tablero[pos] == NOPIEZA) {
+                            movimientos.add(posicion << 6 | pos);
+                            continue;
+                        }
+
+                        if (color[pos] == color[posicion] || tablero[pos] == REY) break;
+
+                        movimientos.add(posicion << 6 | pos);
+                        break;
+
+                    }
+
+                }
 
             }
-            if (diagonal1) {
 
-                procesarLinea(tablero,color, posicion, digonal1Arriba);
-                procesarLinea(tablero,color, posicion, diagonal1Abajo);
-
-            }
             return;
         }
 
+        for (int i = 0; i < direccionesMail.length; i++) {
 
-        procesarLineaValidado(tablero,color, posicion, diagonal1Abajo, estado);
-        procesarLineaValidado(tablero,color, posicion, digonal1Arriba, estado);
-        procesarLineaValidado(tablero,color, posicion, diagonal2Abajo, estado);
-        procesarLineaValidado(tablero,color, posicion, diagonal2Arriba, estado);
+            int dir = direccionesMail[i];
+            int dirLocal = direccionesLocal[i];
+            int pos = posicion;
+            while (mailBox[direccion[pos] + dir] != -1) {
+                pos += dirLocal;
 
-        
+                if (tablero[pos] == NOPIEZA) {
+                    if(movimientoValido(posicion << 6 | pos, tablero, color, estado))
+                        movimientos.add(posicion << 6 | pos);
+
+                    continue;
+                }
+
+                if (color[pos] == color[posicion] || tablero[pos] == REY) break;
+
+                if (movimientoValido(posicion << 6 | pos, tablero, color, estado))
+                    movimientos.add(posicion << 6 | pos);
+
+                break;
+
+            }
+
+
+        }
 
 
     }
 
-    private  void movimientosDeRey(int[] tablero,int[]color, int estado, int posicion) {
+    private void movimientosDeRey(int[] tablero, int[] color, int estado, int posicion) {
 
         var movimietosRey = Generador.movimientosRey.get(posicion);
 
@@ -498,64 +538,64 @@ public class Generador {
 
             if (m == NOPIEZA || color[mov] != color[posicion]) {
 
-                var posicionRey = esTurnoBlanco(estado) ? posicionRey(estado,POSICION_REY_NEGRO) : posicionRey(estado,POSICION_REY_BLANCO);
+                var posicionRey = esTurnoBlanco(estado) ? posicionRey(estado, POSICION_REY_NEGRO) : posicionRey(estado, POSICION_REY_BLANCO);
                 var distancia = abs(mov - posicionRey);
 
                 // TODO optimizar estas condiciones
                 if (distancia == 1 || distancia == 7 || distancia == 8 || distancia == 9) {
 
                     if (distancia == 1 && esCasillaBlanca(posicionRey) == esCasillaBlanca(mov)) {
-                        validarYAgregar(tablero,color, estado, posicion,  mov);
+                        validarYAgregar(tablero, color, estado, posicion, mov);
                     } else if (distancia == 7 && esCasillaBlanca(posicionRey) != esCasillaBlanca(mov)) {
-                        validarYAgregar(tablero,color, estado, posicion,  mov);
+                        validarYAgregar(tablero, color, estado, posicion, mov);
                     } else if (distancia == 9 && esCasillaBlanca(posicionRey) != esCasillaBlanca(mov)) {
-                        validarYAgregar(tablero,color, estado, posicion,  mov);
+                        validarYAgregar(tablero, color, estado, posicion, mov);
                     }
 
                     continue;
                 }
 
-                validarYAgregar(tablero,color, estado, posicion,  mov);
+                validarYAgregar(tablero, color, estado, posicion, mov);
 
             }
         }
         // retornar si no hay enroques disponible
-        if((estado & 0b1111) ==  0) return;
+        if ((estado & 0b1111) == 0) return;
 
         if (esTurnoBlanco(estado)) {
             if ((estado & 0b000000_000000_000_000_000000_0_00_11) > 0) {
-                if (reyEnJaque(tablero,color, estado) == NO_JAQUE) {
+                if (reyEnJaque(tablero, color, estado) == NO_JAQUE) {
                     if ((estado & 1) > 0 && posicionRey(estado, POSICION_REY_NEGRO) != G2) {
 
                         // TODO revisar si la posicion sirve, puede estar de sobra
                         if (posicion == E1) {
                             if (tablero[F1] == NOPIEZA && tablero[G1] == NOPIEZA) {
-                                int estadoCopia = moverReyUnaCasilla(tablero,color, estado, E1, F1);
-                                if (reyEnJaque(tablero,color, estadoCopia) == NO_JAQUE) {
-                                    estadoCopia = moverReyUnaCasilla(tablero,color, estado, F1, G1);
-                                    if (reyEnJaque(tablero,color, estadoCopia) == NO_JAQUE) {
+                                int estadoCopia = moverReyUnaCasilla(tablero, color, estado, E1, F1);
+                                if (reyEnJaque(tablero, color, estadoCopia) == NO_JAQUE) {
+                                    estadoCopia = moverReyUnaCasilla(tablero, color, estado, F1, G1);
+                                    if (reyEnJaque(tablero, color, estadoCopia) == NO_JAQUE) {
                                         movimientos.add(E1 << 6 | G1);
                                     }
-                                    moverReyUnaCasilla(tablero,color, estado, G1, F1);
+                                    moverReyUnaCasilla(tablero, color, estado, G1, F1);
                                 }
-                                moverReyUnaCasilla(tablero,color, estado, F1, E1);
+                                moverReyUnaCasilla(tablero, color, estado, F1, E1);
                             }
                         }
                     }
 
-                    if ((estado & 2) > 0 && posicionRey(estado,POSICION_REY_NEGRO) != B2 && posicionRey(estado,POSICION_REY_NEGRO) != C2) {
+                    if ((estado & 2) > 0 && posicionRey(estado, POSICION_REY_NEGRO) != B2 && posicionRey(estado, POSICION_REY_NEGRO) != C2) {
 
                         if (posicion == E1) {
                             if (tablero[D1] == NOPIEZA && tablero[C1] == NOPIEZA && tablero[B1] == NOPIEZA) {
-                                int ec = moverReyUnaCasilla(tablero,color, estado, E1, D1);
-                                if (reyEnJaque(tablero,color, ec) == NO_JAQUE) {
-                                    ec = moverReyUnaCasilla(tablero,color, estado, D1, C1);
-                                    if (reyEnJaque(tablero,color, ec) == NO_JAQUE) {
+                                int ec = moverReyUnaCasilla(tablero, color, estado, E1, D1);
+                                if (reyEnJaque(tablero, color, ec) == NO_JAQUE) {
+                                    ec = moverReyUnaCasilla(tablero, color, estado, D1, C1);
+                                    if (reyEnJaque(tablero, color, ec) == NO_JAQUE) {
                                         movimientos.add(E1 << 6 | C1);
                                     }
-                                    moverReyUnaCasilla(tablero,color, estado, C1, D1);
+                                    moverReyUnaCasilla(tablero, color, estado, C1, D1);
                                 }
-                                moverReyUnaCasilla(tablero,color, estado, D1, E1);
+                                moverReyUnaCasilla(tablero, color, estado, D1, E1);
                             }
                         }
                     }
@@ -563,49 +603,49 @@ public class Generador {
             }
         } else {
             if ((estado & 0b000000_000000_000_000_000000_0_11_00) > 0) {
-                if (reyEnJaque(tablero,color, estado) == NO_JAQUE) {
-                    if ((estado & 4) > 0 && posicionRey(estado,POSICION_REY_BLANCO) != G7) {
+                if (reyEnJaque(tablero, color, estado) == NO_JAQUE) {
+                    if ((estado & 4) > 0 && posicionRey(estado, POSICION_REY_BLANCO) != G7) {
 
                         // TODO revisar si la posicion sirve, puede estar de sobra
                         if (posicion == E8) {
                             if (tablero[F8] == NOPIEZA && tablero[G8] == NOPIEZA) {
-                                int ec = moverReyUnaCasilla(tablero,color, estado, E8, F8);
-                                if (reyEnJaque(tablero,color, ec) == NO_JAQUE) {
-                                    ec = moverReyUnaCasilla(tablero,color, estado, F8, G8);
-                                    if (reyEnJaque(tablero,color, ec) == NO_JAQUE) {
+                                int ec = moverReyUnaCasilla(tablero, color, estado, E8, F8);
+                                if (reyEnJaque(tablero, color, ec) == NO_JAQUE) {
+                                    ec = moverReyUnaCasilla(tablero, color, estado, F8, G8);
+                                    if (reyEnJaque(tablero, color, ec) == NO_JAQUE) {
                                         movimientos.add(E8 << 6 | G8);
                                     }
-                                    moverReyUnaCasilla(tablero,color, estado, G8, F8);
+                                    moverReyUnaCasilla(tablero, color, estado, G8, F8);
                                 }
-                                moverReyUnaCasilla(tablero,color, estado, F8, E8);
+                                moverReyUnaCasilla(tablero, color, estado, F8, E8);
                             }
                         }
                     }
 
-                    if ((estado & 8)>0 && posicionRey(estado,POSICION_REY_BLANCO) != B7 && posicionRey(estado,POSICION_REY_BLANCO) != C7) {
+                    if ((estado & 8) > 0 && posicionRey(estado, POSICION_REY_BLANCO) != B7 && posicionRey(estado, POSICION_REY_BLANCO) != C7) {
 
                         if (posicion == E8) {
                             if (tablero[D8] == NOPIEZA && tablero[C8] == NOPIEZA && tablero[B8] == NOPIEZA) {
-                                int ec = moverReyUnaCasilla(tablero,color, estado, E8, D8);
-                                if (reyEnJaque(tablero,color, ec) == NO_JAQUE) {
-                                    ec = moverReyUnaCasilla(tablero,color, estado, D8, C8);
-                                    if (reyEnJaque(tablero,color, ec) == NO_JAQUE) {
+                                int ec = moverReyUnaCasilla(tablero, color, estado, E8, D8);
+                                if (reyEnJaque(tablero, color, ec) == NO_JAQUE) {
+                                    ec = moverReyUnaCasilla(tablero, color, estado, D8, C8);
+                                    if (reyEnJaque(tablero, color, ec) == NO_JAQUE) {
                                         movimientos.add(E8 << 6 | C8);
                                     }
-                                    moverReyUnaCasilla(tablero,color, estado, C8, D8);
+                                    moverReyUnaCasilla(tablero, color, estado, C8, D8);
                                 }
-                                moverReyUnaCasilla(tablero,color, estado, D8, E8);
+                                moverReyUnaCasilla(tablero, color, estado, D8, E8);
                             }
                         }
                     }
                 }
             }
         }
-        
+
     }
 
 
-    private static int moverReyUnaCasilla(int[] tablero,int[]color, int estado, int inicio, int destino) {
+    private static int moverReyUnaCasilla(int[] tablero, int[] color, int estado, int inicio, int destino) {
         tablero[destino] = tablero[inicio];
         tablero[inicio] = NOPIEZA;
         color[destino] = color[inicio];
@@ -614,17 +654,17 @@ public class Generador {
             estado = estado & MASK_LIMPIAR_POSICION_REY_BLANCO | destino << POSICION_REY_BLANCO;
         else
             estado = estado & MASK_LIMPIAR_POSICION_REY_NEGRO | destino << POSICION_REY_NEGRO;
-        return  estado;
+        return estado;
     }
 
-    private void movimientosDePeon(int[] tablero,int[]color, int estado, int posicion) {
-        
+    private void movimientosDePeon(int[] tablero, int[] color, int estado, int posicion) {
+
         var turnoBlanco = esTurnoBlanco(estado);
         int pieza = tablero[posicion];
 
         if (posicion >= (turnoBlanco ? A2 : A7) && posicion <= (turnoBlanco ? H2 : H7)) {
             if (tablero[posicion + (turnoBlanco ? 8 : -8)] == NOPIEZA && tablero[posicion + (turnoBlanco ? 16 : -16)] == NOPIEZA) {
-                validarYAgregar(tablero,color, estado, posicion, posicion + (turnoBlanco ? 16 : -16));
+                validarYAgregar(tablero, color, estado, posicion, posicion + (turnoBlanco ? 16 : -16));
             }
         }
 
@@ -634,7 +674,7 @@ public class Generador {
         if (tablero[destino] == NOPIEZA) {
             var m = posicion << 6 | destino;
             if (destino <= H1 || destino >= A8 && destino <= H8) {
-                if(movimientoValido(m,tablero,color,estado)){
+                if (movimientoValido(m, tablero, color, estado)) {
                     movimientos.add(m | 1 << 12);
                     movimientos.add(m | 2 << 12);
                     movimientos.add(m | 3 << 12);
@@ -642,16 +682,16 @@ public class Generador {
                 }
 
             } else {
-                validarYAgregar(tablero,color,estado,posicion,destino);
+                validarYAgregar(tablero, color, estado, posicion, destino);
             }
         }
-        avanceDiagonal(tablero,color, estado, posicion, turnoBlanco, pieza, 9);
-        avanceDiagonal(tablero,color, estado, posicion, turnoBlanco, pieza, 7);
+        avanceDiagonal(tablero, color, estado, posicion, turnoBlanco, pieza, 9);
+        avanceDiagonal(tablero, color, estado, posicion, turnoBlanco, pieza, 7);
 
-        
+
     }
 
-    private void avanceDiagonal(int[] tablero,int[]color, int estado, int posicion,  boolean turnoBlanco, int pieza, int i) {
+    private void avanceDiagonal(int[] tablero, int[] color, int estado, int posicion, boolean turnoBlanco, int pieza, int i) {
         int destino;
         int posicionActual;
         destino = posicion + (turnoBlanco ? i : -i);
@@ -661,27 +701,27 @@ public class Generador {
             if (posicionActual != NOPIEZA) {
                 if (color[destino] == BLANCO != (color[posicion] == BLANCO) && !(posicionActual == REY)) {
                     if (destino >= A8 || destino <= H1) {
-                        if (movimientoValido(m, tablero,color, estado)) {
+                        if (movimientoValido(m, tablero, color, estado)) {
                             movimientos.add(m | 1 << 12);
                             movimientos.add(m | 2 << 12);
                             movimientos.add(m | 3 << 12);
                             movimientos.add(m | 4 << 12);
                         }
                     } else {
-                        validarYAgregar(tablero,color, estado, posicion,  destino);
+                        validarYAgregar(tablero, color, estado, posicion, destino);
                     }
                 }
-            } else if (alPaso(estado,destino) && posicion >= (turnoBlanco ? A5 : A4) && posicion <= (turnoBlanco ? H5 : H4)) {
+            } else if (alPaso(estado, destino) && posicion >= (turnoBlanco ? A5 : A4) && posicion <= (turnoBlanco ? H5 : H4)) {
                 if (destino == (estado >> POSICION_PIEZA_AL_PASO & 0b111111)) {
-                    validarYAgregar(tablero,color, estado, posicion,  destino);
+                    validarYAgregar(tablero, color, estado, posicion, destino);
                 }
             }
         }
     }
 
-    private  void validarYAgregar(int[] tablero,int[]color, int estado, int posicion, int i) {
+    private void validarYAgregar(int[] tablero, int[] color, int estado, int posicion, int i) {
         var mm = posicion << 6 | i;
-        if (movimientoValido(mm, tablero,color, estado))
+        if (movimientoValido(mm, tablero, color, estado))
             movimientos.add(mm);
     }
 }
