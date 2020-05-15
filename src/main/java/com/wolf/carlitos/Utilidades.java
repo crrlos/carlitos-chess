@@ -326,30 +326,9 @@ public class Utilidades {
         color[destino] = color[inicio];
         color[inicio] = NOCOLOR;
 
-        boolean tomaAlPaso = false;
-        int posicionPiezaALPaso = 0;
+        var posicionRey =  posicionRey(estado, esTurnoBlanco(estado) ?  POSICION_REY_BLANCO : POSICION_REY_NEGRO);
 
-        if (piezaActual == PEON && alPaso(estado, destino)) {
-            posicionPiezaALPaso = destino + (esTurnoBlanco(estado) ? -8 : 8);
-            tomaAlPaso = true;
-            tablero[posicionPiezaALPaso] = NOPIEZA;
-
-        } else if (piezaActual == REY) {
-            if (esTurnoBlanco(estado)) {
-                estado = estado & MASK_LIMPIAR_POSICION_REY_BLANCO | destino << POSICION_REY_BLANCO;
-            } else {
-                estado = estado & MASK_LIMPIAR_POSICION_REY_NEGRO | destino << POSICION_REY_NEGRO;
-            }
-        }
-
-        //var jaque = reyEnJaque(tablero, color, estado);
-
-        var jaque = casillaAtacada(posicionRey(estado, (esTurnoBlanco(estado) ? POSICION_REY_BLANCO : POSICION_REY_NEGRO)), tablero, color, esTurnoBlanco(estado) ? NEGRO : BLANCO);
-
-        if (tomaAlPaso) {
-            tablero[posicionPiezaALPaso] = PEON;
-            color[posicionPiezaALPaso] = esTurnoBlanco(estado) ? NEGRO : BLANCO;
-        }
+        var jaque = casillaAtacada(posicionRey, tablero, color, colorContrario(estado));
 
         tablero[destino] = piezaDestino;
         tablero[inicio] = piezaActual;
@@ -357,7 +336,6 @@ public class Utilidades {
         color[inicio] = color[destino];
         color[destino] = colorDestino;
 
-        //return jaque == NO_JAQUE;
         return !jaque;
     }
 

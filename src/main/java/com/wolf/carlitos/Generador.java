@@ -398,8 +398,14 @@ public class Generador {
 
                 pos = posicion + offset64[TORRE][i];
 
-                if ((tablero[pos] == NOPIEZA || color[pos] != color[posicion]) && movimientoValido(posicion << 6 | pos, tablero, color, estado))
+                int ec = esTurnoBlanco(estado) ?
+                        estado & MASK_LIMPIAR_POSICION_REY_BLANCO | pos << POSICION_REY_BLANCO:
+                        estado & MASK_LIMPIAR_POSICION_REY_NEGRO | pos << POSICION_REY_NEGRO;
+
+
+                if ((tablero[pos] == NOPIEZA || color[pos] != color[posicion]) && movimientoValido(posicion << 6 | pos, tablero, color, ec))
                     movimientos.add(posicion << 6 | pos);
+
 
             }
         }
@@ -411,7 +417,11 @@ public class Generador {
 
                 pos = posicion + offset64[ALFIL][i];
 
-                if ((tablero[pos] == NOPIEZA || color[pos] != color[posicion]) && movimientoValido(posicion << 6 | pos, tablero, color, estado))
+                int ec = esTurnoBlanco(estado) ?
+                        estado & MASK_LIMPIAR_POSICION_REY_BLANCO | pos << POSICION_REY_BLANCO:
+                        estado & MASK_LIMPIAR_POSICION_REY_NEGRO | pos << POSICION_REY_NEGRO;
+
+                if ((tablero[pos] == NOPIEZA || color[pos] != color[posicion]) && movimientoValido(posicion << 6 | pos, tablero, color, ec))
                     movimientos.add(posicion << 6 | pos);
 
             }
@@ -518,7 +528,15 @@ public class Generador {
                     }
                 }
             } else if (alPaso(estado, destino)) {
+
+                int posicionPiezaALPaso = destino + (esTurnoBlanco(estado) ? -8 : 8);
+                tablero[posicionPiezaALPaso] = NOPIEZA;
+                color[posicionPiezaALPaso] = NOCOLOR;
+
                 validarYAgregar(tablero, color, estado, posicion, destino);
+
+                tablero[posicionPiezaALPaso] = PEON;
+                color[posicionPiezaALPaso] = esTurnoBlanco(estado) ? NEGRO : BLANCO;
             }
         }
     }
