@@ -46,44 +46,13 @@ public class Generador {
     public static final HashMap<Integer, List<List<Integer>>> movimientosAlfil = new HashMap<>();
     public static final HashMap<Integer, List<List<Integer>>> movimientosTorre = new HashMap<>();
     public static final HashMap<Integer, List<Integer>> movimientosCaballo = new HashMap<>();
-    public static final HashMap<Integer, List<Integer>> movimientosRey = new HashMap<>();
 
     static {
 
         llenarMovimientosDeAlfil();
         llenarMovimientosDeTorre();
         llenarMovimientosDeCaballo();
-        llenarMovimientosDeRey();
 
-    }
-
-    private static void llenarMovimientosDeRey() {
-        for (int i = 0; i < 64; i++) {
-            var movimientos = new ArrayList<Integer>();
-
-
-            boolean colorInicio = esCasillaBlanca(i);
-
-            if (i + 1 < 64 && colorInicio != esCasillaBlanca(i + 1))
-                movimientos.add(i + 1);
-            if (i + 7 < 64 && colorInicio == esCasillaBlanca(i + 7))
-                movimientos.add(i + 7);
-            if (i + 8 < 64 && colorInicio != esCasillaBlanca(i + 8))
-                movimientos.add(i + 8);
-            if (i + 9 < 64 && colorInicio == esCasillaBlanca(i + 9))
-                movimientos.add(i + 9);
-
-            if (i - 1 >= 0 && colorInicio != esCasillaBlanca(i - 1))
-                movimientos.add(i - 1);
-            if (i - 7 >= 0 && colorInicio == esCasillaBlanca(i - 7))
-                movimientos.add(i - 7);
-            if (i - 8 >= 0 && colorInicio != esCasillaBlanca(i - 8))
-                movimientos.add(i - 8);
-            if (i - 9 >= 0 && colorInicio == esCasillaBlanca(i - 9))
-                movimientos.add(i - 9);
-
-            movimientosRey.put(i, movimientos);
-        }
     }
 
     private static void llenarMovimientosDeCaballo() {
@@ -507,7 +476,7 @@ public class Generador {
 
     private void movimientosDeRey(int[] tablero, int[] color, int estado, int posicion) {
 
-        int pos = 0;
+        int pos;
 
         for (int i = 0; i < offsetMailBox[TORRE].length; i++) {
             int mailOffset = offsetMailBox[TORRE][i];
@@ -535,103 +504,52 @@ public class Generador {
             }
         }
 
-
-        // retornar si no hay enroques disponible
-        if ((estado & 0b1111) == 0) return;
+        if ((estado & 0b1111) == 0 || reyEnJaque) return;
 
         if (esTurnoBlanco(estado)) {
             if ((estado & 0b000000_000000_000_000_000000_0_00_11) > 0) {
-                if (reyEnJaque(tablero, color, estado) == NO_JAQUE) {
-                    if ((estado & 1) > 0 && posicionRey(estado, POSICION_REY_NEGRO) != G2) {
 
-                        // TODO revisar si la posicion sirve, puede estar de sobra
-                        if (posicion == E1) {
-                            if (tablero[F1] == NOPIEZA && tablero[G1] == NOPIEZA) {
-                                int estadoCopia = moverReyUnaCasilla(tablero, color, estado, E1, F1);
-                                if (reyEnJaque(tablero, color, estadoCopia) == NO_JAQUE) {
-                                    estadoCopia = moverReyUnaCasilla(tablero, color, estado, F1, G1);
-                                    if (reyEnJaque(tablero, color, estadoCopia) == NO_JAQUE) {
-                                        movimientos.add(E1 << 6 | G1);
-                                    }
-                                    moverReyUnaCasilla(tablero, color, estado, G1, F1);
-                                }
-                                moverReyUnaCasilla(tablero, color, estado, F1, E1);
-                            }
+                    if ((estado & 1) > 0) {
+                        if ((tablero[F1] & tablero[G1]) == NOPIEZA
+                                && !casillaAtacada(F1, tablero, color, colorContrario(estado))
+                                && !casillaAtacada(G1, tablero, color, colorContrario(estado))) {
+                            movimientos.add(E1 << 6 | G1);
                         }
                     }
 
-                    if ((estado & 2) > 0 && posicionRey(estado, POSICION_REY_NEGRO) != B2 && posicionRey(estado, POSICION_REY_NEGRO) != C2) {
+                    if ((estado & 2) > 0) {
 
-                        if (posicion == E1) {
-                            if (tablero[D1] == NOPIEZA && tablero[C1] == NOPIEZA && tablero[B1] == NOPIEZA) {
-                                int ec = moverReyUnaCasilla(tablero, color, estado, E1, D1);
-                                if (reyEnJaque(tablero, color, ec) == NO_JAQUE) {
-                                    ec = moverReyUnaCasilla(tablero, color, estado, D1, C1);
-                                    if (reyEnJaque(tablero, color, ec) == NO_JAQUE) {
-                                        movimientos.add(E1 << 6 | C1);
-                                    }
-                                    moverReyUnaCasilla(tablero, color, estado, C1, D1);
-                                }
-                                moverReyUnaCasilla(tablero, color, estado, D1, E1);
-                            }
+                        if ((tablero[D1] & tablero[C1] & tablero[B1]) == NOPIEZA
+                                && !casillaAtacada(D1, tablero, color, colorContrario(estado))
+                                && !casillaAtacada(C1, tablero, color, colorContrario(estado))) {
+                            movimientos.add(E1 << 6 | C1);
                         }
                     }
-                }
+
             }
         } else {
             if ((estado & 0b000000_000000_000_000_000000_0_11_00) > 0) {
-                if (reyEnJaque(tablero, color, estado) == NO_JAQUE) {
-                    if ((estado & 4) > 0 && posicionRey(estado, POSICION_REY_BLANCO) != G7) {
 
-                        // TODO revisar si la posicion sirve, puede estar de sobra
-                        if (posicion == E8) {
-                            if (tablero[F8] == NOPIEZA && tablero[G8] == NOPIEZA) {
-                                int ec = moverReyUnaCasilla(tablero, color, estado, E8, F8);
-                                if (reyEnJaque(tablero, color, ec) == NO_JAQUE) {
-                                    ec = moverReyUnaCasilla(tablero, color, estado, F8, G8);
-                                    if (reyEnJaque(tablero, color, ec) == NO_JAQUE) {
-                                        movimientos.add(E8 << 6 | G8);
-                                    }
-                                    moverReyUnaCasilla(tablero, color, estado, G8, F8);
-                                }
-                                moverReyUnaCasilla(tablero, color, estado, F8, E8);
-                            }
-                        }
-                    }
-
-                    if ((estado & 8) > 0 && posicionRey(estado, POSICION_REY_BLANCO) != B7 && posicionRey(estado, POSICION_REY_BLANCO) != C7) {
-
-                        if (posicion == E8) {
-                            if (tablero[D8] == NOPIEZA && tablero[C8] == NOPIEZA && tablero[B8] == NOPIEZA) {
-                                int ec = moverReyUnaCasilla(tablero, color, estado, E8, D8);
-                                if (reyEnJaque(tablero, color, ec) == NO_JAQUE) {
-                                    ec = moverReyUnaCasilla(tablero, color, estado, D8, C8);
-                                    if (reyEnJaque(tablero, color, ec) == NO_JAQUE) {
-                                        movimientos.add(E8 << 6 | C8);
-                                    }
-                                    moverReyUnaCasilla(tablero, color, estado, C8, D8);
-                                }
-                                moverReyUnaCasilla(tablero, color, estado, D8, E8);
-                            }
-                        }
+                if ((estado & 4) > 0) {
+                    if ((tablero[F8] & tablero[G8]) == NOPIEZA
+                            && !casillaAtacada(F8, tablero, color, colorContrario(estado))
+                            && !casillaAtacada(G8, tablero, color, colorContrario(estado))) {
+                        movimientos.add(E8 << 6 | G8);
                     }
                 }
+
+                if ((estado & 8) > 0) {
+
+                    if ((tablero[D8] & tablero[C8] & tablero[B8]) == NOPIEZA
+                            && !casillaAtacada(D8, tablero, color, colorContrario(estado))
+                            && !casillaAtacada(C8, tablero, color, colorContrario(estado))) {
+                        movimientos.add(E8 << 6 | C8);
+                    }
+                }
+
             }
         }
 
-    }
-
-
-    private static int moverReyUnaCasilla(int[] tablero, int[] color, int estado, int inicio, int destino) {
-        tablero[destino] = tablero[inicio];
-        tablero[inicio] = NOPIEZA;
-        color[destino] = color[inicio];
-        color[inicio] = NOCOLOR;
-        if (esTurnoBlanco(estado))
-            estado = estado & MASK_LIMPIAR_POSICION_REY_BLANCO | destino << POSICION_REY_BLANCO;
-        else
-            estado = estado & MASK_LIMPIAR_POSICION_REY_NEGRO | destino << POSICION_REY_NEGRO;
-        return estado;
     }
 
     private void movimientosDePeon(int[] tablero, int[] color, int estado, int posicion) {

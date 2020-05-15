@@ -296,7 +296,9 @@ public class Utilidades {
     public static boolean esTurnoBlanco(int estadoTablero) {
         return (estadoTablero & 0b000000_000000_000_000_000000_1_00_00) > 0;
     }
-
+   public  static int colorContrario(int estado){
+        return  esTurnoBlanco(estado) ? NEGRO : BLANCO;
+   }
     public static int  posicionRey(int estado, int desplazamiento) {
         return  estado >> desplazamiento & 0b111111;
     }
@@ -305,6 +307,7 @@ public class Utilidades {
         var blanco = esTurnoBlanco(estado);
 
         var posicionRey = blanco ? posicionRey(estado, POSICION_REY_BLANCO) : posicionRey(estado, POSICION_REY_NEGRO);
+
 
         int result;
 
