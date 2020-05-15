@@ -29,7 +29,8 @@ public class Tablero {
                     {NORTE, NORESTE, NOROESTE},
                     {8, 12, 19, 21, -8, -12, -19, -21},
                     {SURESTE, NORESTE, SUROESTE, NOROESTE},
-                    {NORTE, SUR, ESTE, OESTE}
+                    {NORTE, SUR, ESTE, OESTE},
+                    {NORTE, SUR, ESTE, OESTE,SURESTE, NORESTE, SUROESTE, NOROESTE}
             };
     public static final int[][] offset64 = new int[][]
             {
@@ -37,6 +38,7 @@ public class Tablero {
                     {6, 10, 15, 17, -6, -10, -15, -17},
                     {sureste, noreste, suroeste, noroeste},
                     {norte, sur, este, oeste},
+                    {norte, sur, este, oeste,sureste, noreste, suroeste, noroeste}
             };
     public static final int[][] direccionesVertical = new int[][]{
             {norte, sur},
@@ -152,37 +154,19 @@ public class Tablero {
 
         }
 
-
-        // buscando al rey
-        for (int i = 0; i < offsetMailBox[TORRE].length; i++) {
-
-            int dir = offsetMailBox[TORRE][i];
+        // rey con offset de dama
+        for (int i = 0; i < offsetMailBox[DAMA].length; i++) {
+            int dir = offsetMailBox[DAMA][i];
             pos = posicion;
             if (mailBox[direccion[pos] + dir] != -1) {
-                pos += offset64[TORRE][i];
+                pos += offset64[DAMA][i];
                 if (tablero[pos] != NOPIEZA) {
                     if (color[pos] == colorContrario && (tablero[pos] == REY))
                         return true;
                 }
-
             }
-
         }
 
-        for (int i = 0; i < offsetMailBox[ALFIL].length; i++) {
-
-            int dir = offsetMailBox[ALFIL][i];
-            pos = posicion;
-            if (mailBox[direccion[pos] + dir] != -1) {
-                pos += offset64[ALFIL][i];
-                if (tablero[pos] != NOPIEZA) {
-                    if (color[pos] == colorContrario && (tablero[pos] == REY))
-                        return true;
-                }
-
-            }
-
-        }
 
         return false;
     }
