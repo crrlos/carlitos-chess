@@ -343,21 +343,50 @@ public class Generador {
     }
 
     private void movimientosDeCaballo(int[] tablero, int[] color, int estado, int posicion) {
-        int posicionActual;
+        int pos;
 
-        var movimientosCaballo = Generador.movimientosCaballo.get(posicion);
+        if(!reyEnJaque){
 
-        for (int i = 0; i < movimientosCaballo.size(); i++) {
-            var mov = movimientosCaballo.get(i);
-            posicionActual = tablero[mov];
+            boolean movimientosSinValidar = false;
 
-            if (posicionActual == NOPIEZA || (color[mov] != color[posicion] && !(posicionActual == REY))) {
-                validarYAgregar(tablero, color, estado, posicion, mov);
-            }
+            tablero[posicion] = NOPIEZA;
+            color[posicion] = NOCOLOR;
 
+            if(!casillaAtacada(posicionRey(estado,esTurnoBlanco(estado) ? POSICION_REY_BLANCO : POSICION_REY_NEGRO),tablero,color,colorContrario(estado)))
+                movimientosSinValidar = true;
+
+            tablero[posicion] = CABALLO;
+            color[posicion] = esTurnoBlanco(estado) ? BLANCO : NEGRO;
+
+           if(movimientosSinValidar){
+               for (int i = 0; i < offsetMailBox[CABALLO].length; i++) {
+                   int mailOffset = offsetMailBox[CABALLO][i];
+
+                   if(mailBox[direccion[posicion] + mailOffset] != -1){
+
+                       pos = posicion + offset64[CABALLO][i];
+
+                       if((tablero[pos] == NOPIEZA || color[pos] != color[posicion]) && tablero[pos] != REY)
+                           movimientos.add(posicion << 6 | pos);
+                   }
+               }
+           }
+            return;
         }
 
 
+        for (int i = 0; i < offsetMailBox[CABALLO].length; i++) {
+            int mailOffset = offsetMailBox[CABALLO][i];
+
+            if(mailBox[direccion[posicion] + mailOffset] != -1){
+
+                pos = posicion + offset64[CABALLO][i];
+
+                if((tablero[pos] == NOPIEZA || color[pos] != color[posicion])  && movimientoValido(posicion << 6 | pos,tablero,color,estado))
+                    movimientos.add(posicion << 6 | pos);
+
+            }
+        }
     }
 
     public void movimientosDeAlfil(int[] tablero, int[] color, int estado, int posicion) {
