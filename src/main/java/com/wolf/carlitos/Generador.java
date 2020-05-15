@@ -368,28 +368,6 @@ public class Generador {
 
     }
 
-    private void procesarLineaValidado(int[] tablero, int[] color, int posicion, List<Integer> horizontal1, int estado) {
-        int posicionActual;
-        for (int j = 0; j < horizontal1.size(); j++) {
-            var mov = horizontal1.get(j);
-            posicionActual = tablero[mov];
-
-            if (posicionActual == NOPIEZA) {
-                validarYAgregar(tablero, color, estado, posicion, mov);
-                continue;
-            }
-
-            var sonMismoColor = color[mov] == color[posicion];
-
-            if (!sonMismoColor && !(posicionActual == REY)) {
-                validarYAgregar(tablero, color, estado, posicion, mov);
-                break;
-            }
-
-            break;
-        }
-    }
-
     private void movimientosDeDama(int[] tablero, int[] color, int estado, int posicion) {
         movimientosDeAlfil(tablero, color, estado, posicion);
         movimientosDeTorre(tablero, color, estado, posicion);
@@ -529,36 +507,35 @@ public class Generador {
 
     private void movimientosDeRey(int[] tablero, int[] color, int estado, int posicion) {
 
-        var movimietosRey = Generador.movimientosRey.get(posicion);
+        int pos = 0;
 
-        for (int i = 0; i < movimietosRey.size(); i++) {
+        for (int i = 0; i < offsetMailBox[TORRE].length; i++) {
+            int mailOffset = offsetMailBox[TORRE][i];
 
-            int mov = movimietosRey.get(i);
-            var m = tablero[mov];
+            if(mailBox[direccion[posicion] + mailOffset] != -1){
 
-            if (m == NOPIEZA || color[mov] != color[posicion]) {
+                pos = posicion + offset64[TORRE][i];
 
-                var posicionRey = esTurnoBlanco(estado) ? posicionRey(estado, POSICION_REY_NEGRO) : posicionRey(estado, POSICION_REY_BLANCO);
-                var distancia = abs(mov - posicionRey);
-
-                // TODO optimizar estas condiciones
-                if (distancia == 1 || distancia == 7 || distancia == 8 || distancia == 9) {
-
-                    if (distancia == 1 && esCasillaBlanca(posicionRey) == esCasillaBlanca(mov)) {
-                        validarYAgregar(tablero, color, estado, posicion, mov);
-                    } else if (distancia == 7 && esCasillaBlanca(posicionRey) != esCasillaBlanca(mov)) {
-                        validarYAgregar(tablero, color, estado, posicion, mov);
-                    } else if (distancia == 9 && esCasillaBlanca(posicionRey) != esCasillaBlanca(mov)) {
-                        validarYAgregar(tablero, color, estado, posicion, mov);
-                    }
-
-                    continue;
-                }
-
-                validarYAgregar(tablero, color, estado, posicion, mov);
+                if((tablero[pos] == NOPIEZA || color[pos] != color[posicion])  && movimientoValido(posicion << 6 | pos,tablero,color,estado))
+                        movimientos.add(posicion << 6 | pos);
 
             }
         }
+
+        for (int i = 0; i < offsetMailBox[ALFIL].length; i++) {
+            int mailOffset = offsetMailBox[ALFIL][i];
+
+            if(mailBox[direccion[posicion] + mailOffset] != -1){
+
+                pos = posicion + offset64[ALFIL][i];
+
+                if((tablero[pos] == NOPIEZA || color[pos] != color[posicion])  && movimientoValido(posicion << 6 | pos,tablero,color,estado))
+                    movimientos.add(posicion << 6 | pos);
+
+            }
+        }
+
+
         // retornar si no hay enroques disponible
         if ((estado & 0b1111) == 0) return;
 

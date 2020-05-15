@@ -444,7 +444,7 @@ public class Utilidades {
             tomaAlPaso = true;
             tablero[posicionPiezaALPaso] = NOPIEZA;
 
-        }
+        }else
         if (piezaActual == REY) {
             if (esTurnoBlanco(estado)) {
                 estado = estado & MASK_LIMPIAR_POSICION_REY_BLANCO | destino << POSICION_REY_BLANCO;

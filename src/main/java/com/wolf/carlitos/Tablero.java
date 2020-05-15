@@ -24,6 +24,35 @@ public class Tablero {
     public static final int sureste = sur + este;
     public static final int suroeste = sur + oeste;
 
+    public static int[][] MOVIMIENTOS_PIEZA = new int[][]{
+            {NORESTE, NOROESTE},//p
+            {8, 12, 19, 21, -8, -12, -19, -21},// caballo
+            {SURESTE, NORESTE, SUROESTE, NOROESTE}, // alfil
+            {NORTE, SUR, ESTE, OESTE},// torre
+    };
+    public static int[][] movimientos_pieza = new int[][]{
+            {noreste, noroeste},
+            {6, 10, 15, 17, -6, -10, -15, -17},// caballo
+            {sureste, noreste, suroeste, noroeste}, // alfil
+            {norte, sur, este, oeste},// torre
+    };
+
+
+    public static final int[][] offsetMailBox = new int[][]
+            {
+                    {},
+                    {8, 12, 19, 21, -8, -12, -19, -21},
+                    {SURESTE, NORESTE, SUROESTE, NOROESTE},
+                    {NORTE, SUR, ESTE, OESTE}
+            };
+    public static final int[][] offset64 = new int[][]
+            {
+                    {},
+                    {6, 10, 15, 17, -6, -10, -15, -17},
+                    {sureste, noreste, suroeste, noroeste},
+                    {norte, sur, este, oeste},
+            };
+
 
     public static final int[] mailBox = new int[]{
             -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -153,18 +182,7 @@ public class Tablero {
         return false;
     }
 
-    public static int[][] MOVIMIENTOS_PIEZA = new int[][]{
-            {NORESTE, NOROESTE},//p
-            {8, 12, 19, 21, -8, -12, -19, -21},// caballo
-            {SURESTE, NORESTE, SUROESTE, NOROESTE}, // alfil
-            {NORTE, SUR, ESTE, OESTE},// torre
-    };
-    public static int[][] movimientos_pieza = new int[][]{
-            {noreste, noroeste},
-            {6, 10, 15, 17, -6, -10, -15, -17},// caballo
-            {sureste, noreste, suroeste, noroeste}, // alfil
-            {norte, sur, este, oeste},// torre
-    };
+
 
 
 }
