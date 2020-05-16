@@ -8,6 +8,8 @@ package com.wolf.carlitos;
 import javax.print.attribute.standard.Finishings;
 import java.util.Arrays;
 
+import static com.wolf.carlitos.Bitboard.next;
+import static com.wolf.carlitos.Bitboard.remainder;
 import static com.wolf.carlitos.Constantes.*;
 import static com.wolf.carlitos.Tablero.*;
 import static com.wolf.carlitos.Utilidades.*;
@@ -59,36 +61,37 @@ public class Generador {
 
         int posicionRey = posicionRey(estado, turnoBlanco ? POSICION_REY_BLANCO : POSICION_REY_NEGRO);
 
-        reyEnJaque = Tablero.casillaAtacada(posicionRey, pieza, color, turnoBlanco ? NEGRO : BLANCO);
+        reyEnJaque = casillaAtacada(posicionRey, pieza, color, turnoBlanco ? NEGRO : BLANCO);
 
-        for (int i = 0; i < pieza.length; i++) {
+        int bando = turnoBlanco ? BLANCO :NEGRO;
 
-            var piezaActual = pieza[i];
-
-            if (piezaActual != NOPIEZA && color[i] == BLANCO == turnoBlanco) {
-                switch (piezaActual) {
-                    case PEON:
-                        movimientosDePeon(pieza, color, estado, i);
-                        break;
-                    case CABALLO:
-                        movimientosDeCaballo(pieza, color, estado, i);
-                        break;
-                    case ALFIL:
-                        movimientosDeAlfil(pieza, color, estado, i);
-                        break;
-                    case TORRE:
-                        movimientosDeTorre(pieza, color, estado, i);
-                        break;
-                    case DAMA:
-                        movimientosDeDama(pieza, color, estado, i);
-                        break;
-                    case REY:
-                        movimientosDeRey(pieza, color, estado, i);
-                        break;
-                }
-            }
-
+        for (long squares = piezas[bando][PEON]; squares != 0; squares = remainder(squares)) {
+            int square = next(squares);
+            movimientosDePeon(pieza,color,estado,square);
         }
+
+        for (long squares = piezas[bando][CABALLO]; squares != 0; squares = remainder(squares)) {
+            int square = next(squares);
+            movimientosDeCaballo(pieza,color,estado,square);
+        }
+        for (long squares = piezas[bando][ALFIL]; squares != 0; squares = remainder(squares)) {
+            int square = next(squares);
+            movimientosDeAlfil(pieza,color,estado,square);
+        }
+        for (long squares = piezas[bando][TORRE]; squares != 0; squares = remainder(squares)) {
+            int square = next(squares);
+            movimientosDeTorre(pieza,color,estado,square);
+        }
+        for (long squares = piezas[bando][DAMA]; squares != 0; squares = remainder(squares)) {
+            int square = next(squares);
+            movimientosDeDama(pieza,color,estado,square);
+        }
+
+        for (long squares = piezas[bando][REY]; squares != 0; squares = remainder(squares)) {
+            int square = next(squares);
+            movimientosDeRey(pieza,color,estado,square);
+        }
+
         reyEnJaque = false;
 
         respuesta.movimientosGenerados = this.movimientos.getMovimientos();
@@ -179,6 +182,7 @@ public class Generador {
 
             return;
         }
+
 
 
         for (int i = 0; i < offsetMailBox[TORRE].length; i++) {

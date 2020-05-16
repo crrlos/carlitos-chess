@@ -4,16 +4,20 @@ package com.wolf.carlitos;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.ExecutionException;
 
+import static com.wolf.carlitos.Bitboard.add;
 import static com.wolf.carlitos.Constantes.*;
+import static com.wolf.carlitos.Tablero.hacerMovimiento;
+import static com.wolf.carlitos.Tablero.piezas;
 import static com.wolf.carlitos.Utilidades.*;
 
 
 public class Juego {
 
-    public int[] tablero = new int[64];
-    public int[] color = new int[64];
+    public static int[] tablero = new int[64];
+    public static  int[] color = new int[64];
 
     public int estadoTablero;
     public List<Integer> secuencia = new ArrayList<>();
@@ -27,27 +31,51 @@ public class Juego {
             color[i] = NOCOLOR;
         }
 
+        for (int i = 0; i < 16; i++) {
+            color[i] = BLANCO;
+            color[i + 48] = NEGRO;
+
+        }
         tablero[A1] = TORRE;
+        add(true, TORRE, A1);
         tablero[B1] = CABALLO;
+        add(true, CABALLO, B1);
         tablero[C1] = ALFIL;
+        add(true, ALFIL, C1);
         tablero[D1] = DAMA;
+        add(true, DAMA, D1);
         tablero[E1] = REY;
+        add(true, REY, E1);
         tablero[F1] = ALFIL;
+        add(true, ALFIL, F1);
         tablero[G1] = CABALLO;
+        add(true, CABALLO, G1);
         tablero[H1] = TORRE;
+        add(true, TORRE, H1);
 
         tablero[A8] = TORRE;
+        add(false, TORRE, A8);
         tablero[B8] = CABALLO;
+        add(false, CABALLO, B8);
         tablero[C8] = ALFIL;
+        add(false, ALFIL, C8);
         tablero[D8] = DAMA;
+        add(false, DAMA, D8);
         tablero[E8] = REY;
+        add(false, REY, E8);
         tablero[F8] = ALFIL;
+        add(false, ALFIL, F8);
         tablero[G8] = CABALLO;
+        add(false, CABALLO, G8);
         tablero[H8] = TORRE;
+        add(false, TORRE, H8);
 
         for (int i = 0; i < 8; i++) {
             tablero[8 + i] = PEON;
             tablero[48 + i] = PEON;
+
+            add(true, PEON, 8 + i);
+            add(false, PEON, 48 + i);
         }
 
         for (int i = 0; i < 16; i++) {
@@ -55,6 +83,8 @@ public class Juego {
             color[i + 48] = NEGRO;
 
         }
+
+
     }
 
     public void establecerPosicion(String... movimientos) {
@@ -121,7 +151,7 @@ public class Juego {
             if (c == 'k') {
                 tablero[indexInicio] = REY;
                 color[indexInicio] = NEGRO;
-                estadoTablero |=  indexInicio << POSICION_REY_NEGRO;
+                estadoTablero |= indexInicio << POSICION_REY_NEGRO;
             }
             if (c == 'q') {
                 tablero[indexInicio] = DAMA;

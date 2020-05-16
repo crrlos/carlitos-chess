@@ -6,8 +6,11 @@
 package com.wolf.carlitos;
 
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.*;
 
+import static com.wolf.carlitos.Bitboard.*;
 import static com.wolf.carlitos.Ponderaciones.*;
 import static com.wolf.carlitos.Constantes.*;
 import static com.wolf.carlitos.Utilidades.*;
@@ -23,6 +26,7 @@ public class Search {
     private final int[] color;
     private final int estadoTablero;
     private final Generador generador = new Generador();
+    public static final List<Integer> secuencia = new ArrayList<>();
 
     public Search(int[] pieza, int[] color, int estado) {
         this.pieza = pieza;
@@ -94,66 +98,7 @@ public class Search {
     }
 
 
-    private void revertirMovimiento(int movimiento, int estado, int[] tablero, int[] color) {
 
-        estado ^= 0b10000;
-
-        int inicio = movimiento >> 6 & 0b111111;
-        int destino = movimiento & 0b111111;
-
-        boolean turnoBlanco = esTurnoBlanco(estado);
-
-        switch ((estado >> POSICION_TIPO_MOVIMIENTO & 0b111)) {
-
-            case MOVIMIENTO_NORMAL:
-            case MOVIMIENTO_REY:
-                tablero[inicio] = tablero[destino];
-                color[inicio] = color[destino];
-                break;
-            case AL_PASO:
-                int posicionPaso = turnoBlanco ? destino - 8 : destino + 8;
-
-                tablero[posicionPaso] = PEON;
-                color[posicionPaso] = esTurnoBlanco(estado) ? NEGRO : BLANCO;
-
-                tablero[inicio] = tablero[destino];
-                color[inicio] = color[destino];
-
-                break;
-            case PROMOCION:
-                tablero[inicio] = PEON;
-                color[inicio] = turnoBlanco ? BLANCO : NEGRO;
-                break;
-            case ENROQUE:
-
-                tablero[inicio] = tablero[destino];
-                tablero[destino] = NOPIEZA;
-                color[inicio] = color[destino];
-                color[destino] = NOCOLOR;
-
-                if (destino == G1 || destino == G8) {
-                    tablero[turnoBlanco ? H1 : H8] = tablero[turnoBlanco ? F1 : F8];
-                    tablero[turnoBlanco ? F1 : F8] = NOPIEZA;
-
-                    color[turnoBlanco ? H1 : H8] = color[turnoBlanco ? F1 : F8];
-                    color[turnoBlanco ? F1 : F8] = NOCOLOR;
-
-                } else if (destino == C1 || destino == C8) {
-                    tablero[turnoBlanco ? A1 : A8] = tablero[turnoBlanco ? D1 : D8];
-                    tablero[turnoBlanco ? D1 : D8] = NOPIEZA;
-
-                    color[turnoBlanco ? A1 : A8] = color[turnoBlanco ? D1 : D8];
-                    color[turnoBlanco ? D1 : D8] = NOCOLOR;
-                }
-
-                break;
-
-        }
-
-        tablero[destino] = (estado >> POSICION_PIEZA_CAPTURADA & 0b111);
-        color[destino] = tablero[destino] == NOPIEZA ? NOCOLOR : esTurnoBlanco(estado) ? NEGRO : BLANCO;
-
-    }
 
 
     private int evaluar(int[] tablero, int[] color) {

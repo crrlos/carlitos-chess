@@ -8,7 +8,10 @@ package com.wolf.carlitos;
 
 import java.util.HashMap;
 
+import static com.wolf.carlitos.Bitboard.*;
+import static com.wolf.carlitos.Search.secuencia;
 import static com.wolf.carlitos.Tablero.casillaAtacada;
+import static com.wolf.carlitos.Tablero.piezas;
 import static java.lang.Math.abs;
 import static com.wolf.carlitos.Constantes.*;
 
@@ -96,190 +99,7 @@ public class Utilidades {
         return mov;
     }
 
-    public static int hacerMovimiento(int[] tablero, int[] color, int estadoTablero, int movimiento) {
 
-        int inicio = movimiento >> 6 & 0b111111;
-        int destino = movimiento & 0b111111;
-
-        var pieza = tablero[inicio];
-
-        estadoTablero = colocarValor(estadoTablero, NOPIEZA, POSICION_PIEZA_CAPTURADA, MASK_LIMPIAR_PIEZA_CAPTURADA);
-        estadoTablero = colocarValor(estadoTablero, MOVIMIENTO_NORMAL, POSICION_TIPO_MOVIMIENTO, MASK_LIMPIAR_TIPO_MOVIMIENTO);
-
-        if (pieza == PEON) {
-
-            if (alPaso(estadoTablero, destino)) {
-
-                var posicionAlPaso = destino + (esTurnoBlanco(estadoTablero) ? -8 : 8);
-
-                // aqui se remueve la pieza al paso
-                tablero[posicionAlPaso] = NOPIEZA;
-                color[posicionAlPaso] = NOCOLOR;
-
-                estadoTablero = colocarValor(estadoTablero, AL_PASO, POSICION_TIPO_MOVIMIENTO, MASK_LIMPIAR_TIPO_MOVIMIENTO);
-
-                // al paso = false
-                estadoTablero &= MASK_LIMPIAR_AL_PASO;
-            } else if (destino <= H1 || destino >= A8) {
-
-                if (tablero[destino] != NOPIEZA) {
-
-                    estadoTablero = colocarValor(estadoTablero, tablero[destino], POSICION_PIEZA_CAPTURADA, MASK_LIMPIAR_PIEZA_CAPTURADA);
-
-                    if (tablero[destino] == TORRE) {
-                        switch (destino) {
-                            case H8:
-                                estadoTablero &= MASK_LIMPIAR_ENROQUES_NEGROS | 8;
-                                break;
-                            case A8:
-                                estadoTablero &= MASK_LIMPIAR_ENROQUES_NEGROS | 4;
-                                break;
-                            case H1:
-                                estadoTablero &= MASK_LIMPIAR_ENROQUES_BLANCOS | 2;
-                                break;
-                            case A1:
-                                estadoTablero &= MASK_LIMPIAR_ENROQUES_BLANCOS | 1;
-                                break;
-
-                        }
-
-                    }
-                }
-                switch (movimiento >> 12 & 0b111) {
-                    case 1:
-                        tablero[destino] = DAMA;
-                        break;
-                    case 2:
-                        tablero[destino] = TORRE;
-                        break;
-                    case 3:
-                        tablero[destino] = CABALLO;
-                        break;
-                    case 4:
-                        tablero[destino] = ALFIL;
-                        break;
-                }
-                color[destino] = esTurnoBlanco(estadoTablero) ? BLANCO : NEGRO;
-                estadoTablero = colocarValor(estadoTablero, PROMOCION, POSICION_TIPO_MOVIMIENTO, MASK_LIMPIAR_TIPO_MOVIMIENTO);
-
-                tablero[inicio] = NOPIEZA;
-                color[inicio] = NOCOLOR;
-
-                estadoTablero &= MASK_LIMPIAR_AL_PASO;
-
-                estadoTablero ^= 0b10000;
-
-                return estadoTablero;
-
-            } else if (abs(inicio - destino) == 16) {
-
-                int posicionPiezaAlPAso = destino + (esTurnoBlanco(estadoTablero) ? -8 : 8);
-                estadoTablero = estadoTablero & MASK_LIMPIAR_AL_PASO | posicionPiezaAlPAso << POSICION_PIEZA_AL_PASO;
-
-                tablero[destino] = pieza;
-                tablero[inicio] = NOPIEZA;
-
-                color[destino] = color[inicio];
-                color[inicio] = NOCOLOR;
-
-                estadoTablero ^= 0b10000;
-
-                return estadoTablero;
-            }
-
-        } else if (pieza == REY) {
-            // en los enroques solo se mueven las torres por ser el movimiento especial
-            if (abs(inicio - destino) == 2) {
-                if (color[inicio] == BLANCO) {
-                    if (destino == G1) {
-                        tablero[F1] = tablero[H1];
-                        tablero[H1] = NOPIEZA;
-                        color[F1] = color[H1];
-                        color[H1] = NOCOLOR;
-                    } else {
-                        tablero[D1] = tablero[A1];
-                        tablero[A1] = NOPIEZA;
-                        color[D1] = color[A1];
-                        color[A1] = NOCOLOR;
-                    }
-                } else {
-                    if (destino == G8) {
-                        tablero[F8] = tablero[H8];
-                        tablero[H8] = NOPIEZA;
-                        color[F8] = color[H8];
-                        color[H8] = NOCOLOR;
-                    } else {
-                        tablero[D8] = tablero[A8];
-                        tablero[A8] = NOPIEZA;
-                        color[D8] = color[A8];
-                        color[A8] = NOCOLOR;
-                    }
-                }
-                estadoTablero = colocarValor(estadoTablero, ENROQUE, POSICION_TIPO_MOVIMIENTO, MASK_LIMPIAR_TIPO_MOVIMIENTO);
-            } else {
-                estadoTablero = colocarValor(estadoTablero, MOVIMIENTO_REY, POSICION_TIPO_MOVIMIENTO, MASK_LIMPIAR_TIPO_MOVIMIENTO);
-            }
-            if (esTurnoBlanco(estadoTablero)) {
-                // enroques blancos false
-                estadoTablero &= MASK_LIMPIAR_ENROQUES_BLANCOS;
-                // posicion rey blanco
-                estadoTablero = estadoTablero & MASK_LIMPIAR_POSICION_REY_BLANCO | destino << POSICION_REY_BLANCO;
-            } else {
-                // enroques negros false
-                estadoTablero &= MASK_LIMPIAR_ENROQUES_NEGROS;
-                // posicion rey negro
-                estadoTablero = estadoTablero & MASK_LIMPIAR_POSICION_REY_NEGRO | destino << POSICION_REY_NEGRO;
-            }
-
-        } else if (pieza == TORRE) {
-
-            switch (inicio) {
-                case H8:
-                    estadoTablero &= MASK_LIMPIAR_ENROQUES_NEGROS | 8;
-                    break;
-                case A8:
-                    estadoTablero &= MASK_LIMPIAR_ENROQUES_NEGROS | 4;
-                    break;
-                case H1:
-                    estadoTablero &= MASK_LIMPIAR_ENROQUES_BLANCOS | 2;
-                    break;
-                case A1:
-                    estadoTablero &= MASK_LIMPIAR_ENROQUES_BLANCOS | 1;
-                    break;
-            }
-
-        }
-        estadoTablero = colocarValor(estadoTablero, tablero[destino], POSICION_PIEZA_CAPTURADA, MASK_LIMPIAR_PIEZA_CAPTURADA);
-
-        if (tablero[destino] == TORRE) {
-            switch (destino) {
-                case H8:
-                    estadoTablero &= MASK_LIMPIAR_ENROQUES_NEGROS | 8;
-                    break;
-                case A8:
-                    estadoTablero &= MASK_LIMPIAR_ENROQUES_NEGROS | 4;
-                    break;
-                case H1:
-                    estadoTablero &= MASK_LIMPIAR_ENROQUES_BLANCOS | 2;
-                    break;
-                case A1:
-                    estadoTablero &= MASK_LIMPIAR_ENROQUES_BLANCOS | 1;
-                    break;
-
-            }
-
-        }
-
-
-        tablero[destino] = tablero[inicio];
-        color[destino] = color[inicio];
-        tablero[inicio] = NOPIEZA;
-        color[inicio] = NOCOLOR;
-
-        estadoTablero &= MASK_LIMPIAR_AL_PASO;
-        estadoTablero ^= 0b10000;
-        return estadoTablero;
-    }
 
     static boolean alPaso(int estadoTablero, int destino) {
 
@@ -289,7 +109,7 @@ public class Utilidades {
         return false;
     }
 
-    private static int colocarValor(int estadoTablero, int valor, int posicion, int mascara) {
+    static int colocarValor(int estadoTablero, int valor, int posicion, int mascara) {
         return estadoTablero & mascara | valor << posicion;
     }
 
