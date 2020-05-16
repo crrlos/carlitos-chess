@@ -97,10 +97,6 @@ public class Search {
 
     }
 
-
-
-
-
     private int evaluar(int[] tablero, int[] color) {
 
         int valorBlancas = 0;
@@ -158,16 +154,12 @@ public class Search {
         puntajeMVVLVA(movimientos, fin);
         insertionSort(movimientos, fin);
 
-        for (int i = 0; i < movimientos.length; i++) {
+        for (int i = 0; i < fin; i++) {
 
             var mov = movimientos[i];
             int estadoActualizado = hacerMovimiento(tablero, color, estado, mov);
 
-            estadoActualizado ^= 0b10000;
-
             int evaluacion = maxi(nivel - 1, estadoActualizado, tablero, color, alfa, beta);
-
-            estadoActualizado ^= 0b10000;
 
             revertirMovimiento(mov, estadoActualizado, tablero, color);
 
@@ -199,14 +191,11 @@ public class Search {
             else return AHOGADO;
         }
 
-        for (int i = 0; i < movimientos.length; i++) {
+        for (int i = 0; i < fin; i++) {
             var mov = movimientos[i];
             int estadoCopia = hacerMovimiento(tablero, color, estado, mov);
-            estadoCopia ^= 0b10000;
 
             int evaluacion = mini(nivel - 1, estadoCopia, tablero, color, alfa, beta);
-
-            estadoCopia ^= 0b10000;
 
             revertirMovimiento(mov, estadoCopia, tablero, color);
 
@@ -219,7 +208,7 @@ public class Search {
     }
 
     public int search(int n) throws InterruptedException, CloneNotSupportedException, ExecutionException {
-        //n = 1;
+
         int pos = 0;
 
         int alfa = -10_000;
@@ -280,20 +269,10 @@ public class Search {
 //
 //        }
 
-        for (int i = 0; i < movimientos.length; i++) {
+        for (int i = 0; i < fin; i++) {
 
             var mov = movimientos[i];
-
-
-//            var m = Utilidades.convertirANotacion(mov);
-//            if(m.contains("g2g1")){
-//                Utilidades.imprimirPosicicion(pieza,color);
-//                System.out.println();
-//            }
-
             int estadoActualizado = hacerMovimiento(pieza, color, estadoTablero, mov);
-            //Utilidades.imprimirPosicicion(pieza,color);
-            estadoActualizado ^= 0b10000;
 
             int eval = esTurnoBlanco(estadoTablero) ? mini(n - 1, estadoActualizado, pieza, color, alfa, beta) :
                     maxi(n - 1, estadoActualizado, pieza, color, alfa, beta);
@@ -309,10 +288,8 @@ public class Search {
                     pos = i;
                 }
             }
-            estadoActualizado ^= 0b10000;
 
             revertirMovimiento(mov, estadoActualizado, pieza, color);
-            // Utilidades.imprimirPosicicion(pieza,color);
 
         }
         return movimientos[pos];
