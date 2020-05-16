@@ -101,6 +101,7 @@ public class Juego {
         tablero = new int[64];
         color = new int[64];
         estadoTablero = 0;
+        piezas = new long[2][6];
 
         Arrays.fill(tablero, NOPIEZA);
         Arrays.fill(color, NOCOLOR);
@@ -152,52 +153,64 @@ public class Juego {
                 tablero[indexInicio] = REY;
                 color[indexInicio] = NEGRO;
                 estadoTablero |= indexInicio << POSICION_REY_NEGRO;
+                add(false,REY,indexInicio);
             }
             if (c == 'q') {
                 tablero[indexInicio] = DAMA;
                 color[indexInicio] = NEGRO;
+                add(false,DAMA,indexInicio);
             }
             if (c == 'r') {
                 tablero[indexInicio] = TORRE;
                 color[indexInicio] = NEGRO;
+                add(false,TORRE,indexInicio);
             }
             if (c == 'b') {
                 tablero[indexInicio] = ALFIL;
                 color[indexInicio] = NEGRO;
+                add(false,ALFIL,indexInicio);
             }
             if (c == 'n') {
                 tablero[indexInicio] = CABALLO;
                 color[indexInicio] = NEGRO;
+                add(false,CABALLO,indexInicio);
             }
             if (c == 'p') {
                 tablero[indexInicio] = PEON;
                 color[indexInicio] = NEGRO;
+                add(false,PEON,indexInicio);
             }
 
             if (c == 'K') {
                 tablero[indexInicio] = REY;
                 color[indexInicio] = BLANCO;
                 estadoTablero |= indexInicio << POSICION_REY_BLANCO;
+                add(true,REY,indexInicio);
             }
             if (c == 'Q') {
                 tablero[indexInicio] = DAMA;
                 color[indexInicio] = BLANCO;
+                add(true,DAMA,indexInicio);
             }
             if (c == 'R') {
                 tablero[indexInicio] = TORRE;
                 color[indexInicio] = BLANCO;
+                add(true,TORRE,indexInicio);
             }
             if (c == 'B') {
                 tablero[indexInicio] = ALFIL;
                 color[indexInicio] = BLANCO;
+                add(true,ALFIL,indexInicio);
             }
             if (c == 'N') {
                 tablero[indexInicio] = CABALLO;
                 color[indexInicio] = BLANCO;
+                add(true,CABALLO,indexInicio);
             }
             if (c == 'P') {
                 tablero[indexInicio] = PEON;
                 color[indexInicio] = BLANCO;
+                add(true,PEON,indexInicio);
             }
 
             if (Character.isDigit(c)) {
