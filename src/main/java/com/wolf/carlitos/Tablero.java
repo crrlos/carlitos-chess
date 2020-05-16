@@ -213,6 +213,8 @@ public class Tablero {
                 break;
             case ENROQUE:
 
+                update(turnoBlanco,tablero[destino],destino,inicio);
+
                 tablero[inicio] = tablero[destino];
                 tablero[destino] = NOPIEZA;
                 color[inicio] = color[destino];
