@@ -208,8 +208,8 @@ public class Tablero {
             case PROMOCION:
                 tablero[inicio] = PEON;
                 color[inicio] = turnoBlanco ? BLANCO : NEGRO;
-                remove(esTurnoBlanco(estado),tablero[destino],destino);
-                add(turnoBlanco,tablero[destino],inicio);
+                remove(turnoBlanco,tablero[destino],destino);
+                add(turnoBlanco,tablero[inicio],inicio);
                 break;
             case ENROQUE:
 
