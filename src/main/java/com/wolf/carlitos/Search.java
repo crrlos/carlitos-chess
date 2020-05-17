@@ -41,7 +41,7 @@ public class Search {
             int inicio = movimientos[i] >> 6 & 0b111111;
             int destino = movimientos[i] & 0b111111;
 
-            movimientos[i] |= (valorPiezas[pieza[inicio]] + 10 * valorPiezas[pieza[destino]]) << 14;
+            movimientos[i] |= (valorPiezas[REY] / valorPiezas[pieza[inicio]] + 10 * valorPiezas[pieza[destino]]) << 15;
         }
 
     }
@@ -50,7 +50,7 @@ public class Search {
         for (int j = 1; j < fin; j++) {
             int key = array[j];
             int i = j - 1;
-            while ((i > -1) && (array[i] >> 14 < key >> 14)) {
+            while ((i > -1) && (array[i] >> 15 < key >> 15)) {
                 array[i + 1] = array[i];
                 i--;
             }
@@ -139,15 +139,13 @@ public class Search {
 
         if (nivel == 0) return evaluar(tablero, color);
 
-
-
         var respuesta = generador.generarMovimientos(tablero, color, estado, nivel);
 
         var movimientos = respuesta.movimientosGenerados;
         var fin = respuesta.cantidadDeMovimientos;
 
-        if (movimientos.length == 0) {
-            if (reyEnJaque(tablero, color, estado)) return MATE;
+        if (fin == 0) {
+            if (reyEnJaque(tablero, color, estado)) return MATE + nivel;
             else return AHOGADO;
         }
 
@@ -157,6 +155,7 @@ public class Search {
         for (int i = 0; i < fin; i++) {
 
             var mov = movimientos[i];
+
             int estadoActualizado = hacerMovimiento(tablero, color, estado, mov);
 
             int evaluacion = maxi(nivel - 1, estadoActualizado, tablero, color, alfa, beta);
@@ -186,13 +185,14 @@ public class Search {
         puntajeMVVLVA(movimientos,fin);
         insertionSort(movimientos,fin);
 
-        if (movimientos.length == 0) {
-            if (reyEnJaque(tablero, color, estado)) return -MATE;
+        if (fin == 0) {
+            if (reyEnJaque(tablero, color, estado)) return -MATE - nivel;
             else return AHOGADO;
         }
 
         for (int i = 0; i < fin; i++) {
             var mov = movimientos[i];
+
             int estadoCopia = hacerMovimiento(tablero, color, estado, mov);
 
             int evaluacion = mini(nivel - 1, estadoCopia, tablero, color, alfa, beta);
@@ -211,8 +211,8 @@ public class Search {
 
         int pos = 0;
 
-        int alfa = -10_000;
-        int beta = 10_000;
+        int alfa = -10_000_000;
+        int beta = 10_000_000;
 
 //        ExecutorService WORKER_THREAD_POOL = Executors.newFixedThreadPool(2);
 //        List<Callable<Integer>> callables = new ArrayList<>();
@@ -273,7 +273,6 @@ public class Search {
 
             var mov = movimientos[i];
             int estadoActualizado = hacerMovimiento(pieza, color, estadoTablero, mov);
-
             int eval = esTurnoBlanco(estadoTablero) ? mini(n - 1, estadoActualizado, pieza, color, alfa, beta) :
                     maxi(n - 1, estadoActualizado, pieza, color, alfa, beta);
 

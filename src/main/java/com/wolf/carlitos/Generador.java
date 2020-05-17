@@ -92,6 +92,34 @@ public class Generador {
             movimientosDeRey(pieza,color,estado,square);
         }
 
+//        for (int i = 0; i < pieza.length; i++) {
+//
+//            var piezaActual = pieza[i];
+//
+//            if (piezaActual != NOPIEZA && color[i] == BLANCO == turnoBlanco) {
+//                switch (piezaActual) {
+//                    case PEON:
+//                        movimientosDePeon(pieza, color, estado, i);
+//                        break;
+//                    case CABALLO:
+//                        movimientosDeCaballo(pieza, color, estado, i);
+//                        break;
+//                    case ALFIL:
+//                        movimientosDeAlfil(pieza, color, estado, i);
+//                        break;
+//                    case TORRE:
+//                        movimientosDeTorre(pieza, color, estado, i);
+//                        break;
+//                    case DAMA:
+//                        movimientosDeDama(pieza, color, estado, i);
+//                        break;
+//                    case REY:
+//                        movimientosDeRey(pieza, color, estado, i);
+//                        break;
+//                }
+//            }
+//
+//        }
         reyEnJaque = false;
 
         respuesta.movimientosGenerados = this.movimientos.getMovimientos();

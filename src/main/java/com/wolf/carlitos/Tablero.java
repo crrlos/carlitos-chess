@@ -62,7 +62,7 @@ public class Tablero {
     };
 
     public static int[] valorPiezas = new int[]
-            {100, 320, 330, 500, 900, 1000,0};
+            {100, 320, 330, 500, 900, 10000,0};
 
     public static final int[] mailBox = new int[]{
             -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
