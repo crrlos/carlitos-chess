@@ -340,45 +340,4 @@ public class Search {
         return movimientos[pos];
     }
 
-    public void awaitTerminationAfterShutdown(ExecutorService threadPool) {
-        threadPool.shutdown();
-        try {
-            if (!threadPool.awaitTermination(60, TimeUnit.SECONDS)) {
-                threadPool.shutdownNow();
-            }
-        } catch (InterruptedException ex) {
-            threadPool.shutdownNow();
-            Thread.currentThread().interrupt();
-        }
-    }
-
-//    private void esperarHilos(ExecutorService service) throws InterruptedException {
-//        service.shutdown();
-//        if(!service.awaitTermination(5, TimeUnit.SECONDS)){
-//            esperarHilos(service);
-//        }
-//    }
-//    private void comprobar(List<int[]> movimientos, List<int[]> secuencia){
-//        var movimientosCopia = movimientos.stream().map( e -> {
-//
-//            return new int[]{e[0],e[1],e[2],e[3]};
-//
-//        }).collect(Collectors.toList());
-//
-//        var secuenciaCopia = secuencia.stream().map( e -> {
-//
-//            return Utilidades.convertirANotacion(e);
-//
-//        }).collect(Collectors.toList());
-//
-//        Hilos.comparar(movimientos, secuenciaCopia, estadoTablero);
-//
-//
-//    }
-
-//    public void setSecuencia(List<int[]> secuencia) {
-//        search.secuencia = secuencia;
-//    }
-
-
 }
