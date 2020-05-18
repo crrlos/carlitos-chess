@@ -10,11 +10,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 
-import static com.wolf.carlitos.Bitboard.*;
-import static com.wolf.carlitos.Ponderaciones.*;
+import static com.wolf.carlitos.Bitboard.next;
+import static com.wolf.carlitos.Bitboard.remainder;
 import static com.wolf.carlitos.Constantes.*;
+import static com.wolf.carlitos.Ponderaciones.*;
 import static com.wolf.carlitos.Utilidades.*;
 import static com.wolf.carlitos.Tablero.*;
+import static java.lang.Long.bitCount;
 
 /**
  * @author carlos
@@ -46,7 +48,7 @@ public class Search {
 
     }
 
-    public static void insertionSort(int[] array,int fin) {
+    public static void insertionSort(int[] array, int fin) {
         for (int j = 1; j < fin; j++) {
             int key = array[j];
             int i = j - 1;
@@ -97,47 +99,59 @@ public class Search {
 
     }
 
-    private int evaluar(int[] tablero, int[] color) {
+    private int evaluarCantidadPiezas(int bando) {
+        int total = 0;
+        for (int i = 0; i < piezas[bando].length; i++) {
+            total += bitCount(piezas[bando][i]) * valorPiezas[i];
+        }
+        return total;
+    }
 
-        int valorBlancas = 0;
-        int valorNegras = 0;
+    private int evaluarPosicionDePiezas(int bando) {
+        int total = 0;
+        boolean esBlanco = bando == BLANCO;
 
-        for (int i = 0; i < 64; i++) {
-            var pieza = tablero[i];
-            if (pieza == NOPIEZA) continue;
-
-            switch (pieza) {
-                case PEON:
-                    valorBlancas += (color[i] == BLANCO ? ponderacionPeon[flip[i]] : -ponderacionPeon[i]);
-                    break;
-                case CABALLO:
-                    valorBlancas += (color[i] == BLANCO ? ponderacionCaballo[flip[i]] : -ponderacionCaballo[i]);
-                    break;
-                case ALFIL:
-                    valorBlancas += (color[i] == BLANCO ? ponderacionAlfil[flip[i]] : -ponderacionAlfil[i]);
-                    break;
-                case TORRE:
-                    valorBlancas += (color[i] == BLANCO ? ponderacionTorre[flip[i]] : -ponderacionTorre[i]);
-                    break;
-                case DAMA:
-                    valorBlancas += (color[i] == BLANCO ? ponderacionDama[flip[i]] : -ponderacionDama[i]);
-                    break;
-                case REY:
-                    valorBlancas += (color[i] == BLANCO ? ponderacionRey[flip[i]] : -ponderacionRey[i]);
-                    break;
-            }
-            if (color[i] == BLANCO)
-                valorBlancas += valorPiezas[pieza];
-            else valorNegras -= valorPiezas[pieza];
+        for (long squares = piezas[bando][PEON]; squares != 0; squares = remainder(squares)) {
+            int square = next(squares);
+            total += esBlanco ? ponderacionPeon[flip[square]] : ponderacionPeon[square];
+        }
+        for (long squares = piezas[bando][CABALLO]; squares != 0; squares = remainder(squares)) {
+            int square = next(squares);
+            total += esBlanco ? ponderacionCaballo[flip[square]] : ponderacionCaballo[square];
+        }
+        for (long squares = piezas[bando][ALFIL]; squares != 0; squares = remainder(squares)) {
+            int square = next(squares);
+            total += esBlanco ? ponderacionAlfil[flip[square]] : ponderacionAlfil[square];
+        }
+        for (long squares = piezas[bando][TORRE]; squares != 0; squares = remainder(squares)) {
+            int square = next(squares);
+            total += esBlanco ? ponderacionTorre[flip[square]] : ponderacionTorre[square];
+        }
+        for (long squares = piezas[bando][DAMA]; squares != 0; squares = remainder(squares)) {
+            int square = next(squares);
+            total += esBlanco ? ponderacionDama[flip[square]] : ponderacionDama[square];
+        }
+        for (long squares = piezas[bando][REY]; squares != 0; squares = remainder(squares)) {
+            int square = next(squares);
+            total += esBlanco ? ponderacionRey[flip[square]] : ponderacionRey[square];
         }
 
-        return valorBlancas + valorNegras;
+        return total;
+    }
+
+    private int evaluar() {
+
+        int valorBlancas = evaluarCantidadPiezas(BLANCO) + evaluarPosicionDePiezas(BLANCO);
+
+        int valorNegras = evaluarCantidadPiezas(NEGRO) + evaluarPosicionDePiezas(NEGRO);
+
+        return valorBlancas - valorNegras;
 
     }
 
     public int mini(int nivel, int estado, int[] tablero, int[] color, int alfa, int beta) {
 
-        if (nivel == 0) return evaluar(tablero, color);
+        if (nivel == 0) return evaluar();
 
         var respuesta = generador.generarMovimientos(tablero, color, estado, nivel);
 
@@ -175,15 +189,15 @@ public class Search {
 
     public int maxi(int nivel, int estado, int[] tablero, int[] color, int alfa, int beta) {
 
-        if (nivel == 0) return evaluar(tablero, color);
+        if (nivel == 0) return evaluar();
 
         var respuesta = generador.generarMovimientos(tablero, color, estado, nivel);
 
         var movimientos = respuesta.movimientosGenerados;
         var fin = respuesta.cantidadDeMovimientos;
 
-        puntajeMVVLVA(movimientos,fin);
-        insertionSort(movimientos,fin);
+        puntajeMVVLVA(movimientos, fin);
+        insertionSort(movimientos, fin);
 
         if (fin == 0) {
             if (reyEnJaque(tablero, color, estado)) return -MATE - nivel;
@@ -207,67 +221,19 @@ public class Search {
         return alfa;
     }
 
-    public int search(int n) throws InterruptedException, CloneNotSupportedException, ExecutionException {
-
+    public int search(int n)  {
         int pos = 0;
 
         int alfa = -10_000_000;
         int beta = 10_000_000;
-
-//        ExecutorService WORKER_THREAD_POOL = Executors.newFixedThreadPool(2);
-//        List<Callable<Integer>> callables = new ArrayList<>();
 
         var respuesta = this.generador.generarMovimientos(pieza, color, estadoTablero, n);
 
         var movimientos = respuesta.movimientosGenerados;
         var fin = respuesta.cantidadDeMovimientos;
 
-        puntajeMVVLVA(movimientos,fin);
-        insertionSort(movimientos,fin);
-
-//        for (int i = 0; i < fin; i++) {
-//            var mov = movimientos[i];
-//            long estadoActualizado = actualizarTablero(pieza,color, estadoTablero, mov);
-//
-//            estadoActualizado ^= 10000;
-//
-//            Movimientos clonMovimientos = (Movimientos) this.movimientos.clone();
-//
-//            long finalEstadoActualizado = estadoActualizado;
-//
-//            var piezaClon = Arrays.copyOf(pieza,pieza.length);
-//            var colorClon = Arrays.copyOf(color,color.length);
-//
-//            callables.add(() -> esTurnoBlanco(estadoTablero) ?
-//                    mini(n -1, finalEstadoActualizado, piezaClon,colorClon,alfa,beta,clonMovimientos, new Generador()) :
-//                    maxi(n -1, finalEstadoActualizado, piezaClon,colorClon,alfa,beta,clonMovimientos,new Generador()));
-//
-//            estadoActualizado ^= 10000;
-//
-//            revertirMovimiento(mov, estadoActualizado, pieza,color);
-//
-//
-//        }
-//        var resultados = WORKER_THREAD_POOL.invokeAll(callables);
-//        awaitTerminationAfterShutdown(WORKER_THREAD_POOL);
-//
-//
-//        for (int i = 0; i < resultados.size(); i++) {
-//            var eval = resultados.get(i).get();
-//
-//            if (esTurnoBlanco(estadoTablero)) {
-//                if (eval > valoracion) {
-//                    valoracion = eval;
-//                    pos = i;
-//                }
-//            } else {
-//                if (eval < valoracion) {
-//                    valoracion = eval;
-//                    pos = i;
-//                }
-//            }
-//
-//        }
+        puntajeMVVLVA(movimientos, fin);
+        insertionSort(movimientos, fin);
 
         for (int i = 0; i < fin; i++) {
 
