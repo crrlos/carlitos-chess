@@ -99,7 +99,7 @@ public class Search {
 
     }
 
-    private int evaluarCantidadPiezas(int bando) {
+    private static int evaluarCantidadPiezas(int bando) {
         int total = 0;
         for (int i = 0; i < piezas[bando].length; i++) {
             total += bitCount(piezas[bando][i]) * valorPiezas[i];
@@ -107,7 +107,7 @@ public class Search {
         return total;
     }
 
-    private int evaluarPosicionDePiezas(int bando) {
+    private static int evaluarPosicionDePiezas(int bando) {
         int total = 0;
         boolean esBlanco = bando == BLANCO;
 
@@ -139,7 +139,7 @@ public class Search {
         return total;
     }
 
-    private int evaluar() {
+    public static int evaluar() {
 
         int valorBlancas = evaluarCantidadPiezas(BLANCO) + evaluarPosicionDePiezas(BLANCO);
 

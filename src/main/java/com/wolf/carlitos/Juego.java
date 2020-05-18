@@ -232,4 +232,8 @@ public class Juego {
         var search = new Search(tablero, color, estadoTablero);
         return Utilidades.convertirANotacion(search.search(n));
     }
+
+    public void evaluarPosicion() {
+        System.out.println(Search.evaluar());
+    }
 }

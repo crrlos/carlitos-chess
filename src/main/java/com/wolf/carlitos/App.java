@@ -48,6 +48,9 @@ public class App {
             } else if (linea.contains("stop")) {
                 System.out.println("readyok");
             }
+            else if(linea.contains("static")){
+                juego.evaluarPosicion();
+            }
             else if (linea.contains("perft")) {
                 int n = 1;
 
