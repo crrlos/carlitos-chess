@@ -20,11 +20,14 @@ import static com.wolf.carlitos.Utilidades.*;
 public class Generador {
 
     static class Movimientos {
-        private final int[][] movimientosPorNivel = new int[10][256];
+        private final int[][] movimientosPorNivel = new int[200][256];
         private int[] current;
         private int posicion;
 
         public void iniciar(int nivel) {
+            if (nivel < 0){
+                nivel = 10 + nivel * -1;
+            }
             this.current = movimientosPorNivel[nivel];
             this.posicion = 0;
         }
