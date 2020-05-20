@@ -152,7 +152,7 @@ public class Search {
 
         int mejorValor = evaluar();
         if(nivel == -2) return mejorValor;
-        if(mejorValor >= beta) return  mejorValor;
+        if(mejorValor >= beta) return  beta;
         if(mejorValor > alfa) alfa = mejorValor;
 
 
@@ -163,7 +163,7 @@ public class Search {
 
         int nuevoTotal = 0;
         for (int i = 0; i < fin; i++) {
-            if((movimientos[i] & 0b111111) != NOPIEZA){
+            if(tablero[movimientos[i] & 0b111111] != NOPIEZA){
                 movimientos[nuevoTotal++] = movimientos[i];
             }
         }
@@ -193,7 +193,7 @@ public class Search {
 
         if(nivel == -2) return mejorValor;
 
-        if(mejorValor <= alfa) return  mejorValor;
+        if(mejorValor <= alfa) return  alfa;
         if(mejorValor < beta) beta = mejorValor;
 
         var respuesta = generador.generarMovimientos(tablero, color, estado, nivel);
@@ -203,7 +203,7 @@ public class Search {
 
         int nuevoTotal = 0;
         for (int i = 0; i < fin; i++) {
-            if(tablero[movimientos[i] &0b111111] != NOPIEZA){
+            if(tablero[movimientos[i] & 0b111111] != NOPIEZA){
                 movimientos[nuevoTotal++] = movimientos[i];
             }
         }
