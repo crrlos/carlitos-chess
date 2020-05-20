@@ -151,7 +151,7 @@ public class Search {
     private int quiescentMax(int nivel, int estado, int[] tablero, int[] color, int alfa, int beta){
 
         int mejorValor = evaluar();
-        if(nivel == -2) return mejorValor;
+       // if(nivel == -2) return mejorValor;
         if(mejorValor >= beta) return  beta;
         if(mejorValor > alfa) alfa = mejorValor;
 
@@ -191,7 +191,7 @@ public class Search {
     private int quiescentMin(int nivel, int estado, int[] tablero, int[] color, int alfa, int beta){
         int mejorValor = evaluar();
 
-        if(nivel == -2) return mejorValor;
+       // if(nivel == -2) return mejorValor;
 
         if(mejorValor <= alfa) return  alfa;
         if(mejorValor < beta) beta = mejorValor;
