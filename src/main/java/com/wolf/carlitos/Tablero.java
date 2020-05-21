@@ -4,7 +4,11 @@ package com.wolf.carlitos;
 
 import static com.wolf.carlitos.Bitboard.*;
 import static com.wolf.carlitos.Constantes.*;
+import static com.wolf.carlitos.Juego.color;
+import static com.wolf.carlitos.Juego.tablero;
 import static com.wolf.carlitos.Utilidades.*;
+import static java.lang.Long.bitCount;
+import static java.lang.Long.numberOfTrailingZeros;
 import static java.lang.Math.abs;
 
 public class Tablero {
@@ -33,7 +37,7 @@ public class Tablero {
                     {8, 12, 19, 21, -8, -12, -19, -21},
                     {SURESTE, NORESTE, SUROESTE, NOROESTE},
                     {NORTE, SUR, ESTE, OESTE},
-                    {NORTE, SUR, ESTE, OESTE,SURESTE, NORESTE, SUROESTE, NOROESTE}
+                    {NORTE, SUR, ESTE, OESTE, SURESTE, NORESTE, SUROESTE, NOROESTE}
             };
     public static final int[][] offset64 = new int[][]
             {
@@ -41,7 +45,7 @@ public class Tablero {
                     {6, 10, 15, 17, -6, -10, -15, -17},
                     {sureste, noreste, suroeste, noroeste},
                     {norte, sur, este, oeste},
-                    {norte, sur, este, oeste,sureste, noreste, suroeste, noroeste}
+                    {norte, sur, este, oeste, sureste, noreste, suroeste, noroeste}
             };
     public static final int[][] direccionesVertical = new int[][]{
             {norte, sur},
@@ -62,7 +66,7 @@ public class Tablero {
     };
 
     public static int[] valorPiezas = new int[]
-            {100, 320, 330, 500, 900, 10000,0};
+            {100, 320, 330, 500, 900, 10000, 0};
 
     public static final int[] mailBox = new int[]{
             -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -92,56 +96,110 @@ public class Tablero {
 
     public static long[][] piezas = new long[2][6];
 
-    public static boolean casillaAtacada(int posicion, int[] tablero, int[] color, int colorContrario) {
+    public static long[] ataqueCaballo = new long[64];
+    public static long[] ataqueTorre = new long[64];
+    public static long[] ataqueAlfil = new long[64];
+    public static long[] ataqueRey = new long[64];
 
+
+    static {
+
+
+        for (int j = 0; j < 64; j++) {
+            long ataquesCaballo = 0;
+            long ataquesTorre = 0;
+            long ataquesAlfil = 0;
+            long ataquesRey = 0;
+
+            for (int i = 0; i < offsetMailBox[CABALLO].length; i++) {
+                int mailOffset = offsetMailBox[CABALLO][i];
+                if (mailBox[direccion[j] + mailOffset] != -1) {
+
+                    int pos = j + offset64[CABALLO][i];
+                    ataquesCaballo |= 1L << pos;
+
+                }
+            }
+            ataqueCaballo[j] = ataquesCaballo;
+
+            for (int i = 0; i < offsetMailBox[TORRE].length; i++) {
+
+                int dir = offsetMailBox[TORRE][i];
+                int pos = j;
+                while (mailBox[direccion[pos] + dir] != -1) {
+                    pos += offset64[TORRE][i];
+
+                    ataquesTorre |= 1L << pos;
+
+                }
+            }
+            ataqueTorre[j] = ataquesTorre;
+
+            for (int i = 0; i < offsetMailBox[ALFIL].length; i++) {
+
+                int dir = offsetMailBox[ALFIL][i];
+                int pos = j;
+                while (mailBox[direccion[pos] + dir] != -1) {
+                    pos += offset64[ALFIL][i];
+
+                    ataquesAlfil |= 1L << pos;
+                }
+
+            }
+            ataqueAlfil[j] = ataquesAlfil;
+
+            for (int i = 0; i < offsetMailBox[DAMA].length; i++) {
+                int dir = offsetMailBox[DAMA][i];
+                int pos = j;
+                if (mailBox[direccion[pos] + dir] != -1) {
+                    pos += offset64[DAMA][i];
+                    ataquesRey |= 1L << pos;
+                }
+            }
+
+            ataqueRey[j] = ataquesRey;
+
+        }
+    }
+
+
+    public static boolean casillaAtacada(int posicion, int[] tablero, int[] color, int colorContrario) {
         int pos;
 
-        for (int i = 0; i < offsetMailBox[TORRE].length; i++) {
+        if((ataqueCaballo[posicion] & piezas[colorContrario][CABALLO]) != 0) return  true;
 
-            int dir = offsetMailBox[TORRE][i];
-            pos = posicion;
-            while (mailBox[direccion[pos] + dir] != -1) {
-                pos += offset64[TORRE][i];
-                if (tablero[pos] != NOPIEZA) {
-                    if (color[pos] == colorContrario && (tablero[pos] == TORRE || tablero[pos] == DAMA))
-                        return true;
-                    else break;
+       if ((ataqueTorre[posicion] & (piezas[colorContrario][TORRE] | piezas[colorContrario][DAMA])) != 0)
+            for (int i = 0; i < offsetMailBox[TORRE].length; i++) {
+
+                int dir = offsetMailBox[TORRE][i];
+                pos = posicion;
+                while (mailBox[direccion[pos] + dir] != -1) {
+                    pos += offset64[TORRE][i];
+                    if (tablero[pos] != NOPIEZA) {
+                        if (color[pos] == colorContrario && (tablero[pos] == TORRE || tablero[pos] == DAMA))
+                            return true;
+                        else break;
+                    }
+
                 }
 
             }
+        if ((ataqueAlfil[posicion] & (piezas[colorContrario][ALFIL] | piezas[colorContrario][DAMA])) != 0)
+            for (int i = 0; i < offsetMailBox[ALFIL].length; i++) {
 
-        }
+                int dir = offsetMailBox[ALFIL][i];
+                pos = posicion;
+                while (mailBox[direccion[pos] + dir] != -1) {
+                    pos += offset64[ALFIL][i];
+                    if (tablero[pos] != NOPIEZA) {
+                        if (color[pos] == colorContrario && (tablero[pos] == ALFIL || tablero[pos] == DAMA))
+                            return true;
+                        else break;
+                    }
 
-        for (int i = 0; i < offsetMailBox[ALFIL].length; i++) {
-
-            int dir = offsetMailBox[ALFIL][i];
-            pos = posicion;
-            while (mailBox[direccion[pos] + dir] != -1) {
-                pos += offset64[ALFIL][i];
-                if (tablero[pos] != NOPIEZA) {
-                    if (color[pos] == colorContrario && (tablero[pos] == ALFIL || tablero[pos] == DAMA))
-                        return true;
-                    else break;
                 }
 
             }
-
-        }
-
-        for (int i = 0; i < offsetMailBox[CABALLO].length; i++) {
-
-            int dir = offsetMailBox[CABALLO][i];
-            pos = posicion;
-            if (mailBox[direccion[pos] + dir] != -1) {
-                pos += offset64[CABALLO][i];
-                if (tablero[pos] != NOPIEZA) {
-                    if (color[pos] == colorContrario && (tablero[pos] == CABALLO))
-                        return true;
-                }
-
-            }
-
-        }
 
         for (int i = 1; i < offsetMailBox[PEON].length; i++) {
 
@@ -158,21 +216,7 @@ public class Tablero {
 
         }
 
-        // rey con offset de dama
-        for (int i = 0; i < offsetMailBox[DAMA].length; i++) {
-            int dir = offsetMailBox[DAMA][i];
-            pos = posicion;
-            if (mailBox[direccion[pos] + dir] != -1) {
-                pos += offset64[DAMA][i];
-                if (tablero[pos] != NOPIEZA) {
-                    if (color[pos] == colorContrario && (tablero[pos] == REY))
-                        return true;
-                }
-            }
-        }
-
-
-        return false;
+        return (ataqueRey[posicion] & piezas[colorContrario][REY]) != 0;
     }
 
     public static void revertirMovimiento(int movimiento, int estado, int[] tablero, int[] color) {
@@ -188,7 +232,7 @@ public class Tablero {
 
             case MOVIMIENTO_NORMAL:
             case MOVIMIENTO_REY:
-                update(turnoBlanco,tablero[destino],destino,inicio);
+                update(turnoBlanco, tablero[destino], destino, inicio);
                 tablero[inicio] = tablero[destino];
                 color[inicio] = color[destino];
                 break;
@@ -198,8 +242,8 @@ public class Tablero {
                 tablero[posicionPaso] = PEON;
                 color[posicionPaso] = esTurnoBlanco(estado) ? NEGRO : BLANCO;
 
-                add(!esTurnoBlanco(estado),PEON,posicionPaso);
-                update(turnoBlanco,tablero[destino],destino,inicio);
+                add(!esTurnoBlanco(estado), PEON, posicionPaso);
+                update(turnoBlanco, tablero[destino], destino, inicio);
 
                 tablero[inicio] = tablero[destino];
                 color[inicio] = color[destino];
@@ -208,12 +252,12 @@ public class Tablero {
             case PROMOCION:
                 tablero[inicio] = PEON;
                 color[inicio] = turnoBlanco ? BLANCO : NEGRO;
-                remove(turnoBlanco,tablero[destino],destino);
-                add(turnoBlanco,tablero[inicio],inicio);
+                remove(turnoBlanco, tablero[destino], destino);
+                add(turnoBlanco, tablero[inicio], inicio);
                 break;
             case ENROQUE:
 
-                update(turnoBlanco,tablero[destino],destino,inicio);
+                update(turnoBlanco, tablero[destino], destino, inicio);
 
                 tablero[inicio] = tablero[destino];
                 tablero[destino] = NOPIEZA;
@@ -222,7 +266,7 @@ public class Tablero {
 
                 if (destino == G1 || destino == G8) {
 
-                    update(turnoBlanco,TORRE,turnoBlanco ? F1 : F8,turnoBlanco ? H1 : H8);
+                    update(turnoBlanco, TORRE, turnoBlanco ? F1 : F8, turnoBlanco ? H1 : H8);
 
                     tablero[turnoBlanco ? H1 : H8] = tablero[turnoBlanco ? F1 : F8];
                     tablero[turnoBlanco ? F1 : F8] = NOPIEZA;
@@ -232,7 +276,7 @@ public class Tablero {
 
                 } else if (destino == C1 || destino == C8) {
 
-                    update(turnoBlanco,TORRE,turnoBlanco ? D1 : D8,turnoBlanco ? A1 : A8);
+                    update(turnoBlanco, TORRE, turnoBlanco ? D1 : D8, turnoBlanco ? A1 : A8);
 
                     tablero[turnoBlanco ? A1 : A8] = tablero[turnoBlanco ? D1 : D8];
                     tablero[turnoBlanco ? D1 : D8] = NOPIEZA;
@@ -246,13 +290,14 @@ public class Tablero {
         }
 
         tablero[destino] = (estado >> POSICION_PIEZA_CAPTURADA & 0b111);
-        if(tablero[destino] != NOPIEZA){
-            add(!turnoBlanco,tablero[destino],destino);
+        if (tablero[destino] != NOPIEZA) {
+            add(!turnoBlanco, tablero[destino], destino);
         }
 
         color[destino] = tablero[destino] == NOPIEZA ? NOCOLOR : esTurnoBlanco(estado) ? NEGRO : BLANCO;
 
     }
+
     public static int hacerMovimiento(int[] tablero, int[] color, int estado, int movimiento) {
 
         int inicio = movimiento >> 6 & 0b111111;
@@ -269,7 +314,7 @@ public class Tablero {
 
                 var posicionAlPaso = destino + (esTurnoBlanco(estado) ? -8 : 8);
 
-                remove(!esTurnoBlanco(estado),PEON,posicionAlPaso);
+                remove(!esTurnoBlanco(estado), PEON, posicionAlPaso);
 
                 // aqui se remueve la pieza al paso
                 tablero[posicionAlPaso] = NOPIEZA;
@@ -279,8 +324,7 @@ public class Tablero {
 
                 // al paso = false
                 estado &= MASK_LIMPIAR_AL_PASO;
-            }
-            else if (destino <= H1 || destino >= A8) {
+            } else if (destino <= H1 || destino >= A8) {
 
                 if (tablero[destino] != NOPIEZA) {
 
@@ -305,7 +349,7 @@ public class Tablero {
 
                     }
                     // remover pieza capturada
-                    remove(!esTurnoBlanco(estado),tablero[destino],destino);
+                    remove(!esTurnoBlanco(estado), tablero[destino], destino);
                 }
                 switch (movimiento >> 12 & 0b111) {
                     case 1:
@@ -322,9 +366,9 @@ public class Tablero {
                         break;
                 }
                 // agregar pieza promovida
-                add(esTurnoBlanco(estado),tablero[destino],destino);
+                add(esTurnoBlanco(estado), tablero[destino], destino);
                 // remover el peon porque se va a promover
-                remove(esTurnoBlanco(estado),PEON,inicio);
+                remove(esTurnoBlanco(estado), PEON, inicio);
 
 
                 color[destino] = esTurnoBlanco(estado) ? BLANCO : NEGRO;
@@ -345,7 +389,7 @@ public class Tablero {
                 int posicionPiezaAlPAso = destino + (esTurnoBlanco(estado) ? -8 : 8);
                 estado = estado & MASK_LIMPIAR_AL_PASO | posicionPiezaAlPAso << POSICION_PIEZA_AL_PASO;
 
-                update(esTurnoBlanco(estado),PEON,inicio,destino);
+                update(esTurnoBlanco(estado), PEON, inicio, destino);
 
                 tablero[destino] = pieza;
                 tablero[inicio] = NOPIEZA;
@@ -363,13 +407,13 @@ public class Tablero {
             if (abs(inicio - destino) == 2) {
                 if (color[inicio] == BLANCO) {
                     if (destino == G1) {
-                        update(esTurnoBlanco(estado),TORRE,H1,F1);
+                        update(esTurnoBlanco(estado), TORRE, H1, F1);
                         tablero[F1] = tablero[H1];
                         tablero[H1] = NOPIEZA;
                         color[F1] = color[H1];
                         color[H1] = NOCOLOR;
                     } else {
-                        update(esTurnoBlanco(estado),TORRE,A1,D1);
+                        update(esTurnoBlanco(estado), TORRE, A1, D1);
                         tablero[D1] = tablero[A1];
                         tablero[A1] = NOPIEZA;
                         color[D1] = color[A1];
@@ -377,13 +421,13 @@ public class Tablero {
                     }
                 } else {
                     if (destino == G8) {
-                        update(esTurnoBlanco(estado),TORRE,H8,F8);
+                        update(esTurnoBlanco(estado), TORRE, H8, F8);
                         tablero[F8] = tablero[H8];
                         tablero[H8] = NOPIEZA;
                         color[F8] = color[H8];
                         color[H8] = NOCOLOR;
                     } else {
-                        update(esTurnoBlanco(estado),TORRE,A8,D8);
+                        update(esTurnoBlanco(estado), TORRE, A8, D8);
                         tablero[D8] = tablero[A8];
                         tablero[A8] = NOPIEZA;
                         color[D8] = color[A8];
@@ -426,8 +470,8 @@ public class Tablero {
         }
         estado = colocarValor(estado, tablero[destino], POSICION_PIEZA_CAPTURADA, MASK_LIMPIAR_PIEZA_CAPTURADA);
 
-        if(tablero[destino] != NOPIEZA)
-            remove(!esTurnoBlanco(estado),tablero[destino],destino);
+        if (tablero[destino] != NOPIEZA)
+            remove(!esTurnoBlanco(estado), tablero[destino], destino);
 
         if (tablero[destino] == TORRE) {
             switch (destino) {
@@ -448,7 +492,7 @@ public class Tablero {
 
         }
 
-        update(esTurnoBlanco(estado),tablero[inicio],inicio,destino);
+        update(esTurnoBlanco(estado), tablero[inicio], inicio, destino);
 
         tablero[destino] = tablero[inicio];
         color[destino] = color[inicio];

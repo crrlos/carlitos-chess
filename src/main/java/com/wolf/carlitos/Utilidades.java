@@ -140,6 +140,11 @@ public class Utilidades {
         int piezaDestino = tablero[destino];
         int colorDestino = color[destino];
 
+        if(piezaDestino != NOPIEZA){
+            remove(!esTurnoBlanco(estado),piezaDestino,destino);
+        }
+        update(esTurnoBlanco(estado),piezaActual,inicio,destino);
+
         tablero[inicio] = NOPIEZA;
         tablero[destino] = piezaActual;
 
@@ -155,6 +160,11 @@ public class Utilidades {
 
         color[inicio] = color[destino];
         color[destino] = colorDestino;
+
+        if(piezaDestino != NOPIEZA){
+            add(!esTurnoBlanco(estado),piezaDestino,destino);
+        }
+        update(esTurnoBlanco(estado),piezaActual,destino,inicio);
 
         return !jaque;
     }

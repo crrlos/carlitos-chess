@@ -8,8 +8,7 @@ package com.wolf.carlitos;
 import javax.print.attribute.standard.Finishings;
 import java.util.Arrays;
 
-import static com.wolf.carlitos.Bitboard.next;
-import static com.wolf.carlitos.Bitboard.remainder;
+import static com.wolf.carlitos.Bitboard.*;
 import static com.wolf.carlitos.Constantes.*;
 import static com.wolf.carlitos.Tablero.*;
 import static com.wolf.carlitos.Utilidades.*;
@@ -509,10 +508,15 @@ public class Generador {
             } else if (alPaso(estado, destino)) {
 
                 int posicionPiezaALPaso = destino + (turnoBlanco ? -8 : 8);
+
                 tablero[posicionPiezaALPaso] = NOPIEZA;
                 color[posicionPiezaALPaso] = NOCOLOR;
 
+                remove(!turnoBlanco,PEON,posicionPiezaALPaso);
+
                 validarYAgregar(tablero, color, estado, posicion, destino);
+
+                add(!turnoBlanco,PEON,posicionPiezaALPaso);
 
                 tablero[posicionPiezaALPaso] = PEON;
                 color[posicionPiezaALPaso] = turnoBlanco ? NEGRO : BLANCO;
