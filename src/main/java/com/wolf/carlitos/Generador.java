@@ -63,7 +63,7 @@ public class Generador {
 
         int posicionRey = posicionRey(estado, turnoBlanco ? POSICION_REY_BLANCO : POSICION_REY_NEGRO);
 
-        reyEnJaque = casillaAtacada(posicionRey, pieza, color, turnoBlanco ? NEGRO : BLANCO);
+        reyEnJaque = casillaAtacada(posicionRey, colorContrario(estado));
 
         int bando = turnoBlanco ? BLANCO : NEGRO;
 
@@ -100,12 +100,13 @@ public class Generador {
         respuesta.cantidadDeMovimientos = this.movimientos.getPosicionFinal();
         return respuesta;
     }
-    public Respuesta generarCapturas(int[] pieza, int[] color, int estado, int nivel){
+
+    public Respuesta generarCapturas(int[] pieza, int[] color, int estado, int nivel) {
 
         movimientos.iniciar(nivel);
 
         int contrario = colorContrario(estado);
-        int miColor = esTurnoBlanco(estado) ? BLANCO :NEGRO;
+        int miColor = esTurnoBlanco(estado) ? BLANCO : NEGRO;
 
         long piezasEnemigas = piezasEnemigas(miColor);
         long piezasAmigas = piezasAmigas(miColor);
@@ -122,8 +123,8 @@ public class Generador {
                 if (mailBox[direccion[pos] + (contrario == BLANCO ? -dir : dir)] != -1) {
                     pos += (contrario == BLANCO ? -offset64[PEON][i] : offset64[PEON][i]);
                     if (pieza[pos] != NOPIEZA) {
-                        if (color[pos] == contrario && pieza[pos] != REY){
-                            if(movimientoValido(square << 6 | pos,pieza,color,estado))
+                        if (color[pos] == contrario && pieza[pos] != REY) {
+                            if (movimientoValido(square << 6 | pos, pieza, color, estado))
                                 movimientos.add(square << 6 | pos);
                         }
 
@@ -139,10 +140,10 @@ public class Generador {
 
             long piezasAtacadas = ataqueCaballo[square] & piezasEnemigas;
 
-            for (long squa = piezasAtacadas ; squa != 0; squa = remainder(squa)){
+            for (long squa = piezasAtacadas; squa != 0; squa = remainder(squa)) {
                 int destino = next(squa);
 
-                if(movimientoValido(square << 6 | destino,pieza,color,estado))
+                if (movimientoValido(square << 6 | destino, pieza, color, estado))
                     movimientos.add(square << 6 | destino);
 
             }
@@ -152,14 +153,14 @@ public class Generador {
 
             long piezasAtacadas = ataqueRey[square] & piezasEnemigas;
 
-            for (long squa = piezasAtacadas ; squa != 0; squa = remainder(squa)){
+            for (long squa = piezasAtacadas; squa != 0; squa = remainder(squa)) {
                 int destino = next(squa);
 
                 int ec = turnoBlanco ?
                         estado & MASK_LIMPIAR_POSICION_REY_BLANCO | destino << POSICION_REY_BLANCO :
                         estado & MASK_LIMPIAR_POSICION_REY_NEGRO | destino << POSICION_REY_NEGRO;
 
-                if(movimientoValido(square << 6 | destino,pieza,color,ec))
+                if (movimientoValido(square << 6 | destino, pieza, color, ec))
                     movimientos.add(square << 6 | destino);
 
             }
@@ -169,17 +170,17 @@ public class Generador {
             int square = next(squares);
 
             long piezasAtacadas = ataqueTorre[square] & casillasOcupadas;
-            int index = (int) ((piezasAtacadas * _rookMagics[square]) >>> (64 -  bitCount(ataqueTorre[square])));
+            int index = (int) ((piezasAtacadas * _rookMagics[square]) >>> (64 - bitCount(ataqueTorre[square])));
 
             long attackSet = Ataque.ataqueTorre[square][index];
 
             long ataque = casillasOcupadas & attackSet;
-            ataque =  ataque & ~piezasAmigas;
+            ataque = ataque & ~piezasAmigas;
 
-            for (long squa = ataque ; squa != 0; squa = remainder(squa)){
+            for (long squa = ataque; squa != 0; squa = remainder(squa)) {
                 int destino = next(squa);
 
-                if(movimientoValido(square << 6 | destino,pieza,color,estado))
+                if (movimientoValido(square << 6 | destino, pieza, color, estado))
                     movimientos.add(square << 6 | destino);
             }
 
@@ -188,17 +189,17 @@ public class Generador {
             int square = next(squares);
 
             long piezasAtacadas = ataqueAlfil[square] & casillasOcupadas;
-            int index = (int) ((piezasAtacadas * _bishopMagics[square]) >>> (64 -  bitCount(ataqueAlfil[square])));
+            int index = (int) ((piezasAtacadas * _bishopMagics[square]) >>> (64 - bitCount(ataqueAlfil[square])));
 
             long attackSet = Ataque.ataqueAlfil[square][index];
 
             long ataque = casillasOcupadas & attackSet;
-            ataque =  ataque & ~piezasAmigas;
+            ataque = ataque & ~piezasAmigas;
 
-            for (long squa = ataque ; squa != 0; squa = remainder(squa)){
+            for (long squa = ataque; squa != 0; squa = remainder(squa)) {
                 int destino = next(squa);
 
-                if(movimientoValido(square << 6 | destino,pieza,color,estado))
+                if (movimientoValido(square << 6 | destino, pieza, color, estado))
                     movimientos.add(square << 6 | destino);
             }
 
@@ -207,22 +208,21 @@ public class Generador {
             int square = next(squares);
 
             long piezasAtacadas = ataqueTorre[square] & casillasOcupadas;
-            int index = (int) ((piezasAtacadas * _rookMagics[square]) >>> (64 -  bitCount(ataqueTorre[square])));
+            int index = (int) ((piezasAtacadas * _rookMagics[square]) >>> (64 - bitCount(ataqueTorre[square])));
             long attackSetTorre = Ataque.ataqueTorre[square][index];
 
             piezasAtacadas = ataqueAlfil[square] & casillasOcupadas;
-            index = (int) ((piezasAtacadas * _bishopMagics[square]) >>> (64 -  bitCount(ataqueAlfil[square])));
+            index = (int) ((piezasAtacadas * _bishopMagics[square]) >>> (64 - bitCount(ataqueAlfil[square])));
             long attackSetAlfil = Ataque.ataqueAlfil[square][index];
 
             long ataque = casillasOcupadas & (attackSetTorre | attackSetAlfil);
-            ataque =  ataque & ~piezasAmigas;
+            ataque = ataque & ~piezasAmigas;
 
-            for (long squa = ataque ; squa != 0; squa = remainder(squa)){
+            for (long squa = ataque; squa != 0; squa = remainder(squa)) {
                 int destino = next(squa);
-                if(movimientoValido(square << 6 | destino,pieza,color,estado))
+                if (movimientoValido(square << 6 | destino, pieza, color, estado))
                     movimientos.add(square << 6 | destino);
             }
-
 
 
         }
@@ -236,7 +236,7 @@ public class Generador {
 
     private void movimientosDeTorre(int[] tablero, int[] color, int estado, int posicion) {
 
-        int miColor = turnoBlanco ? BLANCO :NEGRO;
+        int miColor = turnoBlanco ? BLANCO : NEGRO;
 
         long casillasOcupadas = casillasOcupadas();
 
@@ -246,12 +246,12 @@ public class Generador {
 
         long attackSet = Ataque.ataqueTorre[posicion][index];
 
-        attackSet = attackSet & ~(piezasAmigas(miColor) | piezas[colorContrario(estado)][REY] );
+        attackSet = attackSet & ~(piezasAmigas(miColor) | piezas[colorContrario(estado)][REY]);
 
-        for(long squares = attackSet; squares != 0; squares = remainder(squares)){
+        for (long squares = attackSet; squares != 0; squares = remainder(squares)) {
             int square = next(squares);
 
-            if(movimientoValido(posicion << 6 | square,tablero,color,estado))
+            if (movimientoValido(posicion << 6 | square, tablero, color, estado))
                 movimientos.add(posicion << 6 | square);
         }
 
@@ -265,22 +265,22 @@ public class Generador {
 
     private void movimientosDeCaballo(int[] tablero, int[] color, int estado, int posicion) {
 
-       int miColor = esTurnoBlanco(estado) ? BLANCO : NEGRO;
+        int miColor = esTurnoBlanco(estado) ? BLANCO : NEGRO;
 
-       long movimientosCaballo = ataqueCaballo[posicion] & ~(piezasAmigas(miColor) | piezas[colorContrario(estado)][REY]);
+        long movimientosCaballo = ataqueCaballo[posicion] & ~(piezasAmigas(miColor) | piezas[colorContrario(estado)][REY]);
 
-       boolean validar = false;
+        boolean validar = false;
 
-       // se quita el caballo de esta posición, si el rey no queda en jaque se omite la validación de los movimientos
+        // se quita el caballo de esta posición, si el rey no queda en jaque se omite la validación de los movimientos
         remove(turnoBlanco, CABALLO, posicion);
-        if (reyEnJaque(tablero, color, estado)) validar = true;
+        if (reyEnJaque(estado)) validar = true;
         add(turnoBlanco, CABALLO, posicion);
 
 
         for (long squares = movimientosCaballo; squares != 0; squares = remainder(squares)) {
             int square = next(squares);
 
-            if(!validar) {
+            if (!validar) {
                 movimientos.add(posicion << 6 | square);
                 continue;
             }
@@ -294,7 +294,7 @@ public class Generador {
 
     private void movimientosDeAlfil(int[] tablero, int[] color, int estado, int posicion) {
 
-        int miColor = turnoBlanco ? BLANCO :NEGRO;
+        int miColor = turnoBlanco ? BLANCO : NEGRO;
 
         long casillasOcupadas = casillasOcupadas();
 
@@ -306,10 +306,10 @@ public class Generador {
 
         attackSet = attackSet & ~(piezasAmigas(miColor) | piezas[colorContrario(estado)][REY]);
 
-        for(long squares = attackSet; squares != 0; squares = remainder(squares)){
+        for (long squares = attackSet; squares != 0; squares = remainder(squares)) {
             int square = next(squares);
 
-            if(movimientoValido(posicion << 6 | square,tablero,color,estado))
+            if (movimientoValido(posicion << 6 | square, tablero, color, estado))
                 movimientos.add(posicion << 6 | square);
         }
 
@@ -335,8 +335,8 @@ public class Generador {
 
                 if ((estado & 1) > 0) {
                     if ((tablero[F1] & tablero[G1]) == NOPIEZA
-                            && !casillaAtacada(F1, tablero, color, colorContrario(estado))
-                            && !casillaAtacada(G1, tablero, color, colorContrario(estado))) {
+                            && !casillaAtacada(F1, colorContrario(estado))
+                            && !casillaAtacada(G1, colorContrario(estado))) {
                         movimientos.add(E1 << 6 | G1);
                     }
                 }
@@ -344,8 +344,8 @@ public class Generador {
                 if ((estado & 2) > 0) {
 
                     if ((tablero[D1] & tablero[C1] & tablero[B1]) == NOPIEZA
-                            && !casillaAtacada(D1, tablero, color, colorContrario(estado))
-                            && !casillaAtacada(C1, tablero, color, colorContrario(estado))) {
+                            && !casillaAtacada(D1, colorContrario(estado))
+                            && !casillaAtacada(C1, colorContrario(estado))) {
                         movimientos.add(E1 << 6 | C1);
                     }
                 }
@@ -356,8 +356,8 @@ public class Generador {
 
                 if ((estado & 4) > 0) {
                     if ((tablero[F8] & tablero[G8]) == NOPIEZA
-                            && !casillaAtacada(F8, tablero, color, colorContrario(estado))
-                            && !casillaAtacada(G8, tablero, color, colorContrario(estado))) {
+                            && !casillaAtacada(F8, colorContrario(estado))
+                            && !casillaAtacada(G8, colorContrario(estado))) {
                         movimientos.add(E8 << 6 | G8);
                     }
                 }
@@ -365,8 +365,8 @@ public class Generador {
                 if ((estado & 8) > 0) {
 
                     if ((tablero[D8] & tablero[C8] & tablero[B8]) == NOPIEZA
-                            && !casillaAtacada(D8, tablero, color, colorContrario(estado))
-                            && !casillaAtacada(C8, tablero, color, colorContrario(estado))) {
+                            && !casillaAtacada(D8, colorContrario(estado))
+                            && !casillaAtacada(C8, colorContrario(estado))) {
                         movimientos.add(E8 << 6 | C8);
                     }
                 }
@@ -385,7 +385,7 @@ public class Generador {
 
             long maskAvance = 1L << posicion + (turnoBlanco ? 8 : -8) | 1L << destino;
 
-            if((maskAvance & casillasOcupadas) == 0)
+            if ((maskAvance & casillasOcupadas) == 0)
                 validarYAgregar(tablero, color, estado, posicion, destino);
 
         }
@@ -414,9 +414,9 @@ public class Generador {
             int square = next(squares);
 
             long moveMask = 1L << square;
-            if((moveMask & casillasOcupadas) != 0){
+            if ((moveMask & casillasOcupadas) != 0) {
                 moveMask = moveMask & ~(piezasAmigas(miColor(estado)) | piezas[colorContrario(estado)][REY]);
-                if(moveMask != 0){
+                if (moveMask != 0) {
                     int m = posicion << 6 | square;
                     if (destino >= A8 || destino <= H1) {
                         if (movimientoValido(m, tablero, color, estado)) {
@@ -429,7 +429,7 @@ public class Generador {
                         validarYAgregar(tablero, color, estado, posicion, square);
                     }
                 }
-            }else if (alPaso(estado, square)) {
+            } else if (alPaso(estado, square)) {
                 int posicionPiezaALPaso = square + (turnoBlanco ? -8 : 8);
 
                 remove(!turnoBlanco, PEON, posicionPiezaALPaso);

@@ -165,7 +165,7 @@ public class Tablero {
     }
 
 
-    public static boolean casillaAtacada(int posicion, int[] tablero, int[] color, int colorContrario) {
+    public static boolean casillaAtacada(int posicion, int colorContrario) {
 
         if ((ataqueCaballo[posicion] & piezas[colorContrario][CABALLO]) != 0) return true;
 

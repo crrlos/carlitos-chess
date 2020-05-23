@@ -221,7 +221,7 @@ public class Search {
         var fin = respuesta.cantidadDeMovimientos;
 
         if (fin == 0) {
-            if (reyEnJaque(tablero, color, estado)) return MATE + nivel;
+            if (reyEnJaque(estado)) return MATE + nivel;
             else return AHOGADO;
         }
 
@@ -262,7 +262,7 @@ public class Search {
         insertionSort(movimientos, fin);
 
         if (fin == 0) {
-            if (reyEnJaque(tablero, color, estado)) return -MATE - nivel;
+            if (reyEnJaque(estado)) return -MATE - nivel;
             else return AHOGADO;
         }
 

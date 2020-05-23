@@ -129,10 +129,10 @@ public class Utilidades {
         return estado >> desplazamiento & 0b111111;
     }
 
-    public static boolean reyEnJaque(int[] pieza, int[] color, int estado) {
+    public static boolean reyEnJaque(int estado) {
         int miColor = miColor(estado);
         int posicionRey = numberOfTrailingZeros(piezas[miColor][REY]);
-        return casillaAtacada(posicionRey, pieza, color, colorContrario(estado));
+        return casillaAtacada(posicionRey, colorContrario(estado));
     }
 
     public static boolean movimientoValido(int movimiento, int[] tablero, int[] color, int estado) {
@@ -156,7 +156,7 @@ public class Utilidades {
         color[inicio] = NOCOLOR;
 
         int posicionRey = numberOfTrailingZeros(piezas[miColor(estado)][REY]);
-        var jaque = casillaAtacada(posicionRey, tablero, color, colorContrario(estado));
+        var jaque = casillaAtacada(posicionRey, colorContrario(estado));
 
         tablero[destino] = piezaDestino;
         tablero[inicio] = piezaActual;
