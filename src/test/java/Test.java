@@ -1,5 +1,6 @@
 import com.wolf.carlitos.Ataque;
 import com.wolf.carlitos.Tablero;
+import com.wolf.carlitos.Utilidades;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -11,6 +12,9 @@ public class Test {
 
 
     public static void main(String[] args) {
+
+
+        System.out.println(Utilidades.colorContrario(0b111111_0_0000));
 
 
         var maskk = 0b101110_00010000_00010000_00010000_00000000_00000000_00010000_00000000L;

@@ -24,7 +24,7 @@ public class Generador {
         private int posicion;
 
         public void iniciar(int nivel) {
-            if (nivel < 0){
+            if (nivel < 0) {
                 nivel = 10 + nivel * -1;
             }
             this.current = movimientosPorNivel[nivel];
@@ -65,33 +65,33 @@ public class Generador {
 
         reyEnJaque = casillaAtacada(posicionRey, pieza, color, turnoBlanco ? NEGRO : BLANCO);
 
-        int bando = turnoBlanco ? BLANCO :NEGRO;
+        int bando = turnoBlanco ? BLANCO : NEGRO;
 
         for (long squares = piezas[bando][PEON]; squares != 0; squares = remainder(squares)) {
             int square = next(squares);
-            movimientosDePeon(pieza,color,estado,square);
+            movimientosDePeon(pieza, color, estado, square);
         }
 
         for (long squares = piezas[bando][CABALLO]; squares != 0; squares = remainder(squares)) {
             int square = next(squares);
-            movimientosDeCaballo(pieza,color,estado,square);
+            movimientosDeCaballo(pieza, color, estado, square);
         }
         for (long squares = piezas[bando][ALFIL]; squares != 0; squares = remainder(squares)) {
             int square = next(squares);
-            movimientosDeAlfil(pieza,color,estado,square);
+            movimientosDeAlfil(pieza, color, estado, square);
         }
         for (long squares = piezas[bando][TORRE]; squares != 0; squares = remainder(squares)) {
             int square = next(squares);
-            movimientosDeTorre(pieza,color,estado,square);
+            movimientosDeTorre(pieza, color, estado, square);
         }
         for (long squares = piezas[bando][DAMA]; squares != 0; squares = remainder(squares)) {
             int square = next(squares);
-            movimientosDeDama(pieza,color,estado,square);
+            movimientosDeDama(pieza, color, estado, square);
         }
 
         for (long squares = piezas[bando][REY]; squares != 0; squares = remainder(squares)) {
             int square = next(squares);
-            movimientosDeRey(pieza,color,estado,square);
+            movimientosDeRey(pieza, color, estado, square);
         }
 
         reyEnJaque = false;
@@ -186,7 +186,6 @@ public class Generador {
         }
 
 
-
         for (int i = 0; i < offsetMailBox[TORRE].length; i++) {
 
             int dir = offsetMailBox[TORRE][i];
@@ -222,53 +221,53 @@ public class Generador {
     }
 
     private void movimientosDeCaballo(int[] tablero, int[] color, int estado, int posicion) {
-        int pos;
 
-        if (!reyEnJaque) {
+        int colorContrario = colorContrario(estado);
 
-            boolean movimientosSinValidar = false;
+        long casillasOcupadas =
+                piezas[BLANCO][PEON] |
+                piezas[BLANCO][CABALLO] |
+                piezas[BLANCO][ALFIL] |
+                piezas[BLANCO][TORRE] |
+                piezas[BLANCO][DAMA] |
+                piezas[BLANCO][REY] |
+                piezas[NEGRO][PEON] |
+                piezas[NEGRO][CABALLO] |
+                piezas[NEGRO][ALFIL] |
+                piezas[NEGRO][TORRE] |
+                piezas[NEGRO][DAMA] |
+                piezas[NEGRO][REY];
 
-            tablero[posicion] = NOPIEZA;
-            color[posicion] = NOCOLOR;
+        long casillasVacias = ~casillasOcupadas;
 
-            remove(turnoBlanco,CABALLO,posicion);
+        long movimientosCaballo = (casillasVacias |
+                piezas[colorContrario][PEON] |
+                piezas[colorContrario][CABALLO] |
+                piezas[colorContrario][ALFIL] |
+                piezas[colorContrario][TORRE] |
+                piezas[colorContrario][DAMA]) & ataqueCaballo[posicion];
 
-            if (!casillaAtacada(posicionRey(estado, turnoBlanco ? POSICION_REY_BLANCO : POSICION_REY_NEGRO), tablero, color, colorContrario(estado)))
-                movimientosSinValidar = true;
+        remove(turnoBlanco, CABALLO, posicion);
+        boolean validar = false;
 
-            tablero[posicion] = CABALLO;
-            color[posicion] = turnoBlanco ? BLANCO : NEGRO;
-            add(turnoBlanco,CABALLO,posicion);
+        if (casillaAtacada(posicionRey(estado, turnoBlanco ? POSICION_REY_BLANCO : POSICION_REY_NEGRO), tablero, color, colorContrario))
+            validar = true;
 
-            if (movimientosSinValidar) {
-                for (int i = 0; i < offsetMailBox[CABALLO].length; i++) {
-                    int mailOffset = offsetMailBox[CABALLO][i];
+        add(turnoBlanco, CABALLO, posicion);
 
-                    if (mailBox[direccion[posicion] + mailOffset] != -1) {
+        for (long squares = movimientosCaballo; squares != 0; squares = remainder(squares)) {
+            int square = next(squares);
 
-                        pos = posicion + offset64[CABALLO][i];
-
-                        if ((tablero[pos] == NOPIEZA || color[pos] != color[posicion]) && tablero[pos] != REY)
-                            movimientos.add(posicion << 6 | pos);
-                    }
-                }
+            if (!validar) {
+                movimientos.add(posicion << 6 | square);
+                continue;
             }
-            return;
+
+            if (movimientoValido(posicion << 6 | square, tablero, color, estado))
+                movimientos.add(posicion << 6 | square);
+
         }
 
-
-        for (int i = 0; i < offsetMailBox[CABALLO].length; i++) {
-            int mailOffset = offsetMailBox[CABALLO][i];
-
-            if (mailBox[direccion[posicion] + mailOffset] != -1) {
-
-                pos = posicion + offset64[CABALLO][i];
-
-                if ((tablero[pos] == NOPIEZA || color[pos] != color[posicion]) && movimientoValido(posicion << 6 | pos, tablero, color, estado))
-                    movimientos.add(posicion << 6 | pos);
-
-            }
-        }
     }
 
     private void movimientosDeAlfil(int[] tablero, int[] color, int estado, int posicion) {
@@ -515,11 +514,11 @@ public class Generador {
                 tablero[posicionPiezaALPaso] = NOPIEZA;
                 color[posicionPiezaALPaso] = NOCOLOR;
 
-                remove(!turnoBlanco,PEON,posicionPiezaALPaso);
+                remove(!turnoBlanco, PEON, posicionPiezaALPaso);
 
                 validarYAgregar(tablero, color, estado, posicion, destino);
 
-                add(!turnoBlanco,PEON,posicionPiezaALPaso);
+                add(!turnoBlanco, PEON, posicionPiezaALPaso);
 
                 tablero[posicionPiezaALPaso] = PEON;
                 color[posicionPiezaALPaso] = turnoBlanco ? NEGRO : BLANCO;

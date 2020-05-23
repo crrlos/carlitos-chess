@@ -118,7 +118,7 @@ public class Utilidades {
     }
 
     public static int colorContrario(int estado) {
-        return esTurnoBlanco(estado) ? NEGRO : BLANCO;
+        return estado >>> 4 & 0b1;
     }
 
     public static int posicionRey(int estado, int desplazamiento) {
