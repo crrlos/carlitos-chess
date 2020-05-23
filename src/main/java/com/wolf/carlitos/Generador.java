@@ -5,13 +5,13 @@
  */
 package com.wolf.carlitos;
 
-import javax.print.attribute.standard.Finishings;
-import java.util.Arrays;
-
+import static com.wolf.carlitos.Ataque._bishopMagics;
+import static com.wolf.carlitos.Ataque._rookMagics;
 import static com.wolf.carlitos.Bitboard.*;
 import static com.wolf.carlitos.Constantes.*;
 import static com.wolf.carlitos.Tablero.*;
 import static com.wolf.carlitos.Utilidades.*;
+import static java.lang.Long.bitCount;
 
 /**
  * @author carlos
@@ -45,7 +45,7 @@ public class Generador {
 
     }
 
-    static class Respuesta {
+    public static class Respuesta {
         public int[] movimientosGenerados;
         public int cantidadDeMovimientos;
     }
@@ -95,6 +95,148 @@ public class Generador {
         }
 
         reyEnJaque = false;
+
+        respuesta.movimientosGenerados = this.movimientos.getMovimientos();
+        respuesta.cantidadDeMovimientos = this.movimientos.getPosicionFinal();
+        return respuesta;
+    }
+    public Respuesta generarCapturas(int[] pieza, int[] color, int estado, int nivel){
+        movimientos.iniciar(nivel);
+        int contrario = colorContrario(estado);
+        int miColor = esTurnoBlanco(estado) ? BLANCO :NEGRO;
+        long piezasContrarias =
+                piezas[contrario][PEON] |
+                piezas[contrario][CABALLO] |
+                piezas[contrario][ALFIL] |
+                piezas[contrario][TORRE] |
+                piezas[contrario][DAMA];
+
+        long piezasAmigas =
+                        piezas[miColor][PEON] |
+                        piezas[miColor][CABALLO] |
+                        piezas[miColor][ALFIL] |
+                        piezas[miColor][TORRE] |
+                        piezas[miColor][DAMA] |
+                        piezas[miColor][REY];
+
+        long piezasEnTablero = piezasContrarias | piezasAmigas;
+
+        for (long squares = piezas[miColor][PEON]; squares != 0; squares = remainder(squares)) {
+            int square = next(squares);
+
+            int pos;
+            for (int i = 1; i < offsetMailBox[PEON].length; i++) {
+
+                int dir = offsetMailBox[PEON][i];
+                pos = square;
+                if (mailBox[direccion[pos] + (contrario == BLANCO ? -dir : dir)] != -1) {
+                    pos += (contrario == BLANCO ? -offset64[PEON][i] : offset64[PEON][i]);
+                    if (pieza[pos] != NOPIEZA) {
+                        if (color[pos] == contrario && pieza[pos] != REY){
+                            if(movimientoValido(square << 6 | pos,pieza,color,estado))
+                                movimientos.add(square << 6 | pos);
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+        for (long squares = piezas[miColor][CABALLO]; squares != 0; squares = remainder(squares)) {
+            int square = next(squares);
+
+            long piezasAtacadas = ataqueCaballo[square] & piezasContrarias;
+
+            for (long squa = piezasAtacadas ; squa != 0; squa = remainder(squa)){
+                int destino = next(squa);
+
+                if(movimientoValido(square << 6 | destino,pieza,color,estado))
+                    movimientos.add(square << 6 | destino);
+
+            }
+        }
+        for (long squares = piezas[miColor][REY]; squares != 0; squares = remainder(squares)) {
+            int square = next(squares);
+
+            long piezasAtacadas = ataqueRey[square] & piezasContrarias;
+
+            for (long squa = piezasAtacadas ; squa != 0; squa = remainder(squa)){
+                int destino = next(squa);
+
+                int ec = turnoBlanco ?
+                        estado & MASK_LIMPIAR_POSICION_REY_BLANCO | destino << POSICION_REY_BLANCO :
+                        estado & MASK_LIMPIAR_POSICION_REY_NEGRO | destino << POSICION_REY_NEGRO;
+
+                if(movimientoValido(square << 6 | destino,pieza,color,ec))
+                    movimientos.add(square << 6 | destino);
+
+            }
+
+        }
+        for (long squares = piezas[miColor][TORRE]; squares != 0; squares = remainder(squares)) {
+            int square = next(squares);
+
+            long piezasAtacadas = ataqueTorre[square] & piezasEnTablero;
+            int index = (int) ((piezasAtacadas * _rookMagics[square]) >>> (64 -  bitCount(ataqueTorre[square])));
+
+            long attackSet = Ataque.ataqueTorre[square][index];
+
+            long ataque = piezasEnTablero & attackSet;
+            ataque =  ataque & ~piezasAmigas;
+
+            for (long squa = ataque ; squa != 0; squa = remainder(squa)){
+                int destino = next(squa);
+
+                if(movimientoValido(square << 6 | destino,pieza,color,estado))
+                    movimientos.add(square << 6 | destino);
+            }
+
+        }
+        for (long squares = piezas[miColor][ALFIL]; squares != 0; squares = remainder(squares)) {
+            int square = next(squares);
+
+            long piezasAtacadas = ataqueAlfil[square] & piezasEnTablero;
+            int index = (int) ((piezasAtacadas * _bishopMagics[square]) >>> (64 -  bitCount(ataqueAlfil[square])));
+
+            long attackSet = Ataque.ataqueAlfil[square][index];
+
+            long ataque = piezasEnTablero & attackSet;
+            ataque =  ataque & ~piezasAmigas;
+
+            for (long squa = ataque ; squa != 0; squa = remainder(squa)){
+                int destino = next(squa);
+
+                if(movimientoValido(square << 6 | destino,pieza,color,estado))
+                    movimientos.add(square << 6 | destino);
+            }
+
+        }
+        for (long squares = piezas[miColor][DAMA]; squares != 0; squares = remainder(squares)) {
+            int square = next(squares);
+
+            long piezasAtacadas = ataqueTorre[square] & piezasEnTablero;
+            int index = (int) ((piezasAtacadas * _rookMagics[square]) >>> (64 -  bitCount(ataqueTorre[square])));
+            long attackSetTorre = Ataque.ataqueTorre[square][index];
+
+            piezasAtacadas = ataqueAlfil[square] & piezasEnTablero;
+            index = (int) ((piezasAtacadas * _bishopMagics[square]) >>> (64 -  bitCount(ataqueAlfil[square])));
+            long attackSetAlfil = Ataque.ataqueAlfil[square][index];
+
+            long ataque = piezasEnTablero & (attackSetTorre | attackSetAlfil);
+            ataque =  ataque & ~piezasAmigas;
+
+            for (long squa = ataque ; squa != 0; squa = remainder(squa)){
+                int destino = next(squa);
+                if(movimientoValido(square << 6 | destino,pieza,color,estado))
+                    movimientos.add(square << 6 | destino);
+            }
+
+
+
+        }
+
 
         respuesta.movimientosGenerados = this.movimientos.getMovimientos();
         respuesta.cantidadDeMovimientos = this.movimientos.getPosicionFinal();

@@ -11,6 +11,8 @@ public class App {
 
         var scanner = new Scanner(System.in);
 
+        Ataque.iniciar();
+
         while (scanner.hasNext()) {
 
             var linea = scanner.nextLine();

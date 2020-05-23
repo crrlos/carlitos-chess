@@ -44,10 +44,6 @@ public class Ataque {
     public static final long[][] ataqueTorre = new long[64][4096];
     public static final long[][] ataqueAlfil = new long[64][1000];
 
-    static {
-        iniciar();
-    }
-
     public static void iniciar() {
         for (int i = 0; i < 64; i++) {
             var attackMask = attackMask(i, TORRE);

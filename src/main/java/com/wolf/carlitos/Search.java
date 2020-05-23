@@ -7,6 +7,7 @@ package com.wolf.carlitos;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -151,27 +152,19 @@ public class Search {
     private int quiescentMax(int nivel, int estado, int[] tablero, int[] color, int alfa, int beta){
 
         int mejorValor = evaluar();
-       // if(nivel == -2) return mejorValor;
         if(mejorValor >= beta) return  beta;
         if(mejorValor > alfa) alfa = mejorValor;
 
 
-        var respuesta = generador.generarMovimientos(tablero, color, estado, nivel);
+        var respuesta = generador.generarCapturas(tablero, color, estado, nivel);
 
         var movimientos = respuesta.movimientosGenerados;
         var fin = respuesta.cantidadDeMovimientos;
 
-        int nuevoTotal = 0;
+        puntajeMVVLVA(movimientos,fin);
+        insertionSort(movimientos,fin);
+
         for (int i = 0; i < fin; i++) {
-            if(tablero[movimientos[i] & 0b111111] != NOPIEZA){
-                movimientos[nuevoTotal++] = movimientos[i];
-            }
-        }
-
-        puntajeMVVLVA(movimientos,nuevoTotal);
-        insertionSort(movimientos,nuevoTotal);
-
-        for (int i = 0; i < nuevoTotal; i++) {
             var mov = movimientos[i];
 
             int estadoCopia = hacerMovimiento(tablero, color, estado, mov);
@@ -191,27 +184,18 @@ public class Search {
     private int quiescentMin(int nivel, int estado, int[] tablero, int[] color, int alfa, int beta){
         int mejorValor = evaluar();
 
-       // if(nivel == -2) return mejorValor;
-
         if(mejorValor <= alfa) return  alfa;
         if(mejorValor < beta) beta = mejorValor;
 
-        var respuesta = generador.generarMovimientos(tablero, color, estado, nivel);
+        var respuesta = generador.generarCapturas(tablero, color, estado, nivel);
 
         var movimientos = respuesta.movimientosGenerados;
         var fin = respuesta.cantidadDeMovimientos;
 
-        int nuevoTotal = 0;
+        puntajeMVVLVA(movimientos,fin);
+        insertionSort(movimientos,fin);
+
         for (int i = 0; i < fin; i++) {
-            if(tablero[movimientos[i] & 0b111111] != NOPIEZA){
-                movimientos[nuevoTotal++] = movimientos[i];
-            }
-        }
-
-        puntajeMVVLVA(movimientos,nuevoTotal);
-        insertionSort(movimientos,nuevoTotal);
-
-        for (int i = 0; i < nuevoTotal; i++) {
             var mov = movimientos[i];
 
             int estadoCopia = hacerMovimiento(tablero, color, estado, mov);
@@ -225,7 +209,6 @@ public class Search {
             if (evaluacion <= alfa) return  alfa;
 
         }
-
         return beta;
     }
 
