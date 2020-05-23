@@ -236,115 +236,25 @@ public class Generador {
 
     private void movimientosDeTorre(int[] tablero, int[] color, int estado, int posicion) {
 
+        int miColor = turnoBlanco ? BLANCO :NEGRO;
 
-        if (!reyEnJaque) {
+        long casillasOcupadas = casillasOcupadas();
 
-            boolean verticalSinValidar = false;
-            boolean horizontalSinValidar = false;
+        long maskedBlockers = ataqueTorre[posicion] & casillasOcupadas;
 
-            for (int i = 0; i < direccionesVertical[0].length; i++) {
-                int dir = direccionesVertical[0][i];
-                if (mailBox[direccion[posicion] + direccionesVertical[1][i]] != -1
-                        && (tablero[posicion + dir] == NOPIEZA
-                        || (color[posicion + dir] != color[posicion]
-                        && tablero[posicion + dir] != REY))
-                        && movimientoValido(posicion << 6 | posicion + dir, tablero, color, estado)) {
-                    verticalSinValidar = true;
-                    break;
-                }
-            }
+        int index = (int) ((maskedBlockers * _rookMagics[posicion]) >>> (64 - bitCount(ataqueTorre[posicion])));
 
-            for (int i = 0; i < direccionesHorizontal[0].length; i++) {
-                int dir = direccionesHorizontal[0][i];
-                if (mailBox[direccion[posicion] + direccionesHorizontal[1][i]] != -1
-                        && (tablero[posicion + dir] == NOPIEZA
-                        || (color[posicion + dir] != color[posicion]
-                        && tablero[posicion + dir] != REY))
-                        && movimientoValido(posicion << 6 | posicion + dir, tablero, color, estado)) {
-                    horizontalSinValidar = true;
-                    break;
-                }
-            }
+        long attackSet = Ataque.ataqueTorre[posicion][index];
 
-            int pos;
+        attackSet = attackSet & ~(piezasAmigas(miColor) | piezas[colorContrario(estado)][REY] );
 
-            if (verticalSinValidar) {
+        for(long squares = attackSet; squares != 0; squares = remainder(squares)){
+            int square = next(squares);
 
-                for (int i = 0; i < direccionesVertical[0].length; i++) {
-                    pos = posicion;
-                    int dir = direccionesVertical[0][i];
-                    while (mailBox[direccion[pos] + direccionesVertical[1][i]] != -1) {
-                        pos += dir;
-
-                        if (tablero[pos] == NOPIEZA) {
-                            movimientos.add(posicion << 6 | pos);
-                            continue;
-                        }
-
-                        if (color[pos] == color[posicion] || tablero[pos] == REY) break;
-
-                        movimientos.add(posicion << 6 | pos);
-                        break;
-
-                    }
-
-                }
-            }
-
-            if (horizontalSinValidar) {
-
-                for (int i = 0; i < direccionesHorizontal[0].length; i++) {
-                    pos = posicion;
-                    int dir = direccionesHorizontal[0][i];
-                    while (mailBox[direccion[pos] + direccionesHorizontal[1][i]] != -1) {
-                        pos += dir;
-
-                        if (tablero[pos] == NOPIEZA) {
-                            movimientos.add(posicion << 6 | pos);
-                            continue;
-                        }
-
-                        if (color[pos] == color[posicion] || tablero[pos] == REY) break;
-
-                        movimientos.add(posicion << 6 | pos);
-                        break;
-
-                    }
-
-                }
-
-            }
-
-            return;
+            if(movimientoValido(posicion << 6 | square,tablero,color,estado))
+                movimientos.add(posicion << 6 | square);
         }
 
-
-        for (int i = 0; i < offsetMailBox[TORRE].length; i++) {
-
-            int dir = offsetMailBox[TORRE][i];
-            int dirLocal = offset64[TORRE][i];
-            int pos = posicion;
-            while (mailBox[direccion[pos] + dir] != -1) {
-                pos += dirLocal;
-
-                if (tablero[pos] == NOPIEZA) {
-                    if (movimientoValido(posicion << 6 | pos, tablero, color, estado))
-                        movimientos.add(posicion << 6 | pos);
-
-                    continue;
-                }
-
-                if (color[pos] == color[posicion] || tablero[pos] == REY) break;
-
-                if (movimientoValido(posicion << 6 | pos, tablero, color, estado))
-                    movimientos.add(posicion << 6 | pos);
-
-                break;
-
-            }
-
-
-        }
 
     }
 
@@ -355,43 +265,22 @@ public class Generador {
 
     private void movimientosDeCaballo(int[] tablero, int[] color, int estado, int posicion) {
 
-        int colorContrario = colorContrario(estado);
+       int miColor = esTurnoBlanco(estado) ? BLANCO : NEGRO;
 
-        long casillasOcupadas =
-                piezas[BLANCO][PEON] |
-                piezas[BLANCO][CABALLO] |
-                piezas[BLANCO][ALFIL] |
-                piezas[BLANCO][TORRE] |
-                piezas[BLANCO][DAMA] |
-                piezas[BLANCO][REY] |
-                piezas[NEGRO][PEON] |
-                piezas[NEGRO][CABALLO] |
-                piezas[NEGRO][ALFIL] |
-                piezas[NEGRO][TORRE] |
-                piezas[NEGRO][DAMA] |
-                piezas[NEGRO][REY];
+       long movimientosCaballo = ataqueCaballo[posicion] & ~(piezasAmigas(miColor) | piezas[colorContrario(estado)][REY]);
 
-        long casillasVacias = ~casillasOcupadas;
+       boolean validar = false;
 
-        long movimientosCaballo = (casillasVacias |
-                piezas[colorContrario][PEON] |
-                piezas[colorContrario][CABALLO] |
-                piezas[colorContrario][ALFIL] |
-                piezas[colorContrario][TORRE] |
-                piezas[colorContrario][DAMA]) & ataqueCaballo[posicion];
-
+       // se quita el caballo de esta posición, si el rey no queda en jaque se omite la validación de los movimientos
         remove(turnoBlanco, CABALLO, posicion);
-        boolean validar = false;
-
-        if (casillaAtacada(posicionRey(estado, turnoBlanco ? POSICION_REY_BLANCO : POSICION_REY_NEGRO), tablero, color, colorContrario))
-            validar = true;
-
+        if (reyEnJaque(tablero, color, estado)) validar = true;
         add(turnoBlanco, CABALLO, posicion);
+
 
         for (long squares = movimientosCaballo; squares != 0; squares = remainder(squares)) {
             int square = next(squares);
 
-            if (!validar) {
+            if(!validar) {
                 movimientos.add(posicion << 6 | square);
                 continue;
             }
@@ -405,140 +294,39 @@ public class Generador {
 
     private void movimientosDeAlfil(int[] tablero, int[] color, int estado, int posicion) {
 
+        int miColor = turnoBlanco ? BLANCO :NEGRO;
 
-        if (!reyEnJaque) {
+        long casillasOcupadas = casillasOcupadas();
 
-            boolean diagonal1SinValidar = false;
-            boolean diagonal2SinValidar = false;
+        long maskedBlockers = ataqueAlfil[posicion] & casillasOcupadas;
 
-            for (int i = 0; i < direccionesDiagonal1[0].length; i++) {
-                int dir = direccionesDiagonal1[0][i];
-                if (mailBox[direccion[posicion] + direccionesDiagonal1[1][i]] != -1
-                        && (tablero[posicion + dir] == NOPIEZA
-                        || (color[posicion + dir] != color[posicion]
-                        && tablero[posicion + dir] != REY))
-                        && movimientoValido(posicion << 6 | posicion + dir, tablero, color, estado)) {
-                    diagonal1SinValidar = true;
-                    break;
-                }
-            }
+        int index = (int) ((maskedBlockers * _bishopMagics[posicion]) >>> (64 - bitCount(ataqueAlfil[posicion])));
 
-            for (int i = 0; i < direccionesDiagonal2[0].length; i++) {
-                int dir = direccionesDiagonal2[0][i];
-                if (mailBox[direccion[posicion] + direccionesDiagonal2[1][i]] != -1
-                        && (tablero[posicion + dir] == NOPIEZA
-                        || (color[posicion + dir] != color[posicion]
-                        && tablero[posicion + dir] != REY))
-                        && movimientoValido(posicion << 6 | posicion + dir, tablero, color, estado)) {
-                    diagonal2SinValidar = true;
-                    break;
-                }
-            }
+        long attackSet = Ataque.ataqueAlfil[posicion][index];
 
-            int pos;
+        attackSet = attackSet & ~(piezasAmigas(miColor) | piezas[colorContrario(estado)][REY]);
 
-            if (diagonal1SinValidar) {
+        for(long squares = attackSet; squares != 0; squares = remainder(squares)){
+            int square = next(squares);
 
-                for (int i = 0; i < direccionesDiagonal1[0].length; i++) {
-                    pos = posicion;
-                    int dir = direccionesDiagonal1[0][i];
-                    while (mailBox[direccion[pos] + direccionesDiagonal1[1][i]] != -1) {
-                        pos += dir;
-
-                        if (tablero[pos] == NOPIEZA) {
-                            movimientos.add(posicion << 6 | pos);
-                            continue;
-                        }
-
-                        if (color[pos] == color[posicion] || tablero[pos] == REY) break;
-
-                        movimientos.add(posicion << 6 | pos);
-                        break;
-
-                    }
-
-                }
-            }
-
-            if (diagonal2SinValidar) {
-
-                for (int i = 0; i < direccionesDiagonal2[0].length; i++) {
-                    pos = posicion;
-                    int dir = direccionesDiagonal2[0][i];
-                    while (mailBox[direccion[pos] + direccionesDiagonal2[1][i]] != -1) {
-                        pos += dir;
-
-                        if (tablero[pos] == NOPIEZA) {
-                            movimientos.add(posicion << 6 | pos);
-                            continue;
-                        }
-
-                        if (color[pos] == color[posicion] || tablero[pos] == REY) break;
-
-                        movimientos.add(posicion << 6 | pos);
-                        break;
-
-                    }
-
-                }
-
-            }
-
-            return;
+            if(movimientoValido(posicion << 6 | square,tablero,color,estado))
+                movimientos.add(posicion << 6 | square);
         }
-
-        for (int i = 0; i < offsetMailBox[ALFIL].length; i++) {
-
-            int dir = offsetMailBox[ALFIL][i];
-            int dirLocal = offset64[ALFIL][i];
-            int pos = posicion;
-            while (mailBox[direccion[pos] + dir] != -1) {
-                pos += dirLocal;
-
-                if (tablero[pos] == NOPIEZA) {
-                    if (movimientoValido(posicion << 6 | pos, tablero, color, estado))
-                        movimientos.add(posicion << 6 | pos);
-
-                    continue;
-                }
-
-                if (color[pos] == color[posicion] || tablero[pos] == REY) break;
-
-                if (movimientoValido(posicion << 6 | pos, tablero, color, estado))
-                    movimientos.add(posicion << 6 | pos);
-
-                break;
-
-            }
-
-
-        }
-
 
     }
 
     private void movimientosDeRey(int[] tablero, int[] color, int estado, int posicion) {
 
-        int pos;
 
-        for (int i = 0; i < offsetMailBox[DAMA].length; i++) {
-            int mailOffset = offsetMailBox[DAMA][i];
+        long movimientosRey = ataqueRey[posicion] & ~(piezasAmigas(miColor(estado)));
 
-            if (mailBox[direccion[posicion] + mailOffset] != -1) {
+        for (long squares = movimientosRey; squares != 0; squares = remainder(squares)) {
+            int square = next(squares);
 
-                pos = posicion + offset64[DAMA][i];
-
-                int ec = turnoBlanco ?
-                        estado & MASK_LIMPIAR_POSICION_REY_BLANCO | pos << POSICION_REY_BLANCO :
-                        estado & MASK_LIMPIAR_POSICION_REY_NEGRO | pos << POSICION_REY_NEGRO;
-
-
-                if ((tablero[pos] == NOPIEZA || color[pos] != color[posicion]) && movimientoValido(posicion << 6 | pos, tablero, color, ec))
-                    movimientos.add(posicion << 6 | pos);
-
-
-            }
+            if (movimientoValido(posicion << 6 | square, tablero, color, estado))
+                movimientos.add(posicion << 6 | square);
         }
+
 
         if ((estado & 0b1111) == 0 || reyEnJaque) return;
 

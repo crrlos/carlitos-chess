@@ -12,6 +12,7 @@ import static com.wolf.carlitos.Bitboard.*;
 import static com.wolf.carlitos.Search.secuencia;
 import static com.wolf.carlitos.Tablero.casillaAtacada;
 import static com.wolf.carlitos.Tablero.piezas;
+import static java.lang.Long.numberOfTrailingZeros;
 import static java.lang.Math.abs;
 import static com.wolf.carlitos.Constantes.*;
 
@@ -120,14 +121,17 @@ public class Utilidades {
     public static int colorContrario(int estado) {
         return estado >>> 4 & 0b1;
     }
+    public  static  int miColor(int estado){
+        return  (estado >>> 4 & 0b1) ^ 1;
+    }
 
     public static int posicionRey(int estado, int desplazamiento) {
         return estado >> desplazamiento & 0b111111;
     }
 
     public static boolean reyEnJaque(int[] pieza, int[] color, int estado) {
-        var blanco = esTurnoBlanco(estado);
-        var posicionRey = blanco ? posicionRey(estado, POSICION_REY_BLANCO) : posicionRey(estado, POSICION_REY_NEGRO);
+        int miColor = miColor(estado);
+        int posicionRey = numberOfTrailingZeros(piezas[miColor][REY]);
         return casillaAtacada(posicionRey, pieza, color, colorContrario(estado));
     }
 
@@ -151,8 +155,7 @@ public class Utilidades {
         color[destino] = color[inicio];
         color[inicio] = NOCOLOR;
 
-        var posicionRey =  posicionRey(estado, esTurnoBlanco(estado) ?  POSICION_REY_BLANCO : POSICION_REY_NEGRO);
-
+        int posicionRey = numberOfTrailingZeros(piezas[miColor(estado)][REY]);
         var jaque = casillaAtacada(posicionRey, tablero, color, colorContrario(estado));
 
         tablero[destino] = piezaDestino;
