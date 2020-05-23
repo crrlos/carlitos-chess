@@ -48,23 +48,6 @@ public class Tablero {
                     {norte, sur, este, oeste},
                     {norte, sur, este, oeste, sureste, noreste, suroeste, noroeste}
             };
-    public static final int[][] direccionesVertical = new int[][]{
-            {norte, sur},
-            {NORTE, SUR}
-    };
-    public static final int[][] direccionesHorizontal = new int[][]{
-            {este, oeste},
-            {ESTE, OESTE}
-    };
-
-    public static final int[][] direccionesDiagonal1 = new int[][]{
-            {noreste, suroeste},
-            {NORESTE, SUROESTE}
-    };
-    public static final int[][] direccionesDiagonal2 = new int[][]{
-            {noroeste, sureste},
-            {NOROESTE, SURESTE}
-    };
 
     public static int[] valorPiezas = new int[]
             {100, 320, 330, 500, 900, 10000, 0};
@@ -100,6 +83,7 @@ public class Tablero {
     public static long[] ataqueTorre = new long[64];
     public static long[] ataqueAlfil = new long[64];
     public static long[] ataqueRey = new long[64];
+    public static long[][] ataquePeon = new long[2][64];
 
 
     static {
@@ -110,7 +94,8 @@ public class Tablero {
             long ataquesTorre = 0;
             long ataquesAlfil = 0;
             long ataquesRey = 0;
-
+            long ataquesPeonBlanco = 0;
+            long ataquesPeonNegro = 0;
             for (int i = 0; i < offsetMailBox[CABALLO].length; i++) {
                 int mailOffset = offsetMailBox[CABALLO][i];
                 if (mailBox[direccion[j] + mailOffset] != -1) {
@@ -159,6 +144,25 @@ public class Tablero {
 
             ataqueRey[j] = ataquesRey;
 
+            if(j >= A2 && j <= H7){
+
+                for (int i = 1 ; i < offsetMailBox[PEON].length;i++){
+
+                    if(mailBox[direccion[j] + offsetMailBox[PEON][i]] != -1){
+                        int pos = j + offset64[PEON][i];
+                        ataquesPeonBlanco |= 1L << pos;
+                    }
+                    if(mailBox[direccion[j] - offsetMailBox[PEON][i]] != -1){
+                        int pos = j - offset64[PEON][i];
+                        ataquesPeonNegro |= 1L << pos;
+                    }
+
+                }
+
+                ataquePeon[BLANCO][j] = ataquesPeonBlanco;
+                ataquePeon[NEGRO][j] = ataquesPeonNegro;
+            }
+
         }
     }
 
@@ -186,22 +190,7 @@ public class Tablero {
         if ((attackSet & (piezas[colorContrario][ALFIL] | piezas[colorContrario][DAMA])) != 0) return true;
         /* FIN ATAQUE ALFIL/DAMA */
 
-
-        int pos;
-        for (int i = 1; i < offsetMailBox[PEON].length; i++) {
-
-            int dir = offsetMailBox[PEON][i];
-            pos = posicion;
-            if (mailBox[direccion[pos] + (colorContrario == BLANCO ? -dir : dir)] != -1) {
-                pos += (colorContrario == BLANCO ? -offset64[PEON][i] : offset64[PEON][i]);
-                if (tablero[pos] != NOPIEZA) {
-                    if (color[pos] == colorContrario && tablero[pos] == PEON)
-                        return true;
-                }
-
-            }
-
-        }
+        if((ataquePeon[colorContrario ^ 1][posicion]  & piezas[colorContrario][PEON]) != 0) return  true;
 
         return (ataqueRey[posicion] & piezas[colorContrario][REY]) != 0;
     }
