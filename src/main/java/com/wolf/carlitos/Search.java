@@ -7,9 +7,7 @@ package com.wolf.carlitos;
 
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.*;
 
 import static com.wolf.carlitos.Bitboard.next;
 import static com.wolf.carlitos.Bitboard.remainder;
@@ -25,14 +23,15 @@ import static java.lang.Long.bitCount;
 
 
 public class Search {
-    private final int[] pieza;
+
+    private final int[] tablero;
     private final int[] color;
     private final int estadoTablero;
     private final Generador generador = new Generador();
     public static final List<Integer> secuencia = new ArrayList<>();
 
-    public Search(int[] pieza, int[] color, int estado) {
-        this.pieza = pieza;
+    public Search(int[] tablero, int[] color, int estado) {
+        this.tablero = tablero;
         this.color = color;
         this.estadoTablero = estado;
 
@@ -44,7 +43,7 @@ public class Search {
             int inicio = movimientos[i] >> 6 & 0b111111;
             int destino = movimientos[i] & 0b111111;
 
-            movimientos[i] |= (valorPiezas[REY] / valorPiezas[pieza[inicio]] + 10 * valorPiezas[pieza[destino]]) << 15;
+            movimientos[i] |= (valorPiezas[REY] / valorPiezas[tablero[inicio]] + 10 * valorPiezas[tablero[destino]]) << 15;
         }
 
     }
@@ -68,7 +67,7 @@ public class Search {
             acumulador.contadorPerft++;
             return;
         }
-        var respuesta = generador.generarMovimientos(pieza, color, estado, deep);
+        var respuesta = generador.generarMovimientos(tablero, color, estado, deep);
 
         var movimientos = respuesta.movimientosGenerados;
         var fin = respuesta.cantidadDeMovimientos;
@@ -77,11 +76,11 @@ public class Search {
         for (int i = 0; i < fin; i++) {
             var mov = movimientos[i];
 
-            int estadoActualizodo = hacerMovimiento(pieza, color, estado, mov);
+            int estadoActualizodo = hacerMovimiento(tablero, color, estado, mov);
 
             perftSearch(deep - 1, estadoActualizodo, acumulador, false);
 
-            revertirMovimiento(mov, estadoActualizodo, pieza, color);
+            revertirMovimiento(mov, estadoActualizodo, tablero, color);
 
             if (reset) {
                 System.out.println(Utilidades.convertirANotacion(mov) + " " + acumulador.contadorPerft);
@@ -290,7 +289,7 @@ public class Search {
         int alfa = -10_000_000;
         int beta = 10_000_000;
 
-        var respuesta = this.generador.generarMovimientos(pieza, color, estadoTablero, n);
+        var respuesta = this.generador.generarMovimientos(tablero, color, estadoTablero, n);
 
         var movimientos = respuesta.movimientosGenerados;
         var fin = respuesta.cantidadDeMovimientos;
@@ -301,9 +300,9 @@ public class Search {
         for (int i = 0; i < fin; i++) {
 
             var mov = movimientos[i];
-            int estadoActualizado = hacerMovimiento(pieza, color, estadoTablero, mov);
-            int eval = esTurnoBlanco(estadoTablero) ? mini(n - 1, estadoActualizado, pieza, color, alfa, beta) :
-                    maxi(n - 1, estadoActualizado, pieza, color, alfa, beta);
+            int estadoActualizado = hacerMovimiento(tablero, color, estadoTablero, mov);
+            int eval = esTurnoBlanco(estadoTablero) ? mini(n - 1, estadoActualizado, tablero, color, alfa, beta) :
+                    maxi(n - 1, estadoActualizado, tablero, color, alfa, beta);
 
             if (esTurnoBlanco(estadoTablero)) {
                 if (eval > alfa) {
@@ -317,7 +316,7 @@ public class Search {
                 }
             }
 
-            revertirMovimiento(mov, estadoActualizado, pieza, color);
+            revertirMovimiento(mov, estadoActualizado, tablero, color);
 
         }
         return movimientos[pos];

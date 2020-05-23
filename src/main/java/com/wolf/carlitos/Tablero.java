@@ -96,7 +96,6 @@ public class Tablero {
     };
 
     public static long[][] piezas = new long[2][6];
-
     public static long[] ataqueCaballo = new long[64];
     public static long[] ataqueTorre = new long[64];
     public static long[] ataqueAlfil = new long[64];
@@ -168,36 +167,25 @@ public class Tablero {
 
         if ((ataqueCaballo[posicion] & piezas[colorContrario][CABALLO]) != 0) return true;
 
-        long casillasOcupadas = piezas[BLANCO][PEON] |
-                piezas[BLANCO][CABALLO] |
-                piezas[BLANCO][ALFIL] |
-                piezas[BLANCO][TORRE] |
-                piezas[BLANCO][DAMA] |
-                piezas[BLANCO][REY] |
-                piezas[NEGRO][PEON] |
-                piezas[NEGRO][CABALLO] |
-                piezas[NEGRO][ALFIL] |
-                piezas[NEGRO][TORRE] |
-                piezas[NEGRO][DAMA] |
-                piezas[NEGRO][REY];
-
+        /* ATAQUE TORRE/DAMA */
+        long casillasOcupadas = casillasOcupadas();
         long piezasAtacadas = casillasOcupadas & ataqueTorre[posicion];
-
         int bits = bitCount(ataqueTorre[posicion]);
         int desplazamiento = 64 - bits;
         int index = (int) ((piezasAtacadas * _rookMagics[posicion]) >>> desplazamiento);
-
         long attackSet = Ataque.ataqueTorre[posicion][index];
-
         if ((attackSet & (piezas[colorContrario][TORRE] | piezas[colorContrario][DAMA])) != 0) return true;
+        /* FIN ATAQUE TORRE/DAMA */
 
+        /* ATAQUE ALFIL/DAMA */
         piezasAtacadas = casillasOcupadas & ataqueAlfil[posicion];
         bits = bitCount(ataqueAlfil[posicion]);
         desplazamiento = 64 - bits;
         index = (int) ((piezasAtacadas * _bishopMagics[posicion]) >>> desplazamiento);
-
         attackSet = Ataque.ataqueAlfil[posicion][index];
         if ((attackSet & (piezas[colorContrario][ALFIL] | piezas[colorContrario][DAMA])) != 0) return true;
+        /* FIN ATAQUE ALFIL/DAMA */
+
 
         int pos;
         for (int i = 1; i < offsetMailBox[PEON].length; i++) {
@@ -502,6 +490,42 @@ public class Tablero {
         estado &= MASK_LIMPIAR_AL_PASO;
         estado ^= 0b10000;
         return estado;
+    }
+
+    public static long casillasOcupadas(){
+        return
+                piezas[BLANCO][PEON] |
+                piezas[BLANCO][CABALLO] |
+                piezas[BLANCO][ALFIL] |
+                piezas[BLANCO][TORRE] |
+                piezas[BLANCO][DAMA] |
+                piezas[BLANCO][REY] |
+                piezas[NEGRO][PEON] |
+                piezas[NEGRO][CABALLO] |
+                piezas[NEGRO][ALFIL] |
+                piezas[NEGRO][TORRE] |
+                piezas[NEGRO][DAMA] |
+                piezas[NEGRO][REY];
+
+    }
+    public static long piezasAmigas(int color){
+        return
+                piezas[color][PEON] |
+                piezas[color][CABALLO] |
+                piezas[color][ALFIL] |
+                piezas[color][TORRE] |
+                piezas[color][DAMA] |
+                piezas[color][REY];
+    }
+
+    public static long piezasEnemigas(int color){
+        color ^= 1;
+        return
+                piezas[color][PEON] |
+                piezas[color][CABALLO] |
+                piezas[color][ALFIL] |
+                piezas[color][TORRE] |
+                piezas[color][DAMA];
     }
 
 

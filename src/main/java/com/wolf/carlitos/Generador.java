@@ -101,25 +101,15 @@ public class Generador {
         return respuesta;
     }
     public Respuesta generarCapturas(int[] pieza, int[] color, int estado, int nivel){
+
         movimientos.iniciar(nivel);
+
         int contrario = colorContrario(estado);
         int miColor = esTurnoBlanco(estado) ? BLANCO :NEGRO;
-        long piezasContrarias =
-                piezas[contrario][PEON] |
-                piezas[contrario][CABALLO] |
-                piezas[contrario][ALFIL] |
-                piezas[contrario][TORRE] |
-                piezas[contrario][DAMA];
 
-        long piezasAmigas =
-                        piezas[miColor][PEON] |
-                        piezas[miColor][CABALLO] |
-                        piezas[miColor][ALFIL] |
-                        piezas[miColor][TORRE] |
-                        piezas[miColor][DAMA] |
-                        piezas[miColor][REY];
-
-        long piezasEnTablero = piezasContrarias | piezasAmigas;
+        long piezasEnemigas = piezasEnemigas(miColor);
+        long piezasAmigas = piezasAmigas(miColor);
+        long casillasOcupadas = casillasOcupadas();
 
         for (long squares = piezas[miColor][PEON]; squares != 0; squares = remainder(squares)) {
             int square = next(squares);
@@ -147,7 +137,7 @@ public class Generador {
         for (long squares = piezas[miColor][CABALLO]; squares != 0; squares = remainder(squares)) {
             int square = next(squares);
 
-            long piezasAtacadas = ataqueCaballo[square] & piezasContrarias;
+            long piezasAtacadas = ataqueCaballo[square] & piezasEnemigas;
 
             for (long squa = piezasAtacadas ; squa != 0; squa = remainder(squa)){
                 int destino = next(squa);
@@ -160,7 +150,7 @@ public class Generador {
         for (long squares = piezas[miColor][REY]; squares != 0; squares = remainder(squares)) {
             int square = next(squares);
 
-            long piezasAtacadas = ataqueRey[square] & piezasContrarias;
+            long piezasAtacadas = ataqueRey[square] & piezasEnemigas;
 
             for (long squa = piezasAtacadas ; squa != 0; squa = remainder(squa)){
                 int destino = next(squa);
@@ -178,12 +168,12 @@ public class Generador {
         for (long squares = piezas[miColor][TORRE]; squares != 0; squares = remainder(squares)) {
             int square = next(squares);
 
-            long piezasAtacadas = ataqueTorre[square] & piezasEnTablero;
+            long piezasAtacadas = ataqueTorre[square] & casillasOcupadas;
             int index = (int) ((piezasAtacadas * _rookMagics[square]) >>> (64 -  bitCount(ataqueTorre[square])));
 
             long attackSet = Ataque.ataqueTorre[square][index];
 
-            long ataque = piezasEnTablero & attackSet;
+            long ataque = casillasOcupadas & attackSet;
             ataque =  ataque & ~piezasAmigas;
 
             for (long squa = ataque ; squa != 0; squa = remainder(squa)){
@@ -197,12 +187,12 @@ public class Generador {
         for (long squares = piezas[miColor][ALFIL]; squares != 0; squares = remainder(squares)) {
             int square = next(squares);
 
-            long piezasAtacadas = ataqueAlfil[square] & piezasEnTablero;
+            long piezasAtacadas = ataqueAlfil[square] & casillasOcupadas;
             int index = (int) ((piezasAtacadas * _bishopMagics[square]) >>> (64 -  bitCount(ataqueAlfil[square])));
 
             long attackSet = Ataque.ataqueAlfil[square][index];
 
-            long ataque = piezasEnTablero & attackSet;
+            long ataque = casillasOcupadas & attackSet;
             ataque =  ataque & ~piezasAmigas;
 
             for (long squa = ataque ; squa != 0; squa = remainder(squa)){
@@ -216,15 +206,15 @@ public class Generador {
         for (long squares = piezas[miColor][DAMA]; squares != 0; squares = remainder(squares)) {
             int square = next(squares);
 
-            long piezasAtacadas = ataqueTorre[square] & piezasEnTablero;
+            long piezasAtacadas = ataqueTorre[square] & casillasOcupadas;
             int index = (int) ((piezasAtacadas * _rookMagics[square]) >>> (64 -  bitCount(ataqueTorre[square])));
             long attackSetTorre = Ataque.ataqueTorre[square][index];
 
-            piezasAtacadas = ataqueAlfil[square] & piezasEnTablero;
+            piezasAtacadas = ataqueAlfil[square] & casillasOcupadas;
             index = (int) ((piezasAtacadas * _bishopMagics[square]) >>> (64 -  bitCount(ataqueAlfil[square])));
             long attackSetAlfil = Ataque.ataqueAlfil[square][index];
 
-            long ataque = piezasEnTablero & (attackSetTorre | attackSetAlfil);
+            long ataque = casillasOcupadas & (attackSetTorre | attackSetAlfil);
             ataque =  ataque & ~piezasAmigas;
 
             for (long squa = ataque ; squa != 0; squa = remainder(squa)){
@@ -240,6 +230,7 @@ public class Generador {
 
         respuesta.movimientosGenerados = this.movimientos.getMovimientos();
         respuesta.cantidadDeMovimientos = this.movimientos.getPosicionFinal();
+
         return respuesta;
     }
 
