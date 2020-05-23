@@ -231,11 +231,14 @@ public class Generador {
             tablero[posicion] = NOPIEZA;
             color[posicion] = NOCOLOR;
 
+            remove(turnoBlanco,CABALLO,posicion);
+
             if (!casillaAtacada(posicionRey(estado, turnoBlanco ? POSICION_REY_BLANCO : POSICION_REY_NEGRO), tablero, color, colorContrario(estado)))
                 movimientosSinValidar = true;
 
             tablero[posicion] = CABALLO;
             color[posicion] = turnoBlanco ? BLANCO : NEGRO;
+            add(turnoBlanco,CABALLO,posicion);
 
             if (movimientosSinValidar) {
                 for (int i = 0; i < offsetMailBox[CABALLO].length; i++) {

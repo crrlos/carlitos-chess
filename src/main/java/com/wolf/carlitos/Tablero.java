@@ -10,6 +10,7 @@ import static com.wolf.carlitos.Utilidades.*;
 import static java.lang.Long.bitCount;
 import static java.lang.Long.numberOfTrailingZeros;
 import static java.lang.Math.abs;
+import static com.wolf.carlitos.Ataque.*;
 
 public class Tablero {
 
@@ -128,7 +129,7 @@ public class Tablero {
                 int pos = j;
                 while (mailBox[direccion[pos] + dir] != -1) {
                     pos += offset64[TORRE][i];
-
+                    if (mailBox[direccion[pos] + offsetMailBox[TORRE][i]] == -1) break;
                     ataquesTorre |= 1L << pos;
 
                 }
@@ -141,7 +142,7 @@ public class Tablero {
                 int pos = j;
                 while (mailBox[direccion[pos] + dir] != -1) {
                     pos += offset64[ALFIL][i];
-
+                    if (mailBox[direccion[pos] + offsetMailBox[ALFIL][i]] == -1) break;
                     ataquesAlfil |= 1L << pos;
                 }
 
@@ -164,43 +165,41 @@ public class Tablero {
 
 
     public static boolean casillaAtacada(int posicion, int[] tablero, int[] color, int colorContrario) {
+
+        if ((ataqueCaballo[posicion] & piezas[colorContrario][CABALLO]) != 0) return true;
+
+        long casillasOcupadas = piezas[BLANCO][PEON] |
+                piezas[BLANCO][CABALLO] |
+                piezas[BLANCO][ALFIL] |
+                piezas[BLANCO][TORRE] |
+                piezas[BLANCO][DAMA] |
+                piezas[BLANCO][REY] |
+                piezas[NEGRO][PEON] |
+                piezas[NEGRO][CABALLO] |
+                piezas[NEGRO][ALFIL] |
+                piezas[NEGRO][TORRE] |
+                piezas[NEGRO][DAMA] |
+                piezas[NEGRO][REY];
+
+        long piezasAtacadas = casillasOcupadas & ataqueTorre[posicion];
+
+        int bits = bitCount(ataqueTorre[posicion]);
+        int desplazamiento = 64 - bits;
+        int index = (int) ((piezasAtacadas * _rookMagics[posicion]) >>> desplazamiento);
+
+        long attackSet = Ataque.ataqueTorre[posicion][index];
+
+        if ((attackSet & (piezas[colorContrario][TORRE] | piezas[colorContrario][DAMA])) != 0) return true;
+
+        piezasAtacadas = casillasOcupadas & ataqueAlfil[posicion];
+        bits = bitCount(ataqueAlfil[posicion]);
+        desplazamiento = 64 - bits;
+        index = (int) ((piezasAtacadas * _bishopMagics[posicion]) >>> desplazamiento);
+
+        attackSet = Ataque.ataqueAlfil[posicion][index];
+        if ((attackSet & (piezas[colorContrario][ALFIL] | piezas[colorContrario][DAMA])) != 0) return true;
+
         int pos;
-
-        if((ataqueCaballo[posicion] & piezas[colorContrario][CABALLO]) != 0) return  true;
-
-       if ((ataqueTorre[posicion] & (piezas[colorContrario][TORRE] | piezas[colorContrario][DAMA])) != 0)
-            for (int i = 0; i < offsetMailBox[TORRE].length; i++) {
-
-                int dir = offsetMailBox[TORRE][i];
-                pos = posicion;
-                while (mailBox[direccion[pos] + dir] != -1) {
-                    pos += offset64[TORRE][i];
-                    if (tablero[pos] != NOPIEZA) {
-                        if (color[pos] == colorContrario && (tablero[pos] == TORRE || tablero[pos] == DAMA))
-                            return true;
-                        else break;
-                    }
-
-                }
-
-            }
-        if ((ataqueAlfil[posicion] & (piezas[colorContrario][ALFIL] | piezas[colorContrario][DAMA])) != 0)
-            for (int i = 0; i < offsetMailBox[ALFIL].length; i++) {
-
-                int dir = offsetMailBox[ALFIL][i];
-                pos = posicion;
-                while (mailBox[direccion[pos] + dir] != -1) {
-                    pos += offset64[ALFIL][i];
-                    if (tablero[pos] != NOPIEZA) {
-                        if (color[pos] == colorContrario && (tablero[pos] == ALFIL || tablero[pos] == DAMA))
-                            return true;
-                        else break;
-                    }
-
-                }
-
-            }
-
         for (int i = 1; i < offsetMailBox[PEON].length; i++) {
 
             int dir = offsetMailBox[PEON][i];
