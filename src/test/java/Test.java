@@ -3,24 +3,41 @@ import com.wolf.carlitos.*;
 import java.util.Arrays;
 import java.util.Random;
 
+import static com.wolf.carlitos.Bitboard.next;
+import static com.wolf.carlitos.Bitboard.remainder;
 import static com.wolf.carlitos.Constantes.*;
 import static com.wolf.carlitos.Tablero.*;
+import static com.wolf.carlitos.Utilidades.convertirANotacion;
+import static com.wolf.carlitos.Utilidades.movimientoValido;
 
 public class Test {
 
 
     public static void main(String[] args) {
 
-        Ataque.iniciar();
-        Generador g = new Generador();
 
-        Juego ju = new Juego();
-        ju.setFen("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -");
+        for (int i = A2; i <= H7; i++) {
+            System.out.print("movimientos pos " + i + ": ");
+            for (long squares = ataquePeon[NEGRO][i]; squares != 0; squares = remainder(squares)) {
+                int square = next(squares);
 
-        var t1 = System.currentTimeMillis();
+                System.out.print(convertirANotacion(i << 6 | square) + " ");
+            }
+            System.out.println();
+        }
 
-        for (int i = 0; i < 1_000_000; i++) {
-         var r = g.generarCapturas(Juego.tablero,Juego.color,ju.estadoTablero,1);
+
+
+//        Ataque.iniciar();
+//        Generador g = new Generador();
+//
+//        Juego ju = new Juego();
+//        ju.setFen("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -");
+//
+//        var t1 = System.currentTimeMillis();
+//
+//        for (int i = 0; i < 1_000_000; i++) {
+//         var r = g.generarCapturas(Juego.tablero,Juego.color,ju.estadoTablero,1);
 
 //            var r = g.generarMovimientos(Juego.tablero,Juego.color,ju.estadoTablero,1);
 //            int nuevoTotal = 0;
@@ -28,10 +45,10 @@ public class Test {
 //                if(Juego.tablero[r.movimientosGenerados[j] & 0b11111] != NOPIEZA )
 //                    r.movimientosGenerados[nuevoTotal++] = r.movimientosGenerados[j];
 //            }
-
-        }
-
-        System.out.println(System.currentTimeMillis() - t1);
+//
+//        }
+//
+//        System.out.println(System.currentTimeMillis() - t1);
 
 
 

@@ -29,11 +29,11 @@ public final class Bitboard {
 
     }
 
-    static int next(long bitboard) {
+    public static int next(long bitboard) {
         return numberOfTrailingZeros(bitboard);
     }
 
-    static long remainder(long bitboard) {
+    public static long remainder(long bitboard) {
         return bitboard & (bitboard - 1);
     }
 

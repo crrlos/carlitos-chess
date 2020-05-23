@@ -144,8 +144,6 @@ public class Tablero {
 
             ataqueRey[j] = ataquesRey;
 
-            if(j >= A2 && j <= H7){
-
                 for (int i = 1 ; i < offsetMailBox[PEON].length;i++){
 
                     if(mailBox[direccion[j] + offsetMailBox[PEON][i]] != -1){
@@ -161,7 +159,7 @@ public class Tablero {
 
                 ataquePeon[BLANCO][j] = ataquesPeonBlanco;
                 ataquePeon[NEGRO][j] = ataquesPeonNegro;
-            }
+
 
         }
     }
@@ -190,7 +188,9 @@ public class Tablero {
         if ((attackSet & (piezas[colorContrario][ALFIL] | piezas[colorContrario][DAMA])) != 0) return true;
         /* FIN ATAQUE ALFIL/DAMA */
 
-        if((ataquePeon[colorContrario ^ 1][posicion]  & piezas[colorContrario][PEON]) != 0) return  true;
+
+        if((ataquePeon[colorContrario ^ 1][posicion] & piezas[colorContrario][PEON] )!= 0) return true;
+
 
         return (ataqueRey[posicion] & piezas[colorContrario][REY]) != 0;
     }

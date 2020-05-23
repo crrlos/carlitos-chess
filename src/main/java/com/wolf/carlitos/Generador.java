@@ -378,17 +378,22 @@ public class Generador {
 
     private void movimientosDePeon(int[] tablero, int[] color, int estado, int posicion) {
 
+        long casillasOcupadas = casillasOcupadas();
+
         if (posicion >= (turnoBlanco ? A2 : A7) && posicion <= (turnoBlanco ? H2 : H7)) {
             int destino = posicion + (turnoBlanco ? 16 : -16);
-            if ((tablero[posicion + (turnoBlanco ? 8 : -8)] & tablero[destino]) == NOPIEZA) {
+
+            long maskAvance = 1L << posicion + (turnoBlanco ? 8 : -8) | 1L << destino;
+
+            if((maskAvance & casillasOcupadas) == 0)
                 validarYAgregar(tablero, color, estado, posicion, destino);
-            }
+
         }
 
         var destino = posicion + (turnoBlanco ? 8 : -8);
-
+        long maskAvance = 1L << destino;
         //avance una casilla
-        if (tablero[destino] == NOPIEZA) {
+        if ((casillasOcupadas & maskAvance) == 0) {
             var m = posicion << 6 | destino;
             if (destino <= H1 || destino >= A8) {
                 if (movimientoValido(m, tablero, color, estado)) {
@@ -403,20 +408,16 @@ public class Generador {
             }
         }
 
-        avanceDiagonal(tablero, color, estado, posicion, turnoBlanco, offset64[PEON][1]);
-        avanceDiagonal(tablero, color, estado, posicion, turnoBlanco, offset64[PEON][2]);
+        long attackSet = ataquePeon[miColor(estado)][posicion];
 
-    }
+        for (long squares = attackSet; squares != 0; squares = remainder(squares)) {
+            int square = next(squares);
 
-    private void avanceDiagonal(int[] tablero, int[] color, int estado, int posicion, boolean turnoBlanco, int i) {
-        int destino;
-        int posicionActual;
-        destino = posicion + (turnoBlanco ? i : -i);
-        if (mailBox[direccion[posicion] + (turnoBlanco ? i + 2 : (-i - 2))] != -1) {
-            posicionActual = tablero[destino];
-            var m = posicion << 6 | destino;
-            if (posicionActual != NOPIEZA) {
-                if (color[destino] != color[posicion] && !(posicionActual == REY)) {
+            long moveMask = 1L << square;
+            if((moveMask & casillasOcupadas) != 0){
+                moveMask = moveMask & ~(piezasAmigas(miColor(estado)) | piezas[colorContrario(estado)][REY]);
+                if(moveMask != 0){
+                    int m = posicion << 6 | square;
                     if (destino >= A8 || destino <= H1) {
                         if (movimientoValido(m, tablero, color, estado)) {
                             movimientos.add(m | 1 << 12);
@@ -425,26 +426,21 @@ public class Generador {
                             movimientos.add(m | 4 << 12);
                         }
                     } else {
-                        validarYAgregar(tablero, color, estado, posicion, destino);
+                        validarYAgregar(tablero, color, estado, posicion, square);
                     }
                 }
-            } else if (alPaso(estado, destino)) {
-
-                int posicionPiezaALPaso = destino + (turnoBlanco ? -8 : 8);
-
-                tablero[posicionPiezaALPaso] = NOPIEZA;
-                color[posicionPiezaALPaso] = NOCOLOR;
+            }else if (alPaso(estado, square)) {
+                int posicionPiezaALPaso = square + (turnoBlanco ? -8 : 8);
 
                 remove(!turnoBlanco, PEON, posicionPiezaALPaso);
 
-                validarYAgregar(tablero, color, estado, posicion, destino);
+                validarYAgregar(tablero, color, estado, posicion, square);
 
                 add(!turnoBlanco, PEON, posicionPiezaALPaso);
-
-                tablero[posicionPiezaALPaso] = PEON;
-                color[posicionPiezaALPaso] = turnoBlanco ? NEGRO : BLANCO;
             }
+
         }
+
     }
 
     private void validarYAgregar(int[] tablero, int[] color, int estado, int posicion, int i) {
