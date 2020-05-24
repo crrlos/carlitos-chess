@@ -73,6 +73,7 @@ public class Search {
         var fin = respuesta.cantidadDeMovimientos;
 
 
+
         for (int i = 0; i < fin; i++) {
             var mov = movimientos[i];
 

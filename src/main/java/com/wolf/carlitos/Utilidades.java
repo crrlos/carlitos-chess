@@ -10,8 +10,7 @@ import java.util.HashMap;
 
 import static com.wolf.carlitos.Bitboard.*;
 import static com.wolf.carlitos.Search.secuencia;
-import static com.wolf.carlitos.Tablero.casillaAtacada;
-import static com.wolf.carlitos.Tablero.piezas;
+import static com.wolf.carlitos.Tablero.*;
 import static java.lang.Long.numberOfTrailingZeros;
 import static java.lang.Math.abs;
 import static com.wolf.carlitos.Constantes.*;
@@ -101,7 +100,6 @@ public class Utilidades {
     }
 
 
-
     static boolean alPaso(int estadoTablero, int destino) {
 
         if (destino >= A3 && destino <= H3 || destino >= A6 && destino <= H6)
@@ -121,8 +119,9 @@ public class Utilidades {
     public static int colorContrario(int estado) {
         return estado >>> 4 & 0b1;
     }
-    public  static  int miColor(int estado){
-        return  (estado >>> 4 & 0b1) ^ 1;
+
+    public static int miColor(int estado) {
+        return (estado >>> 4 & 0b1) ^ 1;
     }
 
     public static int posicionRey(int estado, int desplazamiento) {
@@ -135,39 +134,42 @@ public class Utilidades {
         return casillaAtacada(posicionRey, colorContrario(estado));
     }
 
-    public static boolean movimientoValido(int movimiento, int[] tablero, int[] color, int estado) {
 
+    public  static  int getPiezaEnPosicion(int posicion, int color){
+        long maskPosicion = 1L << posicion;
+
+        if ((piezas[color][PEON] & maskPosicion) != 0) return PEON;
+        if ((piezas[color][CABALLO] & maskPosicion) != 0) return CABALLO;
+        if ((piezas[color][ALFIL] & maskPosicion) != 0) return ALFIL;
+        if ((piezas[color][TORRE] & maskPosicion) != 0) return TORRE;
+        if ((piezas[color][DAMA] & maskPosicion) != 0) return DAMA;
+        if ((piezas[color][REY] & maskPosicion) != 0) return REY;
+
+        throw new IllegalStateException("no se encontró la pieza");
+    }
+
+    public static boolean movimientoValido(int movimiento, int estado) {
         int inicio = movimiento >> 6 & 0b111111;
         int destino = movimiento & 0b111111;
 
-        int piezaActual = tablero[inicio];
-        int piezaDestino = tablero[destino];
-        int colorDestino = color[destino];
+        int piezaDestino = NOPIEZA;
+        int piezaInicio = getPiezaEnPosicion(inicio,miColor(estado));
 
-        if(piezaDestino != NOPIEZA){
-            remove(!esTurnoBlanco(estado),piezaDestino,destino);
+        if ((casillasOcupadas() & 1L << destino) != 0) {
+            piezaDestino = getPiezaEnPosicion(destino, colorContrario(estado));
+            remove(!esTurnoBlanco(estado), piezaDestino, destino);
         }
-        update(esTurnoBlanco(estado),piezaActual,inicio,destino);
+        update(esTurnoBlanco(estado), piezaInicio, inicio, destino);
 
-        tablero[inicio] = NOPIEZA;
-        tablero[destino] = piezaActual;
-
-        color[destino] = color[inicio];
-        color[inicio] = NOCOLOR;
 
         int posicionRey = numberOfTrailingZeros(piezas[miColor(estado)][REY]);
         var jaque = casillaAtacada(posicionRey, colorContrario(estado));
 
-        tablero[destino] = piezaDestino;
-        tablero[inicio] = piezaActual;
 
-        color[inicio] = color[destino];
-        color[destino] = colorDestino;
-
-        if(piezaDestino != NOPIEZA){
-            add(!esTurnoBlanco(estado),piezaDestino,destino);
+        if (piezaDestino != NOPIEZA) {
+            add(!esTurnoBlanco(estado), piezaDestino, destino);
         }
-        update(esTurnoBlanco(estado),piezaActual,destino,inicio);
+        update(esTurnoBlanco(estado), piezaInicio, destino, inicio);
 
         return !jaque;
     }
