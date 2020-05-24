@@ -138,12 +138,9 @@ public class Utilidades {
     public  static  int getPiezaEnPosicion(int posicion, int color){
         long maskPosicion = 1L << posicion;
 
-        if ((piezas[color][PEON] & maskPosicion) != 0) return PEON;
-        if ((piezas[color][CABALLO] & maskPosicion) != 0) return CABALLO;
-        if ((piezas[color][ALFIL] & maskPosicion) != 0) return ALFIL;
-        if ((piezas[color][TORRE] & maskPosicion) != 0) return TORRE;
-        if ((piezas[color][DAMA] & maskPosicion) != 0) return DAMA;
-        if ((piezas[color][REY] & maskPosicion) != 0) return REY;
+        for (int i = 0; i < piezas[color].length; i++) {
+            if ((piezas[color][i] & maskPosicion) != 0) return i;
+        }
 
         throw new IllegalStateException("no se encontró la pieza");
     }
