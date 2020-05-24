@@ -12,6 +12,7 @@ import static com.wolf.carlitos.Constantes.*;
 import static com.wolf.carlitos.Tablero.*;
 import static com.wolf.carlitos.Utilidades.*;
 import static java.lang.Long.bitCount;
+import static java.lang.Long.numberOfTrailingZeros;
 
 /**
  * @author carlos
@@ -55,15 +56,13 @@ public class Generador {
     private final Movimientos movimientos = new Movimientos();
     private final Respuesta respuesta = new Respuesta();
 
-    public Respuesta generarMovimientos(int[] pieza, int[] color, int estado, int nivel) {
+    public Respuesta generarMovimientos(int estado, int nivel) {
 
         this.movimientos.iniciar(nivel);
 
         this.turnoBlanco = esTurnoBlanco(estado);
 
-        int posicionRey = posicionRey(estado, turnoBlanco ? POSICION_REY_BLANCO : POSICION_REY_NEGRO);
-
-        reyEnJaque = casillaAtacada(posicionRey, colorContrario(estado));
+        reyEnJaque = reyEnJaque(estado);
 
         int bando = turnoBlanco ? BLANCO : NEGRO;
 
@@ -443,4 +442,31 @@ public class Generador {
         if (movimientoValido(mm, estado))
             movimientos.add(mm);
     }
+
+    private static boolean movimientoValido(int movimiento, int estado) {
+        int inicio = movimiento >> 6 & 0b111111;
+        int destino = movimiento & 0b111111;
+
+        int piezaDestino = NOPIEZA;
+        int piezaInicio = getPiezaEnPosicion(inicio,miColor(estado));
+
+        if ((casillasOcupadas() & 1L << destino) != 0) {
+            piezaDestino = getPiezaEnPosicion(destino, colorContrario(estado));
+            remove(!esTurnoBlanco(estado), piezaDestino, destino);
+        }
+        update(esTurnoBlanco(estado), piezaInicio, inicio, destino);
+
+
+        int posicionRey = numberOfTrailingZeros(piezas[miColor(estado)][REY]);
+        var jaque = casillaAtacada(posicionRey, colorContrario(estado));
+
+
+        if (piezaDestino != NOPIEZA) {
+            add(!esTurnoBlanco(estado), piezaDestino, destino);
+        }
+        update(esTurnoBlanco(estado), piezaInicio, destino, inicio);
+
+        return !jaque;
+    }
+
 }

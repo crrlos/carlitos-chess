@@ -10,7 +10,7 @@ import java.util.concurrent.ExecutionException;
 import static com.wolf.carlitos.Bitboard.add;
 import static com.wolf.carlitos.Constantes.*;
 import static com.wolf.carlitos.Tablero.hacerMovimiento;
-import static com.wolf.carlitos.Tablero.piezas;
+import static com.wolf.carlitos.Tablero.*;
 import static com.wolf.carlitos.Utilidades.*;
 
 
@@ -228,12 +228,12 @@ public class Juego {
 
     }
 
-    public String mover(int n) throws InterruptedException, CloneNotSupportedException, ExecutionException {
+    public String mover(int n){
         var search = new Search(tablero, color, estadoTablero);
         return Utilidades.convertirANotacion(search.search(n));
     }
 
     public void evaluarPosicion() {
-        System.out.println(Search.evaluar());
+        System.out.println(Evaluar.evaluar());
     }
 }

@@ -9,13 +9,13 @@ package com.wolf.carlitos;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.wolf.carlitos.Bitboard.next;
-import static com.wolf.carlitos.Bitboard.remainder;
 import static com.wolf.carlitos.Constantes.*;
-import static com.wolf.carlitos.Ponderaciones.*;
-import static com.wolf.carlitos.Utilidades.*;
+
 import static com.wolf.carlitos.Tablero.*;
-import static java.lang.Long.bitCount;
+
+import static com.wolf.carlitos.Evaluar.*;
+import static com.wolf.carlitos.Utilidades.*;
+
 
 /**
  * @author carlos
@@ -37,29 +37,6 @@ public class Search {
 
     }
 
-    public void puntajeMVVLVA(int[] movimientos, int fin) {
-
-        for (int i = 0; i < fin; i++) {
-            int inicio = movimientos[i] >> 6 & 0b111111;
-            int destino = movimientos[i] & 0b111111;
-
-            movimientos[i] |= (valorPiezas[REY] / valorPiezas[tablero[inicio]] + 10 * valorPiezas[tablero[destino]]) << 15;
-        }
-
-    }
-
-    public static void insertionSort(int[] array, int fin) {
-        for (int j = 1; j < fin; j++) {
-            int key = array[j];
-            int i = j - 1;
-            while ((i > -1) && (array[i] >> 15 < key >> 15)) {
-                array[i + 1] = array[i];
-                i--;
-            }
-            array[i + 1] = key;
-        }
-    }
-
     private void perftSearch(int deep, int estado, Acumulador acumulador, boolean reset) {
 
         if (deep == 0) {
@@ -67,11 +44,10 @@ public class Search {
             acumulador.contadorPerft++;
             return;
         }
-        var respuesta = generador.generarMovimientos(tablero, color, estado, deep);
+        var respuesta = generador.generarMovimientos(estado, deep);
 
         var movimientos = respuesta.movimientosGenerados;
         var fin = respuesta.cantidadDeMovimientos;
-
 
 
         for (int i = 0; i < fin; i++) {
@@ -100,60 +76,11 @@ public class Search {
 
     }
 
-    private static int evaluarCantidadPiezas(int bando) {
-        int total = 0;
-        for (int i = 0; i < piezas[bando].length; i++) {
-            total += bitCount(piezas[bando][i]) * valorPiezas[i];
-        }
-        return total;
-    }
-
-    private static int evaluarPosicionDePiezas(int bando) {
-        int total = 0;
-        boolean esBlanco = bando == BLANCO;
-
-        for (long squares = piezas[bando][PEON]; squares != 0; squares = remainder(squares)) {
-            int square = next(squares);
-            total += esBlanco ? ponderacionPeon[flip[square]] : ponderacionPeon[square];
-        }
-        for (long squares = piezas[bando][CABALLO]; squares != 0; squares = remainder(squares)) {
-            int square = next(squares);
-            total += esBlanco ? ponderacionCaballo[flip[square]] : ponderacionCaballo[square];
-        }
-        for (long squares = piezas[bando][ALFIL]; squares != 0; squares = remainder(squares)) {
-            int square = next(squares);
-            total += esBlanco ? ponderacionAlfil[flip[square]] : ponderacionAlfil[square];
-        }
-        for (long squares = piezas[bando][TORRE]; squares != 0; squares = remainder(squares)) {
-            int square = next(squares);
-            total += esBlanco ? ponderacionTorre[flip[square]] : ponderacionTorre[square];
-        }
-        for (long squares = piezas[bando][DAMA]; squares != 0; squares = remainder(squares)) {
-            int square = next(squares);
-            total += esBlanco ? ponderacionDama[flip[square]] : ponderacionDama[square];
-        }
-        for (long squares = piezas[bando][REY]; squares != 0; squares = remainder(squares)) {
-            int square = next(squares);
-            total += esBlanco ? ponderacionRey[flip[square]] : ponderacionRey[square];
-        }
-
-        return total;
-    }
-
-    public static int evaluar() {
-
-        int valorBlancas = evaluarCantidadPiezas(BLANCO) + evaluarPosicionDePiezas(BLANCO);
-
-        int valorNegras = evaluarCantidadPiezas(NEGRO) + evaluarPosicionDePiezas(NEGRO);
-
-        return valorBlancas - valorNegras;
-
-    }
-    private int quiescentMax(int nivel, int estado, int[] tablero, int[] color, int alfa, int beta){
+    private int quiescentMax(int nivel, int estado, int[] tablero, int[] color, int alfa, int beta) {
 
         int mejorValor = evaluar();
-        if(mejorValor >= beta) return  beta;
-        if(mejorValor > alfa) alfa = mejorValor;
+        if (mejorValor >= beta) return beta;
+        if (mejorValor > alfa) alfa = mejorValor;
 
 
         var respuesta = generador.generarCapturas(tablero, color, estado, nivel);
@@ -161,8 +88,8 @@ public class Search {
         var movimientos = respuesta.movimientosGenerados;
         var fin = respuesta.cantidadDeMovimientos;
 
-        puntajeMVVLVA(movimientos,fin);
-        insertionSort(movimientos,fin);
+        puntajeMVVLVA(movimientos, fin);
+        insertionSort(movimientos, fin);
 
         for (int i = 0; i < fin; i++) {
             var mov = movimientos[i];
@@ -181,19 +108,20 @@ public class Search {
 
         return alfa;
     }
-    private int quiescentMin(int nivel, int estado, int[] tablero, int[] color, int alfa, int beta){
+
+    private int quiescentMin(int nivel, int estado, int[] tablero, int[] color, int alfa, int beta) {
         int mejorValor = evaluar();
 
-        if(mejorValor <= alfa) return  alfa;
-        if(mejorValor < beta) beta = mejorValor;
+        if (mejorValor <= alfa) return alfa;
+        if (mejorValor < beta) beta = mejorValor;
 
         var respuesta = generador.generarCapturas(tablero, color, estado, nivel);
 
         var movimientos = respuesta.movimientosGenerados;
         var fin = respuesta.cantidadDeMovimientos;
 
-        puntajeMVVLVA(movimientos,fin);
-        insertionSort(movimientos,fin);
+        puntajeMVVLVA(movimientos, fin);
+        insertionSort(movimientos, fin);
 
         for (int i = 0; i < fin; i++) {
             var mov = movimientos[i];
@@ -204,9 +132,9 @@ public class Search {
 
             revertirMovimiento(mov, estadoCopia, tablero, color);
 
-            if (evaluacion < beta ) beta =  evaluacion;
+            if (evaluacion < beta) beta = evaluacion;
 
-            if (evaluacion <= alfa) return  alfa;
+            if (evaluacion <= alfa) return alfa;
 
         }
         return beta;
@@ -214,9 +142,9 @@ public class Search {
 
     public int mini(int nivel, int estado, int[] tablero, int[] color, int alfa, int beta) {
 
-        if (nivel == 0) return quiescentMin(nivel,estado,tablero,color,alfa,beta);
+        if (nivel == 0) return quiescentMin(nivel, estado, tablero, color, alfa, beta);
 
-        var respuesta = generador.generarMovimientos(tablero, color, estado, nivel);
+        var respuesta = generador.generarMovimientos(estado, nivel);
 
         var movimientos = respuesta.movimientosGenerados;
         var fin = respuesta.cantidadDeMovimientos;
@@ -243,7 +171,6 @@ public class Search {
 
             if (evaluacion < beta) beta = evaluacion;
 
-            // System.out.println("nivel: " + nivel + " mini " + "movimiento " + Utilidades.convertirANotacion(mov) + " evaluacion:" + evaluacion);
 
         }
 
@@ -252,9 +179,9 @@ public class Search {
 
     public int maxi(int nivel, int estado, int[] tablero, int[] color, int alfa, int beta) {
 
-        if (nivel == 0) return quiescentMax(nivel,estado,tablero,color,alfa,beta);
+        if (nivel == 0) return quiescentMax(nivel, estado, tablero, color, alfa, beta);
 
-        var respuesta = generador.generarMovimientos(tablero, color, estado, nivel);
+        var respuesta = generador.generarMovimientos(estado, nivel);
 
         var movimientos = respuesta.movimientosGenerados;
         var fin = respuesta.cantidadDeMovimientos;
@@ -279,18 +206,18 @@ public class Search {
             if (evaluacion >= beta) return beta;
 
             if (evaluacion > alfa) alfa = evaluacion;
-            //System.out.println("nivel: " + nivel + " maxi " + "movimiento " + Utilidades.convertirANotacion(mov) + " evaluacion:" + evaluacion);
+
         }
         return alfa;
     }
 
-    public int search(int n)  {
+    public int search(int n) {
         int pos = 0;
 
         int alfa = -10_000_000;
         int beta = 10_000_000;
 
-        var respuesta = this.generador.generarMovimientos(tablero, color, estadoTablero, n);
+        var respuesta = this.generador.generarMovimientos(estadoTablero, n);
 
         var movimientos = respuesta.movimientosGenerados;
         var fin = respuesta.cantidadDeMovimientos;

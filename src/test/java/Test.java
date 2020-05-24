@@ -6,9 +6,6 @@ import java.util.Random;
 import static com.wolf.carlitos.Bitboard.next;
 import static com.wolf.carlitos.Bitboard.remainder;
 import static com.wolf.carlitos.Constantes.*;
-import static com.wolf.carlitos.Tablero.*;
-import static com.wolf.carlitos.Utilidades.convertirANotacion;
-import static com.wolf.carlitos.Utilidades.movimientoValido;
 
 public class Test {
 
@@ -16,41 +13,29 @@ public class Test {
     public static void main(String[] args) {
 
 
-        for (int i = A2; i <= H7; i++) {
-            System.out.print("movimientos pos " + i + ": ");
-            for (long squares = ataquePeon[NEGRO][i]; squares != 0; squares = remainder(squares)) {
-                int square = next(squares);
-
-                System.out.print(convertirANotacion(i << 6 | square) + " ");
-            }
-            System.out.println();
-        }
-
+//        for (int i = A2; i <= H7; i++) {
+//            System.out.print("movimientos pos " + i + ": ");
+//            for (long squares = ataquePeon[NEGRO][i]; squares != 0; squares = remainder(squares)) {
+//                int square = next(squares);
+//
+//                System.out.print(convertirANotacion(i << 6 | square) + " ");
+//            }
+//            System.out.println();
+//        }
 
 
 //        Ataque.iniciar();
 //        Generador g = new Generador();
 //
-//        Juego ju = new Juego();
-//        ju.setFen("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -");
-//
-//        var t1 = System.currentTimeMillis();
-//
-//        for (int i = 0; i < 1_000_000; i++) {
-//         var r = g.generarCapturas(Juego.tablero,Juego.color,ju.estadoTablero,1);
+        Juego ju = new Juego();
+        ju.setFen("rnbqkbnr/pppp1ppp/8/4p3/3P4/8/PPP1PPPP/RNBQKBNR w KQkq e6 0 2");
 
-//            var r = g.generarMovimientos(Juego.tablero,Juego.color,ju.estadoTablero,1);
-//            int nuevoTotal = 0;
-//            for (int j = 0; j < r.cantidadDeMovimientos; j++) {
-//                if(Juego.tablero[r.movimientosGenerados[j] & 0b11111] != NOPIEZA )
-//                    r.movimientosGenerados[nuevoTotal++] = r.movimientosGenerados[j];
-//            }
-//
-//        }
-//
-//        System.out.println(System.currentTimeMillis() - t1);
+        var t1 = System.currentTimeMillis();
+        int pieza = 0;
 
 
+        System.out.println(pieza);
+        System.out.println(System.currentTimeMillis() - t1);
 
 
 //        var maskk = 0b101110_00010000_00010000_00010000_00000000_00000000_00010000_00000000L;

@@ -9,6 +9,7 @@ package com.wolf.carlitos;
 import java.util.HashMap;
 
 import static com.wolf.carlitos.Bitboard.*;
+import static com.wolf.carlitos.Juego.tablero;
 import static com.wolf.carlitos.Search.secuencia;
 import static com.wolf.carlitos.Tablero.*;
 import static java.lang.Long.numberOfTrailingZeros;
@@ -99,78 +100,6 @@ public class Utilidades {
         return mov;
     }
 
-
-    static boolean alPaso(int estadoTablero, int destino) {
-
-        if (destino >= A3 && destino <= H3 || destino >= A6 && destino <= H6)
-            return (estadoTablero >> POSICION_PIEZA_AL_PASO & 0b111111) == destino;
-
-        return false;
-    }
-
-    static int colocarValor(int estadoTablero, int valor, int posicion, int mascara) {
-        return estadoTablero & mascara | valor << posicion;
-    }
-
-    public static boolean esTurnoBlanco(int estadoTablero) {
-        return (estadoTablero & 0b000000_000000_000_000_000000_1_00_00) > 0;
-    }
-
-    public static int colorContrario(int estado) {
-        return estado >>> 4 & 0b1;
-    }
-
-    public static int miColor(int estado) {
-        return (estado >>> 4 & 0b1) ^ 1;
-    }
-
-    public static int posicionRey(int estado, int desplazamiento) {
-        return estado >> desplazamiento & 0b111111;
-    }
-
-    public static boolean reyEnJaque(int estado) {
-        int miColor = miColor(estado);
-        int posicionRey = numberOfTrailingZeros(piezas[miColor][REY]);
-        return casillaAtacada(posicionRey, colorContrario(estado));
-    }
-
-
-    public  static  int getPiezaEnPosicion(int posicion, int color){
-        long maskPosicion = 1L << posicion;
-
-        for (int i = 0; i < piezas[color].length; i++) {
-            if ((piezas[color][i] & maskPosicion) != 0) return i;
-        }
-
-        throw new IllegalStateException("no se encontró la pieza");
-    }
-
-    public static boolean movimientoValido(int movimiento, int estado) {
-        int inicio = movimiento >> 6 & 0b111111;
-        int destino = movimiento & 0b111111;
-
-        int piezaDestino = NOPIEZA;
-        int piezaInicio = getPiezaEnPosicion(inicio,miColor(estado));
-
-        if ((casillasOcupadas() & 1L << destino) != 0) {
-            piezaDestino = getPiezaEnPosicion(destino, colorContrario(estado));
-            remove(!esTurnoBlanco(estado), piezaDestino, destino);
-        }
-        update(esTurnoBlanco(estado), piezaInicio, inicio, destino);
-
-
-        int posicionRey = numberOfTrailingZeros(piezas[miColor(estado)][REY]);
-        var jaque = casillaAtacada(posicionRey, colorContrario(estado));
-
-
-        if (piezaDestino != NOPIEZA) {
-            add(!esTurnoBlanco(estado), piezaDestino, destino);
-        }
-        update(esTurnoBlanco(estado), piezaInicio, destino, inicio);
-
-        return !jaque;
-    }
-
     public static int casillaANumero(String casilla) {
         int columna = "abcdefgh".indexOf(casilla.charAt(0));
         int fila = "12345678".indexOf(casilla.charAt(1));
@@ -190,6 +119,29 @@ public class Utilidades {
         formato = formateado.substring(0, formateado.length() - 23) + "_" + formato;
 
         System.out.println(formato);
+    }
+
+    public static void puntajeMVVLVA(int[] movimientos, int fin) {
+
+        for (int i = 0; i < fin; i++) {
+            int inicio = movimientos[i] >> 6 & 0b111111;
+            int destino = movimientos[i] & 0b111111;
+
+            movimientos[i] |= (valorPiezas[REY] / valorPiezas[tablero[inicio]] + 10 * valorPiezas[tablero[destino]]) << 15;
+        }
+
+    }
+
+    public static void insertionSort(int[] array, int fin) {
+        for (int j = 1; j < fin; j++) {
+            int key = array[j];
+            int i = j - 1;
+            while ((i > -1) && (array[i] >> 15 < key >> 15)) {
+                array[i + 1] = array[i];
+                i--;
+            }
+            array[i + 1] = key;
+        }
     }
 
 

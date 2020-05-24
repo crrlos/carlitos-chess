@@ -4,9 +4,6 @@ package com.wolf.carlitos;
 
 import static com.wolf.carlitos.Bitboard.*;
 import static com.wolf.carlitos.Constantes.*;
-import static com.wolf.carlitos.Juego.color;
-import static com.wolf.carlitos.Juego.tablero;
-import static com.wolf.carlitos.Utilidades.*;
 import static java.lang.Long.bitCount;
 import static java.lang.Long.numberOfTrailingZeros;
 import static java.lang.Math.abs;
@@ -79,6 +76,7 @@ public class Tablero {
     };
 
     public static long[][] piezas = new long[2][6];
+
     public static long[] ataqueCaballo = new long[64];
     public static long[] ataqueTorre = new long[64];
     public static long[] ataqueAlfil = new long[64];
@@ -194,7 +192,6 @@ public class Tablero {
 
         return (ataqueRey[posicion] & piezas[colorContrario][REY]) != 0;
     }
-
     public static void revertirMovimiento(int movimiento, int estado, int[] tablero, int[] color) {
 
         estado ^= 0b10000;
@@ -273,7 +270,6 @@ public class Tablero {
         color[destino] = tablero[destino] == NOPIEZA ? NOCOLOR : esTurnoBlanco(estado) ? NEGRO : BLANCO;
 
     }
-
     public static int hacerMovimiento(int[] tablero, int[] color, int estado, int movimiento) {
 
         int inicio = movimiento >> 6 & 0b111111;
@@ -480,7 +476,6 @@ public class Tablero {
         estado ^= 0b10000;
         return estado;
     }
-
     public static long casillasOcupadas(){
         return
                 piezas[BLANCO][PEON] |
@@ -506,7 +501,6 @@ public class Tablero {
                 piezas[color][DAMA] |
                 piezas[color][REY];
     }
-
     public static long piezasEnemigas(int color){
         color ^= 1;
         return
@@ -516,6 +510,37 @@ public class Tablero {
                 piezas[color][TORRE] |
                 piezas[color][DAMA];
     }
+    public static int colocarValor(int estadoTablero, int valor, int posicion, int mascara) {
+        return estadoTablero & mascara | valor << posicion;
+    }
+    public static int miColor(int estado) {
+        return (estado >>> 4 & 0b1) ^ 1;
+    }
+    public static boolean reyEnJaque(int estado) {
+        int miColor = miColor(estado);
+        int posicionRey = numberOfTrailingZeros(piezas[miColor][REY]);
+        return casillaAtacada(posicionRey, colorContrario(estado));
+    }
+    public static boolean alPaso(int estadoTablero, int destino) {
 
+        if (destino >= A3 && destino <= H3 || destino >= A6 && destino <= H6)
+            return (estadoTablero >> POSICION_PIEZA_AL_PASO & 0b111111) == destino;
 
+        return false;
+    }
+    public static boolean esTurnoBlanco(int estadoTablero) {
+        return (estadoTablero & 0b000000_000000_000_000_000000_1_00_00) > 0;
+    }
+    public static int colorContrario(int estado) {
+        return estado >>> 4 & 0b1;
+    }
+    public static  int getPiezaEnPosicion(int posicion, int color){
+        long maskPosicion = 1L << posicion;
+
+        for (int i = 0; i < piezas[color].length; i++) {
+            if ((piezas[color][i] & maskPosicion) != 0) return i;
+        }
+
+        throw new IllegalStateException("no se encontró la pieza");
+    }
 }
