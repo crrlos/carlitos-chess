@@ -10,6 +10,7 @@ import java.util.HashMap;
 
 import static com.wolf.carlitos.Bitboard.*;
 import static com.wolf.carlitos.Juego.tablero;
+import static com.wolf.carlitos.Search.history;
 import static com.wolf.carlitos.Search.secuencia;
 import static com.wolf.carlitos.Tablero.*;
 import static java.lang.Long.numberOfTrailingZeros;
@@ -121,13 +122,25 @@ public class Utilidades {
         System.out.println(formato);
     }
 
-    public static void puntajeMVVLVA(int[] movimientos, int fin) {
+    public static void establecerPuntuacion(int[] movimientos, int fin) {
 
         for (int i = 0; i < fin; i++) {
-            int inicio = movimientos[i] >> 6 & 0b111111;
+            int inicio = movimientos[i] >>> 6 & 0b111111;
             int destino = movimientos[i] & 0b111111;
+            int ponderacion = 100_000;
 
-            movimientos[i] |= (valorPiezas[REY] / valorPiezas[tablero[inicio]] + 10 * valorPiezas[tablero[destino]]) << 15;
+            // si es captura usar MVVLVA, con offset de 100k para se coloque antes de una no captura
+            if(tablero[destino] != NOPIEZA){
+                ponderacion += valorPiezas[REY] / valorPiezas[tablero[inicio]] + 10 * valorPiezas[tablero[destino]];
+                movimientos[i] |= ponderacion << 15;
+                continue;
+            }
+            // si no es captura usar history heuristic
+            if(history[inicio][destino] > 0){
+                ponderacion = 200 + history[inicio][destino];
+                movimientos[i] |= ponderacion << 15;
+            }
+
         }
 
     }

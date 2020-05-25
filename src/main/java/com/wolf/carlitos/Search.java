@@ -29,7 +29,8 @@ public class Search {
     private final int estadoTablero;
     private final Generador generador = new Generador();
     public static final List<Integer> secuencia = new ArrayList<>();
-
+    public static  int nodes = 0;
+    public static int[][] history = new int[64][64];
     public Search(int[] tablero, int[] color, int estado) {
         this.tablero = tablero;
         this.color = color;
@@ -88,7 +89,7 @@ public class Search {
         var movimientos = respuesta.movimientosGenerados;
         var fin = respuesta.cantidadDeMovimientos;
 
-        puntajeMVVLVA(movimientos, fin);
+        establecerPuntuacion(movimientos, fin);
         insertionSort(movimientos, fin);
 
         for (int i = 0; i < fin; i++) {
@@ -120,7 +121,7 @@ public class Search {
         var movimientos = respuesta.movimientosGenerados;
         var fin = respuesta.cantidadDeMovimientos;
 
-        puntajeMVVLVA(movimientos, fin);
+        establecerPuntuacion(movimientos, fin);
         insertionSort(movimientos, fin);
 
         for (int i = 0; i < fin; i++) {
@@ -141,9 +142,7 @@ public class Search {
     }
 
     public int mini(int nivel, int estado, int[] tablero, int[] color, int alfa, int beta) {
-
         if (nivel == 0) return quiescentMin(nivel, estado, tablero, color, alfa, beta);
-
         var respuesta = generador.generarMovimientos(estado, nivel);
 
         var movimientos = respuesta.movimientosGenerados;
@@ -154,7 +153,7 @@ public class Search {
             else return AHOGADO;
         }
 
-        puntajeMVVLVA(movimientos, fin);
+        establecerPuntuacion(movimientos, fin);
         insertionSort(movimientos, fin);
 
         for (int i = 0; i < fin; i++) {
@@ -167,7 +166,10 @@ public class Search {
 
             revertirMovimiento(mov, estadoActualizado, tablero, color);
 
-            if (evaluacion <= alfa) return alfa;
+            if (evaluacion <= alfa) {
+                history[movimientos[i] >>> 6 & 0b111111][movimientos[i] & 0b111111]++;
+                return alfa;
+            }
 
             if (evaluacion < beta) beta = evaluacion;
 
@@ -186,7 +188,7 @@ public class Search {
         var movimientos = respuesta.movimientosGenerados;
         var fin = respuesta.cantidadDeMovimientos;
 
-        puntajeMVVLVA(movimientos, fin);
+        establecerPuntuacion(movimientos, fin);
         insertionSort(movimientos, fin);
 
         if (fin == 0) {
@@ -203,7 +205,10 @@ public class Search {
 
             revertirMovimiento(mov, estadoCopia, tablero, color);
 
-            if (evaluacion >= beta) return beta;
+            if (evaluacion >= beta) {
+                history[movimientos[i] >>> 6 & 0b111111][movimientos[i] & 0b111111]++;
+                return beta;
+            }
 
             if (evaluacion > alfa) alfa = evaluacion;
 
@@ -222,7 +227,7 @@ public class Search {
         var movimientos = respuesta.movimientosGenerados;
         var fin = respuesta.cantidadDeMovimientos;
 
-        puntajeMVVLVA(movimientos, fin);
+        establecerPuntuacion(movimientos, fin);
         insertionSort(movimientos, fin);
 
         for (int i = 0; i < fin; i++) {
@@ -247,6 +252,8 @@ public class Search {
             revertirMovimiento(mov, estadoActualizado, tablero, color);
 
         }
+        System.out.println("nodos: " + nodes);
+        nodes = 0;
         return movimientos[pos];
     }
 
