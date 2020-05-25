@@ -13,6 +13,11 @@ public class Test {
     public static void main(String[] args) {
 
 
+        int[] arreglo = new int[]{1,2,3,4,5,6};
+        Utilidades.insertionSort(arreglo,6);
+
+        System.out.println(Arrays.toString(arreglo));
+
 //        for (int i = A2; i <= H7; i++) {
 //            System.out.print("movimientos pos " + i + ": ");
 //            for (long squares = ataquePeon[NEGRO][i]; squares != 0; squares = remainder(squares)) {
@@ -27,15 +32,15 @@ public class Test {
 //        Ataque.iniciar();
 //        Generador g = new Generador();
 //
-        Juego ju = new Juego();
-        ju.setFen("rnbqkbnr/pppp1ppp/8/4p3/3P4/8/PPP1PPPP/RNBQKBNR w KQkq e6 0 2");
-
-        var t1 = System.currentTimeMillis();
-        int pieza = 0;
-
-
-        System.out.println(pieza);
-        System.out.println(System.currentTimeMillis() - t1);
+//        Juego ju = new Juego();
+//        ju.setFen("rnbqkbnr/pppp1ppp/8/4p3/3P4/8/PPP1PPPP/RNBQKBNR w KQkq e6 0 2");
+//
+//        var t1 = System.currentTimeMillis();
+//        int pieza = 0;
+//
+//
+//        System.out.println(pieza);
+//        System.out.println(System.currentTimeMillis() - t1);
 
 
 //        var maskk = 0b101110_00010000_00010000_00010000_00000000_00000000_00010000_00000000L;

@@ -136,7 +136,7 @@ public class Utilidades {
         for (int j = 1; j < fin; j++) {
             int key = array[j];
             int i = j - 1;
-            while ((i > -1) && (array[i] >> 15 < key >> 15)) {
+            while ((i > -1) && (array[i] >>> 15 < key >>> 15)) {
                 array[i + 1] = array[i];
                 i--;
             }
