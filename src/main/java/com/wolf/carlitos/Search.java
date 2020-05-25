@@ -29,8 +29,9 @@ public class Search {
     private final int estadoTablero;
     private final Generador generador = new Generador();
     public static final List<Integer> secuencia = new ArrayList<>();
-    public static  int nodes = 0;
+    public static int nodes = 0;
     public static int[][] history = new int[64][64];
+
     public Search(int[] tablero, int[] color, int estado) {
         this.tablero = tablero;
         this.color = color;
@@ -167,7 +168,8 @@ public class Search {
             revertirMovimiento(mov, estadoActualizado, tablero, color);
 
             if (evaluacion <= alfa) {
-                history[movimientos[i] >>> 6 & 0b111111][movimientos[i] & 0b111111]++;
+                if (tablero[mov & 0b111111] == NOPIEZA)
+                    history[movimientos[i] >>> 6 & 0b111111][movimientos[i] & 0b111111]+= nivel;
                 return alfa;
             }
 
@@ -206,7 +208,8 @@ public class Search {
             revertirMovimiento(mov, estadoCopia, tablero, color);
 
             if (evaluacion >= beta) {
-                history[movimientos[i] >>> 6 & 0b111111][movimientos[i] & 0b111111]++;
+                if (tablero[mov & 0b111111] == NOPIEZA)
+                    history[movimientos[i] >>> 6 & 0b111111][movimientos[i] & 0b111111]+= nivel;
                 return beta;
             }
 

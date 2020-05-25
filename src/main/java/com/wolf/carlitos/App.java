@@ -38,7 +38,7 @@ public class App {
                 juego.establecerPosicion(movimientos);
 
             } else if (linea.contains("go")) {
-               System.out.println("bestmove " + juego.mover(6));
+               System.out.println("bestmove " + juego.mover(8));
 
             } else if (linea.contains("isready")) {
                 System.out.println("readyok");
