@@ -78,14 +78,46 @@ public class Search {
 
     }
 
-    private int quiescentMax(int nivel, int estado, int[] tablero, int[] color, int alfa, int beta) {
+//    private int quiescentMax(int nivel, int estado, int[] tablero, int[] color, int alfa, int beta) {
+//
+//        int mejorValor = evaluar();
+//        if (mejorValor >= beta) return beta;
+//        if (mejorValor > alfa) alfa = mejorValor;
+//
+//
+//        var respuesta = generador.generarCapturas(tablero, color, estado, nivel);
+//
+//        var movimientos = respuesta.movimientosGenerados;
+//        var fin = respuesta.cantidadDeMovimientos;
+//
+//        establecerPuntuacion(movimientos, fin);
+//        insertionSort(movimientos, fin);
+//
+//        for (int i = 0; i < fin; i++) {
+//            var mov = movimientos[i];
+//
+//            int estadoCopia = hacerMovimiento(tablero, color, estado, mov);
+//
+//            int evaluacion = quiescentMin(nivel - 1, estadoCopia, tablero, color, alfa, beta);
+//
+//            revertirMovimiento(mov, estadoCopia, tablero, color);
+//
+//            if (evaluacion >= beta) return beta;
+//
+//            if (evaluacion > alfa) alfa = evaluacion;
+//
+//        }
+//
+//        return alfa;
+//    }
 
-        int mejorValor = evaluar();
-        if (mejorValor >= beta) return beta;
-        if (mejorValor > alfa) alfa = mejorValor;
+    private int quiescent(int nivel, int estado, int[] tablero, int[] color, int alfa, int beta){
 
+        int mejorValor = evaluar(miColor(estado));
+        if(mejorValor > alfa) alfa = mejorValor;
+        if(mejorValor >= beta) return beta;
 
-        var respuesta = generador.generarCapturas(tablero, color, estado, nivel);
+        var respuesta = generador.generarCapturas(tablero,color,estado,nivel);
 
         var movimientos = respuesta.movimientosGenerados;
         var fin = respuesta.cantidadDeMovimientos;
@@ -98,92 +130,128 @@ public class Search {
 
             int estadoCopia = hacerMovimiento(tablero, color, estado, mov);
 
-            int evaluacion = quiescentMin(nivel - 1, estadoCopia, tablero, color, alfa, beta);
+            int evaluacion = -quiescent(nivel - 1, estadoCopia, tablero, color, -beta, -alfa);
 
             revertirMovimiento(mov, estadoCopia, tablero, color);
-
-            if (evaluacion >= beta) return beta;
 
             if (evaluacion > alfa) alfa = evaluacion;
+            if (evaluacion >= beta) return beta;
 
         }
 
-        return alfa;
+        return  alfa;
     }
 
-    private int quiescentMin(int nivel, int estado, int[] tablero, int[] color, int alfa, int beta) {
-        int mejorValor = evaluar();
-
-        if (mejorValor <= alfa) return alfa;
-        if (mejorValor < beta) beta = mejorValor;
-
-        var respuesta = generador.generarCapturas(tablero, color, estado, nivel);
-
-        var movimientos = respuesta.movimientosGenerados;
-        var fin = respuesta.cantidadDeMovimientos;
-
-        establecerPuntuacion(movimientos, fin);
-        insertionSort(movimientos, fin);
-
-        for (int i = 0; i < fin; i++) {
-            var mov = movimientos[i];
-
-            int estadoCopia = hacerMovimiento(tablero, color, estado, mov);
-
-            int evaluacion = quiescentMax(nivel - 1, estadoCopia, tablero, color, alfa, beta);
-
-            revertirMovimiento(mov, estadoCopia, tablero, color);
-
-            if (evaluacion < beta) beta = evaluacion;
-
-            if (evaluacion <= alfa) return alfa;
-
-        }
-        return beta;
-    }
-
-    public int mini(int nivel, int estado, int[] tablero, int[] color, int alfa, int beta) {
-        if (nivel == 0) return quiescentMin(nivel, estado, tablero, color, alfa, beta);
-        var respuesta = generador.generarMovimientos(estado, nivel);
-
-        var movimientos = respuesta.movimientosGenerados;
-        var fin = respuesta.cantidadDeMovimientos;
-
-        if (fin == 0) {
-            if (reyEnJaque(estado)) return MATE + nivel;
-            else return AHOGADO;
-        }
-
-        establecerPuntuacion(movimientos, fin);
-        insertionSort(movimientos, fin);
-
-        for (int i = 0; i < fin; i++) {
-
-            var mov = movimientos[i];
-
-            int estadoActualizado = hacerMovimiento(tablero, color, estado, mov);
-
-            int evaluacion = maxi(nivel - 1, estadoActualizado, tablero, color, alfa, beta);
-
-            revertirMovimiento(mov, estadoActualizado, tablero, color);
-
-            if (evaluacion <= alfa) {
-                if (tablero[mov.destino] == NOPIEZA)
-                    history[mov.inicio][mov.destino] += nivel;
-                return alfa;
-            }
-
-            if (evaluacion < beta) beta = evaluacion;
-
-
-        }
-
-        return beta;
-    }
-
-    public int maxi(int nivel, int estado, int[] tablero, int[] color, int alfa, int beta) {
-
-        if (nivel == 0) return quiescentMax(nivel, estado, tablero, color, alfa, beta);
+//    private int quiescentMin(int nivel, int estado, int[] tablero, int[] color, int alfa, int beta) {
+//        int mejorValor = evaluar();
+//
+//        if (mejorValor <= alfa) return alfa;
+//        if (mejorValor < beta) beta = mejorValor;
+//
+//        var respuesta = generador.generarCapturas(tablero, color, estado, nivel);
+//
+//        var movimientos = respuesta.movimientosGenerados;
+//        var fin = respuesta.cantidadDeMovimientos;
+//
+//        establecerPuntuacion(movimientos, fin);
+//        insertionSort(movimientos, fin);
+//
+//        for (int i = 0; i < fin; i++) {
+//            var mov = movimientos[i];
+//
+//            int estadoCopia = hacerMovimiento(tablero, color, estado, mov);
+//
+//            int evaluacion = quiescentMax(nivel - 1, estadoCopia, tablero, color, alfa, beta);
+//
+//            revertirMovimiento(mov, estadoCopia, tablero, color);
+//
+//            if (evaluacion < beta) beta = evaluacion;
+//
+//            if (evaluacion <= alfa) return alfa;
+//
+//        }
+//        return beta;
+//    }
+//
+//    public int mini(int nivel, int estado, int[] tablero, int[] color, int alfa, int beta) {
+//        if (nivel == 0) return quiescent(nivel, estado, tablero, color, alfa, beta);
+//        var respuesta = generador.generarMovimientos(estado, nivel);
+//
+//        var movimientos = respuesta.movimientosGenerados;
+//        var fin = respuesta.cantidadDeMovimientos;
+//
+//        if (fin == 0) {
+//            if (reyEnJaque(estado)) return MATE + nivel;
+//            else return AHOGADO;
+//        }
+//
+//        establecerPuntuacion(movimientos, fin);
+//        insertionSort(movimientos, fin);
+//
+//        for (int i = 0; i < fin; i++) {
+//
+//            var mov = movimientos[i];
+//
+//            int estadoActualizado = hacerMovimiento(tablero, color, estado, mov);
+//
+//            int evaluacion = maxi(nivel - 1, estadoActualizado, tablero, color, alfa, beta);
+//
+//            revertirMovimiento(mov, estadoActualizado, tablero, color);
+//
+//            if (evaluacion <= alfa) {
+//                if (tablero[mov.destino] == NOPIEZA)
+//                    history[mov.inicio][mov.destino] += nivel;
+//                return alfa;
+//            }
+//
+//            if (evaluacion < beta) beta = evaluacion;
+//
+//
+//        }
+//
+//        return beta;
+//    }
+//
+//    public int maxi(int nivel, int estado, int[] tablero, int[] color, int alfa, int beta) {
+//
+//        if (nivel == 0) return quiescent(nivel, estado, tablero, color, alfa, beta);
+//
+//        var respuesta = generador.generarMovimientos(estado, nivel);
+//
+//        var movimientos = respuesta.movimientosGenerados;
+//        var fin = respuesta.cantidadDeMovimientos;
+//
+//        establecerPuntuacion(movimientos, fin);
+//        insertionSort(movimientos, fin);
+//
+//        if (fin == 0) {
+//            if (reyEnJaque(estado)) return -MATE - nivel;
+//            else return AHOGADO;
+//        }
+//
+//        for (int i = 0; i < fin; i++) {
+//            var mov = movimientos[i];
+//
+//            int estadoCopia = hacerMovimiento(tablero, color, estado, mov);
+//
+//            int evaluacion = mini(nivel - 1, estadoCopia, tablero, color, alfa, beta);
+//
+//            revertirMovimiento(mov, estadoCopia, tablero, color);
+//
+//            if (evaluacion >= beta) {
+//                if (tablero[mov.destino] == NOPIEZA)
+//                    history[mov.inicio][mov.destino] += nivel;
+//                return beta;
+//            }
+//
+//            if (evaluacion > alfa) alfa = evaluacion;
+//
+//        }
+//        return alfa;
+//    }
+//
+    public int negaMax(int nivel, int estado, int[] tablero, int[] color, int alfa, int beta){
+        if (nivel == 0) return quiescent(nivel, estado, tablero, color, alfa, beta);
 
         var respuesta = generador.generarMovimientos(estado, nivel);
 
@@ -203,7 +271,7 @@ public class Search {
 
             int estadoCopia = hacerMovimiento(tablero, color, estado, mov);
 
-            int evaluacion = mini(nivel - 1, estadoCopia, tablero, color, alfa, beta);
+            int evaluacion = -negaMax(nivel - 1, estadoCopia, tablero, color, -beta, -alfa);
 
             revertirMovimiento(mov, estadoCopia, tablero, color);
 
@@ -237,8 +305,8 @@ public class Search {
 
             var mov = movimientos[i];
             int estadoActualizado = hacerMovimiento(tablero, color, estadoTablero, mov);
-            int eval = esTurnoBlanco(estadoTablero) ? mini(n - 1, estadoActualizado, tablero, color, alfa, beta) :
-                    maxi(n - 1, estadoActualizado, tablero, color, alfa, beta);
+
+            int eval = -negaMax(n - 1, estadoActualizado, tablero, color, -beta, -alfa);
 
             if (esTurnoBlanco(estadoTablero)) {
                 if (eval > alfa) {

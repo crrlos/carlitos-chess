@@ -3,7 +3,6 @@ package com.wolf.carlitos;
 import static com.wolf.carlitos.Bitboard.next;
 import static com.wolf.carlitos.Bitboard.remainder;
 import static com.wolf.carlitos.Constantes.*;
-import static com.wolf.carlitos.Constantes.NEGRO;
 import static com.wolf.carlitos.Ponderaciones.*;
 import static com.wolf.carlitos.Tablero.piezas;
 import static com.wolf.carlitos.Tablero.valorPiezas;
@@ -50,13 +49,11 @@ public class Evaluar {
         return total;
     }
 
-    public static int evaluar() {
+    public static int evaluar(int color) {
         Search.nodes++;
-        int valorBlancas = evaluarCantidadPiezas(BLANCO) + evaluarPosicionDePiezas(BLANCO);
-
-        int valorNegras = evaluarCantidadPiezas(NEGRO) + evaluarPosicionDePiezas(NEGRO);
-
-        return valorBlancas - valorNegras;
+        int valorPiezas = evaluarCantidadPiezas(color) - evaluarCantidadPiezas(color ^ 1);
+        int valorPosicion = evaluarPosicionDePiezas(color) - evaluarPosicionDePiezas(color ^ 1);
+        return valorPiezas + valorPosicion;
 
     }
 }

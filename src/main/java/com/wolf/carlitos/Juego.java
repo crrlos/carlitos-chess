@@ -234,6 +234,6 @@ public class Juego {
     }
 
     public void evaluarPosicion() {
-        System.out.println(Evaluar.evaluar());
+       // System.out.println(Evaluar.evaluar(0));
     }
 }
