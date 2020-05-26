@@ -252,7 +252,6 @@ public class Search {
 //
     public int negaMax(int nivel, int estado, int[] tablero, int[] color, int alfa, int beta){
         if (nivel == 0) return quiescent(nivel, estado, tablero, color, alfa, beta);
-
         var respuesta = generador.generarMovimientos(estado, nivel);
 
         var movimientos = respuesta.movimientosGenerados;
@@ -308,16 +307,9 @@ public class Search {
 
             int eval = -negaMax(n - 1, estadoActualizado, tablero, color, -beta, -alfa);
 
-            if (esTurnoBlanco(estadoTablero)) {
-                if (eval > alfa) {
-                    alfa = eval;
-                    pos = i;
-                }
-            } else {
-                if (eval < beta) {
-                    beta = eval;
-                    pos = i;
-                }
+            if(eval > alfa) {
+                alfa = eval;
+                pos = i;
             }
 
             revertirMovimiento(mov, estadoActualizado, tablero, color);
