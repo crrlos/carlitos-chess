@@ -116,7 +116,7 @@ public class Generador {
         movimientos.iniciar(nivel);
 
         int contrario = colorContrario(estado);
-        int miColor = esTurnoBlanco(estado) ? BLANCO : NEGRO;
+        int miColor = miColor(estado);
 
         long piezasEnemigas = piezasEnemigas(miColor);
         long piezasAmigas = piezasAmigas(miColor);
