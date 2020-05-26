@@ -127,7 +127,7 @@ public class Utilidades {
         for (int i = 0; i < fin; i++) {
             int inicio = movimientos[i].inicio;
             int destino = movimientos[i].destino;
-            int ponderacion = 100_000;
+            int ponderacion = 100_000_000;
 
             // si es captura usar MVVLVA, con offset de 100k para se coloque antes de una no captura
             if(tablero[destino] != NOPIEZA){
