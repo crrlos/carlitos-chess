@@ -13,10 +13,7 @@ public class Test {
     public static void main(String[] args) {
 
 
-        int[] arreglo = new int[]{1,2,3,4,5,6};
-       // Utilidades.insertionSort(arreglo,6);
-
-        System.out.println(500 | 100);
+        System.out.println(1 | 60_000 << 15 );
 
 //        for (int i = A2; i <= H7; i++) {
 //            System.out.print("movimientos pos " + i + ": ");

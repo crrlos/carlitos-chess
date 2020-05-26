@@ -20,9 +20,17 @@ import static java.lang.Long.numberOfTrailingZeros;
 public class Generador {
 
     static class Movimientos {
-        private final int[][] movimientosPorNivel = new int[200][256];
-        private int[] current;
+        private final Movimiento[][] movimientosPorNivel = new Movimiento[200][256];
+        private Movimiento[] current;
         private int posicion;
+
+        Movimientos(){
+            for (int i = 0; i < movimientosPorNivel.length; i++) {
+                for (int j = 0; j < movimientosPorNivel[i].length; j++) {
+                    movimientosPorNivel[i][j] = new Movimiento();
+                }
+            }
+        }
 
         public void iniciar(int nivel) {
             if (nivel < 0) {
@@ -33,10 +41,13 @@ public class Generador {
         }
 
         public void add(int movimiento) {
-            current[posicion++] = movimiento;
+            current[posicion].inicio = movimiento >>> 6 & 0b111111;
+            current[posicion].destino = movimiento  & 0b111111;
+            current[posicion].promocion = movimiento >> 12 & 0b111;
+            posicion++;
         }
 
-        public int[] getMovimientos() {
+        public Movimiento[] getMovimientos() {
             return current;
         }
 
@@ -47,7 +58,7 @@ public class Generador {
     }
 
     public static class Respuesta {
-        public int[] movimientosGenerados;
+        public Movimiento[] movimientosGenerados;
         public int cantidadDeMovimientos;
     }
 

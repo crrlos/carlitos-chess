@@ -20,7 +20,7 @@ public class Juego {
     public static  int[] color = new int[64];
 
     public int estadoTablero;
-    public List<Integer> secuencia = new ArrayList<>();
+    public List<Movimiento> secuencia = new ArrayList<>();
 
 
     public Juego() {

@@ -52,29 +52,29 @@ public class Utilidades {
         System.out.println("+---+---+---+---+---+---+---+---+");
     }
 
-    public static int convertirAPosicion(String movimiento) {
-        int posicion = 0;
+    public static Movimiento convertirAPosicion(String movimiento) {
+        Movimiento posicion = new Movimiento();
 
         var inicio = movimiento.substring(0, 2);
         var destino = movimiento.substring(2, 4);
 
-        posicion |= casillaPosicion.get(inicio) << 6;
-        posicion |= casillaPosicion.get(destino);
+        posicion.inicio =  casillaPosicion.get(inicio);
+        posicion.destino =  casillaPosicion.get(destino);
 
 
         if (movimiento.length() == 5) {
             switch (movimiento.charAt(4)) {
                 case 'q':
-                    posicion |= 1 << 12;
+                    posicion.promocion = 1;
                     break;
                 case 'r':
-                    posicion |= 2 << 12;
+                    posicion.promocion = 2;
                     break;
                 case 'n':
-                    posicion |= 3 << 12;
+                    posicion.promocion = 3;
                     break;
                 case 'b':
-                    posicion |= 4 << 12;
+                    posicion.promocion = 4;
                     break;
             }
         }
@@ -82,12 +82,12 @@ public class Utilidades {
         return posicion;
     }
 
-    public static String convertirANotacion(int movimiento) {
+    public static String convertirANotacion(Movimiento movimiento) {
 
-        var mov = posicionCasilla.get(movimiento >> 6 & 0b111111) + posicionCasilla.get(movimiento & 0b111111);
+        var mov = posicionCasilla.get(movimiento.inicio) + posicionCasilla.get(movimiento.destino);
 
-        if (movimiento >> 12 > 0) {
-            switch (movimiento >> 12 & 0b111) {
+        if (movimiento.promocion > 0) {
+            switch (movimiento.promocion) {
                 case 1:
                     return mov + "q";
                 case 2:
@@ -122,34 +122,34 @@ public class Utilidades {
         System.out.println(formato);
     }
 
-    public static void establecerPuntuacion(int[] movimientos, int fin) {
+    public static void establecerPuntuacion(Movimiento[] movimientos, int fin) {
 
         for (int i = 0; i < fin; i++) {
-            int inicio = movimientos[i] >>> 6 & 0b111111;
-            int destino = movimientos[i] & 0b111111;
+            int inicio = movimientos[i].inicio;
+            int destino = movimientos[i].destino;
             int ponderacion = 100_000;
 
             // si es captura usar MVVLVA, con offset de 100k para se coloque antes de una no captura
             if(tablero[destino] != NOPIEZA){
                 ponderacion += valorPiezas[REY] / valorPiezas[tablero[inicio]] + 10 * valorPiezas[tablero[destino]];
-                movimientos[i] |= ponderacion << 15;
+                movimientos[i].ponderacion = ponderacion;
                 continue;
             }
             // si no es captura usar history heuristic
             if(history[inicio][destino] > 0){
                 ponderacion = 200 + history[inicio][destino];
-                movimientos[i] |= ponderacion << 15;
+                movimientos[i].ponderacion =  ponderacion;
             }
 
         }
 
     }
 
-    public static void insertionSort(int[] array, int fin) {
+    public static void insertionSort(Movimiento[] array, int fin) {
         for (int j = 1; j < fin; j++) {
-            int key = array[j];
+            Movimiento key = array[j];
             int i = j - 1;
-            while ((i > -1) && (array[i] >>> 15 < key >>> 15)) {
+            while ((i > -1) && (array[i].ponderacion < key.ponderacion)) {
                 array[i + 1] = array[i];
                 i--;
             }

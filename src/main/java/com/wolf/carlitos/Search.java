@@ -168,8 +168,8 @@ public class Search {
             revertirMovimiento(mov, estadoActualizado, tablero, color);
 
             if (evaluacion <= alfa) {
-                if (tablero[mov & 0b111111] == NOPIEZA)
-                    history[movimientos[i] >>> 6 & 0b111111][movimientos[i] & 0b111111]+= nivel;
+                if (tablero[mov.destino] == NOPIEZA)
+                    history[mov.inicio][mov.destino] += nivel;
                 return alfa;
             }
 
@@ -208,8 +208,8 @@ public class Search {
             revertirMovimiento(mov, estadoCopia, tablero, color);
 
             if (evaluacion >= beta) {
-                if (tablero[mov & 0b111111] == NOPIEZA)
-                    history[movimientos[i] >>> 6 & 0b111111][movimientos[i] & 0b111111]+= nivel;
+                if (tablero[mov.destino] == NOPIEZA)
+                    history[mov.inicio][mov.destino] += nivel;
                 return beta;
             }
 
@@ -219,7 +219,7 @@ public class Search {
         return alfa;
     }
 
-    public int search(int n) {
+    public Movimiento search(int n) {
         int pos = 0;
 
         int alfa = -10_000_000;

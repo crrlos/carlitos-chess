@@ -192,12 +192,12 @@ public class Tablero {
 
         return (ataqueRey[posicion] & piezas[colorContrario][REY]) != 0;
     }
-    public static void revertirMovimiento(int movimiento, int estado, int[] tablero, int[] color) {
+    public static void revertirMovimiento(Movimiento movimiento, int estado, int[] tablero, int[] color) {
 
         estado ^= 0b10000;
 
-        int inicio = movimiento >> 6 & 0b111111;
-        int destino = movimiento & 0b111111;
+        int inicio = movimiento.inicio;
+        int destino = movimiento.destino;
 
         boolean turnoBlanco = esTurnoBlanco(estado);
 
@@ -270,10 +270,10 @@ public class Tablero {
         color[destino] = tablero[destino] == NOPIEZA ? NOCOLOR : esTurnoBlanco(estado) ? NEGRO : BLANCO;
 
     }
-    public static int hacerMovimiento(int[] tablero, int[] color, int estado, int movimiento) {
+    public static int hacerMovimiento(int[] tablero, int[] color, int estado, Movimiento movimiento) {
 
-        int inicio = movimiento >> 6 & 0b111111;
-        int destino = movimiento & 0b111111;
+        int inicio = movimiento.inicio;
+        int destino = movimiento.destino;
 
         var pieza = tablero[inicio];
 
@@ -323,7 +323,7 @@ public class Tablero {
                     // remover pieza capturada
                     remove(!esTurnoBlanco(estado), tablero[destino], destino);
                 }
-                switch (movimiento >> 12 & 0b111) {
+                switch (movimiento.promocion) {
                     case 1:
                         tablero[destino] = DAMA;
                         break;
