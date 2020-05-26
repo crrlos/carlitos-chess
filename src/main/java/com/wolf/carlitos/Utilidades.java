@@ -136,10 +136,9 @@ public class Utilidades {
                 continue;
             }
             // si no es captura usar history heuristic
-            if(history[inicio][destino] > 0){
-                ponderacion = 200 + history[inicio][destino];
+
+                ponderacion = history[inicio][destino];
                 movimientos[i].ponderacion =  ponderacion;
-            }
 
         }
 
