@@ -336,7 +336,7 @@ public class Generador {
         if ((estado & 0b1111) == 0 || reyEnJaque) return;
 
         if (turnoBlanco) {
-            if ((estado & 0b000000_000000_000_000_000000_0_00_11) > 0) {
+            if ((estado & 0b11) > 0) {
 
                 if ((estado & 1) > 0) {
                     if ((0b11 << F1 & casillasOcupadas()) == 0
@@ -357,7 +357,7 @@ public class Generador {
 
             }
         } else {
-            if ((estado & 0b000000_000000_000_000_000000_0_11_00) > 0) {
+            if ((estado & 0b11_00) > 0) {
 
                 if ((estado & 4) > 0) {
                     if ((0b11L << F8 & casillasOcupadas()) == 0
