@@ -26,6 +26,7 @@ public class Search {
 
     private final int[] tablero;
     private final int[] color;
+    private final Tablero tab;
 
     private final Generador generador = new Generador();
     public static final List<Integer> secuencia = new ArrayList<>();
@@ -65,14 +66,15 @@ public class Search {
             }
         }
     }
-    public Search(int[] tablero, int[] color) {
-        this.tablero = tablero;
-        this.color = color;
+    public Search(Tablero tablero) {
+        this.tablero = tablero.tablero;
+        this.color = tablero.color;
+        this.tab = tablero;
 
         // init zobrist key
         for (int i = 0; i < 64; i++) {
-            if(tablero[i] == NOPIEZA) continue;
-            zobrist ^= zobristRand[color[i]][tablero[i]][i];
+            if(this.tablero[i] == NOPIEZA) continue;
+            zobrist ^= zobristRand[color[i]][this.tablero[i]][i];
         }
 
     }
@@ -127,7 +129,7 @@ public class Search {
         var movimientos = respuesta.movimientosGenerados;
         var fin = respuesta.cantidadDeMovimientos;
 
-        establecerPuntuacion(movimientos, fin);
+        establecerPuntuacion(movimientos, fin,tab);
         insertionSort(movimientos, fin);
 
         for (int i = 0; i < fin; i++) {
@@ -154,7 +156,7 @@ public class Search {
         var movimientos = respuesta.movimientosGenerados;
         var fin = respuesta.cantidadDeMovimientos;
 
-        establecerPuntuacion(movimientos, fin);
+        establecerPuntuacion(movimientos, fin,tab);
         insertionSort(movimientos, fin);
 
         if (fin == 0) {
@@ -194,7 +196,7 @@ public class Search {
         var movimientos = respuesta.movimientosGenerados;
         var fin = respuesta.cantidadDeMovimientos;
 
-        establecerPuntuacion(movimientos, fin);
+        establecerPuntuacion(movimientos, fin,tab);
         insertionSort(movimientos, fin);
 
         for (int i = 0; i < fin; i++) {

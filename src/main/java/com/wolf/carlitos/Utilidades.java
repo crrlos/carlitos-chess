@@ -11,7 +11,6 @@ import java.util.HashMap;
 import static com.wolf.carlitos.Constantes.*;
 import static com.wolf.carlitos.Pieza.valorPiezas;
 import static com.wolf.carlitos.Search.history;
-import static com.wolf.carlitos.Tablero.tablero;
 
 /**
  * @author carlos
@@ -113,7 +112,7 @@ public class Utilidades {
         System.out.println(formato);
     }
 
-    public static void establecerPuntuacion(Movimiento[] movimientos, int fin) {
+    public static void establecerPuntuacion(Movimiento[] movimientos, int fin,Tablero tab) {
 
         for (int i = 0; i < fin; i++) {
             int inicio = movimientos[i].inicio;
@@ -121,8 +120,8 @@ public class Utilidades {
             int ponderacion = 100_000_000;
 
             // si es captura usar MVVLVA, con offset de 100k para se coloque antes de una no captura
-            if(tablero[destino] != NOPIEZA){
-                ponderacion += valorPiezas[REY] / valorPiezas[tablero[inicio]] + 10 * valorPiezas[tablero[destino]];
+            if(tab.tablero[destino] != NOPIEZA){
+                ponderacion += valorPiezas[REY] / valorPiezas[tab.tablero[inicio]] + 10 * valorPiezas[tab.tablero[destino]];
                 movimientos[i].ponderacion = ponderacion;
                 continue;
             }

@@ -1,10 +1,7 @@
 package com.wolf.carlitos;
 
 
-import static com.wolf.carlitos.Bitboard.add;
-import static com.wolf.carlitos.Constantes.*;
-import static com.wolf.carlitos.Tablero.color;
-import static com.wolf.carlitos.Tablero.tablero;
+import static com.wolf.carlitos.Constantes.POSICION_INICIAL;
 
 
 public class Juego {
@@ -24,12 +21,12 @@ public class Juego {
     }
 
     public void perft(int n) {
-        var search = new Search(tablero, color);
+        var search = new Search(tab);
         search.perft(n);
     }
 
     public String mover(int n){
-        var search = new Search(tablero, color);
+        var search = new Search(tab);
         return Utilidades.convertirANotacion(search.search(n));
     }
 

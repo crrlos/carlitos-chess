@@ -15,8 +15,8 @@ import static java.lang.Math.abs;
 
 public class Tablero {
 
-    public static int[] tablero = new int[64];
-    public static  int[] color = new int[64];
+    public  int[] tablero = new int[64];
+    public  int[] color = new int[64];
 
     Tablero(){
         setFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
