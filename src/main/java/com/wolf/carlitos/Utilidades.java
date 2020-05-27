@@ -9,9 +9,9 @@ package com.wolf.carlitos;
 import java.util.HashMap;
 
 import static com.wolf.carlitos.Constantes.*;
-import static com.wolf.carlitos.Juego.tablero;
 import static com.wolf.carlitos.Pieza.valorPiezas;
 import static com.wolf.carlitos.Search.history;
+import static com.wolf.carlitos.Tablero.tablero;
 
 /**
  * @author carlos
