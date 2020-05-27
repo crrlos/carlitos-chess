@@ -71,9 +71,9 @@ public class Generador {
 
         this.movimientos.iniciar(nivel);
 
-        this.turnoBlanco = esTurnoBlanco(estado);
+        this.turnoBlanco = esTurnoBlanco();
 
-        reyEnJaque = reyEnJaque(estado);
+        reyEnJaque = reyEnJaque();
 
         int bando = turnoBlanco ? BLANCO : NEGRO;
 
@@ -115,8 +115,8 @@ public class Generador {
 
         movimientos.iniciar(nivel);
 
-        int contrario = colorContrario(estado);
-        int miColor = miColor(estado);
+        int contrario = colorContrario();
+        int miColor = miColor();
 
         long piezasEnemigas = piezasEnemigas(miColor);
         long piezasAmigas = piezasAmigas(miColor);
@@ -251,7 +251,7 @@ public class Generador {
 
         long attackSet = Ataque.ataqueTorre[posicion][index];
 
-        attackSet = attackSet & ~(piezasAmigas(miColor) | piezas[colorContrario(estado)][REY]);
+        attackSet = attackSet & ~(piezasAmigas(miColor) | piezas[colorContrario()][REY]);
 
         for (long squares = attackSet; squares != 0; squares = remainder(squares)) {
             int square = next(squares);
@@ -270,15 +270,15 @@ public class Generador {
 
     private void movimientosDeCaballo(int estado, int posicion) {
 
-        int miColor = esTurnoBlanco(estado) ? BLANCO : NEGRO;
+        int miColor = esTurnoBlanco() ? BLANCO : NEGRO;
 
-        long movimientosCaballo = ataqueCaballo[posicion] & ~(piezasAmigas(miColor) | piezas[colorContrario(estado)][REY]);
+        long movimientosCaballo = ataqueCaballo[posicion] & ~(piezasAmigas(miColor) | piezas[colorContrario()][REY]);
 
         boolean validar = false;
 
         // se quita el caballo de esta posición, si el rey no queda en jaque se omite la validación de los movimientos
         remove(turnoBlanco, CABALLO, posicion);
-        if (reyEnJaque(estado)) validar = true;
+        if (reyEnJaque()) validar = true;
         add(turnoBlanco, CABALLO, posicion);
 
 
@@ -309,7 +309,7 @@ public class Generador {
 
         long attackSet = Ataque.ataqueAlfil[posicion][index];
 
-        attackSet = attackSet & ~(piezasAmigas(miColor) | piezas[colorContrario(estado)][REY]);
+        attackSet = attackSet & ~(piezasAmigas(miColor) | piezas[colorContrario()][REY]);
 
         for (long squares = attackSet; squares != 0; squares = remainder(squares)) {
             int square = next(squares);
@@ -323,7 +323,7 @@ public class Generador {
     private void movimientosDeRey(int estado, int posicion) {
 
 
-        long movimientosRey = ataqueRey[posicion] & ~(piezasAmigas(miColor(estado)));
+        long movimientosRey = ataqueRey[posicion] & ~(piezasAmigas(miColor()));
 
         for (long squares = movimientosRey; squares != 0; squares = remainder(squares)) {
             int square = next(squares);
@@ -340,8 +340,8 @@ public class Generador {
 
                 if ((estado & 1) > 0) {
                     if ((0b11 << F1 & casillasOcupadas()) == 0
-                            && !casillaAtacada(F1, colorContrario(estado))
-                            && !casillaAtacada(G1, colorContrario(estado))) {
+                            && !casillaAtacada(F1, colorContrario())
+                            && !casillaAtacada(G1, colorContrario())) {
                         movimientos.add(E1 << 6 | G1);
                     }
                 }
@@ -349,8 +349,8 @@ public class Generador {
                 if ((estado & 2) > 0) {
 
                     if ((0b111 << B1 & casillasOcupadas()) == 0
-                            && !casillaAtacada(D1, colorContrario(estado))
-                            && !casillaAtacada(C1, colorContrario(estado))) {
+                            && !casillaAtacada(D1, colorContrario())
+                            && !casillaAtacada(C1, colorContrario())) {
                         movimientos.add(E1 << 6 | C1);
                     }
                 }
@@ -361,8 +361,8 @@ public class Generador {
 
                 if ((estado & 4) > 0) {
                     if ((0b11L << F8 & casillasOcupadas()) == 0
-                            && !casillaAtacada(F8, colorContrario(estado))
-                            && !casillaAtacada(G8, colorContrario(estado))) {
+                            && !casillaAtacada(F8, colorContrario())
+                            && !casillaAtacada(G8, colorContrario())) {
                         movimientos.add(E8 << 6 | G8);
                     }
                 }
@@ -370,8 +370,8 @@ public class Generador {
                 if ((estado & 8) > 0) {
 
                     if ((0b111L << B8 & casillasOcupadas()) == 0
-                            && !casillaAtacada(D8, colorContrario(estado))
-                            && !casillaAtacada(C8, colorContrario(estado))) {
+                            && !casillaAtacada(D8, colorContrario())
+                            && !casillaAtacada(C8, colorContrario())) {
                         movimientos.add(E8 << 6 | C8);
                     }
                 }
@@ -413,14 +413,14 @@ public class Generador {
             }
         }
 
-        long attackSet = ataquePeon[miColor(estado)][posicion];
+        long attackSet = ataquePeon[miColor()][posicion];
 
         for (long squares = attackSet; squares != 0; squares = remainder(squares)) {
             int square = next(squares);
 
             long moveMask = 1L << square;
             if ((moveMask & casillasOcupadas) != 0) {
-                moveMask = moveMask & ~(piezasAmigas(miColor(estado)) | piezas[colorContrario(estado)][REY]);
+                moveMask = moveMask & ~(piezasAmigas(miColor()) | piezas[colorContrario()][REY]);
                 if (moveMask != 0) {
                     int m = posicion << 6 | square;
                     if (destino >= A8 || destino <= H1) {
@@ -434,7 +434,7 @@ public class Generador {
                         validarYAgregar( estado, posicion, square);
                     }
                 }
-            } else if (alPaso(estado, square)) {
+            } else if (alPaso(square)) {
                 int posicionPiezaALPaso = square + (turnoBlanco ? -8 : 8);
 
                 remove(!turnoBlanco, PEON, posicionPiezaALPaso);
@@ -459,23 +459,23 @@ public class Generador {
         int destino = movimiento & 0b111111;
 
         int piezaDestino = NOPIEZA;
-        int piezaInicio = getPiezaEnPosicion(inicio,miColor(estado));
+        int piezaInicio = getPiezaEnPosicion(inicio,miColor());
 
         if ((casillasOcupadas() & 1L << destino) != 0) {
-            piezaDestino = getPiezaEnPosicion(destino, colorContrario(estado));
-            remove(!esTurnoBlanco(estado), piezaDestino, destino);
+            piezaDestino = getPiezaEnPosicion(destino, colorContrario());
+            remove(!esTurnoBlanco(), piezaDestino, destino);
         }
-        update(esTurnoBlanco(estado), piezaInicio, inicio, destino);
+        update(esTurnoBlanco(), piezaInicio, inicio, destino);
 
 
-        int posicionRey = numberOfTrailingZeros(piezas[miColor(estado)][REY]);
-        var jaque = casillaAtacada(posicionRey, colorContrario(estado));
+        int posicionRey = numberOfTrailingZeros(piezas[miColor()][REY]);
+        var jaque = casillaAtacada(posicionRey, colorContrario());
 
 
         if (piezaDestino != NOPIEZA) {
-            add(!esTurnoBlanco(estado), piezaDestino, destino);
+            add(!esTurnoBlanco(), piezaDestino, destino);
         }
-        update(esTurnoBlanco(estado), piezaInicio, destino, inicio);
+        update(esTurnoBlanco(), piezaInicio, destino, inicio);
 
         return !jaque;
     }

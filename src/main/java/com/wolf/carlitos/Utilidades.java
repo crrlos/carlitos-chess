@@ -109,11 +109,6 @@ public class Utilidades {
         formato = formateado.substring(formateado.length() - 2);
         formato = formateado.substring(formateado.length() - 4, formateado.length() - 2) + "_" + formato;
         formato = formateado.substring(formateado.length() - 5, formateado.length() - 4) + "_" + formato;
-        formato = formateado.substring(formateado.length() - 11, formateado.length() - 5) + "_" + formato;
-        formato = formateado.substring(formateado.length() - 14, formateado.length() - 11) + "_" + formato;
-        formato = formateado.substring(formateado.length() - 17, formateado.length() - 14) + "_" + formato;
-        formato = formateado.substring(formateado.length() - 23, formateado.length() - 17) + "_" + formato;
-        formato = formateado.substring(0, formateado.length() - 23) + "_" + formato;
 
         System.out.println(formato);
     }

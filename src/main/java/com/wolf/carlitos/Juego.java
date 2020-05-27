@@ -18,12 +18,12 @@ public class Juego {
     public static int[] tablero = new int[64];
     public static  int[] color = new int[64];
 
-    public int estadoTablero;
+
     public List<Movimiento> secuencia = new ArrayList<>();
 
 
     public Juego() {
-        estadoTablero = POSICION_INICIAL;
+        Tablero.estados.push(POSICION_INICIAL);
 
         for (int i = 0; i < 64; i++) {
             tablero[i] = NOPIEZA;
@@ -89,17 +89,16 @@ public class Juego {
     public void establecerPosicion(String... movimientos) {
         for (var movimiento : movimientos) {
             secuencia.add(convertirAPosicion(movimiento));
-            estadoTablero = hacerMovimiento(tablero, color, estadoTablero, convertirAPosicion(movimiento));
-            estadoTablero ^= 0b10000;
+            hacerMovimiento(tablero, color, convertirAPosicion(movimiento));
         }
 
     }
 
     public void setFen(String fen) {
+        int estado = 0;
 
         tablero = new int[64];
         color = new int[64];
-        estadoTablero = 0;
         piezas = new long[2][6];
 
         Arrays.fill(tablero, NOPIEZA);
@@ -114,7 +113,7 @@ public class Juego {
                 iniciarFen(ops[0], 7 - i);
 
                 // turno
-                estadoTablero |= (ops[1].equals("w") ? 1 : 0) << 4;
+                estado |= (ops[1].equals("w") ? 1 : 0) << 4;
 
                 int enroques = 0;
 
@@ -123,12 +122,12 @@ public class Juego {
                 if (ops[2].contains("k")) enroques |= 4;
                 if (ops[2].contains("q")) enroques |= 8;
 
-                estadoTablero |= enroques;
+                estado |= enroques;
 
 
                 if (!ops[3].contains("-")) {
-                    var posicion = Utilidades.casillaANumero(ops[3]) + (esTurnoBlanco(estadoTablero) ? -8 : 8);
-                    estadoTablero |= posicion << POSICION_PIEZA_AL_PASO;
+                    var posicion = Utilidades.casillaANumero(ops[3]) + (esTurnoBlanco() ? -8 : 8);
+                    estado |= posicion << POSICION_PIEZA_AL_PASO;
                 }
 
             } else {
@@ -137,8 +136,10 @@ public class Juego {
 
         }
 
+        Tablero.estados.clear();
+        Tablero.estados.push(estado);
         System.out.println("fen procesado");
-        Utilidades.imprimirBinario(estadoTablero);
+        Utilidades.imprimirBinario(estado);
         Utilidades.imprimirPosicicion(tablero, color);
     }
 
@@ -151,7 +152,6 @@ public class Juego {
             if (c == 'k') {
                 tablero[indexInicio] = REY;
                 color[indexInicio] = NEGRO;
-                estadoTablero |= indexInicio << POSICION_REY_NEGRO;
                 add(false,REY,indexInicio);
             }
             if (c == 'q') {
@@ -183,7 +183,6 @@ public class Juego {
             if (c == 'K') {
                 tablero[indexInicio] = REY;
                 color[indexInicio] = BLANCO;
-                estadoTablero |= indexInicio << POSICION_REY_BLANCO;
                 add(true,REY,indexInicio);
             }
             if (c == 'Q') {
@@ -222,13 +221,13 @@ public class Juego {
     }
 
     public void perft(int n) {
-        var search = new Search(tablero, color, estadoTablero);
+        var search = new Search(tablero, color);
         search.perft(n);
 
     }
 
     public String mover(int n){
-        var search = new Search(tablero, color, estadoTablero);
+        var search = new Search(tablero, color);
         return Utilidades.convertirANotacion(search.search(n));
     }
 

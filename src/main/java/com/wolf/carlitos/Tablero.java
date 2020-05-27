@@ -12,6 +12,31 @@ import static java.lang.Math.abs;
 
 public class Tablero {
 
+    static class Stack{
+        private final int[] estados;
+        private int pos;
+
+        Stack(){
+            estados = new int[1024];
+            pos = 0;
+        }
+        public void push(int estado){
+            estados[pos++] = estado;
+        }
+        public int pop(){
+            return estados[--pos];
+        }
+        public int lastElement(){
+            return estados[pos -1];
+        }
+        public void clear()
+        {
+            pos = 0;
+        }
+
+    }
+
+    public static Stack estados = new Stack();
     public static boolean casillaAtacada(int posicion, int colorContrario) {
 
         if ((ataqueCaballo[posicion] & piezas[colorContrario][CABALLO]) != 0) return true;
@@ -41,14 +66,15 @@ public class Tablero {
 
         return (ataqueRey[posicion] & piezas[colorContrario][REY]) != 0;
     }
-    public static void revertirMovimiento(Movimiento movimiento, int estado, int[] tablero, int[] color) {
+    public static void revertirMovimiento(Movimiento movimiento, int[] tablero, int[] color) {
 
+        int estado = estados.pop();
         estado ^= 0b10000;
 
         int inicio = movimiento.inicio;
         int destino = movimiento.destino;
 
-        boolean turnoBlanco = esTurnoBlanco(estado);
+        boolean turnoBlanco = esTurnoBlanco();
 
         switch ((estado >> POSICION_TIPO_MOVIMIENTO & 0b111)) {
 
@@ -62,9 +88,9 @@ public class Tablero {
                 int posicionPaso = turnoBlanco ? destino - 8 : destino + 8;
 
                 tablero[posicionPaso] = PEON;
-                color[posicionPaso] = esTurnoBlanco(estado) ? NEGRO : BLANCO;
+                color[posicionPaso] = esTurnoBlanco() ? NEGRO : BLANCO;
 
-                add(!esTurnoBlanco(estado), PEON, posicionPaso);
+                add(!esTurnoBlanco(), PEON, posicionPaso);
                 update(turnoBlanco, tablero[destino], destino, inicio);
 
                 tablero[inicio] = tablero[destino];
@@ -116,32 +142,34 @@ public class Tablero {
             add(!turnoBlanco, tablero[destino], destino);
         }
 
-        color[destino] = tablero[destino] == NOPIEZA ? NOCOLOR : esTurnoBlanco(estado) ? NEGRO : BLANCO;
+        color[destino] = tablero[destino] == NOPIEZA ? NOCOLOR : esTurnoBlanco() ? NEGRO : BLANCO;
 
     }
-    public static int hacerMovimiento(int[] tablero, int[] color, int estado, Movimiento movimiento) {
+    public static void hacerMovimiento(int[] tablero, int[] color, Movimiento movimiento) {
+
+        int estado = estados.lastElement();
 
         int inicio = movimiento.inicio;
         int destino = movimiento.destino;
 
         var pieza = tablero[inicio];
 
-        estado = colocarValor(estado, NOPIEZA, POSICION_PIEZA_CAPTURADA, MASK_LIMPIAR_PIEZA_CAPTURADA);
-        estado = colocarValor(estado, MOVIMIENTO_NORMAL, POSICION_TIPO_MOVIMIENTO, MASK_LIMPIAR_TIPO_MOVIMIENTO);
+        estado = colocarValor(NOPIEZA, POSICION_PIEZA_CAPTURADA, MASK_LIMPIAR_PIEZA_CAPTURADA,estado);
+        estado = colocarValor(MOVIMIENTO_NORMAL, POSICION_TIPO_MOVIMIENTO, MASK_LIMPIAR_TIPO_MOVIMIENTO,estado);
 
         if (pieza == PEON) {
 
-            if (alPaso(estado, destino)) {
+            if (alPaso(destino)) {
 
-                var posicionAlPaso = destino + (esTurnoBlanco(estado) ? -8 : 8);
+                var posicionAlPaso = destino + (esTurnoBlanco() ? -8 : 8);
 
-                remove(!esTurnoBlanco(estado), PEON, posicionAlPaso);
+                remove(!esTurnoBlanco(), PEON, posicionAlPaso);
 
                 // aqui se remueve la pieza al paso
                 tablero[posicionAlPaso] = NOPIEZA;
                 color[posicionAlPaso] = NOCOLOR;
 
-                estado = colocarValor(estado, AL_PASO, POSICION_TIPO_MOVIMIENTO, MASK_LIMPIAR_TIPO_MOVIMIENTO);
+                estado = colocarValor(AL_PASO, POSICION_TIPO_MOVIMIENTO, MASK_LIMPIAR_TIPO_MOVIMIENTO,estado);
 
                 // al paso = false
                 estado &= MASK_LIMPIAR_AL_PASO;
@@ -149,7 +177,7 @@ public class Tablero {
 
                 if (tablero[destino] != NOPIEZA) {
 
-                    estado = colocarValor(estado, tablero[destino], POSICION_PIEZA_CAPTURADA, MASK_LIMPIAR_PIEZA_CAPTURADA);
+                    estado = colocarValor(tablero[destino], POSICION_PIEZA_CAPTURADA, MASK_LIMPIAR_PIEZA_CAPTURADA,estado);
 
                     if (tablero[destino] == TORRE) {
                         switch (destino) {
@@ -170,7 +198,7 @@ public class Tablero {
 
                     }
                     // remover pieza capturada
-                    remove(!esTurnoBlanco(estado), tablero[destino], destino);
+                    remove(!esTurnoBlanco(), tablero[destino], destino);
                 }
                 switch (movimiento.promocion) {
                     case 1:
@@ -187,13 +215,13 @@ public class Tablero {
                         break;
                 }
                 // agregar pieza promovida
-                add(esTurnoBlanco(estado), tablero[destino], destino);
+                add(esTurnoBlanco(), tablero[destino], destino);
                 // remover el peon porque se va a promover
-                remove(esTurnoBlanco(estado), PEON, inicio);
+                remove(esTurnoBlanco(), PEON, inicio);
 
 
-                color[destino] = esTurnoBlanco(estado) ? BLANCO : NEGRO;
-                estado = colocarValor(estado, PROMOCION, POSICION_TIPO_MOVIMIENTO, MASK_LIMPIAR_TIPO_MOVIMIENTO);
+                color[destino] = esTurnoBlanco() ? BLANCO : NEGRO;
+                 estado = colocarValor(PROMOCION, POSICION_TIPO_MOVIMIENTO, MASK_LIMPIAR_TIPO_MOVIMIENTO,estado);
 
                 tablero[inicio] = NOPIEZA;
                 color[inicio] = NOCOLOR;
@@ -202,15 +230,15 @@ public class Tablero {
 
                 estado ^= 0b10000;
 
-
-                return estado;
+                estados.push(estado);
+                return;
 
             } else if (abs(inicio - destino) == 16) {
 
-                int posicionPiezaAlPAso = destino + (esTurnoBlanco(estado) ? -8 : 8);
+                int posicionPiezaAlPAso = destino + (esTurnoBlanco() ? -8 : 8);
                 estado = estado & MASK_LIMPIAR_AL_PASO | posicionPiezaAlPAso << POSICION_PIEZA_AL_PASO;
 
-                update(esTurnoBlanco(estado), PEON, inicio, destino);
+                update(esTurnoBlanco(), PEON, inicio, destino);
 
                 tablero[destino] = pieza;
                 tablero[inicio] = NOPIEZA;
@@ -220,7 +248,8 @@ public class Tablero {
 
                 estado ^= 0b10000;
 
-                return estado;
+                estados.push(estado);
+                return;
             }
 
         } else if (pieza == REY) {
@@ -228,13 +257,13 @@ public class Tablero {
             if (abs(inicio - destino) == 2) {
                 if (color[inicio] == BLANCO) {
                     if (destino == G1) {
-                        update(esTurnoBlanco(estado), TORRE, H1, F1);
+                        update(esTurnoBlanco(), TORRE, H1, F1);
                         tablero[F1] = tablero[H1];
                         tablero[H1] = NOPIEZA;
                         color[F1] = color[H1];
                         color[H1] = NOCOLOR;
                     } else {
-                        update(esTurnoBlanco(estado), TORRE, A1, D1);
+                        update(esTurnoBlanco(), TORRE, A1, D1);
                         tablero[D1] = tablero[A1];
                         tablero[A1] = NOPIEZA;
                         color[D1] = color[A1];
@@ -242,24 +271,24 @@ public class Tablero {
                     }
                 } else {
                     if (destino == G8) {
-                        update(esTurnoBlanco(estado), TORRE, H8, F8);
+                        update(esTurnoBlanco(), TORRE, H8, F8);
                         tablero[F8] = tablero[H8];
                         tablero[H8] = NOPIEZA;
                         color[F8] = color[H8];
                         color[H8] = NOCOLOR;
                     } else {
-                        update(esTurnoBlanco(estado), TORRE, A8, D8);
+                        update(esTurnoBlanco(), TORRE, A8, D8);
                         tablero[D8] = tablero[A8];
                         tablero[A8] = NOPIEZA;
                         color[D8] = color[A8];
                         color[A8] = NOCOLOR;
                     }
                 }
-                estado = colocarValor(estado, ENROQUE, POSICION_TIPO_MOVIMIENTO, MASK_LIMPIAR_TIPO_MOVIMIENTO);
+                estado = colocarValor(ENROQUE, POSICION_TIPO_MOVIMIENTO, MASK_LIMPIAR_TIPO_MOVIMIENTO,estado);
             } else {
-                estado = colocarValor(estado, MOVIMIENTO_REY, POSICION_TIPO_MOVIMIENTO, MASK_LIMPIAR_TIPO_MOVIMIENTO);
+                estado = colocarValor(MOVIMIENTO_REY, POSICION_TIPO_MOVIMIENTO, MASK_LIMPIAR_TIPO_MOVIMIENTO,estado);
             }
-            if (esTurnoBlanco(estado)) {
+            if (esTurnoBlanco()) {
                 // enroques blancos false
                 estado &= MASK_LIMPIAR_ENROQUES_BLANCOS;
                 // posicion rey blanco
@@ -289,10 +318,10 @@ public class Tablero {
             }
 
         }
-        estado = colocarValor(estado, tablero[destino], POSICION_PIEZA_CAPTURADA, MASK_LIMPIAR_PIEZA_CAPTURADA);
+        estado = colocarValor(tablero[destino], POSICION_PIEZA_CAPTURADA, MASK_LIMPIAR_PIEZA_CAPTURADA,estado);
 
         if (tablero[destino] != NOPIEZA)
-            remove(!esTurnoBlanco(estado), tablero[destino], destino);
+            remove(!esTurnoBlanco(), tablero[destino], destino);
 
         if (tablero[destino] == TORRE) {
             switch (destino) {
@@ -312,8 +341,7 @@ public class Tablero {
             }
 
         }
-
-        update(esTurnoBlanco(estado), tablero[inicio], inicio, destino);
+        update(esTurnoBlanco(), tablero[inicio], inicio, destino);
 
         tablero[destino] = tablero[inicio];
         color[destino] = color[inicio];
@@ -323,7 +351,7 @@ public class Tablero {
 
         estado &= MASK_LIMPIAR_AL_PASO;
         estado ^= 0b10000;
-        return estado;
+        estados.push(estado);
     }
     public static long casillasOcupadas(){
         return
@@ -359,37 +387,35 @@ public class Tablero {
                 piezas[color][TORRE] |
                 piezas[color][DAMA];
     }
-    public static int colocarValor(int estadoTablero, int valor, int posicion, int mascara) {
-        return estadoTablero & mascara | valor << posicion;
+    public static int colocarValor(int valor, int posicion, int mascara, int estado) {
+        return  estado & mascara | valor << posicion;
     }
-    public static int miColor(int estado) {
-        return (estado >>> 4 & 0b1) ^ 1;
+    public static int miColor() {
+        return (estados.lastElement() >>> 4 & 0b1) ^ 1;
     }
-    public static boolean reyEnJaque(int estado) {
-        int miColor = miColor(estado);
+    public static boolean reyEnJaque() {
+        int miColor = miColor();
         int posicionRey = numberOfTrailingZeros(piezas[miColor][REY]);
-        return casillaAtacada(posicionRey, colorContrario(estado));
+        return casillaAtacada(posicionRey, colorContrario());
     }
-    public static boolean alPaso(int estadoTablero, int destino) {
+    public static boolean alPaso(int destino) {
 
-        if (destino >= A3 && destino <= H3 || destino >= A6 && destino <= H6)
-            return (estadoTablero >> POSICION_PIEZA_AL_PASO & 0b111111) == destino;
+        if ((destino >= A3 && destino <= H3 && miColor() == NEGRO) || (destino >= A6 && destino <= H6 && miColor() == BLANCO))
+            return (estados.lastElement() >> POSICION_PIEZA_AL_PASO & 0b111111) == destino;
 
         return false;
     }
-    public static boolean esTurnoBlanco(int estadoTablero) {
-        return (estadoTablero & 0b000000_000000_000_000_000000_1_00_00) > 0;
+    public static boolean esTurnoBlanco() {
+        return (estados.lastElement() & 0b000000_000000_000_000_000000_1_00_00) > 0;
     }
-    public static int colorContrario(int estado) {
-        return estado >>> 4 & 0b1;
+    public static int colorContrario() {
+        return estados.lastElement() >>> 4 & 0b1;
     }
     public static  int getPiezaEnPosicion(int posicion, int color){
         long maskPosicion = 1L << posicion;
-
         for (int i = 0; i < piezas[color].length; i++) {
             if ((piezas[color][i] & maskPosicion) != 0) return i;
         }
-
         throw new IllegalStateException("no se encontró la pieza");
     }
 }
