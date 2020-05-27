@@ -2,166 +2,15 @@
 package com.wolf.carlitos;
 
 
+import static com.wolf.carlitos.Ataque.*;
 import static com.wolf.carlitos.Bitboard.*;
 import static com.wolf.carlitos.Constantes.*;
+import static com.wolf.carlitos.Pieza.piezas;
 import static java.lang.Long.bitCount;
 import static java.lang.Long.numberOfTrailingZeros;
 import static java.lang.Math.abs;
-import static com.wolf.carlitos.Ataque.*;
 
 public class Tablero {
-
-    public static final int NORTE = 10;
-    public static final int SUR = -10;
-    public static final int ESTE = 1;
-    public static final int OESTE = -1;
-    public static final int NORESTE = NORTE + ESTE;
-    public static final int NOROESTE = NORTE + OESTE;
-    public static final int SURESTE = SUR + ESTE;
-    public static final int SUROESTE = SUR + OESTE;
-
-    public static final int norte = 8;
-    public static final int sur = -8;
-    public static final int este = 1;
-    public static final int oeste = -1;
-    public static final int noreste = norte + este;
-    public static final int noroeste = norte + oeste;
-    public static final int sureste = sur + este;
-    public static final int suroeste = sur + oeste;
-
-    public static final int[][] offsetMailBox = new int[][]
-            {
-                    {NORTE, NORESTE, NOROESTE},
-                    {8, 12, 19, 21, -8, -12, -19, -21},
-                    {SURESTE, NORESTE, SUROESTE, NOROESTE},
-                    {NORTE, SUR, ESTE, OESTE},
-                    {NORTE, SUR, ESTE, OESTE, SURESTE, NORESTE, SUROESTE, NOROESTE}
-            };
-    public static final int[][] offset64 = new int[][]
-            {
-                    {norte, noreste, noroeste},
-                    {6, 10, 15, 17, -6, -10, -15, -17},
-                    {sureste, noreste, suroeste, noroeste},
-                    {norte, sur, este, oeste},
-                    {norte, sur, este, oeste, sureste, noreste, suroeste, noroeste}
-            };
-
-    public static int[] valorPiezas = new int[]
-            {100, 320, 330, 500, 900, 10000, 0};
-
-    public static final int[] mailBox = new int[]{
-            -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-            -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-            -1, -0, -0, -0, -0, -0, -0, -0, -0, -1,
-            -1, -0, -0, -0, -0, -0, -0, -0, -0, -1,
-            -1, -0, -0, -0, -0, -0, -0, -0, -0, -1,
-            -1, -0, -0, -0, -0, -0, -0, -0, -0, -1,
-            -1, -0, -0, -0, -0, -0, -0, -0, -0, -1,
-            -1, -0, -0, -0, -0, -0, -0, -0, -0, -1,
-            -1, -0, -0, -0, -0, -0, -0, -0, -0, -1,
-            -1, -0, -0, -0, -0, -0, -0, -0, -0, -1,
-            -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-            -1, -1, -1, -1, -1, -1, -1, -1, -1, -1
-    };
-
-    public static final int[] direccion = new int[]{
-            21, 22, 23, 24, 25, 26, 27, 28,
-            31, 32, 33, 34, 35, 36, 37, 38,
-            41, 42, 43, 44, 45, 46, 47, 48,
-            51, 52, 53, 54, 55, 56, 57, 58,
-            61, 62, 63, 64, 65, 66, 67, 68,
-            71, 72, 73, 74, 75, 76, 77, 78,
-            81, 82, 83, 84, 85, 86, 87, 88,
-            91, 92, 93, 94, 95, 96, 97, 98,
-    };
-
-    public static long[][] piezas = new long[2][6];
-
-    public static long[] ataqueCaballo = new long[64];
-    public static long[] ataqueTorre = new long[64];
-    public static long[] ataqueAlfil = new long[64];
-    public static long[] ataqueRey = new long[64];
-    public static long[][] ataquePeon = new long[2][64];
-
-
-    static {
-
-
-        for (int j = 0; j < 64; j++) {
-            long ataquesCaballo = 0;
-            long ataquesTorre = 0;
-            long ataquesAlfil = 0;
-            long ataquesRey = 0;
-            long ataquesPeonBlanco = 0;
-            long ataquesPeonNegro = 0;
-            for (int i = 0; i < offsetMailBox[CABALLO].length; i++) {
-                int mailOffset = offsetMailBox[CABALLO][i];
-                if (mailBox[direccion[j] + mailOffset] != -1) {
-
-                    int pos = j + offset64[CABALLO][i];
-                    ataquesCaballo |= 1L << pos;
-
-                }
-            }
-            ataqueCaballo[j] = ataquesCaballo;
-
-            for (int i = 0; i < offsetMailBox[TORRE].length; i++) {
-
-                int dir = offsetMailBox[TORRE][i];
-                int pos = j;
-                while (mailBox[direccion[pos] + dir] != -1) {
-                    pos += offset64[TORRE][i];
-                    if (mailBox[direccion[pos] + offsetMailBox[TORRE][i]] == -1) break;
-                    ataquesTorre |= 1L << pos;
-
-                }
-            }
-            ataqueTorre[j] = ataquesTorre;
-
-            for (int i = 0; i < offsetMailBox[ALFIL].length; i++) {
-
-                int dir = offsetMailBox[ALFIL][i];
-                int pos = j;
-                while (mailBox[direccion[pos] + dir] != -1) {
-                    pos += offset64[ALFIL][i];
-                    if (mailBox[direccion[pos] + offsetMailBox[ALFIL][i]] == -1) break;
-                    ataquesAlfil |= 1L << pos;
-                }
-
-            }
-            ataqueAlfil[j] = ataquesAlfil;
-
-            for (int i = 0; i < offsetMailBox[DAMA].length; i++) {
-                int dir = offsetMailBox[DAMA][i];
-                int pos = j;
-                if (mailBox[direccion[pos] + dir] != -1) {
-                    pos += offset64[DAMA][i];
-                    ataquesRey |= 1L << pos;
-                }
-            }
-
-            ataqueRey[j] = ataquesRey;
-
-                for (int i = 1 ; i < offsetMailBox[PEON].length;i++){
-
-                    if(mailBox[direccion[j] + offsetMailBox[PEON][i]] != -1){
-                        int pos = j + offset64[PEON][i];
-                        ataquesPeonBlanco |= 1L << pos;
-                    }
-                    if(mailBox[direccion[j] - offsetMailBox[PEON][i]] != -1){
-                        int pos = j - offset64[PEON][i];
-                        ataquesPeonNegro |= 1L << pos;
-                    }
-
-                }
-
-                ataquePeon[BLANCO][j] = ataquesPeonBlanco;
-                ataquePeon[NEGRO][j] = ataquesPeonNegro;
-
-
-        }
-    }
-
 
     public static boolean casillaAtacada(int posicion, int colorContrario) {
 
@@ -169,8 +18,8 @@ public class Tablero {
 
         /* ATAQUE TORRE/DAMA */
         long casillasOcupadas = casillasOcupadas();
-        long piezasAtacadas = casillasOcupadas & ataqueTorre[posicion];
-        int bits = bitCount(ataqueTorre[posicion]);
+        long piezasAtacadas = casillasOcupadas & maskAtaqueTorre[posicion];
+        int bits = bitCount(maskAtaqueTorre[posicion]);
         int desplazamiento = 64 - bits;
         int index = (int) ((piezasAtacadas * _rookMagics[posicion]) >>> desplazamiento);
         long attackSet = Ataque.ataqueTorre[posicion][index];
@@ -178,8 +27,8 @@ public class Tablero {
         /* FIN ATAQUE TORRE/DAMA */
 
         /* ATAQUE ALFIL/DAMA */
-        piezasAtacadas = casillasOcupadas & ataqueAlfil[posicion];
-        bits = bitCount(ataqueAlfil[posicion]);
+        piezasAtacadas = casillasOcupadas & maskAtaqueAlfil[posicion];
+        bits = bitCount(maskAtaqueAlfil[posicion]);
         desplazamiento = 64 - bits;
         index = (int) ((piezasAtacadas * _bishopMagics[posicion]) >>> desplazamiento);
         attackSet = Ataque.ataqueAlfil[posicion][index];

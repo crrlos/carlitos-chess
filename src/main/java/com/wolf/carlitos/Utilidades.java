@@ -8,14 +8,10 @@ package com.wolf.carlitos;
 
 import java.util.HashMap;
 
-import static com.wolf.carlitos.Bitboard.*;
-import static com.wolf.carlitos.Juego.tablero;
-import static com.wolf.carlitos.Search.history;
-import static com.wolf.carlitos.Search.secuencia;
-import static com.wolf.carlitos.Tablero.*;
-import static java.lang.Long.numberOfTrailingZeros;
-import static java.lang.Math.abs;
 import static com.wolf.carlitos.Constantes.*;
+import static com.wolf.carlitos.Juego.tablero;
+import static com.wolf.carlitos.Pieza.valorPiezas;
+import static com.wolf.carlitos.Search.history;
 
 /**
  * @author carlos

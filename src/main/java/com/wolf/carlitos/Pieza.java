@@ -1,44 +1,28 @@
 package com.wolf.carlitos;
 
-import static com.wolf.carlitos.Constantes.*;
-
 public class Pieza {
 
-    public boolean esBlanca;
-    public String nombre;
-    public int valor;
-    public int tipo;
+    public static final int NORTE = 10;
+    public static final int SUR = -10;
+    public static final int ESTE = 1;
+    public static final int OESTE = -1;
+    public static final int NORESTE = NORTE + ESTE;
+    public static final int NOROESTE = NORTE + OESTE;
+    public static final int SURESTE = SUR + ESTE;
+    public static final int SUROESTE = SUR + OESTE;
 
-    public Pieza(boolean esBlanca, int tipo) {
-        this.esBlanca = esBlanca;
-        this.tipo = tipo;
-        switch (tipo) {
-            case PEON:
-                valor = esBlanca ? 100 : -100;
-                nombre = esBlanca ? "P" : "p";
-                break;
-            case CABALLO:
-                valor = esBlanca ? 320 : -320;
-                nombre = esBlanca ? "C" : "c";
-                break;
-            case ALFIL:
-                valor = esBlanca ? 330 : -330;
-                nombre = esBlanca ? "A" : "a";
-                break;
-            case TORRE:
-                valor = esBlanca ? 500 : -500;
-                nombre = esBlanca ? "T" : "t";
-                break;
-            case DAMA:
-                valor = esBlanca ? 900 : -900;
-                nombre = esBlanca ? "D" : "d";
-                break;
-            case REY:
-                valor = esBlanca ? 10000 : -10000;
-                nombre = esBlanca ? "R" : "r";
-                break;
+    public static final int norte = 8;
+    public static final int sur = -8;
+    public static final int este = 1;
+    public static final int oeste = -1;
+    public static final int noreste = norte + este;
+    public static final int noroeste = norte + oeste;
+    public static final int sureste = sur + este;
+    public static final int suroeste = sur + oeste;
 
-        }
-    }
+    public static int[] valorPiezas = new int[]
+            {100, 320, 330, 500, 900, 10000, 0};
+
+    public static long[][] piezas = new long[2][6];
 
 }

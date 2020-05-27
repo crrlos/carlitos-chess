@@ -5,12 +5,12 @@
  */
 package com.wolf.carlitos;
 
-import static com.wolf.carlitos.Ataque._bishopMagics;
-import static com.wolf.carlitos.Ataque._rookMagics;
+import static com.wolf.carlitos.Ataque.*;
 import static com.wolf.carlitos.Bitboard.*;
 import static com.wolf.carlitos.Constantes.*;
+import static com.wolf.carlitos.MailBox.*;
+import static com.wolf.carlitos.Pieza.piezas;
 import static com.wolf.carlitos.Tablero.*;
-import static com.wolf.carlitos.Utilidades.*;
 import static java.lang.Long.bitCount;
 import static java.lang.Long.numberOfTrailingZeros;
 
@@ -174,8 +174,8 @@ public class Generador {
         for (long squares = piezas[miColor][TORRE]; squares != 0; squares = remainder(squares)) {
             int square = next(squares);
 
-            long piezasAtacadas = ataqueTorre[square] & casillasOcupadas;
-            int index = (int) ((piezasAtacadas * _rookMagics[square]) >>> (64 - bitCount(ataqueTorre[square])));
+            long piezasAtacadas = maskAtaqueTorre[square] & casillasOcupadas;
+            int index = (int) ((piezasAtacadas * _rookMagics[square]) >>> (64 - bitCount(maskAtaqueTorre[square])));
 
             long attackSet = Ataque.ataqueTorre[square][index];
 
@@ -193,8 +193,8 @@ public class Generador {
         for (long squares = piezas[miColor][ALFIL]; squares != 0; squares = remainder(squares)) {
             int square = next(squares);
 
-            long piezasAtacadas = ataqueAlfil[square] & casillasOcupadas;
-            int index = (int) ((piezasAtacadas * _bishopMagics[square]) >>> (64 - bitCount(ataqueAlfil[square])));
+            long piezasAtacadas = maskAtaqueAlfil[square] & casillasOcupadas;
+            int index = (int) ((piezasAtacadas * _bishopMagics[square]) >>> (64 - bitCount(maskAtaqueAlfil[square])));
 
             long attackSet = Ataque.ataqueAlfil[square][index];
 
@@ -212,12 +212,12 @@ public class Generador {
         for (long squares = piezas[miColor][DAMA]; squares != 0; squares = remainder(squares)) {
             int square = next(squares);
 
-            long piezasAtacadas = ataqueTorre[square] & casillasOcupadas;
-            int index = (int) ((piezasAtacadas * _rookMagics[square]) >>> (64 - bitCount(ataqueTorre[square])));
+            long piezasAtacadas = maskAtaqueTorre[square] & casillasOcupadas;
+            int index = (int) ((piezasAtacadas * _rookMagics[square]) >>> (64 - bitCount(maskAtaqueTorre[square])));
             long attackSetTorre = Ataque.ataqueTorre[square][index];
 
-            piezasAtacadas = ataqueAlfil[square] & casillasOcupadas;
-            index = (int) ((piezasAtacadas * _bishopMagics[square]) >>> (64 - bitCount(ataqueAlfil[square])));
+            piezasAtacadas = maskAtaqueAlfil[square] & casillasOcupadas;
+            index = (int) ((piezasAtacadas * _bishopMagics[square]) >>> (64 - bitCount(maskAtaqueAlfil[square])));
             long attackSetAlfil = Ataque.ataqueAlfil[square][index];
 
             long ataque = casillasOcupadas & (attackSetTorre | attackSetAlfil);
@@ -245,9 +245,9 @@ public class Generador {
 
         long casillasOcupadas = casillasOcupadas();
 
-        long maskedBlockers = ataqueTorre[posicion] & casillasOcupadas;
+        long maskedBlockers = maskAtaqueTorre[posicion] & casillasOcupadas;
 
-        int index = (int) ((maskedBlockers * _rookMagics[posicion]) >>> (64 - bitCount(ataqueTorre[posicion])));
+        int index = (int) ((maskedBlockers * _rookMagics[posicion]) >>> (64 - bitCount(maskAtaqueTorre[posicion])));
 
         long attackSet = Ataque.ataqueTorre[posicion][index];
 
@@ -303,9 +303,9 @@ public class Generador {
 
         long casillasOcupadas = casillasOcupadas();
 
-        long maskedBlockers = ataqueAlfil[posicion] & casillasOcupadas;
+        long maskedBlockers = maskAtaqueAlfil[posicion] & casillasOcupadas;
 
-        int index = (int) ((maskedBlockers * _bishopMagics[posicion]) >>> (64 - bitCount(ataqueAlfil[posicion])));
+        int index = (int) ((maskedBlockers * _bishopMagics[posicion]) >>> (64 - bitCount(maskAtaqueAlfil[posicion])));
 
         long attackSet = Ataque.ataqueAlfil[posicion][index];
 

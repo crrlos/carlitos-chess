@@ -1,7 +1,5 @@
 package com.wolf.carlitos;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 public class App {

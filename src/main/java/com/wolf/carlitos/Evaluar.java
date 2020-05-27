@@ -3,9 +3,9 @@ package com.wolf.carlitos;
 import static com.wolf.carlitos.Bitboard.next;
 import static com.wolf.carlitos.Bitboard.remainder;
 import static com.wolf.carlitos.Constantes.*;
+import static com.wolf.carlitos.Pieza.piezas;
+import static com.wolf.carlitos.Pieza.valorPiezas;
 import static com.wolf.carlitos.Ponderaciones.*;
-import static com.wolf.carlitos.Tablero.piezas;
-import static com.wolf.carlitos.Tablero.valorPiezas;
 import static java.lang.Long.bitCount;
 
 public class Evaluar {

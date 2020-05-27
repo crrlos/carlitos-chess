@@ -4,14 +4,13 @@ package com.wolf.carlitos;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.BlockingDeque;
-import java.util.concurrent.ExecutionException;
 
 import static com.wolf.carlitos.Bitboard.add;
 import static com.wolf.carlitos.Constantes.*;
+import static com.wolf.carlitos.Pieza.piezas;
+import static com.wolf.carlitos.Tablero.esTurnoBlanco;
 import static com.wolf.carlitos.Tablero.hacerMovimiento;
-import static com.wolf.carlitos.Tablero.*;
-import static com.wolf.carlitos.Utilidades.*;
+import static com.wolf.carlitos.Utilidades.convertirAPosicion;
 
 
 public class Juego {

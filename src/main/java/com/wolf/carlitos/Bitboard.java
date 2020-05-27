@@ -2,8 +2,8 @@ package com.wolf.carlitos;
 
 import static com.wolf.carlitos.Constantes.BLANCO;
 import static com.wolf.carlitos.Constantes.NEGRO;
-import static com.wolf.carlitos.Tablero.piezas;
-import static java.lang.Long.*;
+import static com.wolf.carlitos.Pieza.piezas;
+import static java.lang.Long.numberOfTrailingZeros;
 
 public final class Bitboard {
 

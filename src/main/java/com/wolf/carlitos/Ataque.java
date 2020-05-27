@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Random;
 
 import static com.wolf.carlitos.Constantes.*;
-import static com.wolf.carlitos.Tablero.*;
+import static com.wolf.carlitos.MailBox.*;
 import static java.lang.Math.pow;
 
 public class Ataque {
@@ -43,6 +43,88 @@ public class Ataque {
 
     public static final long[][] ataqueTorre = new long[64][4096];
     public static final long[][] ataqueAlfil = new long[64][1000];
+    public static final long[] ataqueCaballo = new long[64];
+    public static final long[] ataqueRey = new long[64];
+    public static final long[][] ataquePeon = new long[2][64];
+
+    public static final long[] maskAtaqueTorre = new long[64];
+    public static final long[] maskAtaqueAlfil = new long[64];
+
+    static {
+        for (int j = 0; j < 64; j++) {
+            long ataquesCaballo = 0;
+            long ataquesTorre = 0;
+            long ataquesAlfil = 0;
+            long ataquesRey = 0;
+            long ataquesPeonBlanco = 0;
+            long ataquesPeonNegro = 0;
+            for (int i = 0; i < offsetMailBox[CABALLO].length; i++) {
+                int mailOffset = offsetMailBox[CABALLO][i];
+                if (mailBox[direccion[j] + mailOffset] != -1) {
+
+                    int pos = j + offset64[CABALLO][i];
+                    ataquesCaballo |= 1L << pos;
+
+                }
+            }
+            ataqueCaballo[j] = ataquesCaballo;
+
+            for (int i = 0; i < offsetMailBox[TORRE].length; i++) {
+
+                int dir = offsetMailBox[TORRE][i];
+                int pos = j;
+                while (mailBox[direccion[pos] + dir] != -1) {
+                    pos += offset64[TORRE][i];
+                    if (mailBox[direccion[pos] + offsetMailBox[TORRE][i]] == -1) break;
+                    ataquesTorre |= 1L << pos;
+
+                }
+            }
+            maskAtaqueTorre[j] = ataquesTorre;
+
+            for (int i = 0; i < offsetMailBox[ALFIL].length; i++) {
+
+                int dir = offsetMailBox[ALFIL][i];
+                int pos = j;
+                while (mailBox[direccion[pos] + dir] != -1) {
+                    pos += offset64[ALFIL][i];
+                    if (mailBox[direccion[pos] + offsetMailBox[ALFIL][i]] == -1) break;
+                    ataquesAlfil |= 1L << pos;
+                }
+
+            }
+            maskAtaqueAlfil[j] = ataquesAlfil;
+
+            for (int i = 0; i < offsetMailBox[DAMA].length; i++) {
+                int dir = offsetMailBox[DAMA][i];
+                int pos = j;
+                if (mailBox[direccion[pos] + dir] != -1) {
+                    pos += offset64[DAMA][i];
+                    ataquesRey |= 1L << pos;
+                }
+            }
+
+            ataqueRey[j] = ataquesRey;
+
+            for (int i = 1 ; i < offsetMailBox[PEON].length;i++){
+
+                if(mailBox[direccion[j] + offsetMailBox[PEON][i]] != -1){
+                    int pos = j + offset64[PEON][i];
+                    ataquesPeonBlanco |= 1L << pos;
+                }
+                if(mailBox[direccion[j] - offsetMailBox[PEON][i]] != -1){
+                    int pos = j - offset64[PEON][i];
+                    ataquesPeonNegro |= 1L << pos;
+                }
+
+            }
+
+            ataquePeon[BLANCO][j] = ataquesPeonBlanco;
+            ataquePeon[NEGRO][j] = ataquesPeonNegro;
+
+
+        }
+    }
 
     public static void iniciar() {
         for (int i = 0; i < 64; i++) {
