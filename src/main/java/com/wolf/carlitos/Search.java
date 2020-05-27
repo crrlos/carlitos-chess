@@ -26,14 +26,17 @@ public class Search {
 
     private final int[] tablero;
     private final int[] color;
-    private final Tablero tab;
 
-    private final Generador generador = new Generador();
-    public static final List<Integer> secuencia = new ArrayList<>();
+    private final Tablero tab;
+    private final Generador generador;
+
     public static int nodes = 0;
+
     public static int[][] history = new int[64][64];
+
     public static long zobrist = 0;
     public static long[][][] zobristRand = new long[2][6][64];
+
     static {
         Random rand = new Random();
         long[] casillas = new long[768];
@@ -70,6 +73,7 @@ public class Search {
         this.tablero = tablero.tablero;
         this.color = tablero.color;
         this.tab = tablero;
+        this.generador = new Generador(tablero);
 
         // init zobrist key
         for (int i = 0; i < 64; i++) {
@@ -86,7 +90,7 @@ public class Search {
             acumulador.contadorPerft++;
             return;
         }
-        var respuesta = generador.generarMovimientos(estados.lastElement(), deep);
+        var respuesta = generador.generarMovimientos(deep);
 
         var movimientos = respuesta.movimientosGenerados;
         var fin = respuesta.cantidadDeMovimientos;
@@ -95,11 +99,11 @@ public class Search {
         for (int i = 0; i < fin; i++) {
             var mov = movimientos[i];
 
-            hacerMovimiento(tablero, color, mov);
+            tab.hacerMovimiento(tablero, color, mov);
 
             perftSearch(deep - 1, acumulador, false);
 
-            revertirMovimiento(mov, tablero, color);
+            tab.revertirMovimiento(mov, tablero, color);
 
             if (reset) {
                 System.out.println(Utilidades.convertirANotacion(mov) + " " + acumulador.contadorPerft);
@@ -120,11 +124,11 @@ public class Search {
 
     private int quiescent(int nivel, int[] tablero, int[] color, int alfa, int beta){
 
-        int mejorValor = evaluar(miColor());
+        int mejorValor = evaluar(tab.miColor());
         if(mejorValor > alfa) alfa = mejorValor;
         if(mejorValor >= beta) return beta;
 
-        var respuesta = generador.generarCapturas(tablero,color,estados.lastElement(),nivel);
+        var respuesta = generador.generarCapturas(tablero,color,nivel);
 
         var movimientos = respuesta.movimientosGenerados;
         var fin = respuesta.cantidadDeMovimientos;
@@ -135,11 +139,11 @@ public class Search {
         for (int i = 0; i < fin; i++) {
             var mov = movimientos[i];
 
-            hacerMovimiento(tablero, color, mov);
+            tab.hacerMovimiento(tablero, color, mov);
 
             int evaluacion = -quiescent(nivel - 1, tablero, color, -beta, -alfa);
 
-            revertirMovimiento(mov, tablero, color);
+            tab.revertirMovimiento(mov, tablero, color);
 
             if (evaluacion > alfa) alfa = evaluacion;
             if (evaluacion >= beta) return beta;
@@ -151,7 +155,7 @@ public class Search {
 
     public int negaMax(int nivel, int[] tablero, int[] color, int alfa, int beta){
         if (nivel == 0) return quiescent(nivel, tablero, color, alfa, beta);
-        var respuesta = generador.generarMovimientos(estados.lastElement(), nivel);
+        var respuesta = generador.generarMovimientos(nivel);
 
         var movimientos = respuesta.movimientosGenerados;
         var fin = respuesta.cantidadDeMovimientos;
@@ -160,18 +164,18 @@ public class Search {
         insertionSort(movimientos, fin);
 
         if (fin == 0) {
-            if (reyEnJaque()) return -MATE - nivel;
+            if (tab.reyEnJaque()) return -MATE - nivel;
             else return AHOGADO;
         }
 
         for (int i = 0; i < fin; i++) {
             var mov = movimientos[i];
 
-            hacerMovimiento(tablero, color, mov);
+            tab.hacerMovimiento(tablero, color, mov);
 
             int evaluacion = -negaMax(nivel - 1, tablero, color, -beta, -alfa);
 
-            revertirMovimiento(mov, tablero, color);
+            tab.revertirMovimiento(mov, tablero, color);
 
             if (evaluacion >= beta) {
                 if (tablero[mov.destino] == NOPIEZA)
@@ -191,7 +195,7 @@ public class Search {
         int alfa = -10_000_000;
         int beta = 10_000_000;
 
-        var respuesta = this.generador.generarMovimientos(estados.lastElement(), n);
+        var respuesta = this.generador.generarMovimientos(n);
 
         var movimientos = respuesta.movimientosGenerados;
         var fin = respuesta.cantidadDeMovimientos;
@@ -203,7 +207,7 @@ public class Search {
 
             var mov = movimientos[i];
 
-            hacerMovimiento(tablero, color, mov);
+            tab.hacerMovimiento(tablero, color, mov);
 
             int eval = -negaMax(n - 1, tablero, color, -beta, -alfa);
 
@@ -212,7 +216,7 @@ public class Search {
                 pos = i;
             }
 
-            revertirMovimiento(mov, tablero, color);
+            tab.revertirMovimiento(mov, tablero, color);
 
         }
         System.out.println("nodos: " + nodes);

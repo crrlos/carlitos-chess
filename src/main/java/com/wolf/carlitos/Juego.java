@@ -1,33 +1,27 @@
 package com.wolf.carlitos;
 
-
-import static com.wolf.carlitos.Constantes.POSICION_INICIAL;
-
+import static com.wolf.carlitos.Utilidades.convertirANotacion;
 
 public class Juego {
 
-    private Tablero tab = new Tablero();
+    private final Tablero tablero = new Tablero();
 
-    public Juego() {
-        Tablero.estados.push(POSICION_INICIAL);
-    }
-
-    public void establecerPosicion(String... movimientos) {
-        tab.setHistoria(movimientos);
+    public void setHistoria(String... movimientos) {
+        tablero.setHistoria(movimientos);
     }
 
     public void setFen(String fen) {
-       tab.setFen(fen);
+       tablero.setFen(fen);
     }
 
     public void perft(int n) {
-        var search = new Search(tab);
+        var search = new Search(tablero);
         search.perft(n);
     }
 
     public String mover(int n){
-        var search = new Search(tab);
-        return Utilidades.convertirANotacion(search.search(n));
+        var search = new Search(tablero);
+        return convertirANotacion(search.search(n));
     }
 
     public void evaluarPosicion() {

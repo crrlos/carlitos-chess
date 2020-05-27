@@ -24,7 +24,7 @@ public class App {
                 if(linea.contains("moves")){
                     var regex = Pattern.compile("(([a-h][1-8]){2}([qrbn])?)");
                     var movimientos = regex.matcher(linea).results().map(r -> r.group(0)).toArray(String[]::new);
-                    juego.establecerPosicion(movimientos);
+                    juego.setHistoria(movimientos);
                 }
             }
             else
@@ -33,7 +33,7 @@ public class App {
 
                 var regex = Pattern.compile("(([a-h][1-8]){2}([qrbn])?)");
                 var movimientos = regex.matcher(linea).results().map(r -> r.group(0)).toArray(String[]::new);
-                juego.establecerPosicion(movimientos);
+                juego.setHistoria(movimientos);
 
             } else if (linea.contains("go")) {
                System.out.println("bestmove " + juego.mover(7));

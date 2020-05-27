@@ -15,13 +15,6 @@ import static java.lang.Math.abs;
 
 public class Tablero {
 
-    public  int[] tablero = new int[64];
-    public  int[] color = new int[64];
-
-    Tablero(){
-        setFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-    }
-
     static class Stack{
         private final int[] estados;
         private int pos;
@@ -46,8 +39,16 @@ public class Tablero {
 
     }
 
-    public static Stack estados = new Stack();
-    public static boolean casillaAtacada(int posicion, int colorContrario) {
+    public  int[] tablero = new int[64];
+    public  int[] color = new int[64];
+    private final Stack estados = new Stack();
+
+    Tablero(){
+        setFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+        estados.push(POSICION_INICIAL);
+    }
+
+    public  boolean casillaAtacada(int posicion, int colorContrario) {
 
         if ((ataqueCaballo[posicion] & piezas[colorContrario][CABALLO]) != 0) return true;
 
@@ -76,7 +77,7 @@ public class Tablero {
 
         return (ataqueRey[posicion] & piezas[colorContrario][REY]) != 0;
     }
-    public static void revertirMovimiento(Movimiento movimiento, int[] tablero, int[] color) {
+    public  void revertirMovimiento(Movimiento movimiento, int[] tablero, int[] color) {
 
         int estado = estados.pop();
         estado ^= 0b10000;
@@ -155,7 +156,7 @@ public class Tablero {
         color[destino] = tablero[destino] == NOPIEZA ? NOCOLOR : esTurnoBlanco() ? NEGRO : BLANCO;
 
     }
-    public static void hacerMovimiento(int[] tablero, int[] color, Movimiento movimiento) {
+    public  void hacerMovimiento(int[] tablero, int[] color, Movimiento movimiento) {
 
         int estado = estados.lastElement();
 
@@ -363,7 +364,7 @@ public class Tablero {
         estado ^= 0b10000;
         estados.push(estado);
     }
-    public static long casillasOcupadas(){
+    public  long casillasOcupadas(){
         return
                 piezas[BLANCO][PEON] |
                 piezas[BLANCO][CABALLO] |
@@ -379,7 +380,7 @@ public class Tablero {
                 piezas[NEGRO][REY];
 
     }
-    public static long piezasAmigas(int color){
+    public  long piezasAmigas(int color){
         return
                 piezas[color][PEON] |
                 piezas[color][CABALLO] |
@@ -388,7 +389,7 @@ public class Tablero {
                 piezas[color][DAMA] |
                 piezas[color][REY];
     }
-    public static long piezasEnemigas(int color){
+    public  long piezasEnemigas(int color){
         color ^= 1;
         return
                 piezas[color][PEON] |
@@ -397,38 +398,37 @@ public class Tablero {
                 piezas[color][TORRE] |
                 piezas[color][DAMA];
     }
-    public static int colocarValor(int valor, int posicion, int mascara, int estado) {
+    private   int colocarValor(int valor, int posicion, int mascara, int estado) {
         return  estado & mascara | valor << posicion;
     }
-    public static int miColor() {
+    public  int miColor() {
         return (estados.lastElement() >>> 4 & 0b1) ^ 1;
     }
-    public static boolean reyEnJaque() {
+    public  boolean reyEnJaque() {
         int miColor = miColor();
         int posicionRey = numberOfTrailingZeros(piezas[miColor][REY]);
         return casillaAtacada(posicionRey, colorContrario());
     }
-    public static boolean alPaso(int destino) {
+    public  boolean alPaso(int destino) {
 
         if ((destino >= A3 && destino <= H3 && miColor() == NEGRO) || (destino >= A6 && destino <= H6 && miColor() == BLANCO))
             return (estados.lastElement() >> POSICION_PIEZA_AL_PASO & 0b111111) == destino;
 
         return false;
     }
-    public static boolean esTurnoBlanco() {
+    public  boolean esTurnoBlanco() {
         return (estados.lastElement() & 0b000000_000000_000_000_000000_1_00_00) > 0;
     }
-    public static int colorContrario() {
+    public  int colorContrario() {
         return estados.lastElement() >>> 4 & 0b1;
     }
-    public static  int getPiezaEnPosicion(int posicion, int color){
+    public  int getPiezaEnPosicion(int posicion, int color){
         long maskPosicion = 1L << posicion;
         for (int i = 0; i < piezas[color].length; i++) {
             if ((piezas[color][i] & maskPosicion) != 0) return i;
         }
         throw new IllegalStateException("no se encontró la pieza");
     }
-
     public void setFen(String fen) {
         int estado = 0;
 
@@ -471,8 +471,8 @@ public class Tablero {
 
         }
 
-        Tablero.estados.clear();
-        Tablero.estados.push(estado);
+        estados.clear();
+        estados.push(estado);
     }
     public void setHistoria(String... movimientos){
         for (var movimiento : movimientos) {
@@ -554,5 +554,8 @@ public class Tablero {
             }
         }
 
+    }
+    public int getEstado(){
+        return estados.lastElement();
     }
 }
