@@ -13,7 +13,9 @@ public class Test {
     public static void main(String[] args) {
 
 
-        System.out.println(1 | 60_000 << 15 );
+       var rand = new Random();
+        System.out.println(rand.nextLong());
+
 
 //        for (int i = A2; i <= H7; i++) {
 //            System.out.print("movimientos pos " + i + ": ");
