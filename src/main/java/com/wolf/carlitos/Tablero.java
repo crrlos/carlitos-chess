@@ -234,28 +234,29 @@ public class Tablero {
 
                     if (tablero[destino] == TORRE) {
                         switch (destino) {
-                            case H8:
-                                if((estado & 4) > 0) {
-                                    zobrist ^= zobristCastlePlusPasant[2];
-                                    estado &= MASK_LIMPIAR_ENROQUES_NEGROS | 4;
-                                }
-                                break;
-                            case A8:
-                                if((estado & 8) > 0) {
-                                    zobrist ^= zobristCastlePlusPasant[3];
-                                    estado &= MASK_LIMPIAR_ENROQUES_NEGROS | 8;
-                                }
-                                break;
                             case H1:
                                 if((estado & 1) > 0) {
+                                    // si hay enroque corto, quitarlo.
                                     zobrist ^= zobristCastlePlusPasant[0];
-                                    estado &= MASK_LIMPIAR_ENROQUES_BLANCOS | 1;
+                                    estado ^= 1;
                                 }
                                 break;
                             case A1:
                                 if((estado & 2) > 0) {
                                     zobrist ^= zobristCastlePlusPasant[1];
-                                    estado &= MASK_LIMPIAR_ENROQUES_BLANCOS | 2;
+                                    estado ^= 2;
+                                }
+                                break;
+                            case H8:
+                                if((estado & 4) > 0) {
+                                    zobrist ^= zobristCastlePlusPasant[2];
+                                    estado ^= 4;
+                                }
+                                break;
+                            case A8:
+                                if((estado & 8) > 0) {
+                                    zobrist ^= zobristCastlePlusPasant[3];
+                                    estado ^= 8;
                                 }
                                 break;
 
@@ -383,15 +384,12 @@ public class Tablero {
             if (esTurnoBlanco()) {
                 // enroques blancos false
                 estado &= MASK_LIMPIAR_ENROQUES_BLANCOS;
-                // posicion rey blanco
-                estado = estado & MASK_LIMPIAR_POSICION_REY_BLANCO | destino << POSICION_REY_BLANCO;
+
                 zobrist ^= zobristCastlePlusPasant[0];
                 zobrist ^= zobristCastlePlusPasant[1];
             } else {
                 // enroques negros false
                 estado &= MASK_LIMPIAR_ENROQUES_NEGROS;
-                // posicion rey negro
-                estado = estado & MASK_LIMPIAR_POSICION_REY_NEGRO | destino << POSICION_REY_NEGRO;
 
                 zobrist ^= zobristCastlePlusPasant[2];
                 zobrist ^= zobristCastlePlusPasant[3];
@@ -400,28 +398,29 @@ public class Tablero {
         } else if (pieza == TORRE) {
 
             switch (inicio) {
-                case H8:
-                    if((estado & 4) > 0) {
-                        zobrist ^= zobristCastlePlusPasant[2];
-                        estado &= MASK_LIMPIAR_ENROQUES_NEGROS | 4;
-                    }
-                    break;
-                case A8:
-                    if((estado & 8) > 0) {
-                        zobrist ^= zobristCastlePlusPasant[3];
-                        estado &= MASK_LIMPIAR_ENROQUES_NEGROS | 8;
-                    }
-                    break;
                 case H1:
                     if((estado & 1) > 0) {
+                        // si hay enroque corto, quitarlo.
                         zobrist ^= zobristCastlePlusPasant[0];
-                        estado &= MASK_LIMPIAR_ENROQUES_BLANCOS | 1;
+                        estado ^= 1;
                     }
                     break;
                 case A1:
                     if((estado & 2) > 0) {
                         zobrist ^= zobristCastlePlusPasant[1];
-                        estado &= MASK_LIMPIAR_ENROQUES_BLANCOS | 2;
+                        estado ^= 2;
+                    }
+                    break;
+                case H8:
+                    if((estado & 4) > 0) {
+                        zobrist ^= zobristCastlePlusPasant[2];
+                        estado ^= 4;
+                    }
+                    break;
+                case A8:
+                    if((estado & 8) > 0) {
+                        zobrist ^= zobristCastlePlusPasant[3];
+                        estado ^= 8;
                     }
                     break;
             }
@@ -436,28 +435,29 @@ public class Tablero {
 
         if (tablero[destino] == TORRE) {
             switch (destino) {
-                case H8:
-                    if((estado & 4) > 0) {
-                        zobrist ^= zobristCastlePlusPasant[2];
-                        estado &= MASK_LIMPIAR_ENROQUES_NEGROS | 4;
-                    }
-                    break;
-                case A8:
-                    if((estado & 8) > 0) {
-                        zobrist ^= zobristCastlePlusPasant[3];
-                        estado &= MASK_LIMPIAR_ENROQUES_NEGROS | 8;
-                    }
-                    break;
                 case H1:
                     if((estado & 1) > 0) {
+                        // si hay enroque corto, quitarlo.
                         zobrist ^= zobristCastlePlusPasant[0];
-                        estado &= MASK_LIMPIAR_ENROQUES_BLANCOS | 1;
+                        estado ^= 1;
                     }
                     break;
                 case A1:
                     if((estado & 2) > 0) {
                         zobrist ^= zobristCastlePlusPasant[1];
-                        estado &= MASK_LIMPIAR_ENROQUES_BLANCOS | 2;
+                        estado ^= 2;
+                    }
+                    break;
+                case H8:
+                    if((estado & 4) > 0) {
+                        zobrist ^= zobristCastlePlusPasant[2];
+                        estado ^= 4;
+                    }
+                    break;
+                case A8:
+                    if((estado & 8) > 0) {
+                        zobrist ^= zobristCastlePlusPasant[3];
+                        estado ^= 8;
                     }
                     break;
 
