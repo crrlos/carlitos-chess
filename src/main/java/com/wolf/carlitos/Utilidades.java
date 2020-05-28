@@ -6,8 +6,6 @@
 package com.wolf.carlitos;
 
 
-import java.util.HashMap;
-
 import static com.wolf.carlitos.Constantes.*;
 import static com.wolf.carlitos.Pieza.valorPiezas;
 import static com.wolf.carlitos.Search.history;
@@ -17,21 +15,6 @@ import static com.wolf.carlitos.Search.history;
  */
 public class Utilidades {
 
-    private static final HashMap<String, Integer> casillaPosicion = new HashMap<>();
-    public static final HashMap<Integer, String> posicionCasilla = new HashMap<>();
-
-    static {
-        int correlativo = 0;
-
-        for (int i = 1; i <= 8; i++) {
-            for (char c : "abcdefgh".toCharArray()) {
-                casillaPosicion.put(String.valueOf(c) + i, correlativo);
-                posicionCasilla.put(correlativo++, String.valueOf(c) + i);
-            }
-        }
-
-
-    }
 
     public static void imprimirPosicicion(int[] tablero, int[] color) {
 
@@ -47,14 +30,20 @@ public class Utilidades {
         System.out.println("+---+---+---+---+---+---+---+---+");
     }
 
+    public static int casillAPosicion(String posicion){
+        return  "abcdefgh".indexOf(posicion.charAt(0)) + ("12345678".indexOf(posicion.charAt(1)) * 8);
+    }
+    public static String posicionACasilla(int posicion){
+        return "abcdefgh".charAt(posicion & 7) + String.valueOf("12345678".charAt(posicion >> 3));
+    }
     public static Movimiento convertirAPosicion(String movimiento) {
         Movimiento posicion = new Movimiento();
 
         var inicio = movimiento.substring(0, 2);
         var destino = movimiento.substring(2, 4);
 
-        posicion.inicio =  casillaPosicion.get(inicio);
-        posicion.destino =  casillaPosicion.get(destino);
+        posicion.inicio =  casillAPosicion(inicio);
+        posicion.destino =  casillAPosicion(destino);
 
 
         if (movimiento.length() == 5) {
@@ -79,7 +68,7 @@ public class Utilidades {
 
     public static String convertirANotacion(Movimiento movimiento) {
 
-        var mov = posicionCasilla.get(movimiento.inicio) + posicionCasilla.get(movimiento.destino);
+        var mov = posicionACasilla(movimiento.inicio) + posicionACasilla(movimiento.destino);
 
         if (movimiento.promocion > 0) {
             switch (movimiento.promocion) {

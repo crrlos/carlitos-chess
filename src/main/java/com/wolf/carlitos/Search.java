@@ -6,13 +6,10 @@
 package com.wolf.carlitos;
 
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 import static com.wolf.carlitos.Constantes.*;
 import static com.wolf.carlitos.Evaluar.evaluar;
-import static com.wolf.carlitos.Tablero.*;
 import static com.wolf.carlitos.Utilidades.establecerPuntuacion;
 import static com.wolf.carlitos.Utilidades.insertionSort;
 

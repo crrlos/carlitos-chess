@@ -13,8 +13,7 @@ public class Test {
     public static void main(String[] args) {
 
 
-       var rand = new Random();
-        System.out.println(rand.nextLong());
+        System.out.println(62  & 7 );
 
 
 //        for (int i = A2; i <= H7; i++) {
