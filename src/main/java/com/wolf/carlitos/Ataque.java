@@ -9,7 +9,7 @@ import static java.lang.Math.pow;
 
 public class Ataque {
 
-    public static final long[] _rookMagics = new long[]{
+    public static final long[] rookMagics = new long[]{
             0xa8002c000108020L, 0x0040001000200040L, 0x100200010090040L, 0x2480041000800801L, 0x280028004000800L,
             0x900410008040022L, 0x280020001001080L, 0x2880002041000080L, 0xa000800080400034L, 0x4808020004000L,
             0x2290802004801000L, 0x411000d00100020L, 0x402800800040080L, 0xb000401004208L, 0x2409000100040200L,
@@ -25,7 +25,7 @@ public class Ataque {
             0x489a000810200402L, 0x1004400080a13L, 0x4000011008020084L, 0x26002114058042L
     };
 
-    public static final long[] _bishopMagics = new long[]{
+    public static final long[] bishopMagics = new long[]{
             0x89a1121896040240L, 0x2004844802002010L, 0x2068080051921000L, 0x62880a0220200808L, 0x4042004000000L,
             0x100822020200011L, 0xc00444222012000aL, 0x28808801216001L, 0x400492088408100L, 0x201c401040c0084L,
             0x840800910a0010L, 0x82080240060L, 0x2000840504006000L, 0x30010c4108405004L, 0x1008005410080802L,
@@ -51,109 +51,79 @@ public class Ataque {
     public static final long[] maskAtaqueAlfil = new long[64];
 
     static {
+        int[] piezas = new int[]{CABALLO, ALFIL, TORRE, REY};
+
+        long[][] ataquesPieza = new long[][]{
+                ataqueCaballo, maskAtaqueAlfil, maskAtaqueTorre, ataqueRey
+        };
+
         for (int j = 0; j < 64; j++) {
-            long ataquesCaballo = 0;
-            long ataquesTorre = 0;
-            long ataquesAlfil = 0;
-            long ataquesRey = 0;
-            long ataquesPeonBlanco = 0;
-            long ataquesPeonNegro = 0;
-            for (int i = 0; i < offsetMailBox[CABALLO].length; i++) {
-                int mailOffset = offsetMailBox[CABALLO][i];
-                if (mailBox[direccion[j] + mailOffset] != -1) {
 
-                    int pos = j + offset64[CABALLO][i];
-                    ataquesCaballo |= 1L << pos;
+            long[] ataques = new long[piezas.length + 2];
 
+            for (int i = 0; i < piezas.length; i++) {
+                for (int k = 0; k < offsetMailBox[piezas[i]].length; k++) {
+                    int offset = offsetMailBox[piezas[i]][k];
+                    int pos = direccion[j];
+                    while (mailBox[pos + offset] != -1) {
+                        pos += offset;
+                        if (!Pieza.slider[piezas[i]]) {
+                            ataques[i] |= 1L << mailBox[pos];
+                            break;
+                        }
+                        if (mailBox[pos + offsetMailBox[piezas[i]][k]] == -1) break;
+                        ataques[i] |= 1L << mailBox[pos];
+                    }
                 }
-            }
-            ataqueCaballo[j] = ataquesCaballo;
-
-            for (int i = 0; i < offsetMailBox[TORRE].length; i++) {
-
-                int dir = offsetMailBox[TORRE][i];
-                int pos = j;
-                while (mailBox[direccion[pos] + dir] != -1) {
-                    pos += offset64[TORRE][i];
-                    if (mailBox[direccion[pos] + offsetMailBox[TORRE][i]] == -1) break;
-                    ataquesTorre |= 1L << pos;
-
-                }
-            }
-            maskAtaqueTorre[j] = ataquesTorre;
-
-            for (int i = 0; i < offsetMailBox[ALFIL].length; i++) {
-
-                int dir = offsetMailBox[ALFIL][i];
-                int pos = j;
-                while (mailBox[direccion[pos] + dir] != -1) {
-                    pos += offset64[ALFIL][i];
-                    if (mailBox[direccion[pos] + offsetMailBox[ALFIL][i]] == -1) break;
-                    ataquesAlfil |= 1L << pos;
-                }
-
-            }
-            maskAtaqueAlfil[j] = ataquesAlfil;
-
-            for (int i = 0; i < offsetMailBox[DAMA].length; i++) {
-                int dir = offsetMailBox[DAMA][i];
-                int pos = j;
-                if (mailBox[direccion[pos] + dir] != -1) {
-                    pos += offset64[DAMA][i];
-                    ataquesRey |= 1L << pos;
-                }
+                ataquesPieza[i][j] = ataques[i];
             }
 
-            ataqueRey[j] = ataquesRey;
+            for (int i = 1; i < offsetMailBox[PEON].length; i++) {
 
-            for (int i = 1 ; i < offsetMailBox[PEON].length;i++){
-
-                if(mailBox[direccion[j] + offsetMailBox[PEON][i]] != -1){
-                    int pos = j + offset64[PEON][i];
-                    ataquesPeonBlanco |= 1L << pos;
+                if (mailBox[direccion[j] + offsetMailBox[PEON][i]] != -1) {
+                    int pos = mailBox[direccion[j] + offsetMailBox[PEON][i]];
+                    ataques[piezas.length] |= 1L << pos;
                 }
-                if(mailBox[direccion[j] - offsetMailBox[PEON][i]] != -1){
-                    int pos = j - offset64[PEON][i];
-                    ataquesPeonNegro |= 1L << pos;
+                if (mailBox[direccion[j] - offsetMailBox[PEON][i]] != -1) {
+                    int pos = mailBox[direccion[j] - offsetMailBox[PEON][i]];
+                    ataques[piezas.length + 1] |= 1L << pos;
                 }
 
             }
 
-            ataquePeon[BLANCO][j] = ataquesPeonBlanco;
-            ataquePeon[NEGRO][j] = ataquesPeonNegro;
-
+            ataquePeon[BLANCO][j] = ataques[piezas.length];
+            ataquePeon[NEGRO][j] = ataques[piezas.length + 1];
 
         }
+        iniciar();
     }
 
-    public static void iniciar() {
+    private static void iniciar() {
         for (int i = 0; i < 64; i++) {
             var attackMask = attackMask(i, TORRE);
-            llenarTablaAtaque(attackMask, ataqueTorre[i], TORRE,i, _rookMagics[i]);
+            llenarTablaAtaque(attackMask, ataqueTorre[i], TORRE, i, rookMagics[i]);
             attackMask = attackMask(i, ALFIL);
-            llenarTablaAtaque(attackMask, ataqueAlfil[i], ALFIL,i, _bishopMagics[i]);
+            llenarTablaAtaque(attackMask, ataqueAlfil[i], ALFIL, i, bishopMagics[i]);
         }
     }
 
-    public static int[] attackMask(int pos, int pieza) {
+    private static int[] attackMask(int pos, int pieza) {
 
         int[] attackMask = new int[64];
 
         for (int i = 0; i < offsetMailBox[pieza].length; i++) {
-            int p = pos;
-            while (mailBox[direccion[p] + offsetMailBox[pieza][i]] != -1) {
-                p += offset64[pieza][i];
-
-                if (mailBox[direccion[p] + offsetMailBox[pieza][i]] == -1) break;
-
-                attackMask[p] = 1;
+            int p = direccion[pos];
+            while (mailBox[p + offsetMailBox[pieza][i]] != -1) {
+                p += offsetMailBox[pieza][i];
+                if (mailBox[p + offsetMailBox[pieza][i]] == -1) break;
+                attackMask[mailBox[p]] = 1;
             }
 
         }
         return attackMask;
     }
 
-    public static void llenarTablaAtaque(int[] attackMask, long[] tabla, int pieza,int posicion, long magic) {
+    private static void llenarTablaAtaque(int[] attackMask, long[] tabla, int pieza, int posicion, long magic) {
 
         int bits = (int) Arrays.stream(attackMask).filter(e -> e == 1).count();
         int total = 0;
@@ -178,19 +148,19 @@ public class Ataque {
             for (int i = 0; i < offsetMailBox[pieza].length; i++) {
                 boolean limite = false;
 
-                int pos = posicion;
+                int pos = direccion[posicion];
 
-                while (mailBox[direccion[pos] + offsetMailBox[pieza][i]] != -1) {
-                    pos += offset64[pieza][i];
+                while (mailBox[pos + offsetMailBox[pieza][i]] != -1) {
+                    pos += offsetMailBox[pieza][i];
 
                     if (!limite) {
-                        ataque |= 1L << pos;
+                        ataque |= 1L << mailBox[pos];
                     }
 
-                    if (blocked[pos] == 1)
-                        bloqueadores |= 1L << pos;
+                    if (blocked[mailBox[pos]] == 1)
+                        bloqueadores |= 1L << mailBox[pos];
 
-                    if (blocked[pos] == 1) limite = true;
+                    if (blocked[mailBox[pos]] == 1) limite = true;
 
                 }
 

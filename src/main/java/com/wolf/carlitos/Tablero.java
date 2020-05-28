@@ -7,7 +7,7 @@ import java.util.Arrays;
 import static com.wolf.carlitos.Ataque.*;
 import static com.wolf.carlitos.Bitboard.*;
 import static com.wolf.carlitos.Constantes.*;
-import static com.wolf.carlitos.Pieza.piezas;
+import static com.wolf.carlitos.Pieza.bitboard;
 import static com.wolf.carlitos.Utilidades.convertirAPosicion;
 import static java.lang.Long.bitCount;
 import static java.lang.Long.numberOfTrailingZeros;
@@ -50,32 +50,32 @@ public class Tablero {
 
     public  boolean casillaAtacada(int posicion, int colorContrario) {
 
-        if ((ataqueCaballo[posicion] & piezas[colorContrario][CABALLO]) != 0) return true;
+        if ((ataqueCaballo[posicion] & bitboard[colorContrario][CABALLO]) != 0) return true;
 
         /* ATAQUE TORRE/DAMA */
         long casillasOcupadas = casillasOcupadas();
         long piezasAtacadas = casillasOcupadas & maskAtaqueTorre[posicion];
         int bits = bitCount(maskAtaqueTorre[posicion]);
         int desplazamiento = 64 - bits;
-        int index = (int) ((piezasAtacadas * _rookMagics[posicion]) >>> desplazamiento);
+        int index = (int) ((piezasAtacadas * rookMagics[posicion]) >>> desplazamiento);
         long attackSet = Ataque.ataqueTorre[posicion][index];
-        if ((attackSet & (piezas[colorContrario][TORRE] | piezas[colorContrario][DAMA])) != 0) return true;
+        if ((attackSet & (bitboard[colorContrario][TORRE] | bitboard[colorContrario][DAMA])) != 0) return true;
         /* FIN ATAQUE TORRE/DAMA */
 
         /* ATAQUE ALFIL/DAMA */
         piezasAtacadas = casillasOcupadas & maskAtaqueAlfil[posicion];
         bits = bitCount(maskAtaqueAlfil[posicion]);
         desplazamiento = 64 - bits;
-        index = (int) ((piezasAtacadas * _bishopMagics[posicion]) >>> desplazamiento);
+        index = (int) ((piezasAtacadas * bishopMagics[posicion]) >>> desplazamiento);
         attackSet = Ataque.ataqueAlfil[posicion][index];
-        if ((attackSet & (piezas[colorContrario][ALFIL] | piezas[colorContrario][DAMA])) != 0) return true;
+        if ((attackSet & (bitboard[colorContrario][ALFIL] | bitboard[colorContrario][DAMA])) != 0) return true;
         /* FIN ATAQUE ALFIL/DAMA */
 
 
-        if((ataquePeon[colorContrario ^ 1][posicion] & piezas[colorContrario][PEON] )!= 0) return true;
+        if((ataquePeon[colorContrario ^ 1][posicion] & bitboard[colorContrario][PEON] )!= 0) return true;
 
 
-        return (ataqueRey[posicion] & piezas[colorContrario][REY]) != 0;
+        return (ataqueRey[posicion] & bitboard[colorContrario][REY]) != 0;
     }
     public  void revertirMovimiento(Movimiento movimiento, int[] tablero, int[] color) {
 
@@ -366,37 +366,37 @@ public class Tablero {
     }
     public  long casillasOcupadas(){
         return
-                piezas[BLANCO][PEON] |
-                piezas[BLANCO][CABALLO] |
-                piezas[BLANCO][ALFIL] |
-                piezas[BLANCO][TORRE] |
-                piezas[BLANCO][DAMA] |
-                piezas[BLANCO][REY] |
-                piezas[NEGRO][PEON] |
-                piezas[NEGRO][CABALLO] |
-                piezas[NEGRO][ALFIL] |
-                piezas[NEGRO][TORRE] |
-                piezas[NEGRO][DAMA] |
-                piezas[NEGRO][REY];
+                bitboard[BLANCO][PEON] |
+                bitboard[BLANCO][CABALLO] |
+                bitboard[BLANCO][ALFIL] |
+                bitboard[BLANCO][TORRE] |
+                bitboard[BLANCO][DAMA] |
+                bitboard[BLANCO][REY] |
+                bitboard[NEGRO][PEON] |
+                bitboard[NEGRO][CABALLO] |
+                bitboard[NEGRO][ALFIL] |
+                bitboard[NEGRO][TORRE] |
+                bitboard[NEGRO][DAMA] |
+                bitboard[NEGRO][REY];
 
     }
     public  long piezasAmigas(int color){
         return
-                piezas[color][PEON] |
-                piezas[color][CABALLO] |
-                piezas[color][ALFIL] |
-                piezas[color][TORRE] |
-                piezas[color][DAMA] |
-                piezas[color][REY];
+                bitboard[color][PEON] |
+                bitboard[color][CABALLO] |
+                bitboard[color][ALFIL] |
+                bitboard[color][TORRE] |
+                bitboard[color][DAMA] |
+                bitboard[color][REY];
     }
     public  long piezasEnemigas(int color){
         color ^= 1;
         return
-                piezas[color][PEON] |
-                piezas[color][CABALLO] |
-                piezas[color][ALFIL] |
-                piezas[color][TORRE] |
-                piezas[color][DAMA];
+                bitboard[color][PEON] |
+                bitboard[color][CABALLO] |
+                bitboard[color][ALFIL] |
+                bitboard[color][TORRE] |
+                bitboard[color][DAMA];
     }
     private   int colocarValor(int valor, int posicion, int mascara, int estado) {
         return  estado & mascara | valor << posicion;
@@ -406,7 +406,7 @@ public class Tablero {
     }
     public  boolean reyEnJaque() {
         int miColor = miColor();
-        int posicionRey = numberOfTrailingZeros(piezas[miColor][REY]);
+        int posicionRey = numberOfTrailingZeros(bitboard[miColor][REY]);
         return casillaAtacada(posicionRey, colorContrario());
     }
     public  boolean alPaso(int destino) {
@@ -417,15 +417,15 @@ public class Tablero {
         return false;
     }
     public  boolean esTurnoBlanco() {
-        return (estados.lastElement() & 0b000000_000000_000_000_000000_1_00_00) > 0;
+        return (estados.lastElement() & 0b1_00_00) > 0;
     }
     public  int colorContrario() {
         return estados.lastElement() >>> 4 & 0b1;
     }
     public  int getPiezaEnPosicion(int posicion, int color){
         long maskPosicion = 1L << posicion;
-        for (int i = 0; i < piezas[color].length; i++) {
-            if ((piezas[color][i] & maskPosicion) != 0) return i;
+        for (int i = 0; i < bitboard[color].length; i++) {
+            if ((bitboard[color][i] & maskPosicion) != 0) return i;
         }
         throw new IllegalStateException("no se encontró la pieza");
     }
@@ -434,7 +434,7 @@ public class Tablero {
 
         tablero = new int[64];
         color = new int[64];
-        piezas = new long[2][6];
+        bitboard = new long[2][6];
 
         Arrays.fill(tablero, NOPIEZA);
         Arrays.fill(color, NOCOLOR);

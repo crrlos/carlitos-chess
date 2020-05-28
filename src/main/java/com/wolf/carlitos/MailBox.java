@@ -24,7 +24,8 @@ public class MailBox {
                     {8, 12, 19, 21, -8, -12, -19, -21},
                     {SURESTE, NORESTE, SUROESTE, NOROESTE},
                     {NORTE, SUR, ESTE, OESTE},
-                    {NORTE, SUR, ESTE, OESTE, SURESTE, NORESTE, SUROESTE, NOROESTE}
+                    {NORTE, SUR, ESTE, OESTE, SURESTE, NORESTE, SUROESTE, NOROESTE},
+                    {NORTE, SUR, ESTE, OESTE, SURESTE, NORESTE, SUROESTE, NOROESTE},
             };
 
     public static final int[] direccion = new int[]{
@@ -38,12 +39,4 @@ public class MailBox {
             91, 92, 93, 94, 95, 96, 97, 98,
     };
 
-    public static final int[][] offset64 = new int[][]
-            {
-                    {norte, noreste, noroeste},
-                    {6, 10, 15, 17, -6, -10, -15, -17},
-                    {sureste, noreste, suroeste, noroeste},
-                    {norte, sur, este, oeste},
-                    {norte, sur, este, oeste, sureste, noreste, suroeste, noroeste}
-            };
 }

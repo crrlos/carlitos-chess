@@ -9,8 +9,7 @@ import static com.wolf.carlitos.Ataque.*;
 import static com.wolf.carlitos.Bitboard.*;
 import static com.wolf.carlitos.Constantes.*;
 import static com.wolf.carlitos.MailBox.*;
-import static com.wolf.carlitos.Pieza.piezas;
-import static com.wolf.carlitos.Tablero.*;
+import static com.wolf.carlitos.Pieza.bitboard;
 import static java.lang.Long.bitCount;
 import static java.lang.Long.numberOfTrailingZeros;
 
@@ -79,29 +78,29 @@ public class Generador {
 
         int bando = tab.miColor();
 
-        for (long squares = piezas[bando][PEON]; squares != 0; squares = remainder(squares)) {
+        for (long squares = bitboard[bando][PEON]; squares != 0; squares = remainder(squares)) {
             int square = next(squares);
             movimientosDePeon(tab.getEstado(), square);
         }
 
-        for (long squares = piezas[bando][CABALLO]; squares != 0; squares = remainder(squares)) {
+        for (long squares = bitboard[bando][CABALLO]; squares != 0; squares = remainder(squares)) {
             int square = next(squares);
             movimientosDeCaballo(tab.getEstado(), square);
         }
-        for (long squares = piezas[bando][ALFIL]; squares != 0; squares = remainder(squares)) {
+        for (long squares = bitboard[bando][ALFIL]; squares != 0; squares = remainder(squares)) {
             int square = next(squares);
             movimientosDeAlfil(tab.getEstado(), square);
         }
-        for (long squares = piezas[bando][TORRE]; squares != 0; squares = remainder(squares)) {
+        for (long squares = bitboard[bando][TORRE]; squares != 0; squares = remainder(squares)) {
             int square = next(squares);
             movimientosDeTorre(tab.getEstado(), square);
         }
-        for (long squares = piezas[bando][DAMA]; squares != 0; squares = remainder(squares)) {
+        for (long squares = bitboard[bando][DAMA]; squares != 0; squares = remainder(squares)) {
             int square = next(squares);
             movimientosDeDama(tab.getEstado(), square);
         }
 
-        for (long squares = piezas[bando][REY]; squares != 0; squares = remainder(squares)) {
+        for (long squares = bitboard[bando][REY]; squares != 0; squares = remainder(squares)) {
             int square = next(squares);
             movimientosDeRey(tab.getEstado(), square);
         }
@@ -124,20 +123,20 @@ public class Generador {
         long piezasAmigas = tab.piezasAmigas(miColor);
         long casillasOcupadas = tab.casillasOcupadas();
 
-        for (long squares = piezas[miColor][PEON]; squares != 0; squares = remainder(squares)) {
+        for (long squares = bitboard[miColor][PEON]; squares != 0; squares = remainder(squares)) {
             int square = next(squares);
 
             int pos;
             for (int i = 1; i < offsetMailBox[PEON].length; i++) {
 
                 int dir = offsetMailBox[PEON][i];
-                pos = square;
-                if (mailBox[direccion[pos] + (contrario == BLANCO ? -dir : dir)] != -1) {
-                    pos += (contrario == BLANCO ? -offset64[PEON][i] : offset64[PEON][i]);
-                    if (pieza[pos] != NOPIEZA) {
-                        if (color[pos] == contrario && pieza[pos] != REY) {
-                            if (movimientoValido(square << 6 | pos,  tab.getEstado()))
-                                movimientos.add(square << 6 | pos);
+                pos = direccion[square];
+                if (mailBox[pos + (contrario == BLANCO ? -dir : dir)] != -1) {
+                    pos += (contrario == BLANCO ? -dir : dir);
+                    if (pieza[mailBox[pos]] != NOPIEZA) {
+                        if (color[mailBox[pos]] == contrario && pieza[mailBox[pos]] != REY) {
+                            if (movimientoValido(square << 6 | mailBox[pos],  tab.getEstado()))
+                                movimientos.add(square << 6 | mailBox[pos]);
                         }
 
                     }
@@ -147,7 +146,7 @@ public class Generador {
             }
 
         }
-        for (long squares = piezas[miColor][CABALLO]; squares != 0; squares = remainder(squares)) {
+        for (long squares = bitboard[miColor][CABALLO]; squares != 0; squares = remainder(squares)) {
             int square = next(squares);
 
             long piezasAtacadas = ataqueCaballo[square] & piezasEnemigas;
@@ -160,7 +159,7 @@ public class Generador {
 
             }
         }
-        for (long squares = piezas[miColor][REY]; squares != 0; squares = remainder(squares)) {
+        for (long squares = bitboard[miColor][REY]; squares != 0; squares = remainder(squares)) {
             int square = next(squares);
 
             long piezasAtacadas = ataqueRey[square] & piezasEnemigas;
@@ -173,11 +172,11 @@ public class Generador {
             }
 
         }
-        for (long squares = piezas[miColor][TORRE]; squares != 0; squares = remainder(squares)) {
+        for (long squares = bitboard[miColor][TORRE]; squares != 0; squares = remainder(squares)) {
             int square = next(squares);
 
             long piezasAtacadas = maskAtaqueTorre[square] & casillasOcupadas;
-            int index = (int) ((piezasAtacadas * _rookMagics[square]) >>> (64 - bitCount(maskAtaqueTorre[square])));
+            int index = (int) ((piezasAtacadas * rookMagics[square]) >>> (64 - bitCount(maskAtaqueTorre[square])));
 
             long attackSet = Ataque.ataqueTorre[square][index];
 
@@ -192,11 +191,11 @@ public class Generador {
             }
 
         }
-        for (long squares = piezas[miColor][ALFIL]; squares != 0; squares = remainder(squares)) {
+        for (long squares = bitboard[miColor][ALFIL]; squares != 0; squares = remainder(squares)) {
             int square = next(squares);
 
             long piezasAtacadas = maskAtaqueAlfil[square] & casillasOcupadas;
-            int index = (int) ((piezasAtacadas * _bishopMagics[square]) >>> (64 - bitCount(maskAtaqueAlfil[square])));
+            int index = (int) ((piezasAtacadas * bishopMagics[square]) >>> (64 - bitCount(maskAtaqueAlfil[square])));
 
             long attackSet = Ataque.ataqueAlfil[square][index];
 
@@ -211,15 +210,15 @@ public class Generador {
             }
 
         }
-        for (long squares = piezas[miColor][DAMA]; squares != 0; squares = remainder(squares)) {
+        for (long squares = bitboard[miColor][DAMA]; squares != 0; squares = remainder(squares)) {
             int square = next(squares);
 
             long piezasAtacadas = maskAtaqueTorre[square] & casillasOcupadas;
-            int index = (int) ((piezasAtacadas * _rookMagics[square]) >>> (64 - bitCount(maskAtaqueTorre[square])));
+            int index = (int) ((piezasAtacadas * rookMagics[square]) >>> (64 - bitCount(maskAtaqueTorre[square])));
             long attackSetTorre = Ataque.ataqueTorre[square][index];
 
             piezasAtacadas = maskAtaqueAlfil[square] & casillasOcupadas;
-            index = (int) ((piezasAtacadas * _bishopMagics[square]) >>> (64 - bitCount(maskAtaqueAlfil[square])));
+            index = (int) ((piezasAtacadas * bishopMagics[square]) >>> (64 - bitCount(maskAtaqueAlfil[square])));
             long attackSetAlfil = Ataque.ataqueAlfil[square][index];
 
             long ataque = casillasOcupadas & (attackSetTorre | attackSetAlfil);
@@ -249,11 +248,11 @@ public class Generador {
 
         long maskedBlockers = maskAtaqueTorre[posicion] & casillasOcupadas;
 
-        int index = (int) ((maskedBlockers * _rookMagics[posicion]) >>> (64 - bitCount(maskAtaqueTorre[posicion])));
+        int index = (int) ((maskedBlockers * rookMagics[posicion]) >>> (64 - bitCount(maskAtaqueTorre[posicion])));
 
         long attackSet = Ataque.ataqueTorre[posicion][index];
 
-        attackSet = attackSet & ~(tab.piezasAmigas(miColor) | piezas[tab.colorContrario()][REY]);
+        attackSet = attackSet & ~(tab.piezasAmigas(miColor) | bitboard[tab.colorContrario()][REY]);
 
         for (long squares = attackSet; squares != 0; squares = remainder(squares)) {
             int square = next(squares);
@@ -274,7 +273,7 @@ public class Generador {
 
         int miColor = tab.esTurnoBlanco() ? BLANCO : NEGRO;
 
-        long movimientosCaballo = ataqueCaballo[posicion] & ~(tab.piezasAmigas(miColor) | piezas[tab.colorContrario()][REY]);
+        long movimientosCaballo = ataqueCaballo[posicion] & ~(tab.piezasAmigas(miColor) | bitboard[tab.colorContrario()][REY]);
 
         boolean validar = false;
 
@@ -307,11 +306,11 @@ public class Generador {
 
         long maskedBlockers = maskAtaqueAlfil[posicion] & casillasOcupadas;
 
-        int index = (int) ((maskedBlockers * _bishopMagics[posicion]) >>> (64 - bitCount(maskAtaqueAlfil[posicion])));
+        int index = (int) ((maskedBlockers * bishopMagics[posicion]) >>> (64 - bitCount(maskAtaqueAlfil[posicion])));
 
         long attackSet = Ataque.ataqueAlfil[posicion][index];
 
-        attackSet = attackSet & ~(tab.piezasAmigas(miColor) | piezas[tab.colorContrario()][REY]);
+        attackSet = attackSet & ~(tab.piezasAmigas(miColor) | bitboard[tab.colorContrario()][REY]);
 
         for (long squares = attackSet; squares != 0; squares = remainder(squares)) {
             int square = next(squares);
@@ -422,7 +421,7 @@ public class Generador {
 
             long moveMask = 1L << square;
             if ((moveMask & casillasOcupadas) != 0) {
-                moveMask = moveMask & ~(tab.piezasAmigas(tab.miColor()) | piezas[tab.colorContrario()][REY]);
+                moveMask = moveMask & ~(tab.piezasAmigas(tab.miColor()) | bitboard[tab.colorContrario()][REY]);
                 if (moveMask != 0) {
                     int m = posicion << 6 | square;
                     if (destino >= A8 || destino <= H1) {
@@ -470,7 +469,7 @@ public class Generador {
         update(tab.esTurnoBlanco(), piezaInicio, inicio, destino);
 
 
-        int posicionRey = numberOfTrailingZeros(piezas[tab.miColor()][REY]);
+        int posicionRey = numberOfTrailingZeros(bitboard[tab.miColor()][REY]);
         var jaque = tab.casillaAtacada(posicionRey, tab.colorContrario());
 
 

@@ -1,5 +1,7 @@
 package com.wolf.carlitos;
 
+import static com.wolf.carlitos.Constantes.*;
+
 public class Pieza {
 
     public static final int NORTE = 10;
@@ -11,18 +13,18 @@ public class Pieza {
     public static final int SURESTE = SUR + ESTE;
     public static final int SUROESTE = SUR + OESTE;
 
-    public static final int norte = 8;
-    public static final int sur = -8;
-    public static final int este = 1;
-    public static final int oeste = -1;
-    public static final int noreste = norte + este;
-    public static final int noroeste = norte + oeste;
-    public static final int sureste = sur + este;
-    public static final int suroeste = sur + oeste;
+    public static int[] piezas = new int[]{
+            PEON, CABALLO, ALFIL, TORRE, DAMA, REY
+    };
 
-    public static int[] valorPiezas = new int[]
-            {100, 320, 330, 500, 900, 10000, 0};
+    public static int[] valorPiezas = new int[]{
+            100, 320, 330, 500, 900, 10000, 0
+    };
 
-    public static long[][] piezas = new long[2][6];
+    public static boolean[] slider = new boolean[]{
+            false, false, true, true, true, false
+    };
+
+    public static long[][] bitboard = new long[2][6];
 
 }

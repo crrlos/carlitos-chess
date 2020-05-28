@@ -18,7 +18,7 @@ import static com.wolf.carlitos.Search.history;
 public class Utilidades {
 
     private static final HashMap<String, Integer> casillaPosicion = new HashMap<>();
-    private static final HashMap<Integer, String> posicionCasilla = new HashMap<>();
+    public static final HashMap<Integer, String> posicionCasilla = new HashMap<>();
 
     static {
         int correlativo = 0;
