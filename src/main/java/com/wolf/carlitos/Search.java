@@ -31,53 +31,11 @@ public class Search {
 
     public static int[][] history = new int[64][64];
 
-    public static long zobrist = 0;
-    public static long[][][] zobristRand = new long[2][6][64];
-
-    static {
-        Random rand = new Random();
-        long[] casillas = new long[768];
-        int contador = 0;
-        while(contador < 768){
-            long r = rand.nextLong();
-            if(r > 0){
-                boolean repetido = false;
-                for (long casilla : casillas) {
-                    if (casilla == r) {
-                        repetido = true;
-                        break;
-                    }
-                }
-                if(repetido) continue;
-
-                casillas[contador] = r;
-                contador++;
-            }
-
-        }
-
-        contador = 0;
-
-        for (int i = 0; i < zobristRand.length; i++) {
-            for (int j = 0; j < zobristRand[i].length; j++) {
-                for (int k = 0; k < zobristRand[i][j].length; k++) {
-                    zobristRand[i][j][k] = casillas[contador++];
-                }
-            }
-        }
-    }
     public Search(Tablero tablero) {
         this.tablero = tablero.tablero;
         this.color = tablero.color;
         this.tab = tablero;
         this.generador = new Generador(tablero);
-
-        // init zobrist key
-        for (int i = 0; i < 64; i++) {
-            if(this.tablero[i] == NOPIEZA) continue;
-            zobrist ^= zobristRand[color[i]][this.tablero[i]][i];
-        }
-
     }
 
     private void perftSearch(int deep, Acumulador acumulador, boolean reset) {
@@ -219,14 +177,6 @@ public class Search {
         System.out.println("nodos: " + nodes);
         nodes = 0;
         return movimientos[pos];
-    }
-
-    public void actualizarZobrist(Movimiento movimiento){
-        // remover pieza de inicio
-        zobrist ^= zobristRand[color[movimiento.inicio]][tablero[movimiento.inicio]][movimiento.inicio];
-        if(tablero[movimiento.destino] == NOPIEZA) return;
-        // remover pieza de destino
-        zobrist ^= zobristRand[color[movimiento.destino]][tablero[movimiento.destino]][movimiento.destino];
     }
 
 }

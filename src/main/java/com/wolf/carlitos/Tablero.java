@@ -3,6 +3,8 @@ package com.wolf.carlitos;
 
 
 import java.util.Arrays;
+import java.util.Random;
+import java.util.Stack;
 
 import static com.wolf.carlitos.Ataque.*;
 import static com.wolf.carlitos.Bitboard.*;
@@ -15,40 +17,62 @@ import static java.lang.Math.abs;
 
 public class Tablero {
 
-    static class Stack{
-        private final int[] estados;
-        private int pos;
+    public int[] tablero = new int[64];
+    public int[] color = new int[64];
+    private final Stack<Integer> estados = new Stack<>();
+    private final Stack<Long> zobristKeys = new Stack<>();
 
-        Stack(){
-            estados = new int[1024];
-            pos = 0;
+    public static long[][][] zobristRand = new long[2][6][64];
+    /* [K,Q,k,q,EP] */
+    public static long[] zobristCastlePlusPasant = new long[5];
+    static {
+        Random rand = new Random();
+        long[] casillas = new long[773];
+        int contador = 0;
+        while(contador < casillas.length){
+            long r = rand.nextLong();
+            if(r > 0){
+                boolean repetido = false;
+                for (long casilla : casillas) {
+                    if (casilla == r) {
+                        repetido = true;
+                        break;
+                    }
+                }
+                if(repetido) continue;
+
+                casillas[contador++] = r;
+            }
         }
-        public void push(int estado){
-            estados[pos++] = estado;
+        contador = 0;
+
+        for (int i = 0; i < zobristRand.length; i++) {
+            for (int j = 0; j < zobristRand[i].length; j++) {
+                for (int k = 0; k < zobristRand[i][j].length; k++) {
+                    zobristRand[i][j][k] = casillas[contador++];
+                }
+            }
         }
-        public int pop(){
-            return estados[--pos];
-        }
-        public int lastElement(){
-            return estados[pos -1];
-        }
-        public void clear()
-        {
-            pos = 0;
+        for (int i = 0; i < zobristCastlePlusPasant.length; i++) {
+            zobristCastlePlusPasant[i] = casillas[contador++];
         }
 
     }
 
-    public  int[] tablero = new int[64];
-    public  int[] color = new int[64];
-    private final Stack estados = new Stack();
 
-    Tablero(){
+    Tablero() {
         setFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
         estados.push(POSICION_INICIAL);
+        // init zobrist key
+        long zobrist = 0;
+        for (int i = 0; i < 64; i++) {
+            if(this.tablero[i] == NOPIEZA) continue;
+            zobrist ^= zobristRand[color[i]][this.tablero[i]][i];
+        }
+        zobristKeys.push(zobrist);
     }
 
-    public  boolean casillaAtacada(int posicion, int colorContrario) {
+    public boolean casillaAtacada(int posicion, int colorContrario) {
 
         if ((ataqueCaballo[posicion] & bitboard[colorContrario][CABALLO]) != 0) return true;
 
@@ -68,14 +92,16 @@ public class Tablero {
         /* FIN ATAQUE ALFIL/DAMA */
 
 
-        if((ataquePeon[colorContrario ^ 1][posicion] & bitboard[colorContrario][PEON] )!= 0) return true;
+        if ((ataquePeon[colorContrario ^ 1][posicion] & bitboard[colorContrario][PEON]) != 0) return true;
 
 
         return (ataqueRey[posicion] & bitboard[colorContrario][REY]) != 0;
     }
-    public  void revertirMovimiento(Movimiento movimiento, int[] tablero, int[] color) {
+
+    public void revertirMovimiento(Movimiento movimiento, int[] tablero, int[] color) {
 
         int estado = estados.pop();
+        zobristKeys.pop();
         estado ^= 0b10000;
 
         int inicio = movimiento.inicio;
@@ -152,8 +178,10 @@ public class Tablero {
         color[destino] = tablero[destino] == NOPIEZA ? NOCOLOR : esTurnoBlanco() ? NEGRO : BLANCO;
 
     }
-    public  void hacerMovimiento(int[] tablero, int[] color, Movimiento movimiento) {
 
+    public void hacerMovimiento(int[] tablero, int[] color, Movimiento movimiento) {
+
+        long zobrist = zobristKeys.lastElement();
         int estado = estados.lastElement();
 
         int inicio = movimiento.inicio;
@@ -161,8 +189,8 @@ public class Tablero {
 
         var pieza = tablero[inicio];
 
-        estado = colocarValor(NOPIEZA, POSICION_PIEZA_CAPTURADA, MASK_LIMPIAR_PIEZA_CAPTURADA,estado);
-        estado = colocarValor(MOVIMIENTO_NORMAL, POSICION_TIPO_MOVIMIENTO, MASK_LIMPIAR_TIPO_MOVIMIENTO,estado);
+        estado = colocarValor(NOPIEZA, POSICION_PIEZA_CAPTURADA, MASK_LIMPIAR_PIEZA_CAPTURADA, estado);
+        estado = colocarValor(MOVIMIENTO_NORMAL, POSICION_TIPO_MOVIMIENTO, MASK_LIMPIAR_TIPO_MOVIMIENTO, estado);
 
         if (pieza == PEON) {
 
@@ -175,30 +203,45 @@ public class Tablero {
                 // aqui se remueve la pieza al paso
                 tablero[posicionAlPaso] = NOPIEZA;
                 color[posicionAlPaso] = NOCOLOR;
+                zobrist ^= zobristRand[colorContrario()][PEON][posicionAlPaso];
 
-                estado = colocarValor(AL_PASO, POSICION_TIPO_MOVIMIENTO, MASK_LIMPIAR_TIPO_MOVIMIENTO,estado);
+                estado = colocarValor(AL_PASO, POSICION_TIPO_MOVIMIENTO, MASK_LIMPIAR_TIPO_MOVIMIENTO, estado);
 
                 // al paso = false
                 estado &= MASK_LIMPIAR_AL_PASO;
+                zobrist ^= zobristCastlePlusPasant[4];
+
             } else if (destino <= H1 || destino >= A8) {
 
                 if (tablero[destino] != NOPIEZA) {
 
-                    estado = colocarValor(tablero[destino], POSICION_PIEZA_CAPTURADA, MASK_LIMPIAR_PIEZA_CAPTURADA,estado);
+                    estado = colocarValor(tablero[destino], POSICION_PIEZA_CAPTURADA, MASK_LIMPIAR_PIEZA_CAPTURADA, estado);
 
                     if (tablero[destino] == TORRE) {
                         switch (destino) {
                             case H8:
-                                estado &= MASK_LIMPIAR_ENROQUES_NEGROS | 8;
+                                if((estado & 4) > 0) {
+                                    zobrist ^= zobristCastlePlusPasant[2];
+                                    estado &= MASK_LIMPIAR_ENROQUES_NEGROS | 4;
+                                }
                                 break;
                             case A8:
-                                estado &= MASK_LIMPIAR_ENROQUES_NEGROS | 4;
+                                if((estado & 8) > 0) {
+                                    zobrist ^= zobristCastlePlusPasant[3];
+                                    estado &= MASK_LIMPIAR_ENROQUES_NEGROS | 8;
+                                }
                                 break;
                             case H1:
-                                estado &= MASK_LIMPIAR_ENROQUES_BLANCOS | 2;
+                                if((estado & 1) > 0) {
+                                    zobrist ^= zobristCastlePlusPasant[0];
+                                    estado &= MASK_LIMPIAR_ENROQUES_BLANCOS | 1;
+                                }
                                 break;
                             case A1:
-                                estado &= MASK_LIMPIAR_ENROQUES_BLANCOS | 1;
+                                if((estado & 2) > 0) {
+                                    zobrist ^= zobristCastlePlusPasant[1];
+                                    estado &= MASK_LIMPIAR_ENROQUES_BLANCOS | 2;
+                                }
                                 break;
 
                         }
@@ -206,6 +249,7 @@ public class Tablero {
                     }
                     // remover pieza capturada
                     remove(!esTurnoBlanco(), tablero[destino], destino);
+                    zobrist ^= zobristRand[colorContrario()][tablero[destino]][destino];
                 }
                 switch (movimiento.promocion) {
                     case 1:
@@ -223,21 +267,29 @@ public class Tablero {
                 }
                 // agregar pieza promovida
                 add(esTurnoBlanco(), tablero[destino], destino);
-                // remover el peon porque se va a promover
+                zobrist ^= zobristRand[miColor()][tablero[destino]][destino];
+                // remover el peon porque se  promovió
                 remove(esTurnoBlanco(), PEON, inicio);
+                zobrist ^= zobristRand[miColor()][PEON][inicio];
 
 
                 color[destino] = esTurnoBlanco() ? BLANCO : NEGRO;
-                 estado = colocarValor(PROMOCION, POSICION_TIPO_MOVIMIENTO, MASK_LIMPIAR_TIPO_MOVIMIENTO,estado);
+                estado = colocarValor(PROMOCION, POSICION_TIPO_MOVIMIENTO, MASK_LIMPIAR_TIPO_MOVIMIENTO, estado);
 
                 tablero[inicio] = NOPIEZA;
                 color[inicio] = NOCOLOR;
+
+                // si hay al paso removerlo de zobrist
+                if((estado >> 5 & 0b111111) > 0){
+                    zobrist ^= zobristCastlePlusPasant[4];
+                }
 
                 estado &= MASK_LIMPIAR_AL_PASO;
 
                 estado ^= 0b10000;
 
                 estados.push(estado);
+                zobristKeys.push(zobrist);
                 return;
 
             } else if (abs(inicio - destino) == 16) {
@@ -246,6 +298,12 @@ public class Tablero {
                 estado = estado & MASK_LIMPIAR_AL_PASO | posicionPiezaAlPAso << POSICION_PIEZA_AL_PASO;
 
                 update(esTurnoBlanco(), PEON, inicio, destino);
+
+                // se mueve el peon
+                zobrist ^= zobristRand[miColor()][PEON][inicio];
+                zobrist ^= zobristRand[miColor()][PEON][destino];
+                // se agrega al paso
+                zobrist ^= zobristCastlePlusPasant[4];
 
                 tablero[destino] = pieza;
                 tablero[inicio] = NOPIEZA;
@@ -256,6 +314,7 @@ public class Tablero {
                 estado ^= 0b10000;
 
                 estados.push(estado);
+                zobristKeys.push(zobrist);
                 return;
             }
 
@@ -265,12 +324,19 @@ public class Tablero {
                 if (color[inicio] == BLANCO) {
                     if (destino == G1) {
                         update(esTurnoBlanco(), TORRE, H1, F1);
+                        // mover torre de h1 a f1
+                        zobrist ^= zobristRand[miColor()][TORRE][H1];
+                        zobrist ^= zobristRand[miColor()][TORRE][F1];
+
                         tablero[F1] = tablero[H1];
                         tablero[H1] = NOPIEZA;
                         color[F1] = color[H1];
                         color[H1] = NOCOLOR;
                     } else {
                         update(esTurnoBlanco(), TORRE, A1, D1);
+                        // mover torre de a1 a d1
+                        zobrist ^= zobristRand[miColor()][TORRE][A1];
+                        zobrist ^= zobristRand[miColor()][TORRE][D1];
                         tablero[D1] = tablero[A1];
                         tablero[A1] = NOPIEZA;
                         color[D1] = color[A1];
@@ -279,70 +345,105 @@ public class Tablero {
                 } else {
                     if (destino == G8) {
                         update(esTurnoBlanco(), TORRE, H8, F8);
+                        zobrist ^= zobristRand[miColor()][TORRE][H8];
+                        zobrist ^= zobristRand[miColor()][TORRE][F8];
                         tablero[F8] = tablero[H8];
                         tablero[H8] = NOPIEZA;
                         color[F8] = color[H8];
                         color[H8] = NOCOLOR;
                     } else {
                         update(esTurnoBlanco(), TORRE, A8, D8);
+                        zobrist ^= zobristRand[miColor()][TORRE][A8];
+                        zobrist ^= zobristRand[miColor()][TORRE][D8];
                         tablero[D8] = tablero[A8];
                         tablero[A8] = NOPIEZA;
                         color[D8] = color[A8];
                         color[A8] = NOCOLOR;
                     }
                 }
-                estado = colocarValor(ENROQUE, POSICION_TIPO_MOVIMIENTO, MASK_LIMPIAR_TIPO_MOVIMIENTO,estado);
+                estado = colocarValor(ENROQUE, POSICION_TIPO_MOVIMIENTO, MASK_LIMPIAR_TIPO_MOVIMIENTO, estado);
             } else {
-                estado = colocarValor(MOVIMIENTO_REY, POSICION_TIPO_MOVIMIENTO, MASK_LIMPIAR_TIPO_MOVIMIENTO,estado);
+                estado = colocarValor(MOVIMIENTO_REY, POSICION_TIPO_MOVIMIENTO, MASK_LIMPIAR_TIPO_MOVIMIENTO, estado);
             }
             if (esTurnoBlanco()) {
                 // enroques blancos false
                 estado &= MASK_LIMPIAR_ENROQUES_BLANCOS;
                 // posicion rey blanco
                 estado = estado & MASK_LIMPIAR_POSICION_REY_BLANCO | destino << POSICION_REY_BLANCO;
+                zobrist ^= zobristCastlePlusPasant[0];
+                zobrist ^= zobristCastlePlusPasant[1];
             } else {
                 // enroques negros false
                 estado &= MASK_LIMPIAR_ENROQUES_NEGROS;
                 // posicion rey negro
                 estado = estado & MASK_LIMPIAR_POSICION_REY_NEGRO | destino << POSICION_REY_NEGRO;
+
+                zobrist ^= zobristCastlePlusPasant[2];
+                zobrist ^= zobristCastlePlusPasant[3];
             }
 
         } else if (pieza == TORRE) {
 
             switch (inicio) {
                 case H8:
-                    estado &= MASK_LIMPIAR_ENROQUES_NEGROS | 8;
+                    if((estado & 4) > 0) {
+                        zobrist ^= zobristCastlePlusPasant[2];
+                        estado &= MASK_LIMPIAR_ENROQUES_NEGROS | 4;
+                    }
                     break;
                 case A8:
-                    estado &= MASK_LIMPIAR_ENROQUES_NEGROS | 4;
+                    if((estado & 8) > 0) {
+                        zobrist ^= zobristCastlePlusPasant[3];
+                        estado &= MASK_LIMPIAR_ENROQUES_NEGROS | 8;
+                    }
                     break;
                 case H1:
-                    estado &= MASK_LIMPIAR_ENROQUES_BLANCOS | 2;
+                    if((estado & 1) > 0) {
+                        zobrist ^= zobristCastlePlusPasant[0];
+                        estado &= MASK_LIMPIAR_ENROQUES_BLANCOS | 1;
+                    }
                     break;
                 case A1:
-                    estado &= MASK_LIMPIAR_ENROQUES_BLANCOS | 1;
+                    if((estado & 2) > 0) {
+                        zobrist ^= zobristCastlePlusPasant[1];
+                        estado &= MASK_LIMPIAR_ENROQUES_BLANCOS | 2;
+                    }
                     break;
             }
 
         }
-        estado = colocarValor(tablero[destino], POSICION_PIEZA_CAPTURADA, MASK_LIMPIAR_PIEZA_CAPTURADA,estado);
+        estado = colocarValor(tablero[destino], POSICION_PIEZA_CAPTURADA, MASK_LIMPIAR_PIEZA_CAPTURADA, estado);
 
-        if (tablero[destino] != NOPIEZA)
+        if (tablero[destino] != NOPIEZA) {
             remove(!esTurnoBlanco(), tablero[destino], destino);
+            zobrist ^= zobristRand[colorContrario()][tablero[destino]][destino];
+        }
 
         if (tablero[destino] == TORRE) {
             switch (destino) {
                 case H8:
-                    estado &= MASK_LIMPIAR_ENROQUES_NEGROS | 8;
+                    if((estado & 4) > 0) {
+                        zobrist ^= zobristCastlePlusPasant[2];
+                        estado &= MASK_LIMPIAR_ENROQUES_NEGROS | 4;
+                    }
                     break;
                 case A8:
-                    estado &= MASK_LIMPIAR_ENROQUES_NEGROS | 4;
+                    if((estado & 8) > 0) {
+                        zobrist ^= zobristCastlePlusPasant[3];
+                        estado &= MASK_LIMPIAR_ENROQUES_NEGROS | 8;
+                    }
                     break;
                 case H1:
-                    estado &= MASK_LIMPIAR_ENROQUES_BLANCOS | 2;
+                    if((estado & 1) > 0) {
+                        zobrist ^= zobristCastlePlusPasant[0];
+                        estado &= MASK_LIMPIAR_ENROQUES_BLANCOS | 1;
+                    }
                     break;
                 case A1:
-                    estado &= MASK_LIMPIAR_ENROQUES_BLANCOS | 1;
+                    if((estado & 2) > 0) {
+                        zobrist ^= zobristCastlePlusPasant[1];
+                        estado &= MASK_LIMPIAR_ENROQUES_BLANCOS | 2;
+                    }
                     break;
 
             }
@@ -350,81 +451,100 @@ public class Tablero {
         }
         update(esTurnoBlanco(), tablero[inicio], inicio, destino);
 
+        zobrist ^= zobristRand[miColor()][tablero[inicio]][inicio];
+        zobrist ^= zobristRand[miColor()][tablero[inicio]][destino];
+
         tablero[destino] = tablero[inicio];
         color[destino] = color[inicio];
 
         tablero[inicio] = NOPIEZA;
         color[inicio] = NOCOLOR;
 
+        if((estado >> 5 & 0b111111) > 0){
+            zobrist ^= zobristCastlePlusPasant[4];
+        }
+
         estado &= MASK_LIMPIAR_AL_PASO;
         estado ^= 0b10000;
         estados.push(estado);
+        zobristKeys.push(zobrist);
     }
-    public  long casillasOcupadas(){
+
+    public long casillasOcupadas() {
         return
                 bitboard[BLANCO][PEON] |
-                bitboard[BLANCO][CABALLO] |
-                bitboard[BLANCO][ALFIL] |
-                bitboard[BLANCO][TORRE] |
-                bitboard[BLANCO][DAMA] |
-                bitboard[BLANCO][REY] |
-                bitboard[NEGRO][PEON] |
-                bitboard[NEGRO][CABALLO] |
-                bitboard[NEGRO][ALFIL] |
-                bitboard[NEGRO][TORRE] |
-                bitboard[NEGRO][DAMA] |
-                bitboard[NEGRO][REY];
+                        bitboard[BLANCO][CABALLO] |
+                        bitboard[BLANCO][ALFIL] |
+                        bitboard[BLANCO][TORRE] |
+                        bitboard[BLANCO][DAMA] |
+                        bitboard[BLANCO][REY] |
+                        bitboard[NEGRO][PEON] |
+                        bitboard[NEGRO][CABALLO] |
+                        bitboard[NEGRO][ALFIL] |
+                        bitboard[NEGRO][TORRE] |
+                        bitboard[NEGRO][DAMA] |
+                        bitboard[NEGRO][REY];
 
     }
-    public  long piezasAmigas(int color){
+
+    public long piezasAmigas(int color) {
         return
                 bitboard[color][PEON] |
-                bitboard[color][CABALLO] |
-                bitboard[color][ALFIL] |
-                bitboard[color][TORRE] |
-                bitboard[color][DAMA] |
-                bitboard[color][REY];
+                        bitboard[color][CABALLO] |
+                        bitboard[color][ALFIL] |
+                        bitboard[color][TORRE] |
+                        bitboard[color][DAMA] |
+                        bitboard[color][REY];
     }
-    public  long piezasEnemigas(int color){
+
+    public long piezasEnemigas(int color) {
         color ^= 1;
         return
                 bitboard[color][PEON] |
-                bitboard[color][CABALLO] |
-                bitboard[color][ALFIL] |
-                bitboard[color][TORRE] |
-                bitboard[color][DAMA];
+                        bitboard[color][CABALLO] |
+                        bitboard[color][ALFIL] |
+                        bitboard[color][TORRE] |
+                        bitboard[color][DAMA];
     }
-    private   int colocarValor(int valor, int posicion, int mascara, int estado) {
-        return  estado & mascara | valor << posicion;
+
+    private int colocarValor(int valor, int posicion, int mascara, int estado) {
+        return estado & mascara | valor << posicion;
     }
-    public  int miColor() {
+
+    public int miColor() {
         return (estados.lastElement() >>> 4 & 0b1) ^ 1;
     }
-    public  boolean reyEnJaque() {
+
+    public boolean reyEnJaque() {
         int miColor = miColor();
         int posicionRey = numberOfTrailingZeros(bitboard[miColor][REY]);
         return casillaAtacada(posicionRey, colorContrario());
     }
-    public  boolean alPaso(int destino) {
+
+    public boolean alPaso(int destino) {
 
         if ((destino >= A3 && destino <= H3 && miColor() == NEGRO) || (destino >= A6 && destino <= H6 && miColor() == BLANCO))
             return (estados.lastElement() >> POSICION_PIEZA_AL_PASO & 0b111111) == destino;
 
         return false;
     }
-    public  boolean esTurnoBlanco() {
+
+    public boolean esTurnoBlanco() {
         return (estados.lastElement() & 0b1_00_00) > 0;
     }
-    public  int colorContrario() {
+
+    public int colorContrario() {
         return estados.lastElement() >>> 4 & 0b1;
     }
-    public  int getPiezaEnPosicion(int posicion, int color){
+
+    public int getPiezaEnPosicion(int posicion, int color) {
         long maskPosicion = 1L << posicion;
         for (int i = 0; i < bitboard[color].length; i++) {
             if ((bitboard[color][i] & maskPosicion) != 0) return i;
         }
         throw new IllegalStateException("no se encontró la pieza");
     }
+
     public void setFen(String fen) {
         int estado = 0;
 
@@ -470,11 +590,13 @@ public class Tablero {
         estados.clear();
         estados.push(estado);
     }
-    public void setHistoria(String... movimientos){
+
+    public void setHistoria(String... movimientos) {
         for (var movimiento : movimientos) {
             hacerMovimiento(tablero, color, convertirAPosicion(movimiento));
         }
     }
+
     private void iniciarFen(String fila, int i) {
 
         int indexInicio = 8 * i;
@@ -484,63 +606,63 @@ public class Tablero {
             if (c == 'k') {
                 tablero[indexInicio] = REY;
                 color[indexInicio] = NEGRO;
-                add(false,REY,indexInicio);
+                add(false, REY, indexInicio);
             }
             if (c == 'q') {
                 tablero[indexInicio] = DAMA;
                 color[indexInicio] = NEGRO;
-                add(false,DAMA,indexInicio);
+                add(false, DAMA, indexInicio);
             }
             if (c == 'r') {
                 tablero[indexInicio] = TORRE;
                 color[indexInicio] = NEGRO;
-                add(false,TORRE,indexInicio);
+                add(false, TORRE, indexInicio);
             }
             if (c == 'b') {
                 tablero[indexInicio] = ALFIL;
                 color[indexInicio] = NEGRO;
-                add(false,ALFIL,indexInicio);
+                add(false, ALFIL, indexInicio);
             }
             if (c == 'n') {
                 tablero[indexInicio] = CABALLO;
                 color[indexInicio] = NEGRO;
-                add(false,CABALLO,indexInicio);
+                add(false, CABALLO, indexInicio);
             }
             if (c == 'p') {
                 tablero[indexInicio] = PEON;
                 color[indexInicio] = NEGRO;
-                add(false,PEON,indexInicio);
+                add(false, PEON, indexInicio);
             }
 
             if (c == 'K') {
                 tablero[indexInicio] = REY;
                 color[indexInicio] = BLANCO;
-                add(true,REY,indexInicio);
+                add(true, REY, indexInicio);
             }
             if (c == 'Q') {
                 tablero[indexInicio] = DAMA;
                 color[indexInicio] = BLANCO;
-                add(true,DAMA,indexInicio);
+                add(true, DAMA, indexInicio);
             }
             if (c == 'R') {
                 tablero[indexInicio] = TORRE;
                 color[indexInicio] = BLANCO;
-                add(true,TORRE,indexInicio);
+                add(true, TORRE, indexInicio);
             }
             if (c == 'B') {
                 tablero[indexInicio] = ALFIL;
                 color[indexInicio] = BLANCO;
-                add(true,ALFIL,indexInicio);
+                add(true, ALFIL, indexInicio);
             }
             if (c == 'N') {
                 tablero[indexInicio] = CABALLO;
                 color[indexInicio] = BLANCO;
-                add(true,CABALLO,indexInicio);
+                add(true, CABALLO, indexInicio);
             }
             if (c == 'P') {
                 tablero[indexInicio] = PEON;
                 color[indexInicio] = BLANCO;
-                add(true,PEON,indexInicio);
+                add(true, PEON, indexInicio);
             }
 
             if (Character.isDigit(c)) {
@@ -551,7 +673,9 @@ public class Tablero {
         }
 
     }
-    public int getEstado(){
+
+    public int getEstado() {
         return estados.lastElement();
     }
+    public long getZobrist(){return zobristKeys.lastElement();}
 }
