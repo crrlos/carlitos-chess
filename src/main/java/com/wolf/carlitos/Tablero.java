@@ -11,15 +11,38 @@ import static com.wolf.carlitos.Bitboard.*;
 import static com.wolf.carlitos.Constantes.*;
 import static com.wolf.carlitos.Pieza.bitboard;
 import static com.wolf.carlitos.Utilidades.convertirAPosicion;
-import static java.lang.Long.bitCount;
 import static java.lang.Long.numberOfTrailingZeros;
 import static java.lang.Math.abs;
 
 public class Tablero {
 
+    static class Stack1 {
+        private final int[] estados;
+        private int pos;
+
+        Stack1(){
+            estados = new int[1024];
+            pos = 0;
+        }
+        public void push(int estado){
+            estados[pos++] = estado;
+        }
+        public int pop(){
+            return estados[--pos];
+        }
+        public int lastElement(){
+            return estados[pos -1];
+        }
+        public void clear()
+        {
+            pos = 0;
+        }
+
+    }
+
     public int[] tablero = new int[64];
     public int[] color = new int[64];
-    private final Stack<Integer> estados = new Stack<>();
+    private final Stack1 estados = new Stack1();
     private final Stack<Long> zobristKeys = new Stack<>();
 
     public static long[][][] zobristRand = new long[2][6][64];
@@ -62,14 +85,6 @@ public class Tablero {
 
     Tablero() {
         setFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-        estados.push(POSICION_INICIAL);
-        // init zobrist key
-        long zobrist = 0;
-        for (int i = 0; i < 64; i++) {
-            if(this.tablero[i] == NOPIEZA) continue;
-            zobrist ^= zobristRand[color[i]][this.tablero[i]][i];
-        }
-        zobristKeys.push(zobrist);
     }
 
     public boolean casillaAtacada(int posicion, int colorContrario) {
@@ -547,6 +562,7 @@ public class Tablero {
 
     public void setFen(String fen) {
         int estado = 0;
+        long zobrist = 0;
 
         tablero = new int[64];
         color = new int[64];
@@ -587,8 +603,24 @@ public class Tablero {
 
         }
 
+
+
+        for (int i = 0; i < 64; i++) {
+            if(tablero[i] == NOPIEZA) continue;
+            zobrist ^= zobristRand[color[i]][tablero[i]][i];
+        }
+
+        // agregar enroques disponibles
+        if((estado & 1) > 0) zobrist ^= zobristCastlePlusPasant[0];
+        if((estado & 2) > 0) zobrist ^= zobristCastlePlusPasant[1];
+        if((estado & 3) > 0) zobrist ^= zobristCastlePlusPasant[2];
+        if((estado & 4) > 0) zobrist ^= zobristCastlePlusPasant[3];
+        // agregar al paso, si hay
+        if((estado & 2016) > 0) zobrist ^= zobristCastlePlusPasant[4];
+
         estados.clear();
         estados.push(estado);
+        zobristKeys.push(zobrist);
     }
 
     public void setHistoria(String... movimientos) {
