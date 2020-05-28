@@ -6,14 +6,23 @@ import java.util.Random;
 import static com.wolf.carlitos.Bitboard.next;
 import static com.wolf.carlitos.Bitboard.remainder;
 import static com.wolf.carlitos.Constantes.*;
+import static java.lang.Long.bitCount;
 
 public class Test {
 
 
     public static void main(String[] args) {
 
+        int c = 0;
+        for (int i = 0; i < Ataque.maskAtaqueAlfil.length; i++) {
 
-        System.out.println(62  & 7 );
+            System.out.print((64 - bitCount(Ataque.maskAtaqueAlfil[i])) + ",");
+            c++;
+            if(c == 8){
+                c =0;
+                System.out.println();
+            }
+        }
 
 
 //        for (int i = A2; i <= H7; i++) {

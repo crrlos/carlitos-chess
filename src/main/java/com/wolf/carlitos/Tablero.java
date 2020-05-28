@@ -55,18 +55,18 @@ public class Tablero {
         /* ATAQUE TORRE/DAMA */
         long casillasOcupadas = casillasOcupadas();
         long piezasAtacadas = casillasOcupadas & maskAtaqueTorre[posicion];
-        int bits = bitCount(maskAtaqueTorre[posicion]);
-        int desplazamiento = 64 - bits;
-        int index = (int) ((piezasAtacadas * rookMagics[posicion]) >>> desplazamiento);
+        //int bits = bitCount(maskAtaqueTorre[posicion]);
+        //int desplazamiento = 64 - bits;
+        int index = (int) ((piezasAtacadas * rookMagics[posicion]) >>> rook_shift[posicion]);
         long attackSet = Ataque.ataqueTorre[posicion][index];
         if ((attackSet & (bitboard[colorContrario][TORRE] | bitboard[colorContrario][DAMA])) != 0) return true;
         /* FIN ATAQUE TORRE/DAMA */
 
         /* ATAQUE ALFIL/DAMA */
         piezasAtacadas = casillasOcupadas & maskAtaqueAlfil[posicion];
-        bits = bitCount(maskAtaqueAlfil[posicion]);
-        desplazamiento = 64 - bits;
-        index = (int) ((piezasAtacadas * bishopMagics[posicion]) >>> desplazamiento);
+        //bits = bitCount(maskAtaqueAlfil[posicion]);
+        //desplazamiento = 64 - bits;
+        index = (int) ((piezasAtacadas * bishopMagics[posicion]) >>> bishop_shift[posicion]);
         attackSet = Ataque.ataqueAlfil[posicion][index];
         if ((attackSet & (bitboard[colorContrario][ALFIL] | bitboard[colorContrario][DAMA])) != 0) return true;
         /* FIN ATAQUE ALFIL/DAMA */
