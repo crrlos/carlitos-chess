@@ -22,7 +22,6 @@ public class Generador {
         private final Movimiento[][] movimientosPorNivel = new Movimiento[200][256];
         private Movimiento[] current;
         private int posicion;
-
         Movimientos() {
             for (int i = 0; i < movimientosPorNivel.length; i++) {
                 for (int j = 0; j < movimientosPorNivel[i].length; j++) {
@@ -31,11 +30,8 @@ public class Generador {
             }
         }
 
-        public void iniciar(int nivel) {
-            if (nivel < 0) {
-                nivel = 10 + nivel * -1;
-            }
-            this.current = movimientosPorNivel[nivel];
+        public void iniciar(int ply) {
+            this.current = movimientosPorNivel[ply];
             this.posicion = 0;
         }
 
@@ -75,8 +71,8 @@ public class Generador {
     private final Movimientos movimientos = new Movimientos();
     private final Respuesta respuesta = new Respuesta();
 
-    private void init(int nivel) {
-        this.movimientos.iniciar(nivel);
+    private void init(int ply) {
+        this.movimientos.iniciar(ply);
         this.turnoBlanco = tab.esTurnoBlanco();
         this.estado = tab.getEstado();
         this.miColor = tab.miColor();
@@ -85,8 +81,8 @@ public class Generador {
         this.casillasOcupadas = tab.casillasOcupadas();
     }
 
-    public Respuesta generarMovimientos(int nivel) {
-        init(nivel);
+    public Respuesta generarMovimientos(int ply) {
+        init(ply);
 
         for (long squares = bitboard[miColor][PEON]; squares != 0; squares = remainder(squares)) {
             int square = next(squares);

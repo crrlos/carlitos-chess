@@ -74,18 +74,18 @@ public class Search {
 
     }
 
-    private int quiescent(int nivel, int alfa, int beta){
+    private int quiescent(int nivel, int alfa, int beta, int ply) {
 
         int mejorValor = evaluar(tab.miColor());
-        if(mejorValor > alfa) alfa = mejorValor;
-        if(mejorValor >= beta) return beta;
+        if (mejorValor > alfa) alfa = mejorValor;
+        if (mejorValor >= beta) return beta;
 
-        var respuesta = generador.generarCapturas(tablero,color,nivel);
+        var respuesta = generador.generarCapturas(tablero, color, ply);
 
         var movimientos = respuesta.movimientosGenerados;
         var fin = respuesta.cantidadDeMovimientos;
 
-        establecerPuntuacion(movimientos, fin,tab);
+        establecerPuntuacion(movimientos, fin, tab);
         insertionSort(movimientos, fin);
 
         for (int i = 0; i < fin; i++) {
@@ -93,7 +93,7 @@ public class Search {
 
             tab.hacerMovimiento(tablero, color, mov);
 
-            int evaluacion = -quiescent(nivel - 1, -beta, -alfa);
+            int evaluacion = -quiescent(nivel - 1, -beta, -alfa, ply + 1);
 
             tab.revertirMovimiento(mov, tablero, color);
 
@@ -102,17 +102,17 @@ public class Search {
 
         }
 
-        return  alfa;
+        return alfa;
     }
 
-    public int negaMax(int nivel, int alfa, int beta){
-        if (nivel == 0) return quiescent(nivel, alfa, beta);
+    public int negaMax(int nivel, int alfa, int beta, int ply) {
+        if (nivel == 0) return quiescent(nivel, alfa, beta, ply);
         var respuesta = generador.generarMovimientos(nivel);
 
         var movimientos = respuesta.movimientosGenerados;
         var fin = respuesta.cantidadDeMovimientos;
 
-        establecerPuntuacion(movimientos, fin,tab);
+        establecerPuntuacion(movimientos, fin, tab);
         insertionSort(movimientos, fin);
 
         if (fin == 0) {
@@ -125,7 +125,7 @@ public class Search {
 
             tab.hacerMovimiento(tablero, color, mov);
 
-            int evaluacion = -negaMax(nivel - 1, -beta, -alfa);
+            int evaluacion = -negaMax(nivel - 1, -beta, -alfa, ply + 1);
 
             tab.revertirMovimiento(mov, tablero, color);
 
@@ -141,18 +141,17 @@ public class Search {
         return alfa;
     }
 
-    public Movimiento search(int n) {
+    public Movimiento search(int depth) {
         int pos = 0;
 
         int alfa = -10_000_000;
         int beta = 10_000_000;
 
-        var respuesta = this.generador.generarMovimientos(n);
-
+        var respuesta = this.generador.generarMovimientos(0);
         var movimientos = respuesta.movimientosGenerados;
         var fin = respuesta.cantidadDeMovimientos;
 
-        establecerPuntuacion(movimientos, fin,tab);
+        establecerPuntuacion(movimientos, fin, tab);
         insertionSort(movimientos, fin);
 
         for (int i = 0; i < fin; i++) {
@@ -161,9 +160,9 @@ public class Search {
 
             tab.hacerMovimiento(tablero, color, mov);
 
-            int eval = -negaMax(n - 1, -beta, -alfa);
+            int eval = -negaMax(depth - 1, -beta, -alfa, 1);
 
-            if(eval > alfa) {
+            if (eval > alfa) {
                 alfa = eval;
                 pos = i;
             }
@@ -176,7 +175,7 @@ public class Search {
         return movimientos[pos];
     }
 
-    public  void establecerPuntuacion(Movimiento[] movimientos, int fin,Tablero tab) {
+    public void establecerPuntuacion(Movimiento[] movimientos, int fin, Tablero tab) {
 
         for (int i = 0; i < fin; i++) {
             int inicio = movimientos[i].inicio;
@@ -184,7 +183,7 @@ public class Search {
             int ponderacion = 100_000_000;
 
             // si es captura usar MVVLVA, con offset de 100k para se coloque antes de una no captura
-            if(tab.tablero[destino] != NOPIEZA){
+            if (tab.tablero[destino] != NOPIEZA) {
                 ponderacion += valorPiezas[REY] / valorPiezas[tab.tablero[inicio]] + 10 * valorPiezas[tab.tablero[destino]];
                 movimientos[i].ponderacion = ponderacion;
                 continue;
@@ -192,13 +191,13 @@ public class Search {
             // si no es captura usar history heuristic
 
             ponderacion = history[inicio][destino];
-            movimientos[i].ponderacion =  ponderacion;
+            movimientos[i].ponderacion = ponderacion;
 
         }
 
     }
 
-    public  void insertionSort(Movimiento[] array, int fin) {
+    public void insertionSort(Movimiento[] array, int fin) {
         for (int j = 1; j < fin; j++) {
             Movimiento key = array[j];
             int i = j - 1;
