@@ -4,14 +4,12 @@ package com.wolf.carlitos;
 
 import java.util.Arrays;
 import java.util.Random;
-import java.util.Stack;
 
 import static com.wolf.carlitos.Ataque.*;
 import static com.wolf.carlitos.Bitboard.*;
 import static com.wolf.carlitos.Constantes.*;
 import static com.wolf.carlitos.Pieza.bitboard;
 import static com.wolf.carlitos.Utilidades.convertirAPosicion;
-import static com.wolf.carlitos.Utilidades.imprimirBinario;
 import static java.lang.Long.numberOfTrailingZeros;
 import static java.lang.Math.abs;
 
@@ -149,7 +147,7 @@ public class Tablero {
         return (ataqueRey[posicion] & bitboard[colorContrario][REY]) != 0;
     }
 
-    public void revertirMovimiento(Movimiento movimiento, int[] tablero, int[] color) {
+    public void revertirMovimiento(Movimiento movimiento) {
 
         int estado = estados.pop();
         zobristKeys.pop();
@@ -230,7 +228,7 @@ public class Tablero {
 
     }
 
-    public void hacerMovimiento(int[] tablero, int[] color, Movimiento movimiento) {
+    public void hacerMovimiento(Movimiento movimiento) {
 
         long zobrist = zobristKeys.lastElement();
         int estado = estados.lastElement();
@@ -674,7 +672,7 @@ public class Tablero {
 
     public void setHistoria(String... movimientos) {
         for (var movimiento : movimientos) {
-            hacerMovimiento(tablero, color, convertirAPosicion(movimiento));
+            hacerMovimiento(convertirAPosicion(movimiento));
         }
     }
 

@@ -51,11 +51,11 @@ public class Search {
         for (int i = 0; i < fin; i++) {
             var mov = movimientos[i];
 
-            tab.hacerMovimiento(tablero, color, mov);
+            tab.hacerMovimiento(mov);
 
             perftSearch(deep - 1, acumulador, false);
 
-            tab.revertirMovimiento(mov, tablero, color);
+            tab.revertirMovimiento(mov);
 
             if (reset) {
                 System.out.println(Utilidades.convertirANotacion(mov) + " " + acumulador.contadorPerft);
@@ -91,11 +91,11 @@ public class Search {
         for (int i = 0; i < fin; i++) {
             var mov = movimientos[i];
 
-            tab.hacerMovimiento(tablero, color, mov);
+            tab.hacerMovimiento(mov);
 
             int evaluacion = -quiescent(nivel - 1, -beta, -alfa, ply + 1);
 
-            tab.revertirMovimiento(mov, tablero, color);
+            tab.revertirMovimiento(mov);
 
             if (evaluacion > alfa) alfa = evaluacion;
             if (evaluacion >= beta) return beta;
@@ -123,11 +123,11 @@ public class Search {
         for (int i = 0; i < fin; i++) {
             var mov = movimientos[i];
 
-            tab.hacerMovimiento(tablero, color, mov);
+            tab.hacerMovimiento(mov);
 
             int evaluacion = -negaMax(nivel - 1, -beta, -alfa, ply + 1);
 
-            tab.revertirMovimiento(mov, tablero, color);
+            tab.revertirMovimiento(mov);
 
             if (evaluacion >= beta) {
                 if (tablero[mov.destino] == NOPIEZA)
@@ -158,7 +158,7 @@ public class Search {
 
             var mov = movimientos[i];
 
-            tab.hacerMovimiento(tablero, color, mov);
+            tab.hacerMovimiento(mov);
 
             int eval = -negaMax(depth - 1, -beta, -alfa, 1);
 
@@ -167,7 +167,7 @@ public class Search {
                 pos = i;
             }
 
-            tab.revertirMovimiento(mov, tablero, color);
+            tab.revertirMovimiento(mov);
 
         }
         System.out.println("nodos: " + nodes);
