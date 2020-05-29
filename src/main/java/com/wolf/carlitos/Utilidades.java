@@ -97,6 +97,7 @@ public class Utilidades {
         formato = formateado.substring(formateado.length() - 2);
         formato = formateado.substring(formateado.length() - 4, formateado.length() - 2) + "_" + formato;
         formato = formateado.substring(formateado.length() - 5, formateado.length() - 4) + "_" + formato;
+        formato = formateado.substring(formateado.length() - 5, formateado.length() - 4) + "_" + formato;
 
         System.out.println(formato);
     }

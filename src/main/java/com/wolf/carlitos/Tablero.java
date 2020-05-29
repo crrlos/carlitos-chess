@@ -11,6 +11,7 @@ import static com.wolf.carlitos.Bitboard.*;
 import static com.wolf.carlitos.Constantes.*;
 import static com.wolf.carlitos.Pieza.bitboard;
 import static com.wolf.carlitos.Utilidades.convertirAPosicion;
+import static com.wolf.carlitos.Utilidades.imprimirBinario;
 import static java.lang.Long.numberOfTrailingZeros;
 import static java.lang.Math.abs;
 
@@ -20,21 +21,55 @@ public class Tablero {
         private final int[] estados;
         private int pos;
 
-        Stack1(){
+        Stack1() {
             estados = new int[1024];
             pos = 0;
         }
-        public void push(int estado){
+
+        public void push(int estado) {
             estados[pos++] = estado;
         }
-        public int pop(){
+
+        public int pop() {
             return estados[--pos];
         }
-        public int lastElement(){
-            return estados[pos -1];
+
+        public int lastElement() {
+            return estados[pos - 1];
         }
-        public void clear()
-        {
+
+        public void clear() {
+            pos = 0;
+        }
+
+    }
+
+    static class Stack2 {
+        private final long[] estados;
+        private int pos;
+
+        Stack2() {
+            estados = new long[1024];
+            pos = 0;
+        }
+
+        public void push(long estado) {
+            estados[pos++] = estado;
+        }
+
+        public long pop() {
+            return estados[--pos];
+        }
+
+        public long lastElement() {
+            return estados[pos - 1];
+        }
+
+        public long firtElement() {
+            return estados[0];
+        }
+
+        public void clear() {
             pos = 0;
         }
 
@@ -43,18 +78,19 @@ public class Tablero {
     public int[] tablero = new int[64];
     public int[] color = new int[64];
     private final Stack1 estados = new Stack1();
-    private final Stack<Long> zobristKeys = new Stack<>();
+    private final Stack2 zobristKeys = new Stack2();
 
     public static long[][][] zobristRand = new long[2][6][64];
     /* [K,Q,k,q,EP] */
     public static long[] zobristCastlePlusPasant = new long[5];
+
     static {
         Random rand = new Random();
         long[] casillas = new long[773];
         int contador = 0;
-        while(contador < casillas.length){
+        while (contador < casillas.length) {
             long r = rand.nextLong();
-            if(r > 0){
+            if (r > 0) {
                 boolean repetido = false;
                 for (long casilla : casillas) {
                     if (casilla == r) {
@@ -62,7 +98,7 @@ public class Tablero {
                         break;
                     }
                 }
-                if(repetido) continue;
+                if (repetido) continue;
 
                 casillas[contador++] = r;
             }
@@ -235,26 +271,26 @@ public class Tablero {
                     if (tablero[destino] == TORRE) {
                         switch (destino) {
                             case H1:
-                                if((estado & 1) > 0) {
+                                if ((estado & 1) > 0) {
                                     // si hay enroque corto, quitarlo.
                                     zobrist ^= zobristCastlePlusPasant[0];
                                     estado ^= 1;
                                 }
                                 break;
                             case A1:
-                                if((estado & 2) > 0) {
+                                if ((estado & 2) > 0) {
                                     zobrist ^= zobristCastlePlusPasant[1];
                                     estado ^= 2;
                                 }
                                 break;
                             case H8:
-                                if((estado & 4) > 0) {
+                                if ((estado & 4) > 0) {
                                     zobrist ^= zobristCastlePlusPasant[2];
                                     estado ^= 4;
                                 }
                                 break;
                             case A8:
-                                if((estado & 8) > 0) {
+                                if ((estado & 8) > 0) {
                                     zobrist ^= zobristCastlePlusPasant[3];
                                     estado ^= 8;
                                 }
@@ -296,7 +332,7 @@ public class Tablero {
                 color[inicio] = NOCOLOR;
 
                 // si hay al paso removerlo de zobrist
-                if((estado >> 5 & 0b111111) > 0){
+                if ((estado >> 5 & 0b111111) > 0) {
                     zobrist ^= zobristCastlePlusPasant[4];
                 }
 
@@ -311,6 +347,10 @@ public class Tablero {
             } else if (abs(inicio - destino) == 16) {
 
                 int posicionPiezaAlPAso = destino + (esTurnoBlanco() ? -8 : 8);
+                if ((estado >> 5 & 0b111111) > 0) {
+                    // se remueve al paso anterior
+                    zobrist ^= zobristCastlePlusPasant[4];
+                }
                 estado = estado & MASK_LIMPIAR_AL_PASO | posicionPiezaAlPAso << POSICION_PIEZA_AL_PASO;
 
                 update(esTurnoBlanco(), PEON, inicio, destino);
@@ -318,6 +358,7 @@ public class Tablero {
                 // se mueve el peon
                 zobrist ^= zobristRand[miColor()][PEON][inicio];
                 zobrist ^= zobristRand[miColor()][PEON][destino];
+
                 // se agrega al paso
                 zobrist ^= zobristCastlePlusPasant[4];
 
@@ -383,42 +424,51 @@ public class Tablero {
             }
             if (esTurnoBlanco()) {
                 // enroques blancos false
+                if((estado & 1) > 0){
+                    zobrist ^= zobristCastlePlusPasant[0];
+                }
+                if((estado & 2) > 0){
+                    zobrist ^= zobristCastlePlusPasant[1];
+                }
                 estado &= MASK_LIMPIAR_ENROQUES_BLANCOS;
-
-                zobrist ^= zobristCastlePlusPasant[0];
-                zobrist ^= zobristCastlePlusPasant[1];
             } else {
                 // enroques negros false
+                if((estado & 4) > 0){
+                    zobrist ^= zobristCastlePlusPasant[2];
+                }
+                if((estado & 8) > 0){
+                    zobrist ^= zobristCastlePlusPasant[3];
+                }
+
                 estado &= MASK_LIMPIAR_ENROQUES_NEGROS;
 
-                zobrist ^= zobristCastlePlusPasant[2];
-                zobrist ^= zobristCastlePlusPasant[3];
+
             }
 
         } else if (pieza == TORRE) {
 
             switch (inicio) {
                 case H1:
-                    if((estado & 1) > 0) {
+                    if ((estado & 1) > 0) {
                         // si hay enroque corto, quitarlo.
                         zobrist ^= zobristCastlePlusPasant[0];
                         estado ^= 1;
                     }
                     break;
                 case A1:
-                    if((estado & 2) > 0) {
+                    if ((estado & 2) > 0) {
                         zobrist ^= zobristCastlePlusPasant[1];
                         estado ^= 2;
                     }
                     break;
                 case H8:
-                    if((estado & 4) > 0) {
+                    if ((estado & 4) > 0) {
                         zobrist ^= zobristCastlePlusPasant[2];
                         estado ^= 4;
                     }
                     break;
                 case A8:
-                    if((estado & 8) > 0) {
+                    if ((estado & 8) > 0) {
                         zobrist ^= zobristCastlePlusPasant[3];
                         estado ^= 8;
                     }
@@ -436,26 +486,26 @@ public class Tablero {
         if (tablero[destino] == TORRE) {
             switch (destino) {
                 case H1:
-                    if((estado & 1) > 0) {
+                    if ((estado & 1) > 0) {
                         // si hay enroque corto, quitarlo.
                         zobrist ^= zobristCastlePlusPasant[0];
                         estado ^= 1;
                     }
                     break;
                 case A1:
-                    if((estado & 2) > 0) {
+                    if ((estado & 2) > 0) {
                         zobrist ^= zobristCastlePlusPasant[1];
                         estado ^= 2;
                     }
                     break;
                 case H8:
-                    if((estado & 4) > 0) {
+                    if ((estado & 4) > 0) {
                         zobrist ^= zobristCastlePlusPasant[2];
                         estado ^= 4;
                     }
                     break;
                 case A8:
-                    if((estado & 8) > 0) {
+                    if ((estado & 8) > 0) {
                         zobrist ^= zobristCastlePlusPasant[3];
                         estado ^= 8;
                     }
@@ -475,7 +525,7 @@ public class Tablero {
         tablero[inicio] = NOPIEZA;
         color[inicio] = NOCOLOR;
 
-        if((estado >> 5 & 0b111111) > 0){
+        if ((estado >> 5 & 0b111111) > 0) {
             zobrist ^= zobristCastlePlusPasant[4];
         }
 
@@ -604,19 +654,18 @@ public class Tablero {
         }
 
 
-
         for (int i = 0; i < 64; i++) {
-            if(tablero[i] == NOPIEZA) continue;
+            if (tablero[i] == NOPIEZA) continue;
             zobrist ^= zobristRand[color[i]][tablero[i]][i];
         }
 
         // agregar enroques disponibles
-        if((estado & 1) > 0) zobrist ^= zobristCastlePlusPasant[0];
-        if((estado & 2) > 0) zobrist ^= zobristCastlePlusPasant[1];
-        if((estado & 3) > 0) zobrist ^= zobristCastlePlusPasant[2];
-        if((estado & 4) > 0) zobrist ^= zobristCastlePlusPasant[3];
+        if ((estado & 1) > 0) zobrist ^= zobristCastlePlusPasant[0];
+        if ((estado & 2) > 0) zobrist ^= zobristCastlePlusPasant[1];
+        if ((estado & 3) > 0) zobrist ^= zobristCastlePlusPasant[2];
+        if ((estado & 4) > 0) zobrist ^= zobristCastlePlusPasant[3];
         // agregar al paso, si hay
-        if((estado & 2016) > 0) zobrist ^= zobristCastlePlusPasant[4];
+        if ((estado & 2016) > 0) zobrist ^= zobristCastlePlusPasant[4];
 
         estados.clear();
         estados.push(estado);
@@ -709,5 +758,31 @@ public class Tablero {
     public int getEstado() {
         return estados.lastElement();
     }
-    public long getZobrist(){return zobristKeys.lastElement();}
+
+    public long getZobrist() {
+        return zobristKeys.lastElement();
+    }
+
+    public long crearKey() {
+
+        long k = 0;
+
+        for (int i = 0; i < 64; i++) {
+            if (tablero[i] == NOPIEZA) continue;
+
+            k ^= zobristRand[color[i]][tablero[i]][i];
+
+        }
+
+        // agregar enroques disponibles
+        if ((estados.lastElement() & 1) > 0) k ^= zobristCastlePlusPasant[0];
+        if ((estados.lastElement() & 2) > 0) k ^= zobristCastlePlusPasant[1];
+        if ((estados.lastElement() & 4) > 0) k ^= zobristCastlePlusPasant[2];
+        if ((estados.lastElement() & 8) > 0) k ^= zobristCastlePlusPasant[3];
+        // agregar al paso, si hay
+        if ((estados.lastElement() & 2016) > 0) k ^= zobristCastlePlusPasant[4];
+
+        return k;
+
+    }
 }
