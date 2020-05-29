@@ -7,8 +7,6 @@ package com.wolf.carlitos;
 
 
 import static com.wolf.carlitos.Constantes.*;
-import static com.wolf.carlitos.Pieza.valorPiezas;
-import static com.wolf.carlitos.Search.history;
 
 /**
  * @author carlos

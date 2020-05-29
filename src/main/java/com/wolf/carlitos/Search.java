@@ -24,9 +24,9 @@ public class Search {
     private final Tablero tab;
     private final Generador generador;
 
-    public static int nodes = 0;
+    private  int nodes = 0;
 
-    public static int[][] history = new int[64][64];
+    private final int[][] history = new int[64][64];
 
     public Search(Tablero tablero) {
         this.tablero = tablero.tablero;
