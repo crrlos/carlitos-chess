@@ -6,12 +6,9 @@
 package com.wolf.carlitos;
 
 
-import java.util.Random;
-
 import static com.wolf.carlitos.Constantes.*;
 import static com.wolf.carlitos.Evaluar.evaluar;
-import static com.wolf.carlitos.Utilidades.establecerPuntuacion;
-import static com.wolf.carlitos.Utilidades.insertionSort;
+import static com.wolf.carlitos.Pieza.valorPiezas;
 
 
 /**
@@ -77,7 +74,7 @@ public class Search {
 
     }
 
-    private int quiescent(int nivel, int[] tablero, int[] color, int alfa, int beta){
+    private int quiescent(int nivel, int alfa, int beta){
 
         int mejorValor = evaluar(tab.miColor());
         if(mejorValor > alfa) alfa = mejorValor;
@@ -96,7 +93,7 @@ public class Search {
 
             tab.hacerMovimiento(tablero, color, mov);
 
-            int evaluacion = -quiescent(nivel - 1, tablero, color, -beta, -alfa);
+            int evaluacion = -quiescent(nivel - 1, -beta, -alfa);
 
             tab.revertirMovimiento(mov, tablero, color);
 
@@ -108,8 +105,8 @@ public class Search {
         return  alfa;
     }
 
-    public int negaMax(int nivel, int[] tablero, int[] color, int alfa, int beta){
-        if (nivel == 0) return quiescent(nivel, tablero, color, alfa, beta);
+    public int negaMax(int nivel, int alfa, int beta){
+        if (nivel == 0) return quiescent(nivel, alfa, beta);
         var respuesta = generador.generarMovimientos(nivel);
 
         var movimientos = respuesta.movimientosGenerados;
@@ -128,7 +125,7 @@ public class Search {
 
             tab.hacerMovimiento(tablero, color, mov);
 
-            int evaluacion = -negaMax(nivel - 1, tablero, color, -beta, -alfa);
+            int evaluacion = -negaMax(nivel - 1, -beta, -alfa);
 
             tab.revertirMovimiento(mov, tablero, color);
 
@@ -164,7 +161,7 @@ public class Search {
 
             tab.hacerMovimiento(tablero, color, mov);
 
-            int eval = -negaMax(n - 1, tablero, color, -beta, -alfa);
+            int eval = -negaMax(n - 1, -beta, -alfa);
 
             if(eval > alfa) {
                 alfa = eval;
@@ -177,6 +174,40 @@ public class Search {
         System.out.println("nodos: " + nodes);
         nodes = 0;
         return movimientos[pos];
+    }
+
+    public  void establecerPuntuacion(Movimiento[] movimientos, int fin,Tablero tab) {
+
+        for (int i = 0; i < fin; i++) {
+            int inicio = movimientos[i].inicio;
+            int destino = movimientos[i].destino;
+            int ponderacion = 100_000_000;
+
+            // si es captura usar MVVLVA, con offset de 100k para se coloque antes de una no captura
+            if(tab.tablero[destino] != NOPIEZA){
+                ponderacion += valorPiezas[REY] / valorPiezas[tab.tablero[inicio]] + 10 * valorPiezas[tab.tablero[destino]];
+                movimientos[i].ponderacion = ponderacion;
+                continue;
+            }
+            // si no es captura usar history heuristic
+
+            ponderacion = history[inicio][destino];
+            movimientos[i].ponderacion =  ponderacion;
+
+        }
+
+    }
+
+    public  void insertionSort(Movimiento[] array, int fin) {
+        for (int j = 1; j < fin; j++) {
+            Movimiento key = array[j];
+            int i = j - 1;
+            while ((i > -1) && (array[i].ponderacion < key.ponderacion)) {
+                array[i + 1] = array[i];
+                i--;
+            }
+            array[i + 1] = key;
+        }
     }
 
 }
