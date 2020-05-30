@@ -26,7 +26,7 @@ public class Search {
 
     public static  int nodes = 0;
 
-    private  final int[][] history = new int[64][64];
+    private static final int[][] history = new int[64][64];
 
     public Search(Tablero tablero) {
         this.tablero = tablero.tablero;
