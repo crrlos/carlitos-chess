@@ -116,6 +116,8 @@ public class Constantes {
 
     public static  final int POSICION_INICIAL = 0b111100_000100_000_000_000000_1_11_11;
 
+    public static final int INFINITO = 10_000_000;
+
 
 
 }

@@ -24,7 +24,7 @@ public class Search {
     private final Tablero tab;
     private final Generador generador;
 
-    public static  int nodes = 0;
+    public static int nodes = 0;
 
     private static final int[][] history = new int[64][64];
 
@@ -85,7 +85,7 @@ public class Search {
         var movimientos = respuesta.movimientosGenerados;
         var fin = respuesta.cantidadDeMovimientos;
 
-        establecerPuntuacion(movimientos, fin, tab);
+        establecerPuntuacion(movimientos, fin);
         insertionSort(movimientos, fin);
 
         for (int i = 0; i < fin; i++) {
@@ -112,7 +112,7 @@ public class Search {
         var movimientos = respuesta.movimientosGenerados;
         var fin = respuesta.cantidadDeMovimientos;
 
-        establecerPuntuacion(movimientos, fin, tab);
+        establecerPuntuacion(movimientos, fin);
         insertionSort(movimientos, fin);
 
         if (fin == 0) {
@@ -142,40 +142,49 @@ public class Search {
     }
 
     public Movimiento search(int depth) {
-        int pos = 0;
+        int ply = 0;
 
-        int alfa = -10_000_000;
-        int beta = 10_000_000;
-
-        var respuesta = this.generador.generarMovimientos(0);
+        var respuesta = this.generador.generarMovimientos(ply);
         var movimientos = respuesta.movimientosGenerados;
         var fin = respuesta.cantidadDeMovimientos;
 
-        establecerPuntuacion(movimientos, fin, tab);
+        establecerPuntuacion(movimientos, fin);
         insertionSort(movimientos, fin);
+        Movimiento bestMove = null;
 
-        for (int i = 0; i < fin; i++) {
+        for (int k = 1; k <= depth; k++) {
 
-            var mov = movimientos[i];
+            int alfa = -INFINITO;
 
-            tab.hacerMovimiento(mov);
-
-            int eval = -negaMax(depth - 1, -beta, -alfa, 1);
-
-            if (eval > alfa) {
-                alfa = eval;
-                pos = i;
+            for (int i = 0; i < fin; i++) {
+                movimientos[i].ponderacion = -INFINITO;
             }
 
-            tab.revertirMovimiento(mov);
+            for (int i = 0; i < fin; i++) {
 
+                var mov = movimientos[i];
+
+                tab.hacerMovimiento(mov);
+
+                int eval = -negaMax(k - 1, -INFINITO, -alfa, 1);
+
+                if (eval > alfa) {
+                    alfa = eval;
+                    mov.ponderacion = eval;
+                    bestMove = mov;
+                }
+
+                tab.revertirMovimiento(mov);
+
+            }
+            insertionSort(movimientos,fin);
         }
         System.out.println("nodos: " + nodes);
         nodes = 0;
-        return movimientos[pos];
+        return bestMove;
     }
 
-    public void establecerPuntuacion(Movimiento[] movimientos, int fin, Tablero tab) {
+    public void establecerPuntuacion(Movimiento[] movimientos, int fin) {
 
         for (int i = 0; i < fin; i++) {
             int inicio = movimientos[i].inicio;
@@ -183,13 +192,12 @@ public class Search {
             int ponderacion = 100_000_000;
 
             // si es captura usar MVVLVA, con offset de 100k para se coloque antes de una no captura
-            if (tab.tablero[destino] != NOPIEZA) {
-                ponderacion += valorPiezas[REY] / valorPiezas[tab.tablero[inicio]] + 10 * valorPiezas[tab.tablero[destino]];
+            if (tablero[destino] != NOPIEZA) {
+                ponderacion += valorPiezas[REY] / valorPiezas[tablero[inicio]] + 10 * valorPiezas[tablero[destino]];
                 movimientos[i].ponderacion = ponderacion;
                 continue;
             }
             // si no es captura usar history heuristic
-
             ponderacion = history[inicio][destino];
             movimientos[i].ponderacion = ponderacion;
 
