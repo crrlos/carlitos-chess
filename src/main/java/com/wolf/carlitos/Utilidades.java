@@ -82,6 +82,13 @@ public class Utilidades {
         }
         return mov;
     }
+    public static String convertirANotacion(int movimiento){
+        Movimiento m = new Movimiento();
+        m.inicio = movimiento >> 6 & 0b111111;
+        m.destino = movimiento & 0b111111;
+        m.promocion = movimiento >> 12 &0b111;
+        return convertirANotacion(m);
+    }
 
     public static int casillaANumero(String casilla) {
         int columna = "abcdefgh".indexOf(casilla.charAt(0));

@@ -6,6 +6,9 @@
 package com.wolf.carlitos;
 
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 import static com.wolf.carlitos.Constantes.*;
 import static com.wolf.carlitos.Evaluar.evaluar;
 import static com.wolf.carlitos.Pieza.valorPiezas;
@@ -27,6 +30,8 @@ public class Search {
     public static int nodes = 0;
 
     private static final int[][] history = new int[64][64];
+
+    private final int[][] pv = new int[64][64];
 
     public Search(Tablero tablero) {
         this.tablero = tablero.tablero;
@@ -135,10 +140,20 @@ public class Search {
                 return beta;
             }
 
-            if (evaluacion > alfa) alfa = evaluacion;
+            if (evaluacion > alfa) {
+                alfa = evaluacion;
+
+                actualizarPV(mov, ply);
+
+            }
 
         }
         return alfa;
+    }
+
+    private void actualizarPV(Movimiento mov, int ply) {
+        pv[ply][ply] = mov.promocion << 12 | mov.inicio << 6 | mov.destino;
+        System.arraycopy(pv[ply + 1], ply + 1, pv[ply], ply + 1, 30);
     }
 
     public Movimiento search(int depth) {
@@ -172,16 +187,30 @@ public class Search {
                     alfa = eval;
                     mov.ponderacion = eval;
                     bestMove = mov;
+                    actualizarPV(mov,ply);
                 }
 
                 tab.revertirMovimiento(mov);
 
             }
-            insertionSort(movimientos,fin);
+            insertionSort(movimientos, fin);
+
+            mostrarInformacionActual(alfa, k);
         }
         System.out.println("nodos: " + nodes);
         nodes = 0;
         return bestMove;
+    }
+
+    private void mostrarInformacionActual(int alfa, int depth) {
+        StringBuilder builder = new StringBuilder();
+
+        Arrays.stream(this.pv[0]).
+                filter(n -> n > 0)
+                .mapToObj(Utilidades::convertirANotacion)
+                .forEach(n -> builder.append(n).append(" "));
+
+        System.out.printf("info depth %d score cp %d nodes 20  time 3 pv %s\n",depth,alfa,builder.toString());
     }
 
     public void establecerPuntuacion(Movimiento[] movimientos, int fin) {
