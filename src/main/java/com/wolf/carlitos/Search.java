@@ -112,13 +112,15 @@ public class Search {
 
     public int negaMax(int nivel, int alfa, int beta, int ply) {
         if (nivel == 0) return quiescent(nivel, alfa, beta, ply);
-        var respuesta = generador.generarMovimientos(nivel);
+        var respuesta = generador.generarMovimientos(ply);
 
         var movimientos = respuesta.movimientosGenerados;
         var fin = respuesta.cantidadDeMovimientos;
 
         establecerPuntuacion(movimientos, fin);
         insertionSort(movimientos, fin);
+
+        if(tab.reyEnJaque()) nivel++;
 
         if (fin == 0) {
             if (tab.reyEnJaque()) return -MATE - nivel;
