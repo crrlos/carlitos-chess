@@ -3,8 +3,7 @@ package com.wolf.carlitos;
 import static com.wolf.carlitos.Bitboard.next;
 import static com.wolf.carlitos.Bitboard.remainder;
 import static com.wolf.carlitos.Constantes.*;
-import static com.wolf.carlitos.Pieza.bitboard;
-import static com.wolf.carlitos.Pieza.valorPiezas;
+import static com.wolf.carlitos.Pieza.*;
 import static com.wolf.carlitos.Ponderaciones.*;
 import static java.lang.Long.bitCount;
 
@@ -41,12 +40,25 @@ public class Evaluar {
             int square = next(squares);
             total += esBlanco ? ponderacionDama[flip[square]] : ponderacionDama[square];
         }
-        for (long squares = bitboard[bando][REY]; squares != 0; squares = remainder(squares)) {
-            int square = next(squares);
-            total += esBlanco ? ponderacionRey[flip[square]] : ponderacionRey[square];
-        }
+        if (esFinal()) {
+            for (long squares = bitboard[bando][REY]; squares != 0; squares = remainder(squares)) {
+                int square = next(squares);
+                total += esBlanco ? ponderacionReyFinal[flip[square]] : ponderacionReyFinal[square];
+            }
+        } else
+            for (long squares = bitboard[bando][REY]; squares != 0; squares = remainder(squares)) {
+                int square = next(squares);
+                total += esBlanco ? ponderacionRey[flip[square]] : ponderacionRey[square];
+            }
 
         return total;
+    }
+
+    private static boolean esFinal() {
+
+        if (bitboard[BLANCO][DAMA] == 0 && bitboard[NEGRO][DAMA] == 0) return true;
+
+        return bitboard[BLANCO][DAMA] > 0 && bitboard[BLANCO][TORRE] == 0 && bitboard[NEGRO][DAMA] > 0 && bitboard[NEGRO][TORRE] == 0;
     }
 
     public static int evaluar(int color) {
