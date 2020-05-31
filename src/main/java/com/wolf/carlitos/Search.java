@@ -121,8 +121,8 @@ public class Search {
         return alfa;
     }
 
-    public int negaMax(int nivel, int alfa, int beta, int ply) {
-        if (nivel == 0) return quiescent(nivel, alfa, beta, ply);
+    public int negaMax(int depth, int alfa, int beta, int ply) {
+        if (depth == 0) return quiescent(depth, alfa, beta, ply);
         var respuesta = generador.generarMovimientos(ply);
 
         var movimientos = respuesta.movimientosGenerados;
@@ -132,10 +132,10 @@ public class Search {
         insertionSort(movimientos, fin);
 
         // check extension
-        if (tab.enJaque() || tab.contrarioEnJaque()) nivel++;
+        if (tab.enJaque() || tab.contrarioEnJaque()) depth++;
 
         if (fin == 0) {
-            if (tab.enJaque()) return -MATE - nivel;
+            if (tab.enJaque()) return -MATE + ply;
             else return AHOGADO;
         }
 
@@ -144,13 +144,13 @@ public class Search {
 
             tab.hacerMovimiento(mov);
 
-            int evaluacion = -negaMax(nivel - 1, -beta, -alfa, ply + 1);
+            int evaluacion = -negaMax(depth - 1, -beta, -alfa, ply + 1);
 
             tab.revertirMovimiento(mov);
 
             if (evaluacion >= beta) {
                 if (tablero[mov.destino] == NOPIEZA)
-                    history[mov.inicio][mov.destino] += nivel;
+                    history[mov.inicio][mov.destino] += depth;
                 return beta;
             }
 
