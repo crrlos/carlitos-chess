@@ -80,14 +80,26 @@ public class Search {
 
     private int quiescent(int nivel, int alfa, int beta, int ply) {
 
-        int mejorValor = evaluar(tab.miColor());
-        if (mejorValor > alfa) alfa = mejorValor;
-        if (mejorValor >= beta) return beta;
+        int mejorValor;
+        Generador.Respuesta respuesta;
+        Movimiento[] movimientos;
+        int fin;
 
-        var respuesta = generador.generarCapturas(tablero, color, ply);
+        boolean enJaque = tab.enJaque();
 
-        var movimientos = respuesta.movimientosGenerados;
-        var fin = respuesta.cantidadDeMovimientos;
+        if (enJaque) {
+            respuesta = generador.generarMovimientos(ply);
+        } else {
+            mejorValor = evaluar(tab.miColor());
+            if (mejorValor > alfa) alfa = mejorValor;
+            if (mejorValor >= beta) return beta;
+
+            respuesta = generador.generarCapturas(tablero, color, ply);
+        }
+        movimientos = respuesta.movimientosGenerados;
+        fin = respuesta.cantidadDeMovimientos;
+
+        if(fin == 0 && enJaque) return -MATE + ply;
 
         establecerPuntuacion(movimientos, fin);
         insertionSort(movimientos, fin);
@@ -120,7 +132,7 @@ public class Search {
         insertionSort(movimientos, fin);
 
         // check extension
-       if(tab.enJaque() || tab.contrarioEnJaque()) nivel++;
+        if (tab.enJaque() || tab.contrarioEnJaque()) nivel++;
 
         if (fin == 0) {
             if (tab.enJaque()) return -MATE - nivel;
@@ -189,7 +201,7 @@ public class Search {
                     alfa = eval;
                     mov.ponderacion = eval;
                     bestMove = mov;
-                    actualizarPV(mov,ply);
+                    actualizarPV(mov, ply);
                 }
 
                 tab.revertirMovimiento(mov);
@@ -212,7 +224,7 @@ public class Search {
                 .mapToObj(Utilidades::convertirANotacion)
                 .forEach(n -> builder.append(n).append(" "));
 
-        System.out.printf("info depth %d score cp %d nodes 20  time 3 pv %s\n",depth,alfa,builder.toString());
+        System.out.printf("info depth %d score cp %d nodes 20  time 3 pv %s\n", depth, alfa, builder.toString());
     }
 
     public void establecerPuntuacion(Movimiento[] movimientos, int fin) {
