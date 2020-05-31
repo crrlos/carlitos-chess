@@ -7,7 +7,6 @@ package com.wolf.carlitos;
 
 
 import java.util.Arrays;
-import java.util.stream.Collectors;
 
 import static com.wolf.carlitos.Constantes.*;
 import static com.wolf.carlitos.Evaluar.evaluar;
@@ -120,10 +119,11 @@ public class Search {
         establecerPuntuacion(movimientos, fin);
         insertionSort(movimientos, fin);
 
-        if(tab.reyEnJaque()) nivel++;
+        // check extension
+       if(tab.enJaque() || tab.contrarioEnJaque()) nivel++;
 
         if (fin == 0) {
-            if (tab.reyEnJaque()) return -MATE - nivel;
+            if (tab.enJaque()) return -MATE - nivel;
             else return AHOGADO;
         }
 

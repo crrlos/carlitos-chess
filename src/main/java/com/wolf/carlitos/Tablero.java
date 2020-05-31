@@ -578,10 +578,13 @@ public class Tablero {
         return (estados.lastElement() >>> 4 & 0b1) ^ 1;
     }
 
-    public boolean reyEnJaque() {
-        int miColor = miColor();
-        int posicionRey = numberOfTrailingZeros(bitboard[miColor][REY]);
+    public boolean enJaque() {
+        int posicionRey = numberOfTrailingZeros(bitboard[miColor()][REY]);
         return casillaAtacada(posicionRey, colorContrario());
+    }
+    public boolean contrarioEnJaque(){
+        int posicionRey = numberOfTrailingZeros(bitboard[colorContrario()][REY]);
+        return casillaAtacada(posicionRey, miColor());
     }
 
     public boolean alPaso(int destino) {

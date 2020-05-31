@@ -77,7 +77,7 @@ public class Generador {
         this.estado = tab.getEstado();
         this.miColor = tab.miColor();
         this.colorContrario = tab.colorContrario();
-        this.reyEnJaque = tab.reyEnJaque();
+        this.reyEnJaque = tab.enJaque();
         this.casillasOcupadas = tab.casillasOcupadas();
     }
 
@@ -278,7 +278,7 @@ public class Generador {
 
         // se quita el caballo de esta posición, si el rey no queda en jaque se omite la validación de los movimientos
         remove(turnoBlanco, CABALLO, posicion);
-        if (tab.reyEnJaque()) validar = true;
+        if (tab.enJaque()) validar = true;
         add(turnoBlanco, CABALLO, posicion);
 
 
