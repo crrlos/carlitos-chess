@@ -99,7 +99,7 @@ public class Search {
         movimientos = respuesta.movimientosGenerados;
         fin = respuesta.cantidadDeMovimientos;
 
-        if(fin == 0 && enJaque) return -MATE + ply;
+        if (fin == 0 && enJaque) return -MATE + ply;
 
         establecerPuntuacion(movimientos, fin);
         insertionSort(movimientos, fin);
@@ -217,12 +217,13 @@ public class Search {
     }
 
     private void mostrarInformacionActual(int alfa, int depth) {
+        int i = 0;
         StringBuilder builder = new StringBuilder();
 
-        Arrays.stream(this.pv[0]).
-                filter(n -> n > 0)
-                .mapToObj(Utilidades::convertirANotacion)
-                .forEach(n -> builder.append(n).append(" "));
+        while (i < depth) {
+            builder.append(Utilidades.convertirANotacion(pv[0][i])).append(" ");
+            i++;
+        }
 
         System.out.printf("info depth %d score cp %d nodes 20  time 3 pv %s\n", depth, alfa, builder.toString());
     }
