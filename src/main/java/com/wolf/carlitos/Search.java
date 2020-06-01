@@ -143,7 +143,7 @@ public class Search {
             var mov = movimientos[i];
 
             tab.hacerMovimiento(mov);
-            tab.validarKey();
+            //tab.validarKey();
             int evaluacion = -negaMax(depth - 1, -beta, -alfa, ply + 1);
 
             tab.revertirMovimiento(mov);

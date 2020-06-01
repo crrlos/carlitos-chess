@@ -94,7 +94,7 @@ public class Tablero {
     };
 
     static {
-        var hashMap = new HashMap<Long,Boolean>();
+        var hashMap = new HashMap<Long, Boolean>();
         Random rand = new Random();
         long[] aleatorios = new long[789]; //12 * 64 + 4 enroques + 16 ep + 1 lado negro
         int posicion = 0;
@@ -102,7 +102,7 @@ public class Tablero {
             long r = rand.nextLong();
             if (r <= 0 || hashMap.containsKey(r)) continue;
 
-            hashMap.put(r,true);
+            hashMap.put(r, true);
             aleatorios[posicion++] = r;
 
         }
@@ -126,8 +126,6 @@ public class Tablero {
         }
 
         claveLadoNegro = aleatorios[posicion];
-
-        System.out.println(posicion);
 
     }
 
@@ -248,6 +246,11 @@ public class Tablero {
         long zobrist = zobristKeys.lastElement();
         int estado = estados.lastElement();
 
+        zobrist ^= claveLadoNegro;
+
+        // se cambia el turno
+        estado ^= 16;
+
         int inicio = movimiento.inicio;
         int destino = movimiento.destino;
 
@@ -351,8 +354,6 @@ public class Tablero {
 
                 estado &= MASK_LIMPIAR_AL_PASO;
 
-                estado ^= 0b10000;
-
                 estados.push(estado);
                 zobristKeys.push(zobrist);
                 return;
@@ -380,8 +381,6 @@ public class Tablero {
 
                 color[destino] = color[inicio];
                 color[inicio] = NOCOLOR;
-
-                estado ^= 0b10000;
 
                 estados.push(estado);
                 zobristKeys.push(zobrist);
@@ -437,19 +436,19 @@ public class Tablero {
             }
             if (esTurnoBlanco()) {
                 // enroques blancos false
-                if((estado & 1) > 0){
+                if ((estado & 1) > 0) {
                     zobrist ^= claveEnroque[0];
                 }
-                if((estado & 2) > 0){
+                if ((estado & 2) > 0) {
                     zobrist ^= claveEnroque[1];
                 }
                 estado &= MASK_LIMPIAR_ENROQUES_BLANCOS;
             } else {
                 // enroques negros false
-                if((estado & 4) > 0){
+                if ((estado & 4) > 0) {
                     zobrist ^= claveEnroque[2];
                 }
-                if((estado & 8) > 0){
+                if ((estado & 8) > 0) {
                     zobrist ^= claveEnroque[3];
                 }
 
@@ -543,7 +542,6 @@ public class Tablero {
         }
 
         estado &= MASK_LIMPIAR_AL_PASO;
-        estado ^= 0b10000;
         estados.push(estado);
         zobristKeys.push(zobrist);
     }
@@ -597,7 +595,8 @@ public class Tablero {
         int posicionRey = numberOfTrailingZeros(bitboard[miColor()][REY]);
         return casillaAtacada(posicionRey, colorContrario());
     }
-    public boolean contrarioEnJaque(){
+
+    public boolean contrarioEnJaque() {
         int posicionRey = numberOfTrailingZeros(bitboard[colorContrario()][REY]);
         return casillaAtacada(posicionRey, miColor());
     }
@@ -683,6 +682,9 @@ public class Tablero {
         // agregar al paso, si hay
         if ((estado & 2016) > 0) zobrist ^= claveAlPaso[direccionAlPaso[estado >> 5 & 63]];
 
+        // si es el turno del jugador negro agregar clave
+        if ((estado >> 4 & 1) == 0) zobrist ^= claveLadoNegro;
+
         estados.clear();
         zobristKeys.clear();
 
@@ -690,7 +692,6 @@ public class Tablero {
         estados.push(estado);
         zobristKeys.push(zobrist);
 
-        //validarKey();
     }
 
     public void setHistoria(String... movimientos) {
@@ -802,11 +803,12 @@ public class Tablero {
         if ((estados.lastElement() & 8) > 0) k ^= claveEnroque[3];
         // agregar al paso, si hay
         if ((estados.lastElement() & 2016) > 0) k ^= claveAlPaso[direccionAlPaso[estados.lastElement() >> 5 & 63]];
+        if((estados.lastElement() >> 4 & 1) == 0) k ^= claveLadoNegro;
 
         //System.out.println(Integer.toBinaryString(estados.lastElement()));
         //throw new IllegalStateException("clave no coincide con el estado");
 
-        if(k != getZobrist()) throw new IllegalStateException("no coinciden");
+        if (k != getZobrist()) throw new IllegalStateException("no coinciden");
 
     }
 }
