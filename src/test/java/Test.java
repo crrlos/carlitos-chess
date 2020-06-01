@@ -13,17 +13,7 @@ public class Test {
 
     public static void main(String[] args) {
 
-        int c = 0;
-        for (int i = 0; i < Ataque.maskAtaqueAlfil.length; i++) {
-
-            System.out.print((64 - bitCount(Ataque.maskAtaqueAlfil[i])) + ",");
-            c++;
-            if(c == 8){
-                c =0;
-                System.out.println();
-            }
-        }
-
+        System.out.println(4 >> 1 & 2);
 
 //        for (int i = A2; i <= H7; i++) {
 //            System.out.print("movimientos pos " + i + ": ");

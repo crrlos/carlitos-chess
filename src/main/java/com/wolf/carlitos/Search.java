@@ -132,7 +132,7 @@ public class Search {
         insertionSort(movimientos, fin);
 
         // check extension
-        if (tab.enJaque() || tab.contrarioEnJaque()) depth++;
+        // if (tab.enJaque() || tab.contrarioEnJaque()) depth++;
 
         if (fin == 0) {
             if (tab.enJaque()) return -MATE + ply;
@@ -143,7 +143,7 @@ public class Search {
             var mov = movimientos[i];
 
             tab.hacerMovimiento(mov);
-
+            tab.validarKey();
             int evaluacion = -negaMax(depth - 1, -beta, -alfa, ply + 1);
 
             tab.revertirMovimiento(mov);
