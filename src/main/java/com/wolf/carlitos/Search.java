@@ -55,11 +55,11 @@ public class Search {
         for (int i = 0; i < fin; i++) {
             var mov = movimientos[i];
 
-            tab.hacerMovimiento(mov);
+            tab.makeMove(mov);
 
             perftSearch(deep - 1, acumulador, false);
 
-            tab.revertirMovimiento(mov);
+            tab.takeBack(mov);
 
             if (reset) {
                 System.out.println(Utilidades.convertirANotacion(mov) + " " + acumulador.contadorPerft);
@@ -107,11 +107,11 @@ public class Search {
         for (int i = 0; i < fin; i++) {
             var mov = movimientos[i];
 
-            tab.hacerMovimiento(mov);
+            tab.makeMove(mov);
 
             int evaluacion = -quiescent(nivel - 1, -beta, -alfa, ply + 1);
 
-            tab.revertirMovimiento(mov);
+            tab.takeBack(mov);
 
             if (evaluacion > alfa) alfa = evaluacion;
             if (evaluacion >= beta) return beta;
@@ -132,7 +132,7 @@ public class Search {
         insertionSort(movimientos, fin);
 
         // check extension
-        // if (tab.enJaque() || tab.contrarioEnJaque()) depth++;
+        if (tab.enJaque()) depth++;
 
         if (fin == 0) {
             if (tab.enJaque()) return -MATE + ply;
@@ -142,11 +142,11 @@ public class Search {
         for (int i = 0; i < fin; i++) {
             var mov = movimientos[i];
 
-            tab.hacerMovimiento(mov);
+            tab.makeMove(mov);
             //tab.validarKey();
             int evaluacion = -negaMax(depth - 1, -beta, -alfa, ply + 1);
 
-            tab.revertirMovimiento(mov);
+            tab.takeBack(mov);
 
             if (evaluacion >= beta) {
                 if (tablero[mov.destino] == NOPIEZA)
@@ -193,7 +193,7 @@ public class Search {
 
                 var mov = movimientos[i];
 
-                tab.hacerMovimiento(mov);
+                tab.makeMove(mov);
 
                 int eval = -negaMax(k - 1, -INFINITO, -alfa, 1);
 
@@ -204,7 +204,7 @@ public class Search {
                     actualizarPV(mov, ply);
                 }
 
-                tab.revertirMovimiento(mov);
+                tab.takeBack(mov);
 
             }
             insertionSort(movimientos, fin);
