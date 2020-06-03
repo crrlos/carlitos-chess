@@ -101,18 +101,29 @@ public class Search {
 
         establecerPuntuacion(movimientos, fin);
         insertionSort(movimientos, fin);
+        long zobrist = 0;
 
         for (int i = 0; i < fin; i++) {
             var mov = movimientos[i];
 
             tab.makeMove(mov);
+            zobrist = tab.getZobrist();
+
+            int ttval = Transposition.checkEntry(zobrist,0,alfa,beta);
+            if(ttval != NOENTRY){
+                tab.takeBack(mov);
+                return ttval;
+            }
 
             int evaluacion = -quiescent(nivel - 1, -beta, -alfa, ply + 1);
 
             tab.takeBack(mov);
 
             if (evaluacion > alfa) alfa = evaluacion;
-            if (evaluacion >= beta) return beta;
+            if (evaluacion >= beta) {
+                Transposition.setEntry(zobrist, 0, evaluacion, BETA);
+                return beta;
+            }
 
         }
 
