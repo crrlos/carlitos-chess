@@ -94,38 +94,26 @@ public class Tablero {
     };
 
     static {
-        var hashMap = new HashMap<Long, Boolean>();
-        Random rand = new Random();
-        long[] aleatorios = new long[789]; //12 * 64 + 4 enroques + 16 ep + 1 lado negro
         int posicion = 0;
-        while (posicion < aleatorios.length) {
-            long r = rand.nextLong();
-            if (r <= 0 || hashMap.containsKey(r)) continue;
-
-            hashMap.put(r, true);
-            aleatorios[posicion++] = r;
-
-        }
-        posicion = 0;
-
         // llenar numeros aleatorios [color][pieza][casilla]
         for (int i = 0; i < claveCasilla.length; i++) {
             for (int j = 0; j < claveCasilla[i].length; j++) {
                 for (int k = 0; k < claveCasilla[i][j].length; k++) {
-                    claveCasilla[i][j][k] = aleatorios[posicion++];
+                    claveCasilla[i][j][k] = ALEATORIOS[posicion++];
                 }
             }
         }
         // llenar arreglo de aleatorios para casillas al paso
         for (int i = 0; i < 16; i++) {
-            claveAlPaso[i] = aleatorios[posicion++];
+            claveAlPaso[i] = ALEATORIOS[posicion++];
         }
         // llenar arreglo de aleatorios para enroques QKqk
         for (int i = 0; i < 4; i++) {
-            claveEnroque[i] = aleatorios[posicion++];
+            claveEnroque[i] = ALEATORIOS[posicion++];
         }
 
-        claveLadoNegro = aleatorios[posicion];
+        claveLadoNegro = ALEATORIOS[posicion];
+
 
     }
 
@@ -160,12 +148,10 @@ public class Tablero {
         return (ataqueRey[posicion] & bitboard[colorContrario][REY]) != 0;
     }
 
-    public void revertirMovimiento(Movimiento movimiento) {
+    public void takeBack(Movimiento movimiento) {
 
         int estado = estados.pop();
         zobristKeys.pop();
-        estado ^= 0b10000;
-
         int inicio = movimiento.inicio;
         int destino = movimiento.destino;
 
@@ -241,7 +227,7 @@ public class Tablero {
 
     }
 
-    public void hacerMovimiento(Movimiento movimiento) {
+    public void makeMove(Movimiento movimiento) {
 
         long zobrist = zobristKeys.lastElement();
         int estado = estados.lastElement();
@@ -696,7 +682,7 @@ public class Tablero {
 
     public void setHistoria(String... movimientos) {
         for (var movimiento : movimientos) {
-            hacerMovimiento(convertirAPosicion(movimiento));
+            makeMove(convertirAPosicion(movimiento));
         }
     }
 
@@ -803,7 +789,7 @@ public class Tablero {
         if ((estados.lastElement() & 8) > 0) k ^= claveEnroque[3];
         // agregar al paso, si hay
         if ((estados.lastElement() & 2016) > 0) k ^= claveAlPaso[direccionAlPaso[estados.lastElement() >> 5 & 63]];
-        if((estados.lastElement() >> 4 & 1) == 0) k ^= claveLadoNegro;
+        if ((estados.lastElement() >> 4 & 1) == 0) k ^= claveLadoNegro;
 
         //System.out.println(Integer.toBinaryString(estados.lastElement()));
         //throw new IllegalStateException("clave no coincide con el estado");
