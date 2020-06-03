@@ -6,8 +6,6 @@
 package com.wolf.carlitos;
 
 
-import java.util.Arrays;
-
 import static com.wolf.carlitos.Constantes.*;
 import static com.wolf.carlitos.Evaluar.evaluar;
 import static com.wolf.carlitos.Pieza.valorPiezas;
@@ -139,30 +137,47 @@ public class Search {
             else return AHOGADO;
         }
 
+        int bestValue = -INFINITO;
+        long zobrist = 0;
         for (int i = 0; i < fin; i++) {
             var mov = movimientos[i];
 
             tab.makeMove(mov);
-            //tab.validarKey();
+            zobrist = tab.getZobrist();
+
+            int ttval = Transposition.checkEntry(zobrist, depth, alfa, beta);
+
+            if (ttval != NOENTRY) {
+                tab.takeBack(mov);
+                return ttval;
+            }
             int evaluacion = -negaMax(depth - 1, -beta, -alfa, ply + 1);
 
             tab.takeBack(mov);
 
             if (evaluacion >= beta) {
-                if (tablero[mov.destino] == NOPIEZA)
-                    history[mov.inicio][mov.destino] += depth;
+                establecerHistory(depth, mov);
+                Transposition.setEntry(zobrist, depth, evaluacion, BETA);
                 return beta;
             }
 
             if (evaluacion > alfa) {
                 alfa = evaluacion;
-
+                Transposition.setEntry(zobrist, depth, evaluacion, EXACT);
                 actualizarPV(mov, ply);
 
             }
 
         }
+        //if (bestValue < alfa) Transposition.setEntry(zobrist, depth, bestValue, ALFA);
         return alfa;
+    }
+
+    private void establecerHistory(int depth, Movimiento mov) {
+
+        if (tablero[mov.destino] == NOPIEZA) {
+            history[mov.inicio][mov.destino] += depth;
+        }
     }
 
     private void actualizarPV(Movimiento mov, int ply) {
