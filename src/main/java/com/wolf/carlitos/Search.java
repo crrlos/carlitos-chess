@@ -26,9 +26,9 @@ public class Search {
 
     public static int nodes = 0;
 
-    private static final int[][] history = new int[64][64];
+    private static int[][] history = new int[64][64];
 
-    private final int[][] pv = new int[64][64];
+    private static int[][] pv = new int[64][64];
 
     public Search(Tablero tablero) {
         this.tablero = tablero.tablero;
@@ -76,7 +76,10 @@ public class Search {
 
     }
 
-    private int quiescent(int nivel, int alfa, int beta, int ply) {
+    private int quiescent(int depth, int alfa, int beta, int ply) {
+
+//        int ttval =  Transposition.checkEntry(tab.getZobrist(),0,alfa,beta);
+//        if(ttval != NOENTRY) return ttval;
 
         int mejorValor;
         Generador.Respuesta respuesta;
@@ -99,7 +102,7 @@ public class Search {
 
         if (fin == 0 && enJaque) return -MATE + ply;
 
-        establecerPuntuacion(movimientos, fin);
+        establecerPuntuacion(movimientos, fin, ply);
         insertionSort(movimientos, fin);
         long zobrist = 0;
 
@@ -109,20 +112,19 @@ public class Search {
             tab.makeMove(mov);
             zobrist = tab.getZobrist();
 
-            int ttval = Transposition.checkEntry(zobrist,0,alfa,beta);
-            if(ttval != NOENTRY){
-                tab.takeBack(mov);
-                return ttval;
-            }
-
-            int evaluacion = -quiescent(nivel - 1, -beta, -alfa, ply + 1);
+            int evaluacion = -quiescent(depth - 1, -beta, -alfa, ply + 1);
 
             tab.takeBack(mov);
 
-            if (evaluacion > alfa) alfa = evaluacion;
             if (evaluacion >= beta) {
                 Transposition.setEntry(zobrist, 0, evaluacion, BETA);
                 return beta;
+            }
+            if (evaluacion > alfa) {
+                Transposition.setEntry(zobrist, 0, evaluacion, EXACT);
+                alfa = evaluacion;
+            } else {
+                Transposition.setEntry(zobrist, 0, evaluacion, ALFA);
             }
 
         }
@@ -131,13 +133,21 @@ public class Search {
     }
 
     public int negaMax(int depth, int alfa, int beta, int ply) {
+
+        // se consulta la tabla de transposición, alfa y beta se invierten porque la consulta se hace un nivel
+        // abajo de donde se generó la posición por lo tanto se llamó -negaMax(-beta,-alfa)
+        int ttval =  Transposition.checkEntry(tab.getZobrist(),depth,-beta,-alfa);
+        // valor retornado negativo para que sea consistente con -negaMax(-beta,-alfa)
+        if(ttval != NOENTRY) return -ttval;
+
         if (depth == 0) return quiescent(depth, alfa, beta, ply);
+
         var respuesta = generador.generarMovimientos(ply);
 
         var movimientos = respuesta.movimientosGenerados;
         var fin = respuesta.cantidadDeMovimientos;
 
-        establecerPuntuacion(movimientos, fin);
+        establecerPuntuacion(movimientos, fin, ply);
         insertionSort(movimientos, fin);
 
         // check extension
@@ -148,20 +158,13 @@ public class Search {
             else return AHOGADO;
         }
 
-        int bestValue = -INFINITO;
-        long zobrist = 0;
         for (int i = 0; i < fin; i++) {
             var mov = movimientos[i];
 
             tab.makeMove(mov);
-            zobrist = tab.getZobrist();
 
-            int ttval = Transposition.checkEntry(zobrist, depth, alfa, beta);
+            long zobrist = tab.getZobrist();
 
-            if (ttval != NOENTRY) {
-                tab.takeBack(mov);
-                return ttval;
-            }
             int evaluacion = -negaMax(depth - 1, -beta, -alfa, ply + 1);
 
             tab.takeBack(mov);
@@ -177,10 +180,11 @@ public class Search {
                 Transposition.setEntry(zobrist, depth, evaluacion, EXACT);
                 actualizarPV(mov, ply);
 
+            } else {
+                Transposition.setEntry(zobrist, depth, evaluacion, ALFA);
             }
 
         }
-        //if (bestValue < alfa) Transposition.setEntry(zobrist, depth, bestValue, ALFA);
         return alfa;
     }
 
@@ -196,16 +200,16 @@ public class Search {
         System.arraycopy(pv[ply + 1], ply + 1, pv[ply], ply + 1, 30);
     }
 
-    public Movimiento search(int depth) {
+    public int search(int depth) {
         int ply = 0;
 
         var respuesta = this.generador.generarMovimientos(ply);
         var movimientos = respuesta.movimientosGenerados;
         var fin = respuesta.cantidadDeMovimientos;
-
-        establecerPuntuacion(movimientos, fin);
+        history = new int[64][64];
+        //pv = new int[64][64];
+        establecerPuntuacion(movimientos, fin, ply);
         insertionSort(movimientos, fin);
-        Movimiento bestMove = null;
 
         for (int k = 1; k <= depth; k++) {
 
@@ -218,28 +222,27 @@ public class Search {
             for (int i = 0; i < fin; i++) {
 
                 var mov = movimientos[i];
-
+                var m = Utilidades.convertirANotacion(mov);
                 tab.makeMove(mov);
 
                 int eval = -negaMax(k - 1, -INFINITO, -alfa, 1);
 
                 if (eval > alfa) {
                     alfa = eval;
-                    mov.ponderacion = eval;
-                    bestMove = mov;
                     actualizarPV(mov, ply);
                 }
 
                 tab.takeBack(mov);
 
             }
+            establecerPuntuacion(movimientos, fin, ply);
             insertionSort(movimientos, fin);
 
             mostrarInformacionActual(alfa, k);
         }
         System.out.println("nodos: " + nodes);
         nodes = 0;
-        return bestMove;
+        return pv[0][0];
     }
 
     private void mostrarInformacionActual(int alfa, int depth) {
@@ -254,13 +257,20 @@ public class Search {
         System.out.printf("info depth %d score cp %d nodes 20  time 3 pv %s\n", depth, alfa, builder.toString());
     }
 
-    public void establecerPuntuacion(Movimiento[] movimientos, int fin) {
+    public void establecerPuntuacion(Movimiento[] movimientos, int fin, int ply) {
 
         for (int i = 0; i < fin; i++) {
             int inicio = movimientos[i].inicio;
             int destino = movimientos[i].destino;
             int ponderacion = 100_000_000;
 
+
+            // movimentos de pv van primero
+            if ((pv[ply][ply] ^ (movimientos[i].promocion << 12 | inicio << 6 | destino)) == 0) {
+               // System.out.printf("ply %d movimiento %s\n",ply,Utilidades.convertirANotacion(movimientos[i]));
+                movimientos[i].ponderacion = 150_000_000;
+                continue;
+            }
             // si es captura usar MVVLVA, con offset de 100k para se coloque antes de una no captura
             if (tablero[destino] != NOPIEZA) {
                 ponderacion += valorPiezas[REY] / valorPiezas[tablero[inicio]] + 10 * valorPiezas[tablero[destino]];
