@@ -280,14 +280,14 @@ public class Search {
 
             int ponderacion = 100_000_000;
 
-            // killer moves
-            if((killers[ply][0] ^ mov) == 0 ){
+            // pv
+            if ((pv[ply][ply] ^ mov ) == 0) {
                 movimientos[i].ponderacion = 150_000_000;
                 continue;
             }
 
-            // pv
-            if ((pv[ply][ply] ^ mov ) == 0) {
+            // killer moves
+            if((killers[ply][0] ^ mov) == 0 ){
                 movimientos[i].ponderacion = 140_000_000;
                 continue;
             }
