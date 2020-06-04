@@ -138,9 +138,9 @@ public class Search {
 
         // se consulta la tabla de transposición, alfa y beta se invierten porque la consulta se hace un nivel
         // abajo de donde se generó la posición por lo tanto se llamó -negaMax(-beta,-alfa)
-        int ttval =  Transposition.checkEntry(tab.getZobrist(),depth,-beta,-alfa);
+        int ttval = Transposition.checkEntry(tab.getZobrist(), depth, -beta, -alfa);
         // valor retornado negativo para que sea consistente con -negaMax(-beta,-alfa)
-        if(ttval != NOENTRY) return -ttval;
+        if (ttval != NOENTRY) return -ttval;
 
         if (depth == 0) return quiescent(depth, alfa, beta, ply);
 
@@ -173,7 +173,7 @@ public class Search {
 
             if (evaluacion >= beta) {
                 establecerHistory(depth, mov);
-                establecerKiller(ply,mov);
+                establecerKiller(ply, mov);
                 Transposition.setEntry(zobrist, depth, evaluacion, BETA);
                 return beta;
             }
@@ -194,7 +194,7 @@ public class Search {
     private void establecerKiller(int ply, Movimiento mov) {
         int movimiento = mov.promocion << 12 | mov.inicio << 6 | mov.destino;
 
-        if((killers[ply][0] ^ movimiento) == 0) return;
+        if ((killers[ply][0] ^ movimiento) == 0) return;
 
         killers[ply][1] = killers[ply][0];
         killers[ply][0] = movimiento;
@@ -223,38 +223,44 @@ public class Search {
         establecerPuntuacion(movimientos, fin, ply);
         insertionSort(movimientos, fin);
 
-        for (int k = 1; k <= depth; k++) {
 
-            int alfa = -INFINITO;
+        int eval;
+
+        for (int k = 1; k <= depth; k++) {
 
             for (int i = 0; i < fin; i++) {
                 movimientos[i].ponderacion = -INFINITO;
             }
 
-            for (int i = 0; i < fin; i++) {
+            eval = searchRoot(k, ply, movimientos, fin, -INFINITO, INFINITO);
 
-                var mov = movimientos[i];
-                var m = Utilidades.convertirANotacion(mov);
-                tab.makeMove(mov);
-
-                int eval = -negaMax(k - 1, -INFINITO, -alfa, 1);
-
-                if (eval > alfa) {
-                    alfa = eval;
-                    actualizarPV(mov, ply);
-                }
-
-                tab.takeBack(mov);
-
-            }
             establecerPuntuacion(movimientos, fin, ply);
             insertionSort(movimientos, fin);
 
-            mostrarInformacionActual(alfa, k);
+            mostrarInformacionActual(eval, k);
         }
+
         System.out.println("nodos: " + nodes);
         nodes = 0;
         return pv[0][0];
+    }
+
+    private int searchRoot(int depth, int ply, Movimiento[] movimientos, int fin, int alfa, int beta) {
+        for (int i = 0; i < fin; i++) {
+
+            var mov = movimientos[i];
+            tab.makeMove(mov);
+
+            int eval = -negaMax(depth - 1, -INFINITO, -alfa, 1);
+
+            if (eval > alfa) {
+                alfa = eval;
+                actualizarPV(mov, ply);
+            }
+
+            tab.takeBack(mov);
+        }
+        return alfa;
     }
 
     private void mostrarInformacionActual(int alfa, int depth) {
@@ -281,13 +287,13 @@ public class Search {
             int ponderacion = 100_000_000;
 
             // pv
-            if ((pv[ply][ply] ^ mov ) == 0) {
+            if ((pv[ply][ply] ^ mov) == 0) {
                 movimientos[i].ponderacion = 150_000_000;
                 continue;
             }
 
             // killer moves
-            if((killers[ply][0] ^ mov) == 0 ){
+            if ((killers[ply][0] ^ mov) == 0) {
                 movimientos[i].ponderacion = 140_000_000;
                 continue;
             }
