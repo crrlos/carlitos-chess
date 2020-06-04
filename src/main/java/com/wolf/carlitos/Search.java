@@ -39,45 +39,6 @@ public class Search {
         this.generador = new Generador(tablero);
     }
 
-    private void perftSearch(int deep, Acumulador acumulador, boolean reset) {
-
-        if (deep == 0) {
-            acumulador.contador++;
-            acumulador.contadorPerft++;
-            return;
-        }
-        var respuesta = generador.generarMovimientos(deep);
-
-        var movimientos = respuesta.movimientosGenerados;
-        var fin = respuesta.cantidadDeMovimientos;
-
-
-        for (int i = 0; i < fin; i++) {
-            var mov = movimientos[i];
-
-            tab.makeMove(mov);
-
-            perftSearch(deep - 1, acumulador, false);
-
-            tab.takeBack(mov);
-
-            if (reset) {
-                System.out.println(Utilidades.convertirANotacion(mov) + " " + acumulador.contadorPerft);
-                acumulador.contadorPerft = 0;
-            }
-        }
-    }
-
-    public void perft(int deep) {
-        var acumulador = new Acumulador();
-        var tinicio = System.currentTimeMillis();
-        perftSearch(deep, acumulador, true);
-        System.out.println(acumulador.contador);
-
-        var tfin = (System.currentTimeMillis() - tinicio) / 1000;
-
-    }
-
     private int quiescent(int depth, int alfa, int beta, int ply) {
 
 //        int ttval =  Transposition.checkEntry(tab.getZobrist(),0,alfa,beta);
@@ -190,28 +151,6 @@ public class Search {
         }
         return alfa;
     }
-
-    private void establecerKiller(int ply, Movimiento mov) {
-        int movimiento = mov.promocion << 12 | mov.inicio << 6 | mov.destino;
-
-        if ((killers[ply][0] ^ movimiento) == 0) return;
-
-        killers[ply][1] = killers[ply][0];
-        killers[ply][0] = movimiento;
-    }
-
-    private void establecerHistory(int depth, Movimiento mov) {
-
-        if (tablero[mov.destino] == NOPIEZA) {
-            history[mov.inicio][mov.destino] += depth;
-        }
-    }
-
-    private void actualizarPV(Movimiento mov, int ply) {
-        pv[ply][ply] = mov.promocion << 12 | mov.inicio << 6 | mov.destino;
-        System.arraycopy(pv[ply + 1], ply + 1, pv[ply], ply + 1, 30);
-    }
-
     public int search(int depth) {
         int ply = 0;
 
@@ -243,6 +182,27 @@ public class Search {
         System.out.println("nodos: " + nodes);
         nodes = 0;
         return pv[0][0];
+    }
+
+    private void establecerKiller(int ply, Movimiento mov) {
+        int movimiento = mov.promocion << 12 | mov.inicio << 6 | mov.destino;
+
+        if ((killers[ply][0] ^ movimiento) == 0) return;
+
+        killers[ply][1] = killers[ply][0];
+        killers[ply][0] = movimiento;
+    }
+
+    private void establecerHistory(int depth, Movimiento mov) {
+
+        if (tablero[mov.destino] == NOPIEZA) {
+            history[mov.inicio][mov.destino] += depth;
+        }
+    }
+
+    private void actualizarPV(Movimiento mov, int ply) {
+        pv[ply][ply] = mov.promocion << 12 | mov.inicio << 6 | mov.destino;
+        System.arraycopy(pv[ply + 1], ply + 1, pv[ply], ply + 1, 30);
     }
 
     private int searchRoot(int depth, int ply, Movimiento[] movimientos, int fin, int alfa, int beta) {

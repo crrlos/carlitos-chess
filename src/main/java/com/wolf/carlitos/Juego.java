@@ -15,8 +15,8 @@ public class Juego {
     }
 
     public void perft(int n) {
-        var search = new Search(tablero);
-        search.perft(n);
+        var perft = new Perft();
+        perft.perft(n);
     }
 
     public String mover(int n){
