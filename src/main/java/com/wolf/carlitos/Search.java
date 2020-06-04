@@ -30,6 +30,8 @@ public class Search {
 
     private static int[][] pv = new int[64][64];
 
+    private static int[][] killers = new int[64][2];
+
     public Search(Tablero tablero) {
         this.tablero = tablero.tablero;
         this.color = tablero.color;
@@ -171,6 +173,7 @@ public class Search {
 
             if (evaluacion >= beta) {
                 establecerHistory(depth, mov);
+                establecerKiller(ply,mov);
                 Transposition.setEntry(zobrist, depth, evaluacion, BETA);
                 return beta;
             }
@@ -186,6 +189,15 @@ public class Search {
 
         }
         return alfa;
+    }
+
+    private void establecerKiller(int ply, Movimiento mov) {
+        int movimiento = mov.promocion << 12 | mov.inicio << 6 | mov.destino;
+
+        if((killers[ply][0] ^ movimiento) == 0) return;
+
+        killers[ply][1] = killers[ply][0];
+        killers[ply][0] = movimiento;
     }
 
     private void establecerHistory(int depth, Movimiento mov) {
@@ -206,7 +218,7 @@ public class Search {
         var respuesta = this.generador.generarMovimientos(ply);
         var movimientos = respuesta.movimientosGenerados;
         var fin = respuesta.cantidadDeMovimientos;
-        history = new int[64][64];
+        //history = new int[64][64];
         //pv = new int[64][64];
         establecerPuntuacion(movimientos, fin, ply);
         insertionSort(movimientos, fin);
@@ -262,21 +274,31 @@ public class Search {
         for (int i = 0; i < fin; i++) {
             int inicio = movimientos[i].inicio;
             int destino = movimientos[i].destino;
+            int promocion = movimientos[i].promocion;
+
+            int mov = promocion << 12 | inicio << 6 | destino;
+
             int ponderacion = 100_000_000;
 
-
-            // movimentos de pv van primero
-            if ((pv[ply][ply] ^ (movimientos[i].promocion << 12 | inicio << 6 | destino)) == 0) {
-               // System.out.printf("ply %d movimiento %s\n",ply,Utilidades.convertirANotacion(movimientos[i]));
+            // killer moves
+            if((killers[ply][0] ^ mov) == 0 ){
                 movimientos[i].ponderacion = 150_000_000;
                 continue;
             }
+
+            // pv
+            if ((pv[ply][ply] ^ mov ) == 0) {
+                movimientos[i].ponderacion = 140_000_000;
+                continue;
+            }
+
             // si es captura usar MVVLVA, con offset de 100k para se coloque antes de una no captura
             if (tablero[destino] != NOPIEZA) {
                 ponderacion += valorPiezas[REY] / valorPiezas[tablero[inicio]] + 10 * valorPiezas[tablero[destino]];
                 movimientos[i].ponderacion = ponderacion;
                 continue;
             }
+
             // si no es captura usar history heuristic
             ponderacion = history[inicio][destino];
             movimientos[i].ponderacion = ponderacion;
