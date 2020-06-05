@@ -236,7 +236,7 @@ public class Search {
             var mov = movimientos[i];
             tab.makeMove(mov);
 
-            int eval = -negaMax(depth - 1, -INFINITO, -alfa, 1);
+            int eval = -negaMax(depth - 1, -beta, -alfa, 1);
 
             if (eval > alfa) {
                 alfa = eval;
