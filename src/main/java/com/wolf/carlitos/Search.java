@@ -42,29 +42,20 @@ public class Search {
 
     private int quiescent(int depth, int alfa, int beta, int ply) {
 
-//        int ttval =  Transposition.checkEntry(tab.getZobrist(),0,alfa,beta);
-//        if(ttval != NOENTRY) return ttval;
+        int ttval = Transposition.checkEntry(tab.getZobrist(), 0, alfa, beta);
+        if (ttval != NOENTRY) return ttval;
 
-        int mejorValor;
-        Generador.Respuesta respuesta;
+        int mejorValor = evaluar(tab.miColor());
+        if (mejorValor > alfa) alfa = mejorValor;
+        if (mejorValor >= beta) return beta;
+
+        Generador.Respuesta respuesta = generador.generarCapturas(tablero, color, ply);;
         Movimiento[] movimientos;
         int fin;
 
-        boolean enJaque = tab.enJaque();
 
-        if (enJaque) {
-            respuesta = generador.generarMovimientos(ply);
-        } else {
-            mejorValor = evaluar(tab.miColor());
-            if (mejorValor > alfa) alfa = mejorValor;
-            if (mejorValor >= beta) return beta;
-
-            respuesta = generador.generarCapturas(tablero, color, ply);
-        }
         movimientos = respuesta.movimientosGenerados;
         fin = respuesta.cantidadDeMovimientos;
-
-        if (fin == 0 && enJaque) return -MATE + ply;
 
         establecerPuntuacion(movimientos, fin, ply);
         insertionSort(movimientos, fin);
@@ -110,11 +101,10 @@ public class Search {
 
         if (depth < 3
                 && !enJaque
-                &&  abs(beta - 1) > -INFINITO + 100)
-        {
+                && abs(beta - 1) > -INFINITO + 100) {
             int static_eval = evaluar(tab.miColor());
 
-            int eval_margin =  15 * depth;
+            int eval_margin = 15 * depth;
             if (static_eval - eval_margin >= beta)
                 return static_eval - eval_margin;
         }
@@ -165,6 +155,7 @@ public class Search {
         }
         return alfa;
     }
+
     public int search(int depth) {
         int ply = 0;
 
@@ -189,7 +180,7 @@ public class Search {
 
             eval = searchRoot(k, ply, movimientos, fin, alfa, beta);
 
-            if(eval <= alfa || eval >= beta){
+            if (eval <= alfa || eval >= beta) {
                 alfa = -INFINITO;
                 beta = INFINITO;
                 k--;
@@ -209,6 +200,7 @@ public class Search {
         nodes = 0;
         return pv[0][0];
     }
+
     private void establecerKiller(int ply, Movimiento mov) {
         int movimiento = mov.promocion << 12 | mov.inicio << 6 | mov.destino;
 
