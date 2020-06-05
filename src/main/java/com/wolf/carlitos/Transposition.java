@@ -11,7 +11,7 @@ public class Transposition {
     }
 
     public static int llamadas = 0;
-    private static final Entry[] transposition = new Entry[25_000_000];
+    private static final Entry[] transposition = new Entry[10_000_000];
 
     static {
         for (int i = 0; i < transposition.length; i++) {

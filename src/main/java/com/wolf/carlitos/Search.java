@@ -9,6 +9,7 @@ package com.wolf.carlitos;
 import static com.wolf.carlitos.Constantes.*;
 import static com.wolf.carlitos.Evaluar.evaluar;
 import static com.wolf.carlitos.Pieza.valorPiezas;
+import static java.lang.Math.abs;
 
 
 /**
@@ -105,6 +106,19 @@ public class Search {
 
         if (depth == 0) return quiescent(depth, alfa, beta, ply);
 
+        boolean enJaque = tab.enJaque();
+
+        if (depth < 3
+                && !enJaque
+                &&  abs(beta - 1) > -INFINITO + 100)
+        {
+            int static_eval = evaluar(tab.miColor());
+
+            int eval_margin =  15 * depth;
+            if (static_eval - eval_margin >= beta)
+                return static_eval - eval_margin;
+        }
+
         var respuesta = generador.generarMovimientos(ply);
 
         var movimientos = respuesta.movimientosGenerados;
@@ -164,6 +178,8 @@ public class Search {
 
 
         int eval;
+        int alfa = -INFINITO;
+        int beta = INFINITO;
 
         for (int k = 1; k <= depth; k++) {
 
@@ -171,7 +187,17 @@ public class Search {
                 movimientos[i].ponderacion = -INFINITO;
             }
 
-            eval = searchRoot(k, ply, movimientos, fin, -INFINITO, INFINITO);
+            eval = searchRoot(k, ply, movimientos, fin, alfa, beta);
+
+            if(eval <= alfa || eval >= beta){
+                alfa = -INFINITO;
+                beta = INFINITO;
+                k--;
+                continue;
+            }
+
+            alfa = eval - 85;
+            beta = eval + 85;
 
             establecerPuntuacion(movimientos, fin, ply);
             insertionSort(movimientos, fin);
@@ -183,7 +209,6 @@ public class Search {
         nodes = 0;
         return pv[0][0];
     }
-
     private void establecerKiller(int ply, Movimiento mov) {
         int movimiento = mov.promocion << 12 | mov.inicio << 6 | mov.destino;
 
