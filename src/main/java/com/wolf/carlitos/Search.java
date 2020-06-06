@@ -97,17 +97,17 @@ public class Search {
 
         if (depth == 0) return quiescent(depth, alfa, beta, ply);
 
-        boolean enJaque = tab.enJaque();
+        //boolean enJaque = tab.enJaque();
 
-        if (depth < 3
-                && !enJaque
-                && abs(beta - 1) > -INFINITO + 100) {
-            int static_eval = evaluar(tab.miColor());
-
-            int eval_margin = 15 * depth;
-            if (static_eval - eval_margin >= beta)
-                return static_eval - eval_margin;
-        }
+//        if (depth < 3
+//                && !enJaque
+//                && abs(beta - 1) > -INFINITO + 100) {
+//            int static_eval = evaluar(tab.miColor());
+//
+//            int eval_margin = 50 * depth;
+//            if (static_eval - eval_margin >= beta)
+//                return static_eval - eval_margin;
+//        }
 
         var respuesta = generador.generarMovimientos(ply);
 
