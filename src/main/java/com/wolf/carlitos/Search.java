@@ -49,7 +49,8 @@ public class Search {
         if (mejorValor > alfa) alfa = mejorValor;
         if (mejorValor >= beta) return beta;
 
-        Generador.Respuesta respuesta = generador.generarCapturas(tablero, color, ply);;
+        Generador.Respuesta respuesta = generador.generarCapturas(tablero, color, ply);
+        ;
         Movimiento[] movimientos;
         int fin;
 
@@ -87,7 +88,7 @@ public class Search {
         return alfa;
     }
 
-    public int negaMax(int depth, int alfa, int beta, int ply) {
+    public int negaMax(int depth, int alfa, int beta, int ply, boolean allowNull) {
 
         // se consulta la tabla de transposición, alfa y beta se invierten porque la consulta se hace un nivel
         // abajo de donde se generó la posición por lo tanto se llamó -negaMax(-beta,-alfa)
@@ -97,17 +98,28 @@ public class Search {
 
         if (depth == 0) return quiescent(depth, alfa, beta, ply);
 
-        //boolean enJaque = tab.enJaque();
+        boolean inCheck = tab.enJaque();
+        // check extension
+        if (inCheck) depth++;
 
-//        if (depth < 3
-//                && !enJaque
-//                && abs(beta - 1) > -INFINITO + 100) {
+//        if (depth < 3 && !inCheck) {
 //            int static_eval = evaluar(tab.miColor());
 //
-//            int eval_margin = 50 * depth;
+//            int eval_margin = 120 * depth;
 //            if (static_eval - eval_margin >= beta)
 //                return static_eval - eval_margin;
 //        }
+
+        // null move pruning
+        if (!inCheck && allowNull && depth >= 4) {
+            int R = 3;
+            tab.doNull();
+            int eval = -negaMax(depth - 1 - R, -beta, -beta + 1, ply + 1, false);
+            tab.takeBackNull();
+            if (eval >= beta) {
+                return beta;
+            }
+        }
 
         var respuesta = generador.generarMovimientos(ply);
 
@@ -117,8 +129,6 @@ public class Search {
         establecerPuntuacion(movimientos, fin, ply);
         insertionSort(movimientos, fin);
 
-        // check extension
-        if (tab.enJaque()) depth++;
 
         if (fin == 0) {
             if (tab.enJaque()) return -MATE + ply;
@@ -132,7 +142,7 @@ public class Search {
 
             long zobrist = tab.getZobrist();
 
-            int evaluacion = -negaMax(depth - 1, -beta, -alfa, ply + 1);
+            int evaluacion = -negaMax(depth - 1, -beta, -alfa, ply + 1, true);
 
             tab.takeBack(mov);
 
@@ -228,7 +238,7 @@ public class Search {
             var mov = movimientos[i];
             tab.makeMove(mov);
 
-            int eval = -negaMax(depth - 1, -beta, -alfa, 1);
+            int eval = -negaMax(depth - 1, -beta, -alfa, 1, true);
 
             if (eval > alfa) {
                 alfa = eval;

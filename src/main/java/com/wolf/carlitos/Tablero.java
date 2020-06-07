@@ -797,4 +797,14 @@ public class Tablero {
         if (k != getZobrist()) throw new IllegalStateException("no coinciden");
 
     }
+
+    public void doNull() {
+        estados.push(getEstado() ^ 16);
+        zobristKeys.push(getZobrist() ^ claveLadoNegro);
+    }
+
+    public void takeBackNull() {
+        estados.pop();
+        zobristKeys.pop();
+    }
 }
