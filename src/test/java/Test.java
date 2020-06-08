@@ -1,189 +1,51 @@
-import com.wolf.carlitos.*;
-
-import java.util.Arrays;
-import java.util.Random;
-
-import static com.wolf.carlitos.Bitboard.next;
-import static com.wolf.carlitos.Bitboard.remainder;
-import static com.wolf.carlitos.Constantes.*;
-import static java.lang.Long.bitCount;
-
 public class Test {
+    static int[] mailbox = new int[]{
+            -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+            -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+            -1, 0, 1, 2, 3, 4, 5, 6, 7, -1,
+            -1, 8, 9, 10, 11, 12, 13, 14, 15, -1,
+            -1, 16, 17, 18, 19, 20, 21, 22, 23, -1,
+            -1, 24, 25, 26, 27, 28, 29, 30, 31, -1,
+            -1, 32, 33, 34, 35, 36, 37, 38, 39, -1,
+            -1, 40, 41, 42, 43, 44, 45, 46, 47, -1,
+            -1, 48, 49, 50, 51, 52, 53, 54, 55, -1,
+            -1, 56, 57, 58, 59, 60, 61, 62, 63, -1,
+            -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+            -1, -1, -1, -1, -1, -1, -1, -1, -1, -1
+    };
+    static int[] mailbox64 = new int[]{
+            21, 22, 23, 24, 25, 26, 27, 28,
+            31, 32, 33, 34, 35, 36, 37, 38,
+            41, 42, 43, 44, 45, 46, 47, 48,
+            51, 52, 53, 54, 55, 56, 57, 58,
+            61, 62, 63, 64, 65, 66, 67, 68,
+            71, 72, 73, 74, 75, 76, 77, 78,
+            81, 82, 83, 84, 85, 86, 87, 88,
+            91, 92, 93, 94, 95, 96, 97, 98
+    };
+
+    public static void main(String... args) {
+        int movimientos = 0;
+        int[] offset = new int[]{
+                8, 12, 19, 21, -8, -12, -19, -21
+        };
+
+        System.out.println("inicio");
+        for (int i = 0; i < 100000000; i++) {
+
+            for (int k = 0; k < 64; k++) {
+                for (int j = 0; j < 8; j++) {
+                    if (mailbox[mailbox64[k] + offset[j]] != -1)
+                        movimientos++;
+                }
+            }
 
 
-    public static void main(String[] args) {
-
-        System.out.println(4 >> 1 & 2);
-
-//        for (int i = A2; i <= H7; i++) {
-//            System.out.print("movimientos pos " + i + ": ");
-//            for (long squares = ataquePeon[NEGRO][i]; squares != 0; squares = remainder(squares)) {
-//                int square = next(squares);
-//
-//                System.out.print(convertirANotacion(i << 6 | square) + " ");
-//            }
-//            System.out.println();
-//        }
-
-
-//        Ataque.iniciar();
-//        Generador g = new Generador();
-//
-//        Juego ju = new Juego();
-//        ju.setFen("rnbqkbnr/pppp1ppp/8/4p3/3P4/8/PPP1PPPP/RNBQKBNR w KQkq e6 0 2");
-//
-//        var t1 = System.currentTimeMillis();
-//        int pieza = 0;
-//
-//
-//        System.out.println(pieza);
-//        System.out.println(System.currentTimeMillis() - t1);
-
-
-//        var maskk = 0b101110_00010000_00010000_00010000_00000000_00000000_00010000_00000000L;
-//        var magic = Ataque._rookMagics[E8];
-//        var key = maskk * magic >>> 53;
-//
-//        System.out.println(Long.toBinaryString(Ataque.ataqueTorre[E8][(int) key]));
-//
-//
-//
-//        long[] valores = new long[4096];
-//        Random rand = new Random();
-//        int posicion = 0;
-//        long magicPrueba = 0xa8002c000108020L;
-//        int bits = 52;
-//        int l = 4096;
-//        int[] rookMask = new int[64];
-//
-////        rookMask[1] = 1;
-////        rookMask[2] = 1;
-////        rookMask[3] = 1;
-////        rookMask[4] = 1;
-////        rookMask[5] = 1;
-////        rookMask[6] = 1;
-////        rookMask[9] = 1;
-////        rookMask[17] = 1;
-////        rookMask[25] = 1;
-////        rookMask[33] = 1;
-////        rookMask[41] = 1;
-////        rookMask[49] = 1;
-//        rookMask[1] = 1;
-//        rookMask[2] = 1;
-//        rookMask[3] = 1;
-//        rookMask[4] = 1;
-//        rookMask[5] = 1;
-//        rookMask[6] = 1;
-//        rookMask[8] = 1;
-//        rookMask[16] = 1;
-//        rookMask[24] = 1;
-//        rookMask[32] = 1;
-//        rookMask[40] = 1;
-//        rookMask[48] = 1;
-//
-//        int total = 0;
-//
-//        int[] blocked = new int[64];
-//
-//        while (total < l) {
-//
-//            Arrays.fill(blocked, -1);
-//
-//            for (int i = 0; i < rookMask.length; i++) {
-//                if (rookMask[i] == 1)
-//                    blocked[i] = rand.nextInt(2);
-//            }
-//            long ataque = 0;
-//            long bloqueadores = 0;
-//
-//            for (int i = 0; i < Tablero.offsetMailBox[TORRE].length; i++) {
-//                boolean limite = false;
-//
-//                int pos = posicion;
-//
-//                while (mailBox[direccion[pos] + offsetMailBox[TORRE][i]] != -1) {
-//                    pos += offset64[TORRE][i];
-//
-//                    if (!limite) {
-//                        ataque |= 1L << pos;
-//                    }
-//
-//                    if (blocked[pos] == 1)
-//                        bloqueadores |= 1L << pos;
-//
-//                    if (blocked[pos] == 1) limite = true;
-//
-//                }
-//
-//            }
-//
-//            long res = bloqueadores * magicPrueba;
-//
-//            int index = (int) (res >>> bits);
-//
-//
-//            if (valores[index] == 0) {
-//                ++total;
-//                valores[index] = ataque;
-//                //System.out.println("generado " + total);
-//            }
-//
-//        }
-////        System.out.println("pruebas iniciadas");
-////
-////        long mask = 0b0100000;
-////        mask = mask * magic;
-////       System.out.println(Long.toBinaryString(valores[(int) (mask >>> 52)]));
-//        System.out.println("iniciando pruebas");
-//
-//
-//        for (int j = 0; j < 1_0000000; j++) {
-//            Arrays.fill(blocked, -1);
-//
-//            // crear blockers aleatorios para la mascara de la torre en A1
-//            for (int i = 0; i < rookMask.length; i++) {
-//                if (rookMask[i] == 1)
-//                    blocked[i] = rand.nextInt(2);
-//            }
-//
-//            long ataque = 0;
-//            long bloqueadores = 0;
-//
-//            for (int i = 0; i < Tablero.offsetMailBox[TORRE].length; i++) {
-//                boolean limite = false;
-//
-//                int pos = posicion;
-//
-//                while (mailBox[direccion[pos] + offsetMailBox[TORRE][i]] != -1) {
-//                    pos += offset64[TORRE][i];
-//
-//                    if (!limite) {
-//                        ataque |= 1L << pos;
-//                    }
-//
-//                    if (blocked[pos] == 1)
-//                        bloqueadores |= 1L << pos;
-//
-//                    if (blocked[pos] == 1) limite = true;
-//
-//                }
-//
-//            }
-//
-//            long res = bloqueadores * magicPrueba;
-//
-//            int index = (int) (res >>> bits);
-//
-//            if (Ataque.ataqueTorre[posicion][index] != ataque) {
-//                System.out.println("no coincide");
-//
-//                System.out.println(Long.toBinaryString(Ataque.ataqueTorre[posicion][index]));
-//                System.out.println(Long.toBinaryString(ataque));
-//                System.out.println("indice " + index);
-//            }
-//
-//        }
-
-
+        }
+        System.out.println("fin");
     }
+
 }
+
+
+
