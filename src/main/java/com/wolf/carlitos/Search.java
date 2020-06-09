@@ -79,7 +79,7 @@ public class Search {
         // abajo de donde se generó la posición por lo tanto se llamó -negaMax(-beta,-alfa)
         int ttval = Transposition.checkEntry(tab.getZobrist(), depth, -beta, -alfa);
         // valor retornado negativo para que sea consistente con -negaMax(-beta,-alfa)
-        if (ttval != NOENTRY) return -ttval;
+        //if (ttval != NOENTRY) return -ttval;
 
         if (depth == 0) return quiescent(depth, alfa, beta, ply);
 
