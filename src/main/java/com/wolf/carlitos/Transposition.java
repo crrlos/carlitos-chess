@@ -8,6 +8,7 @@ public class Transposition {
         public int score;
         public int depth;
         public int flag;
+        public int color;
     }
 
     public static int llamadas = 0;
@@ -19,36 +20,39 @@ public class Transposition {
         }
     }
 
-    public static int checkEntry(long zobrist, int depth, int alfa, int beta, boolean isPv) {
+    public static int checkEntry(long zobrist, int depth, int alfa, int beta, int color) {
 
-        if (!isPv) return NOENTRY;
+        //if (!isPv) return NOENTRY;
+
 
         int index = (int) (zobrist % transposition.length);
 
         Entry entry = transposition[index];
 
-        if (entry.zobrist == zobrist && entry.depth > depth) {
+        if(entry.color != color) return NOENTRY;
+
+        if (entry.zobrist == zobrist && entry.depth >= depth) {
             if (entry.flag == BETA && entry.score >= beta) return beta;
             if (entry.flag == ALFA && entry.score <= alfa) return alfa;
-            if (entry.flag == EXACT && entry.score > alfa && entry.score < beta) return entry.score;
+            if (entry.flag == EXACT) return entry.score;
         }
 
         return NOENTRY;
     }
 
-    public static void setEntry(long zobrist, int depth, int score, int flag, boolean isPv) {
+    public static void setEntry(long zobrist, int depth, int score, int flag, int color) {
 
-        if (!isPv) return;
+       // if (!isPv) return;
 
         int index = (int) (zobrist % transposition.length);
 
         Entry entry = transposition[index];
-        if (entry.depth >= depth && entry.zobrist != 0) return;
 
         entry.zobrist = zobrist;
         entry.depth = depth;
         entry.score = score;
         entry.flag = flag;
+        entry.color = color;
     }
 
     public static int entradasAsignadas() {

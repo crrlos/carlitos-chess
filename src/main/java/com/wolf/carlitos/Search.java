@@ -73,13 +73,10 @@ public class Search {
         return alfa;
     }
 
-    public int negaMax(int depth, int alfa, int beta, int ply, boolean allowNull, boolean isPv) {
+    public int negaMax(int depth, int alfa, int beta, int ply, boolean allowNull) {
 
-        // se consulta la tabla de transposición, alfa y beta se invierten porque la consulta se hace un nivel
-        // abajo de donde se generó la posición por lo tanto se llamó -negaMax(-beta,-alfa)
-        int ttval = Transposition.checkEntry(tab.getZobrist(), depth, -beta, -alfa, isPv);
-        // valor retornado negativo para que sea consistente con -negaMax(-beta,-alfa)
-        if (ttval != NOENTRY) return -ttval;
+        int ttval = Transposition.checkEntry(tab.getZobrist(), depth, alfa, beta, tab.miColor());
+        // if (ttval != NOENTRY) return ttval;
 
         if (depth == 0) return quiescent(depth, alfa, beta, ply);
 
@@ -92,7 +89,7 @@ public class Search {
         if (!inCheck && allowNull && depth >= 4) {
             int R = 3;
             tab.doNull();
-            int eval = -negaMax(depth - 1 - R, -beta, -beta + 1, ply + 1, false, false);
+            int eval = -negaMax(depth - 1 - R, -beta, -beta + 1, ply + 1, false);
             tab.takeBackNull();
             if (eval >= beta) {
                 return beta;
@@ -114,22 +111,21 @@ public class Search {
         }
 
         int best = -INFINITO;
+        int flag = EXACT;
 
         for (int i = 0; i < fin; i++) {
             var mov = movimientos[i];
 
             tab.makeMove(mov);
-
-            long zobrist = tab.getZobrist();
             int eval;
 
             // PV SEARCH
             if (best == -INFINITO) {
-                eval = -negaMax(depth - 1, -beta, -alfa, ply + 1, true, true);
+                eval = -negaMax(depth - 1, -beta, -alfa, ply + 1, true);
             } else {
-                eval = -negaMax(depth - 1, -alfa - 1, -alfa, ply + 1, true, false);
+                eval = -negaMax(depth - 1, -alfa - 1, -alfa, ply + 1, true);
                 if (eval > alfa && eval < beta)
-                    eval = -negaMax(depth - 1, -beta, -alfa, ply + 1, true, true);
+                    eval = -negaMax(depth - 1, -beta, -alfa, ply + 1, true);
             }
 
             if (eval > best) best = eval;
@@ -140,20 +136,18 @@ public class Search {
             if (eval >= beta) {
                 establecerHistory(depth, mov);
                 establecerKiller(ply, mov);
-                Transposition.setEntry(zobrist, depth, eval, BETA, isPv);
+                Transposition.setEntry(tab.getZobrist(), depth, eval, BETA, tab.miColor());
                 return beta;
             }
 
             if (eval > alfa) {
                 alfa = eval;
-                Transposition.setEntry(zobrist, depth, eval, EXACT, isPv);
+                flag = EXACT;
                 actualizarPV(mov, ply);
-
-            } else {
-                Transposition.setEntry(zobrist, depth, eval, ALFA, isPv);
             }
 
         }
+        Transposition.setEntry(tab.getZobrist(), depth, alfa, flag, tab.miColor());
         return alfa;
     }
 
@@ -167,6 +161,7 @@ public class Search {
         insertionSort(movimientos, fin);
 
         int eval;
+
         int alfa = -INFINITO;
         int beta = INFINITO;
 
@@ -230,11 +225,11 @@ public class Search {
 
             // PV SEARCH
             if (best == -INFINITO) {
-                eval = -negaMax(depth - 1, -beta, -alfa, ply + 1, true, true);
+                eval = -negaMax(depth - 1, -beta, -alfa, ply + 1, true);
             } else {
-                eval = -negaMax(depth - 1, -alfa - 1, -alfa, ply + 1, true, false);
+                eval = -negaMax(depth - 1, -alfa - 1, -alfa, ply + 1, true);
                 if (eval > alfa && eval < beta)
-                    eval = -negaMax(depth - 1, -beta, -alfa, ply + 1, true, true);
+                    eval = -negaMax(depth - 1, -beta, -alfa, ply + 1, true);
             }
 
             if (eval > best) best = eval;
