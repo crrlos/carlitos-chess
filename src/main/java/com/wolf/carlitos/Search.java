@@ -73,13 +73,13 @@ public class Search {
         return alfa;
     }
 
-    public int negaMax(int depth, int alfa, int beta, int ply, boolean allowNull, boolean pv) {
+    public int negaMax(int depth, int alfa, int beta, int ply, boolean allowNull, boolean isPv) {
 
         // se consulta la tabla de transposición, alfa y beta se invierten porque la consulta se hace un nivel
         // abajo de donde se generó la posición por lo tanto se llamó -negaMax(-beta,-alfa)
-        int ttval = Transposition.checkEntry(tab.getZobrist(), depth, -beta, -alfa);
+        int ttval = Transposition.checkEntry(tab.getZobrist(), depth, -beta, -alfa, isPv);
         // valor retornado negativo para que sea consistente con -negaMax(-beta,-alfa)
-        //if (ttval != NOENTRY) return -ttval;
+        if (ttval != NOENTRY) return -ttval;
 
         if (depth == 0) return quiescent(depth, alfa, beta, ply);
 
@@ -140,17 +140,17 @@ public class Search {
             if (eval >= beta) {
                 establecerHistory(depth, mov);
                 establecerKiller(ply, mov);
-                Transposition.setEntry(zobrist, depth, eval, BETA);
+                Transposition.setEntry(zobrist, depth, eval, BETA, isPv);
                 return beta;
             }
 
             if (eval > alfa) {
                 alfa = eval;
-                Transposition.setEntry(zobrist, depth, eval, EXACT);
+                Transposition.setEntry(zobrist, depth, eval, EXACT, isPv);
                 actualizarPV(mov, ply);
 
             } else {
-                Transposition.setEntry(zobrist, depth, eval, ALFA);
+                Transposition.setEntry(zobrist, depth, eval, ALFA, isPv);
             }
 
         }

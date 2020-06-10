@@ -19,25 +19,29 @@ public class Transposition {
         }
     }
 
-    public static int checkEntry(long zobrist, int depth, int alfa, int beta) {
+    public static int checkEntry(long zobrist, int depth, int alfa, int beta, boolean isPv) {
+
+        if (!isPv) return NOENTRY;
+
         int index = (int) (zobrist % transposition.length);
 
         Entry entry = transposition[index];
 
-        if (entry.zobrist != zobrist || entry.depth <= depth) return NOENTRY;
-
-        if (entry.flag == BETA && entry.score >= beta) return beta;
-        if (entry.flag == ALFA && entry.score <= alfa) return alfa;
-        if (entry.flag == EXACT && entry.score > alfa && entry.score < beta) return entry.score;
+        if (entry.zobrist == zobrist && entry.depth > depth) {
+            if (entry.flag == BETA && entry.score >= beta) return beta;
+            if (entry.flag == ALFA && entry.score <= alfa) return alfa;
+            if (entry.flag == EXACT && entry.score > alfa && entry.score < beta) return entry.score;
+        }
 
         return NOENTRY;
     }
 
-    public static void setEntry(long zobrist, int depth, int score, int flag) {
+    public static void setEntry(long zobrist, int depth, int score, int flag, boolean isPv) {
+
+        if (!isPv) return;
 
         int index = (int) (zobrist % transposition.length);
 
-        // always replace strategy
         Entry entry = transposition[index];
         if (entry.depth >= depth && entry.zobrist != 0) return;
 
