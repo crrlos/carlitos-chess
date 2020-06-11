@@ -8,7 +8,6 @@ public class Transposition {
         public int score;
         public int depth;
         public int flag;
-        public int color;
     }
 
     public static int llamadas = 0;
@@ -20,7 +19,7 @@ public class Transposition {
         }
     }
 
-    public static int checkEntry(long zobrist, int depth, int alfa, int beta, int color) {
+    public static int checkEntry(long zobrist, int depth, int alfa, int beta) {
 
         //if (!isPv) return NOENTRY;
 
@@ -29,18 +28,16 @@ public class Transposition {
 
         Entry entry = transposition[index];
 
-        if(entry.color != color) return NOENTRY;
-
         if (entry.zobrist == zobrist && entry.depth >= depth) {
             if (entry.flag == BETA && entry.score >= beta) return beta;
             if (entry.flag == ALFA && entry.score <= alfa) return alfa;
-            if (entry.flag == EXACT) return entry.score;
+            //if (entry.flag == EXACT) return entry.score;
         }
 
         return NOENTRY;
     }
 
-    public static void setEntry(long zobrist, int depth, int score, int flag, int color) {
+    public static void setEntry(long zobrist, int depth, int score, int flag) {
 
        // if (!isPv) return;
 
@@ -48,11 +45,12 @@ public class Transposition {
 
         Entry entry = transposition[index];
 
+        if(depth < entry.depth && entry.zobrist == zobrist) return;
+
         entry.zobrist = zobrist;
         entry.depth = depth;
         entry.score = score;
         entry.flag = flag;
-        entry.color = color;
     }
 
     public static int entradasAsignadas() {

@@ -75,8 +75,10 @@ public class Search {
 
     public int negaMax(int depth, int alfa, int beta, int ply, boolean allowNull) {
 
-        int ttval = Transposition.checkEntry(tab.getZobrist(), depth, alfa, beta, tab.miColor());
-        // if (ttval != NOENTRY) return ttval;
+       if(Config.tt){
+           int ttval = Transposition.checkEntry(tab.getZobrist(), depth, alfa, beta);
+           if (ttval != NOENTRY) return ttval;
+       }
 
         if (depth == 0) return quiescent(depth, alfa, beta, ply);
 
@@ -86,13 +88,15 @@ public class Search {
         if (inCheck) depth++;
 
         // NULL MOVE PRUNING
-        if (!inCheck && allowNull && depth >= 4) {
-            int R = 3;
-            tab.doNull();
-            int eval = -negaMax(depth - 1 - R, -beta, -beta + 1, ply + 1, false);
-            tab.takeBackNull();
-            if (eval >= beta) {
-                return beta;
+        if(Config.nullPruning){
+            if (!inCheck && allowNull && depth >= 4) {
+                int R = 3;
+                tab.doNull();
+                int eval = -negaMax(depth - 1 - R, -beta, -beta + 1, ply + 1, false);
+                tab.takeBackNull();
+                if (eval >= beta) {
+                    return beta;
+                }
             }
         }
 
@@ -128,7 +132,9 @@ public class Search {
                     eval = -negaMax(depth - 1, -beta, -alfa, ply + 1, true);
             }
 
-            if (eval > best) best = eval;
+            if(Config.pv){
+                if (eval > best) best = eval;
+            }
 
 
             tab.takeBack(mov);
@@ -136,7 +142,7 @@ public class Search {
             if (eval >= beta) {
                 establecerHistory(depth, mov);
                 establecerKiller(ply, mov);
-                Transposition.setEntry(tab.getZobrist(), depth, eval, BETA, tab.miColor());
+                Transposition.setEntry(tab.getZobrist(), depth, eval, BETA);
                 return beta;
             }
 
@@ -147,7 +153,7 @@ public class Search {
             }
 
         }
-        Transposition.setEntry(tab.getZobrist(), depth, alfa, flag, tab.miColor());
+        Transposition.setEntry(tab.getZobrist(), depth, alfa, flag);
         return alfa;
     }
 
@@ -173,15 +179,20 @@ public class Search {
 
             eval = searchRoot(k, ply, movimientos, fin, alfa, beta);
 
-            if (eval <= alfa || eval >= beta) {
-                alfa = -INFINITO;
-                beta = INFINITO;
-                k--;
-                continue;
-            }
+           if(Config.aspiration){
+               if (eval <= alfa || eval >= beta) {
+                   alfa = -INFINITO;
+                   beta = INFINITO;
+                   k--;
+                   continue;
+               }
 
-            alfa = eval - 85;
-            beta = eval + 85;
+               alfa = eval - 85;
+               beta = eval + 85;
+           }else{
+               alfa = -INFINITO;
+               beta = INFINITO;
+           }
 
             establecerPuntuacion(movimientos, fin, ply);
             insertionSort(movimientos, fin);
@@ -232,7 +243,9 @@ public class Search {
                     eval = -negaMax(depth - 1, -beta, -alfa, ply + 1, true);
             }
 
-            if (eval > best) best = eval;
+           if(Config.pv){
+               if (eval > best) best = eval;
+           }
 
             if (eval > alfa) {
                 alfa = eval;
