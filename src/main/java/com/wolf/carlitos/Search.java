@@ -75,10 +75,8 @@ public class Search {
 
     public int negaMax(int depth, int alfa, int beta, int ply, boolean allowNull) {
 
-       if(Config.tt){
-           int ttval = Transposition.checkEntry(tab.getZobrist(), depth, alfa, beta);
-           if (ttval != NOENTRY) return ttval;
-       }
+        int ttval = Transposition.checkEntry(tab.getZobrist(), depth, alfa, beta);
+        if (ttval != NOENTRY) return ttval;
 
         if (depth == 0) return quiescent(depth, alfa, beta, ply);
 
@@ -88,15 +86,13 @@ public class Search {
         if (inCheck) depth++;
 
         // NULL MOVE PRUNING
-        if(Config.nullPruning){
-            if (!inCheck && allowNull && depth >= 4) {
-                int R = 3;
-                tab.doNull();
-                int eval = -negaMax(depth - 1 - R, -beta, -beta + 1, ply + 1, false);
-                tab.takeBackNull();
-                if (eval >= beta) {
-                    return beta;
-                }
+        if (!inCheck && allowNull && depth >= 4) {
+            int R = 3;
+            tab.doNull();
+            int eval = -negaMax(depth - 1 - R, -beta, -beta + 1, ply + 1, false);
+            tab.takeBackNull();
+            if (eval >= beta) {
+                return beta;
             }
         }
 
@@ -115,7 +111,7 @@ public class Search {
         }
 
         int best = -INFINITO;
-        int flag = EXACT;
+        int flag = ALFA;
 
         for (int i = 0; i < fin; i++) {
             var mov = movimientos[i];
@@ -132,10 +128,7 @@ public class Search {
                     eval = -negaMax(depth - 1, -beta, -alfa, ply + 1, true);
             }
 
-            if(Config.pv){
-                if (eval > best) best = eval;
-            }
-
+            if (eval > best) best = eval;
 
             tab.takeBack(mov);
 
@@ -179,20 +172,15 @@ public class Search {
 
             eval = searchRoot(k, ply, movimientos, fin, alfa, beta);
 
-           if(Config.aspiration){
-               if (eval <= alfa || eval >= beta) {
-                   alfa = -INFINITO;
-                   beta = INFINITO;
-                   k--;
-                   continue;
-               }
+            if (eval <= alfa || eval >= beta) {
+                alfa = -INFINITO;
+                beta = INFINITO;
+                k--;
+                continue;
+            }
 
-               alfa = eval - 85;
-               beta = eval + 85;
-           }else{
-               alfa = -INFINITO;
-               beta = INFINITO;
-           }
+            alfa = eval - 85;
+            beta = eval + 85;
 
             establecerPuntuacion(movimientos, fin, ply);
             insertionSort(movimientos, fin);
@@ -243,9 +231,7 @@ public class Search {
                     eval = -negaMax(depth - 1, -beta, -alfa, ply + 1, true);
             }
 
-           if(Config.pv){
-               if (eval > best) best = eval;
-           }
+            if (eval > best) best = eval;
 
             if (eval > alfa) {
                 alfa = eval;
