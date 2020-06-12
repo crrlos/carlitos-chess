@@ -42,9 +42,18 @@ public class Search {
 
     private int quiescent(int depth, int alfa, int beta, int ply) {
 
+        int ttval = Transposition.checkEntry(tab.getZobrist(),0,alfa,beta);
+        if(ttval != NOENTRY) return ttval;
+
+        int flag = ALFA;
+
         int mejorValor = evaluar(tab.miColor());
-        if (mejorValor > alfa) alfa = mejorValor;
         if (mejorValor >= beta) return beta;
+
+        if (mejorValor > alfa) {
+            alfa = mejorValor;
+            flag = EXACT;
+        }
 
         Generador.Respuesta respuesta = generador.generarCapturas(tablero, color, ply);
         Movimiento[] movimientos;
@@ -65,11 +74,17 @@ public class Search {
 
             tab.takeBack(mov);
 
-            if (evaluacion >= beta) return beta;
-            if (evaluacion > alfa) alfa = evaluacion;
+            if (evaluacion >= beta) {
+                Transposition.setEntry(tab.getZobrist(),0,evaluacion,BETA);
+                return beta;
+            }
+            if (evaluacion > alfa) {
+                alfa = evaluacion;
+                flag = EXACT;
+            }
 
         }
-
+        Transposition.setEntry(tab.getZobrist(),0,alfa,flag);
         return alfa;
     }
 
