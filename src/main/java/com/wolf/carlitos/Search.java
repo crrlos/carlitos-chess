@@ -75,6 +75,12 @@ public class Search {
 
     public int negaMax(int depth, int alfa, int beta, int ply, boolean allowNull) {
 
+//        int mateValue = 1_000_000 - ply;
+//
+//        if (alfa < -mateValue) alfa = -mateValue;
+//        if (beta > mateValue - 1) beta = mateValue - 1;
+//        if (alfa >= beta) return alfa;
+
         int ttval = Transposition.checkEntry(tab.getZobrist(), depth, alfa, beta);
         if (ttval != NOENTRY) return ttval;
 
@@ -86,7 +92,12 @@ public class Search {
         if (inCheck) depth++;
 
         // NULL MOVE PRUNING
-        if (!inCheck && allowNull && depth >= 4) {
+        if (
+                !inCheck
+                && allowNull
+                && depth >= 4
+                && tab.gameMaterial(tab.colorContrario()) >= ENDGAME_MATERIAL
+        ) {
             int R = 3;
             tab.doNull();
             int eval = -negaMax(depth - 1 - R, -beta, -beta + 1, ply + 1, false);

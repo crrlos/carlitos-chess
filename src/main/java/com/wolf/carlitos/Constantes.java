@@ -100,6 +100,8 @@ public class Constantes {
 
     public static char[] PIEZAS = {'P', 'N', 'B', 'R', 'Q', 'K', ' '};
 
+    public static final int ENDGAME_MATERIAL = 1500; // eight pawns plus two minor pieces
+
     public static final int POSICION_TIPO_MOVIMIENTO = 14;
     public static final int POSICION_PIEZA_CAPTURADA = 11;
     public static final int POSICION_REY_BLANCO = 17;

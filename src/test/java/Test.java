@@ -25,24 +25,7 @@ public class Test {
     };
 
     public static void main(String... args) {
-        int movimientos = 0;
-        int[] offset = new int[]{
-                8, 12, 19, 21, -8, -12, -19, -21
-        };
-
-        System.out.println("inicio");
-        for (int i = 0; i < 100000000; i++) {
-
-            for (int k = 0; k < 64; k++) {
-                for (int j = 0; j < 8; j++) {
-                    if (mailbox[mailbox64[k] + offset[j]] != -1)
-                        movimientos++;
-                }
-            }
-
-
-        }
-        System.out.println("fin");
+        System.out.println(Long.MAX_VALUE);
     }
 
 }

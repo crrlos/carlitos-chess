@@ -31,7 +31,7 @@ public class Transposition {
         if (entry.zobrist == zobrist && entry.depth >= depth) {
             if (entry.flag == BETA && entry.score >= beta) return beta;
             if (entry.flag == ALFA && entry.score <= alfa) return alfa;
-            if (entry.flag == EXACT && entry.score > alfa && entry.score < beta) return entry.score;
+            //if (entry.flag == EXACT && entry.score > alfa && entry.score < beta) return entry.score;
         }
 
         return NOENTRY;

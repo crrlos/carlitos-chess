@@ -3,14 +3,14 @@ package com.wolf.carlitos;
 
 
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Random;
 
 import static com.wolf.carlitos.Ataque.*;
 import static com.wolf.carlitos.Bitboard.*;
 import static com.wolf.carlitos.Constantes.*;
 import static com.wolf.carlitos.Pieza.bitboard;
+import static com.wolf.carlitos.Pieza.valorPiezas;
 import static com.wolf.carlitos.Utilidades.convertirAPosicion;
+import static java.lang.Long.bitCount;
 import static java.lang.Long.numberOfTrailingZeros;
 import static java.lang.Math.abs;
 
@@ -806,5 +806,14 @@ public class Tablero {
     public void takeBackNull() {
         estados.pop();
         zobristKeys.pop();
+    }
+
+    public int gameMaterial(int color){
+        return
+                bitCount(bitboard[color][PEON]) * valorPiezas[PEON] +
+                        bitCount(bitboard[color][CABALLO]) * valorPiezas[CABALLO] +
+                        bitCount(bitboard[color][ALFIL]) * valorPiezas[ALFIL] +
+                        bitCount(bitboard[color][TORRE]) * valorPiezas[TORRE] +
+                        bitCount(bitboard[color][DAMA]) * valorPiezas[DAMA];
     }
 }
