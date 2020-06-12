@@ -42,16 +42,17 @@ public class Search {
 
     private int quiescent(int depth, int alfa, int beta, int ply) {
 
-        int ttval = Transposition.checkEntry(tab.getZobrist(),0,alfa,beta);
-        if(ttval != NOENTRY) return ttval;
+        int ttval = Transposition.checkEntry(tab.getZobrist(), 0, alfa, beta);
+        if (ttval != NOENTRY) return ttval;
 
         int flag = ALFA;
 
-        int mejorValor = evaluar(tab.miColor());
-        if (mejorValor >= beta) return beta;
+        int eval = evaluar(tab.miColor());
+        int standPat = eval;
+        if (eval >= beta) return beta;
 
-        if (mejorValor > alfa) {
-            alfa = mejorValor;
+        if (eval > alfa) {
+            alfa = eval;
             flag = EXACT;
         }
 
@@ -68,23 +69,31 @@ public class Search {
         for (int i = 0; i < fin; i++) {
             var mov = movimientos[i];
 
+            // delta pruning
+            if(
+                    alfa >= standPat + valorPiezas[tablero[mov.destino]] + 200
+                   && tab.gameMaterial(tab.colorContrario()) - valorPiezas[tablero[mov.destino]] > ENDGAME_MATERIAL
+                    && !(tablero[mov.inicio] == PEON && (mov.destino <= H1 || mov.destino >= A8))
+            )
+                continue;
+
             tab.makeMove(mov);
 
-            int evaluacion = -quiescent(depth - 1, -beta, -alfa, ply + 1);
+             eval = -quiescent(depth - 1, -beta, -alfa, ply + 1);
 
             tab.takeBack(mov);
 
-            if (evaluacion >= beta) {
-                Transposition.setEntry(tab.getZobrist(),0,evaluacion,BETA);
+            if (eval >= beta) {
+                Transposition.setEntry(tab.getZobrist(), 0, eval, BETA);
                 return beta;
             }
-            if (evaluacion > alfa) {
-                alfa = evaluacion;
+            if (eval > alfa) {
+                alfa = eval;
                 flag = EXACT;
             }
 
         }
-        Transposition.setEntry(tab.getZobrist(),0,alfa,flag);
+        Transposition.setEntry(tab.getZobrist(), 0, alfa, flag);
         return alfa;
     }
 
@@ -109,9 +118,9 @@ public class Search {
         // NULL MOVE PRUNING
         if (
                 !inCheck
-                && allowNull
-                && depth >= 4
-                && tab.gameMaterial(tab.colorContrario()) >= ENDGAME_MATERIAL
+                        && allowNull
+                        && depth >= 4
+                        && tab.gameMaterial(tab.colorContrario()) >= ENDGAME_MATERIAL
         ) {
             int R = 3;
             tab.doNull();
