@@ -32,7 +32,7 @@ public class App {
                 juego.setHistoria(movimientos);
 
             } else if (linea.contains("go")) {
-                System.out.println("bestmove " + juego.mover(12));
+                System.out.println("bestmove " + juego.mover(7));
 
             } else if (linea.contains("isready")) {
                 System.out.println("readyok");

@@ -1,16 +1,24 @@
 package com.wolf.carlitos;
 
 public class Perft {
-    private Generador generador;
-    Tablero tab;
-    private void perftSearch(int deep, Acumulador acumulador, boolean reset) {
+    private final Generador generador;
+    private final Tablero tab;
+    private final Acumulador acumulador;
+
+    Perft(Tablero tablero) {
+        this.tab = tablero;
+        this.generador = new Generador(tab);
+        this.acumulador = new Acumulador();
+    }
+
+    private void perftSearch(int deep, boolean reset) {
 
         if (deep == 0) {
             acumulador.contador++;
             acumulador.contadorPerft++;
             return;
         }
-        var respuesta = generador.generarMovimientos(deep);
+        var respuesta = generador.generarMovimientos(deep + 50);
 
         var movimientos = respuesta.movimientosGenerados;
         var fin = respuesta.cantidadDeMovimientos;
@@ -21,7 +29,7 @@ public class Perft {
 
             tab.makeMove(mov);
 
-            perftSearch(deep - 1, acumulador, false);
+            perftSearch(deep - 1, false);
 
             tab.takeBack(mov);
 
@@ -33,12 +41,8 @@ public class Perft {
     }
 
     public void perft(int deep) {
-        tab = new Tablero();
-        generador = new Generador(tab);
-
-        var acumulador = new Acumulador();
         var tinicio = System.currentTimeMillis();
-        perftSearch(deep, acumulador, true);
+        perftSearch(deep, true);
         System.out.println(acumulador.contador);
 
         var tfin = (System.currentTimeMillis() - tinicio) / 1000;

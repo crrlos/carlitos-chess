@@ -15,7 +15,7 @@ public class Juego {
     }
 
     public void perft(int n) {
-        var perft = new Perft();
+        var perft = new Perft(tablero);
         perft.perft(n);
     }
 

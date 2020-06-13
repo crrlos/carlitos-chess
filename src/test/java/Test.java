@@ -1,3 +1,7 @@
+import com.wolf.carlitos.Juego;
+
+import java.util.jar.JarEntry;
+
 public class Test {
     static int[] mailbox = new int[]{
             -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -25,7 +29,12 @@ public class Test {
     };
 
     public static void main(String... args) {
-        System.out.println(Long.MAX_VALUE);
+        Juego j = new Juego();
+        var t1 = System.currentTimeMillis();
+        for (int i = 0; i < 1000; i++) {
+            j.perft(3);
+        }
+        System.out.println(System.currentTimeMillis() - t1);
     }
 
 }
