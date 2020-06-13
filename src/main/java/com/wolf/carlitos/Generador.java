@@ -10,8 +10,7 @@ import static com.wolf.carlitos.Bitboard.*;
 import static com.wolf.carlitos.Constantes.*;
 import static com.wolf.carlitos.MailBox.*;
 import static com.wolf.carlitos.Pieza.bitboard;
-import static java.lang.Long.bitCount;
-import static java.lang.Long.numberOfTrailingZeros;
+import static java.lang.Long.*;
 
 /**
  * @author carlos
@@ -22,6 +21,7 @@ public class Generador {
         private final Movimiento[][] movimientosPorNivel = new Movimiento[200][256];
         private Movimiento[] current;
         private int posicion;
+
         Movimientos() {
             for (int i = 0; i < movimientosPorNivel.length; i++) {
                 for (int j = 0; j < movimientosPorNivel[i].length; j++) {
@@ -84,10 +84,7 @@ public class Generador {
     public Respuesta generarMovimientos(int ply) {
         init(ply);
 
-        for (long squares = bitboard[miColor][PEON]; squares != 0; squares = remainder(squares)) {
-            int square = next(squares);
-            movimientosDePeon(square);
-        }
+        movimientosDePeon();
 
         for (long squares = bitboard[miColor][CABALLO]; squares != 0; squares = remainder(squares)) {
             int square = next(squares);
@@ -377,69 +374,169 @@ public class Generador {
 
     }
 
-    private void movimientosDePeon(int posicion) {
+    private void pawnPush(boolean all) {
 
-        if (posicion >= (turnoBlanco ? A2 : A7) && posicion <= (turnoBlanco ? H2 : H7)) {
-            int destino = posicion + (turnoBlanco ? 16 : -16);
+        // single push
+        long pawnsSinglePush = turnoBlanco ? bitboard[miColor][PEON] << 8 : (bitboard[miColor][PEON] >> 8);
 
-            long maskAvance = 1L << posicion + (turnoBlanco ? 8 : -8) | 1L << destino;
+        if (!all)
+            pawnsSinglePush &= 0xFF000000000000FFL;
 
-            if ((maskAvance & casillasOcupadas) == 0)
-                validarYAgregar(posicion, destino);
+        pawnsSinglePush &= ~casillasOcupadas;
 
-        }
+        for (long squares = pawnsSinglePush; squares != 0; squares = remainder(squares)) {
+            int destino = next(squares);
+            int inicio = turnoBlanco ? destino - 8 : (destino + 8);
 
-        var destino = posicion + (turnoBlanco ? 8 : -8);
-        long maskAvance = 1L << destino;
-        //avance una casilla
-        if ((casillasOcupadas & maskAvance) == 0) {
-            var m = posicion << 6 | destino;
-            if (destino <= H1 || destino >= A8) {
-                if (movimientoValido(m)) {
-                    movimientos.add(m | 1 << 12);
-                    movimientos.add(m | 2 << 12);
-                    movimientos.add(m | 3 << 12);
-                    movimientos.add(m | 4 << 12);
-                }
+            int movimiento = inicio << 6 | destino;
 
-            } else {
-                validarYAgregar(posicion, destino);
+            if (movimientoValido(movimiento)) {
+                if (destino >= A8 || destino <= H1) {
+
+                    movimientos.add(movimiento | 1 << 12);
+                    movimientos.add(movimiento | 2 << 12);
+                    movimientos.add(movimiento | 3 << 12);
+                    movimientos.add(movimiento | 4 << 12);
+
+                } else
+                    movimientos.add(movimiento);
             }
         }
 
-        long attackSet = ataquePeon[miColor][posicion];
+        if (!all) return;
 
-        for (long squares = attackSet; squares != 0; squares = remainder(squares)) {
-            int square = next(squares);
+        // double push
+        long pawnsDoubleMove = turnoBlanco ? bitboard[miColor][PEON] << 16 : (bitboard[miColor][PEON] >> 16);
 
-            long moveMask = 1L << square;
-            if ((moveMask & casillasOcupadas) != 0) {
-                moveMask = moveMask & ~(tab.piezasAmigas(miColor) | bitboard[colorContrario][REY]);
-                if (moveMask != 0) {
-                    int m = posicion << 6 | square;
+        long casillasOcupadas = tab.casillasOcupadas();
+
+        pawnsDoubleMove &= 0b11111111L << (turnoBlanco ? A4 : A5);
+
+
+        int from = turnoBlanco ? A3 : A6;
+        int to = turnoBlanco ? A4 : A5;
+
+        pawnsDoubleMove &= (~casillasOcupadas >> from & 0b11111111L) << to;
+        pawnsDoubleMove &= ~casillasOcupadas;
+
+        for (long squares = pawnsDoubleMove; squares != 0; squares = remainder(squares)) {
+            int destino = next(squares);
+            int inicio = turnoBlanco ? destino - 16 : (destino + 16);
+            validarYAgregar(inicio, destino);
+        }
+
+    }
+
+    private void pawnAttack() {
+        long notAFile = ~0x101010101010101L;
+        long notHFile = ~0x8080808080808080L;
+
+        long pawnAttack1;
+        long pawnAttack2;
+        long piezasEnemigas = tab.piezasEnemigas(miColor);
+
+        if (turnoBlanco) {
+            pawnAttack1 = bitboard[miColor][PEON] << 9;
+            pawnAttack1 &= notAFile;
+
+            pawnAttack2 = bitboard[miColor][PEON] << 7;
+            pawnAttack2 &= notHFile;
+
+        } else {
+            pawnAttack1 = bitboard[miColor][PEON] >> 9;
+            pawnAttack1 &= notHFile;
+
+            pawnAttack2 = bitboard[miColor][PEON] >> 7;
+            pawnAttack2 &= notAFile;
+        }
+
+        pawnAttack1 &= piezasEnemigas;
+        pawnAttack2 &= piezasEnemigas;
+
+        for (int i = 0; i < 2; i++) {
+            long attack = i == 0 ? pawnAttack1 : pawnAttack2;
+            int offset = i == 0 ? 9 : 7;
+
+            for (long squares = attack; squares != 0; squares = remainder(squares)) {
+                int destino = next(squares);
+                int inicio = turnoBlanco ? destino - offset : (destino + offset);
+                int movimiento = inicio << 6 | destino;
+
+                if (movimientoValido(movimiento)) {
                     if (destino >= A8 || destino <= H1) {
-                        if (movimientoValido(m)) {
-                            movimientos.add(m | 1 << 12);
-                            movimientos.add(m | 2 << 12);
-                            movimientos.add(m | 3 << 12);
-                            movimientos.add(m | 4 << 12);
-                        }
-                    } else {
-                        validarYAgregar(posicion, square);
-                    }
+                        movimientos.add(movimiento | 1 << 12);
+                        movimientos.add(movimiento | 2 << 12);
+                        movimientos.add(movimiento | 3 << 12);
+                        movimientos.add(movimiento | 4 << 12);
+                    } else
+                        movimientos.add(movimiento);
                 }
-            } else if (tab.alPaso(square)) {
-                int posicionPiezaALPaso = square + (turnoBlanco ? -8 : 8);
 
-                remove(!turnoBlanco, PEON, posicionPiezaALPaso);
-
-                validarYAgregar(posicion, square);
-
-                add(!turnoBlanco, PEON, posicionPiezaALPaso);
             }
 
         }
 
+    }
+
+    private void enPassant() {
+
+        long notAFile = ~0x101010101010101L;
+        long notHFile = ~0x8080808080808080L;
+
+        boolean alPaso = false;
+
+        int posicionPeonAtaque = 0;
+        int posicionAlPaso = tab.getEstado() >> POSICION_PIEZA_AL_PASO & 0b111_111;
+
+        if (!tab.alPaso(posicionAlPaso)) return;
+
+        long maskPosicionAlPaso = 1L << posicionAlPaso;
+        long attack = turnoBlanco ? bitboard[miColor][PEON] << 9 : bitboard[miColor][PEON] >> 9;
+
+        attack &= turnoBlanco ? notAFile : notHFile;
+
+        if ((attack & maskPosicionAlPaso) != 0) {
+            alPaso = true;
+            posicionPeonAtaque = posicionAlPaso + (turnoBlanco ? -9 : 9);
+        }
+
+        if (alPaso) {
+
+            int posicionPiezaAlPaso = posicionAlPaso + (turnoBlanco ? -8 : 8);
+
+            remove(!turnoBlanco, PEON, posicionPiezaAlPaso);
+            validarYAgregar(posicionPeonAtaque, posicionAlPaso);
+            add(!turnoBlanco, PEON, posicionPiezaAlPaso);
+        }
+
+
+        alPaso = false;
+
+        attack = turnoBlanco ? bitboard[miColor][PEON] << 7 : bitboard[miColor][PEON] >> 7;
+
+        maskPosicionAlPaso = 1L << posicionAlPaso;
+
+        attack &= turnoBlanco ? notHFile : notAFile;
+
+        if ((attack & maskPosicionAlPaso) != 0) {
+            alPaso = true;
+            posicionPeonAtaque = posicionAlPaso + (turnoBlanco ? -7 : 7);
+        }
+
+        if (alPaso) {
+
+            int posicionPiezaAlPaso = posicionAlPaso + (turnoBlanco ? -8 : 8);
+
+            remove(!turnoBlanco, PEON, posicionPiezaAlPaso);
+            validarYAgregar(posicionPeonAtaque, posicionAlPaso);
+            add(!turnoBlanco, PEON, posicionPiezaAlPaso);
+        }
+    }
+
+    private void movimientosDePeon() {
+        pawnPush(true);
+        pawnAttack();
+        enPassant();
     }
 
     private void validarYAgregar(int posicion, int i) {
@@ -475,3 +572,4 @@ public class Generador {
     }
 
 }
+
