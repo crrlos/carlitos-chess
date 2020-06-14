@@ -123,29 +123,10 @@ public class Generador {
         long piezasEnemigas = tab.piezasEnemigas(miColor);
         long piezasAmigas = tab.piezasAmigas(miColor);
 
-        for (long squares = bitboard[miColor][PEON]; squares != 0; squares = remainder(squares)) {
-            int square = next(squares);
+        pawnPush(false);
+        pawnAttack();
+        enPassant();
 
-            int pos;
-            for (int i = 1; i < offsetMailBox[PEON].length; i++) {
-
-                int dir = offsetMailBox[PEON][i];
-                pos = direccion[square];
-                if (mailBox[pos + (colorContrario == BLANCO ? -dir : dir)] != -1) {
-                    pos += (colorContrario == BLANCO ? -dir : dir);
-                    if (pieza[mailBox[pos]] != NOPIEZA) {
-                        if (color[mailBox[pos]] == colorContrario && pieza[mailBox[pos]] != REY) {
-                            if (movimientoValido(square << 6 | mailBox[pos]))
-                                movimientos.add(square << 6 | mailBox[pos]);
-                        }
-
-                    }
-
-                }
-
-            }
-
-        }
         for (long squares = bitboard[miColor][CABALLO]; squares != 0; squares = remainder(squares)) {
             int square = next(squares);
 
