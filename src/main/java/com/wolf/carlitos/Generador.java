@@ -8,7 +8,6 @@ package com.wolf.carlitos;
 import static com.wolf.carlitos.Ataque.*;
 import static com.wolf.carlitos.Bitboard.*;
 import static com.wolf.carlitos.Constantes.*;
-import static com.wolf.carlitos.MailBox.*;
 import static com.wolf.carlitos.Pieza.bitboard;
 import static java.lang.Long.*;
 
@@ -115,7 +114,7 @@ public class Generador {
         return respuesta;
     }
 
-    public Respuesta generarCapturas(int[] pieza, int[] color, int nivel) {
+    public Respuesta generarCapturas(int nivel) {
 
 
         init(nivel);

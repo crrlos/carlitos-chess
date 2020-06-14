@@ -56,7 +56,7 @@ public class Search {
             flag = EXACT;
         }
 
-        Generador.Respuesta respuesta = generador.generarCapturas(tablero, color, ply);
+        Generador.Respuesta respuesta = generador.generarCapturas(ply);
         Movimiento[] movimientos;
         int fin;
 
