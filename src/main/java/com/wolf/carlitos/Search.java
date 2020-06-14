@@ -97,7 +97,7 @@ public class Search {
         return alfa;
     }
 
-    public int negaMax(int depth, int alfa, int beta, int ply, boolean allowNull) {
+    public int negaMax(int depth, int alfa, int beta, int ply, boolean allowNull, boolean isPv) {
 
 //        int mateValue = 1_000_000 - ply;
 //
@@ -106,7 +106,9 @@ public class Search {
 //        if (alfa >= beta) return alfa;
 
         int ttval = Transposition.checkEntry(tab.getZobrist(), depth, alfa, beta);
-        if (ttval != NOENTRY) return ttval;
+        if (ttval != NOENTRY) {
+            if(!isPv || (ttval > alfa && ttval < beta)) return ttval;
+        }
 
         if (depth == 0) return quiescent(depth, alfa, beta, ply);
 
@@ -124,7 +126,7 @@ public class Search {
         ) {
             int R = 3;
             tab.doNull();
-            int eval = -negaMax(depth - 1 - R, -beta, -beta + 1, ply + 1, false);
+            int eval = -negaMax(depth - 1 - R, -beta, -beta + 1, ply + 1, false, isPv);
             tab.takeBackNull();
             if (eval >= beta) {
                 return beta;
@@ -156,11 +158,11 @@ public class Search {
 
             // PV SEARCH
             if (best == -INFINITO) {
-                eval = -negaMax(depth - 1, -beta, -alfa, ply + 1, true);
+                eval = -negaMax(depth - 1, -beta, -alfa, ply + 1, true, true);
             } else {
-                eval = -negaMax(depth - 1, -alfa - 1, -alfa, ply + 1, true);
+                eval = -negaMax(depth - 1, -alfa - 1, -alfa, ply + 1, true, false);
                 if (eval > alfa && eval < beta)
-                    eval = -negaMax(depth - 1, -beta, -alfa, ply + 1, true);
+                    eval = -negaMax(depth - 1, -beta, -alfa, ply + 1, true, true);
             }
 
             if (eval > best) best = eval;
@@ -259,11 +261,11 @@ public class Search {
 
             // PV SEARCH
             if (best == -INFINITO) {
-                eval = -negaMax(depth - 1, -beta, -alfa, ply + 1, true);
+                eval = -negaMax(depth - 1, -beta, -alfa, ply + 1, true, true);
             } else {
-                eval = -negaMax(depth - 1, -alfa - 1, -alfa, ply + 1, true);
+                eval = -negaMax(depth - 1, -alfa - 1, -alfa, ply + 1, true, false);
                 if (eval > alfa && eval < beta)
-                    eval = -negaMax(depth - 1, -beta, -alfa, ply + 1, true);
+                    eval = -negaMax(depth - 1, -beta, -alfa, ply + 1, true, true);
             }
 
             if (eval > best) best = eval;
