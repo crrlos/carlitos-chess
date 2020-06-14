@@ -125,6 +125,10 @@ public class Constantes {
     public static final int EXACT = 12;
     public static final int NOENTRY = -1;
 
+    public static final int PV_SORT_SCORE = 150_000;
+    public static final int KILLER_SORT_SCORE = 140_000;
+    public static final int CAPTURE_MOVE_SORT = 100_000;
+
 
     public static long[] ALEATORIOS = new long[]{
             6441803279763092037L, 5084170766166728034L, 2582886033896806217L, 4551346473494952952L, 7338072317445841055L, 6371162301818584574L, 1405208958274560997L, 2622682496463714287L, 6656085722473940240L, 1526183829406428720L,

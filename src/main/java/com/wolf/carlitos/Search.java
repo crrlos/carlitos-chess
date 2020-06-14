@@ -295,37 +295,34 @@ public class Search {
     public void establecerPuntuacion(Movimiento[] movimientos, int fin, int ply) {
 
         for (int i = 0; i < fin; i++) {
+
             int inicio = movimientos[i].inicio;
             int destino = movimientos[i].destino;
             int promocion = movimientos[i].promocion;
 
             int mov = promocion << 12 | inicio << 6 | destino;
+            int ponderacion;
 
-            int ponderacion = 100_000_000;
+            //history heuristic
+            ponderacion = history[inicio][destino];
+            movimientos[i].ponderacion = ponderacion;
 
-            // pv
-            if ((pv[ply][ply] ^ mov) == 0) {
-                movimientos[i].ponderacion = 150_000_000;
-                continue;
+            //MVVLVA
+            if (tablero[destino] != NOPIEZA) {
+                ponderacion = CAPTURE_MOVE_SORT +
+                        valorPiezas[REY] / valorPiezas[tablero[inicio]] + 10 * valorPiezas[tablero[destino]];
+                movimientos[i].ponderacion = ponderacion;
             }
 
             // killer moves
             if ((killers[ply][0] ^ mov) == 0) {
-                movimientos[i].ponderacion = 140_000_000;
-                continue;
+                movimientos[i].ponderacion = KILLER_SORT_SCORE;
             }
 
-            // si es captura usar MVVLVA, con offset de 100k para se coloque antes de una no captura
-            if (tablero[destino] != NOPIEZA) {
-                ponderacion += valorPiezas[REY] / valorPiezas[tablero[inicio]] + 10 * valorPiezas[tablero[destino]];
-                movimientos[i].ponderacion = ponderacion;
-                continue;
+            // pv
+            if ((pv[ply][ply] ^ mov) == 0) {
+                movimientos[i].ponderacion = PV_SORT_SCORE;
             }
-
-            // si no es captura usar history heuristic
-            ponderacion = history[inicio][destino];
-            movimientos[i].ponderacion = ponderacion;
-
         }
 
     }
