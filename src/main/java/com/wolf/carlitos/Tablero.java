@@ -7,8 +7,7 @@ import java.util.Arrays;
 import static com.wolf.carlitos.Ataque.*;
 import static com.wolf.carlitos.Bitboard.*;
 import static com.wolf.carlitos.Constantes.*;
-import static com.wolf.carlitos.Pieza.bitboard;
-import static com.wolf.carlitos.Pieza.valorPiezas;
+import static com.wolf.carlitos.Pieza.*;
 import static com.wolf.carlitos.Utilidades.convertirAPosicion;
 import static java.lang.Long.bitCount;
 import static java.lang.Long.numberOfTrailingZeros;
@@ -808,12 +807,35 @@ public class Tablero {
         zobristKeys.pop();
     }
 
-    public int gameMaterial(int color){
+    public int gameMaterial(int color) {
         return
                 bitCount(bitboard[color][PEON]) * valorPiezas[PEON] +
                         bitCount(bitboard[color][CABALLO]) * valorPiezas[CABALLO] +
                         bitCount(bitboard[color][ALFIL]) * valorPiezas[ALFIL] +
                         bitCount(bitboard[color][TORRE]) * valorPiezas[TORRE] +
                         bitCount(bitboard[color][DAMA]) * valorPiezas[DAMA];
+    }
+
+    public boolean moveGivesCheck(Movimiento mov) {
+
+
+        int destPiece = tablero[mov.destino];
+
+        if (destPiece != NOPIEZA)
+            remove(!esTurnoBlanco(), destPiece, mov.destino);
+
+        update(esTurnoBlanco(), tablero[mov.inicio], mov.inicio, mov.destino);
+
+        int kingPos = numberOfTrailingZeros(bitboard[colorContrario()][REY]);
+
+        boolean isCheck = casillaAtacada(kingPos, miColor());
+
+        update(esTurnoBlanco(), tablero[mov.inicio], mov.destino, mov.inicio);
+
+        if (destPiece != NOPIEZA)
+            add(!esTurnoBlanco(), destPiece, mov.destino);
+
+        return isCheck;
+
     }
 }

@@ -70,16 +70,16 @@ public class Search {
             var mov = movimientos[i];
 
             // delta pruning
-            if(
+            if (
                     alfa >= standPat + valorPiezas[tablero[mov.destino]] + 200
-                   && tab.gameMaterial(tab.colorContrario()) - valorPiezas[tablero[mov.destino]] > ENDGAME_MATERIAL
-                    && !(tablero[mov.inicio] == PEON && (mov.destino <= H1 || mov.destino >= A8))
+                            && tab.gameMaterial(tab.colorContrario()) - valorPiezas[tablero[mov.destino]] > ENDGAME_MATERIAL
+                            && !(tablero[mov.inicio] == PEON && (mov.destino <= H1 || mov.destino >= A8))
             )
                 continue;
 
             tab.makeMove(mov);
 
-             eval = -quiescent(depth - 1, -beta, -alfa, ply + 1);
+            eval = -quiescent(depth - 1, -beta, -alfa, ply + 1);
 
             tab.takeBack(mov);
 
@@ -107,7 +107,7 @@ public class Search {
 
         int ttval = Transposition.checkEntry(tab.getZobrist(), depth, alfa, beta);
         if (ttval != NOENTRY) {
-            if(!isPv || (ttval > alfa && ttval < beta)) return ttval;
+            if (!isPv || (ttval > alfa && ttval < beta)) return ttval;
         }
 
         if (depth == 0) return quiescent(depth, alfa, beta, ply);
@@ -153,19 +153,35 @@ public class Search {
         for (int i = 0; i < fin; i++) {
             var mov = movimientos[i];
 
+            boolean reduction = false;
+            int newDepth = depth;
+
+            //LMR
+            if (
+                    depth > 3
+                            && i > 2
+                            && !isPv
+                            && !inCheck
+                            && mov.ponderacion < CAPTURE_MOVE_SORT
+                            && mov.promocion == 0
+                            && !tab.moveGivesCheck(mov)
+
+            ) {
+                reduction = true;
+                newDepth--;
+            }
+
             tab.makeMove(mov);
             int eval;
 
-            // PV SEARCH
-            if (best == -INFINITO) {
-                eval = -negaMax(depth - 1, -beta, -alfa, ply + 1, true, true);
-            } else {
-                eval = -negaMax(depth - 1, -alfa - 1, -alfa, ply + 1, true, false);
-                if (eval > alfa && eval < beta)
-                    eval = -negaMax(depth - 1, -beta, -alfa, ply + 1, true, true);
+            eval = pvSearch(newDepth, alfa, beta, ply, best);
+
+            if (reduction && eval > alfa) {
+                eval = pvSearch(depth, alfa, beta, ply, best);
             }
 
             if (eval > best) best = eval;
+
 
             tab.takeBack(mov);
 
@@ -185,6 +201,18 @@ public class Search {
         }
         Transposition.setEntry(tab.getZobrist(), depth, alfa, flag);
         return alfa;
+    }
+
+    private int pvSearch(int depth, int alfa, int beta, int ply, int best) {
+        int eval;
+        if (best == -INFINITO) {
+            eval = -negaMax(depth - 1, -beta, -alfa, ply + 1, true, true);
+        } else {
+            eval = -negaMax(depth - 1, -alfa - 1, -alfa, ply + 1, true, false);
+            if (eval > alfa && eval < beta)
+                eval = -negaMax(depth - 1, -beta, -alfa, ply + 1, true, true);
+        }
+        return eval;
     }
 
     public int search(int depth) {
@@ -253,20 +281,13 @@ public class Search {
 
     private int searchRoot(int depth, int ply, Movimiento[] movimientos, int fin, int alfa, int beta) {
         int best = -INFINITO;
-        int eval;
         for (int i = 0; i < fin; i++) {
 
             var mov = movimientos[i];
             tab.makeMove(mov);
 
-            // PV SEARCH
-            if (best == -INFINITO) {
-                eval = -negaMax(depth - 1, -beta, -alfa, ply + 1, true, true);
-            } else {
-                eval = -negaMax(depth - 1, -alfa - 1, -alfa, ply + 1, true, false);
-                if (eval > alfa && eval < beta)
-                    eval = -negaMax(depth - 1, -beta, -alfa, ply + 1, true, true);
-            }
+
+            int eval = pvSearch(depth, alfa, beta, ply, best);
 
             if (eval > best) best = eval;
 
