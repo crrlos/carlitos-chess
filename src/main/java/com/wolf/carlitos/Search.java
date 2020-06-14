@@ -10,6 +10,7 @@ import static com.wolf.carlitos.Constantes.*;
 import static com.wolf.carlitos.Evaluar.evaluar;
 import static com.wolf.carlitos.Pieza.valorPiezas;
 import static java.lang.Math.abs;
+import static java.lang.Math.min;
 
 
 /**
@@ -119,15 +120,22 @@ public class Search {
 
         // NULL MOVE PRUNING
         if (
-                !inCheck
+                depth > 2
+                        && !inCheck
+                        && !isPv
                         && allowNull
-                        && depth >= 4
+                        && evaluar(tab.miColor()) > beta
                         && tab.gameMaterial(tab.colorContrario()) >= ENDGAME_MATERIAL
         ) {
-            int R = 3;
+            int R = 2;
+            if (depth > 6) R = 3;
+
             tab.doNull();
-            int eval = -negaMax(depth - 1 - R, -beta, -beta + 1, ply + 1, false, isPv);
+
+            int eval = -negaMax(depth - R - 1, -beta, -beta + 1, ply + 1, false, false);
+
             tab.takeBackNull();
+
             if (eval >= beta) {
                 return beta;
             }
@@ -170,7 +178,7 @@ public class Search {
                 reduction = true;
                 newDepth--;
 
-                if(i > 5) newDepth--;
+                if (i > 5) newDepth--;
             }
 
             tab.makeMove(mov);
