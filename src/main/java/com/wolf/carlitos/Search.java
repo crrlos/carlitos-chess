@@ -169,6 +169,8 @@ public class Search {
             ) {
                 reduction = true;
                 newDepth--;
+
+                if(i > 5) newDepth--;
             }
 
             tab.makeMove(mov);
