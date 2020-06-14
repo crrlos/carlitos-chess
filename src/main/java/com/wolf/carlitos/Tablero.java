@@ -16,11 +16,11 @@ import static java.lang.Math.abs;
 
 public class Tablero {
 
-    static class Stack1 {
+    private static class StateStack {
         private final int[] estados;
         private int pos;
 
-        Stack1() {
+        StateStack() {
             estados = new int[1024];
             pos = 0;
         }
@@ -43,17 +43,17 @@ public class Tablero {
 
     }
 
-    static class Stack2 {
-        private final long[] estados;
+    private static class ZobristStack {
+        private final long[] zobrist;
         private int pos;
 
-        Stack2() {
-            estados = new long[1024];
+        ZobristStack() {
+            zobrist = new long[1024];
             pos = 0;
         }
 
         public void push(long estado) {
-            estados[pos++] = estado;
+            zobrist[pos++] = estado;
         }
 
         public void pop() {
@@ -61,11 +61,11 @@ public class Tablero {
         }
 
         public long lastElement() {
-            return estados[pos - 1];
+            return zobrist[pos - 1];
         }
 
         public long firtElement() {
-            return estados[0];
+            return zobrist[0];
         }
 
         public void clear() {
@@ -76,8 +76,8 @@ public class Tablero {
 
     public int[] tablero = new int[64];
     public int[] color = new int[64];
-    private final Stack1 estados = new Stack1();
-    private final Stack2 zobristKeys = new Stack2();
+    private final StateStack estados = new StateStack();
+    private final ZobristStack zobristKeys = new ZobristStack();
 
     // valores aleatorios para generar clave zobrist
     public static long[][][] claveCasilla = new long[2][6][64];
