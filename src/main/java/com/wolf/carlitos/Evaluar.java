@@ -62,7 +62,6 @@ public class Evaluar {
     }
 
     public static int evaluar(int color) {
-        Search.nodes++;
         int valorPiezas = evaluarCantidadPiezas(color) - evaluarCantidadPiezas(color ^ 1);
         int valorPosicion = evaluarPosicionDePiezas(color) - evaluarPosicionDePiezas(color ^ 1);
         return valorPiezas + valorPosicion;

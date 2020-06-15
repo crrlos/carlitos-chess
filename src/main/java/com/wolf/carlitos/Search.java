@@ -9,8 +9,6 @@ package com.wolf.carlitos;
 import static com.wolf.carlitos.Constantes.*;
 import static com.wolf.carlitos.Evaluar.evaluar;
 import static com.wolf.carlitos.Pieza.valorPiezas;
-import static java.lang.Math.abs;
-import static java.lang.Math.min;
 
 
 /**
@@ -26,7 +24,7 @@ public class Search {
     private final Tablero tab;
     private final Generador generador;
 
-    public static int nodes = 0;
+    private int nodes = 0;
 
     private static final int[][] history = new int[64][64];
 
@@ -99,7 +97,7 @@ public class Search {
     }
 
     public int negaMax(int depth, int alfa, int beta, int ply, boolean allowNull, boolean isPv) {
-
+        nodes++;
 //        int mateValue = 1_000_000 - ply;
 //
 //        if (alfa < -mateValue) alfa = -mateValue;
@@ -141,6 +139,44 @@ public class Search {
             }
         }
 
+        if (depth < 3
+                && !isPv
+                && !inCheck)
+        {
+            int static_eval = evaluar(tab.miColor());
+
+            int eval_margin = 120 * depth;
+            if (static_eval - eval_margin >= beta)
+                return static_eval - eval_margin;
+        }
+
+        /**************************************************************************
+         *  RAZORING - if a node is close to the leaf and its static score is low, *
+         *  we drop directly to the quiescence search.                             *
+         **************************************************************************/
+
+        if (!isPv
+                &&  !inCheck
+                //&&  tt_move_index == -1
+                && allowNull
+                && depth <= 3) {
+            int threshold = alfa - 500 - (depth - 1) * 60;
+            if (evaluar(tab.miColor()) < threshold) {
+                int val = quiescent(0,alfa,beta,ply);
+                if (val < threshold) return alfa;
+            }
+        } // end of razoring code
+
+        int[] fmargin = new int[]{ 0, 200, 300, 500 };
+
+        boolean f_prune = false;
+        if (depth <= 3
+                &&  !isPv
+                &&  !inCheck
+                &&   Math.abs(alfa) < 9000
+                &&   evaluar(tab.miColor()) + fmargin[depth] <= alfa)
+            f_prune = true;
+
         var respuesta = generador.generarMovimientos(ply);
 
         var movimientos = respuesta.movimientosGenerados;
@@ -180,6 +216,13 @@ public class Search {
 
                 if (i > 5) newDepth--;
             }
+
+            if (f_prune
+                    &&   i > 0
+                    &&  mov.ponderacion < CAPTURE_MOVE_SORT
+                    &&  mov.promocion == 0
+                    &&  !tab.moveGivesCheck(mov))
+                continue;
 
             tab.makeMove(mov);
             int eval;
@@ -245,6 +288,8 @@ public class Search {
                 movimientos[i].ponderacion = -INFINITO;
             }
 
+            long initTime = System.currentTimeMillis();
+
             eval = searchRoot(k, ply, movimientos, fin, alfa, beta);
 
             if (eval <= alfa || eval >= beta) {
@@ -260,11 +305,11 @@ public class Search {
             establecerPuntuacion(movimientos, fin, ply);
             insertionSort(movimientos, fin);
 
-            mostrarInformacionActual(eval, k);
+            mostrarInformacionActual(eval, k, nodes, System.currentTimeMillis() - initTime);
+            nodes = 0;
         }
 
-        System.out.println("nodos: " + nodes);
-        nodes = 0;
+
         return pv[0][0];
     }
 
@@ -311,7 +356,7 @@ public class Search {
         return alfa;
     }
 
-    private void mostrarInformacionActual(int alfa, int depth) {
+    private void mostrarInformacionActual(int alfa, int depth, int nodesPerSecond, long time) {
         int i = 0;
         StringBuilder builder = new StringBuilder();
 
@@ -320,7 +365,7 @@ public class Search {
             i++;
         }
 
-        System.out.printf("info depth %d score cp %d nodes 20  time 3 pv %s\n", depth, alfa, builder.toString());
+        System.out.printf("info depth %d score cp %d nodes %d  time %d pv %s\n", depth, alfa, nodesPerSecond,time, builder.toString());
     }
 
     public void establecerPuntuacion(Movimiento[] movimientos, int fin, int ply) {
