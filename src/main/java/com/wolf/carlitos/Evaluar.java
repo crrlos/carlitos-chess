@@ -20,36 +20,53 @@ public class Evaluar {
         int total = 0;
         boolean esBlanco = bando == BLANCO;
 
-        for (long squares = bitboard[bando][PEON]; squares != 0; squares = remainder(squares)) {
-            int square = next(squares);
-            total += esBlanco ? ponderacionPeon[flip[square]] : ponderacionPeon[square];
+        if(esFinal()){
+
+            for (long squares = bitboard[bando][PEON]; squares != 0; squares = remainder(squares)) {
+                int square = next(squares);
+                total += esBlanco ? pt2b[flip[square]] : pt2b[square];
+            }
+            for (long squares = bitboard[bando][CABALLO]; squares != 0; squares = remainder(squares)) {
+                int square = next(squares);
+                total += esBlanco ? nt2b[flip[square]] : nt2b[square];
+            }
+            for (long squares = bitboard[bando][ALFIL]; squares != 0; squares = remainder(squares)) {
+                int square = next(squares);
+                total += esBlanco ? bt2b[flip[square]] : bt2b[square];
+            }
+            for (long squares = bitboard[bando][REY]; squares != 0; squares = remainder(squares)) {
+                int square = next(squares);
+                total += esBlanco ? kt2b[flip[square]] : kt2b[square];
+            }
+
+        }else{
+            for (long squares = bitboard[bando][PEON]; squares != 0; squares = remainder(squares)) {
+                int square = next(squares);
+                total += esBlanco ? pt1b[flip[square]] : pt1b[square];
+            }
+            for (long squares = bitboard[bando][CABALLO]; squares != 0; squares = remainder(squares)) {
+                int square = next(squares);
+                total += esBlanco ? nt1b[flip[square]] : nt1b[square];
+            }
+            for (long squares = bitboard[bando][ALFIL]; squares != 0; squares = remainder(squares)) {
+                int square = next(squares);
+                total += esBlanco ? bt1b[flip[square]] : bt1b[square];
+            }
+            for (long squares = bitboard[bando][REY]; squares != 0; squares = remainder(squares)) {
+                int square = next(squares);
+                total += esBlanco ? kt1b[flip[square]] : kt1b[square];
+            }
+
         }
-        for (long squares = bitboard[bando][CABALLO]; squares != 0; squares = remainder(squares)) {
-            int square = next(squares);
-            total += esBlanco ? ponderacionCaballo[flip[square]] : ponderacionCaballo[square];
-        }
-        for (long squares = bitboard[bando][ALFIL]; squares != 0; squares = remainder(squares)) {
-            int square = next(squares);
-            total += esBlanco ? ponderacionAlfil[flip[square]] : ponderacionAlfil[square];
-        }
+
         for (long squares = bitboard[bando][TORRE]; squares != 0; squares = remainder(squares)) {
             int square = next(squares);
-            total += esBlanco ? ponderacionTorre[flip[square]] : ponderacionTorre[square];
+            total += esBlanco ? rt1b[flip[square]] : rt1b[square];
         }
         for (long squares = bitboard[bando][DAMA]; squares != 0; squares = remainder(squares)) {
             int square = next(squares);
-            total += esBlanco ? ponderacionDama[flip[square]] : ponderacionDama[square];
+            total += esBlanco ? qt1b[flip[square]] : qt1b[square];
         }
-        if (esFinal()) {
-            for (long squares = bitboard[bando][REY]; squares != 0; squares = remainder(squares)) {
-                int square = next(squares);
-                total += esBlanco ? ponderacionReyFinal[flip[square]] : ponderacionReyFinal[square];
-            }
-        } else
-            for (long squares = bitboard[bando][REY]; squares != 0; squares = remainder(squares)) {
-                int square = next(squares);
-                total += esBlanco ? ponderacionRey[flip[square]] : ponderacionRey[square];
-            }
 
         return total;
     }
