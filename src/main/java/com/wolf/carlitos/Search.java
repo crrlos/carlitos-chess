@@ -139,6 +139,7 @@ public class Search {
             }
         }
 
+        // STATIC NULL MOVE PRUNING
         if (depth < 3
                 && !isPv
                 && !inCheck) {
@@ -149,14 +150,9 @@ public class Search {
                 return static_eval - eval_margin;
         }
 
-        /**************************************************************************
-         *  RAZORING - if a node is close to the leaf and its static score is low, *
-         *  we drop directly to the quiescence search.                             *
-         **************************************************************************/
-
+        // RAZORING
         if (!isPv
                 && !inCheck
-                //&&  tt_move_index == -1
                 && allowNull
                 && depth <= 3) {
             int threshold = alfa - 500 - (depth - 1) * 60;
@@ -164,17 +160,18 @@ public class Search {
                 int val = quiescent(0, alfa, beta, ply);
                 if (val < threshold) return alfa;
             }
-        } // end of razoring code
+        }
 
+        // FUTILITY CONDITIONS
         int[] fmargin = new int[]{0, 200, 300, 500};
 
-        boolean f_prune = false;
+        boolean fPrune = false;
         if (depth <= 3
                 && !isPv
                 && !inCheck
                 && Math.abs(alfa) < 9000
                 && evaluar(tab.miColor()) + fmargin[depth] <= alfa)
-            f_prune = true;
+            fPrune = true;
 
         var respuesta = generador.generarMovimientos(ply);
 
@@ -216,7 +213,8 @@ public class Search {
                 if (i > 5) newDepth--;
             }
 
-            if (f_prune
+            // FUTILITY PRUNING
+            if (fPrune
                     && i > 0
                     && mov.ponderacion < CAPTURE_MOVE_SORT
                     && mov.promocion == 0
