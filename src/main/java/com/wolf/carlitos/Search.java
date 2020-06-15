@@ -19,14 +19,13 @@ import static com.wolf.carlitos.Pieza.valorPiezas;
 public class Search {
 
     private final int[] tablero;
-    private final int[] color;
 
     private final Tablero tab;
     private final Generador generador;
 
     private int nodes = 0;
 
-    private static final int[][] history = new int[64][64];
+    private static final int[][][] history = new int[2][64][64];
 
     private static final int[][] pv = new int[64][64];
 
@@ -34,7 +33,6 @@ public class Search {
 
     public Search(Tablero tablero) {
         this.tablero = tablero.tablero;
-        this.color = tablero.color;
         this.tab = tablero;
         this.generador = new Generador(tablero);
     }
@@ -112,6 +110,7 @@ public class Search {
         if (depth == 0) return quiescent(depth, alfa, beta, ply);
 
         boolean inCheck = tab.enJaque();
+        int color = tab.miColor();
 
         // CHECK EXTENSION
         if (inCheck) depth++;
@@ -236,7 +235,7 @@ public class Search {
             tab.takeBack(mov);
 
             if (eval >= beta) {
-                establecerHistory(depth, mov);
+                establecerHistory(depth, color, mov);
                 establecerKiller(ply, mov);
                 bestMove = mov.promocion << 12 | mov.inicio << 6 | mov.destino;
                 Transposition.setEntry(tab.getZobrist(), depth, eval, BETA, bestMove);
@@ -325,10 +324,10 @@ public class Search {
         killers[ply][0] = movimiento;
     }
 
-    private void establecerHistory(int depth, Movimiento mov) {
+    private void establecerHistory(int depth, int color, Movimiento mov) {
 
         if (tablero[mov.destino] == NOPIEZA) {
-            history[mov.inicio][mov.destino] += depth;
+            history[color][mov.inicio][mov.destino] += depth;
         }
     }
 
@@ -383,6 +382,7 @@ public class Search {
     public void establecerPuntuacion(Movimiento[] movimientos, int fin, int ply) {
 
         int ttMove = Transposition.bestMove(tab.getZobrist());
+        int color = tab.miColor();
 
         for (int i = 0; i < fin; i++) {
 
@@ -394,7 +394,7 @@ public class Search {
             int ponderacion;
 
             //history heuristic
-            ponderacion = history[inicio][destino];
+            ponderacion = history[color][inicio][destino];
             movimientos[i].ponderacion = ponderacion;
 
             //MVVLVA
