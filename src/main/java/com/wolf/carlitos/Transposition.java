@@ -8,9 +8,9 @@ public class Transposition {
         public int score;
         public int depth;
         public int flag;
+        public int bestMove;
     }
 
-    public static int llamadas = 0;
     private static final Entry[] transposition = new Entry[25_000_000];
 
     static {
@@ -20,9 +20,6 @@ public class Transposition {
     }
 
     public static int checkEntry(long zobrist, int depth, int alfa, int beta) {
-
-        //if (!isPv) return NOENTRY;
-
 
         int index = (int) (zobrist % transposition.length);
 
@@ -37,27 +34,24 @@ public class Transposition {
         return NOENTRY;
     }
 
-    public static void setEntry(long zobrist, int depth, int score, int flag) {
+    public static void setEntry(long zobrist, int depth, int score, int flag, int bestMove) {
 
-       // if (!isPv) return;
 
         int index = (int) (zobrist % transposition.length);
 
         Entry entry = transposition[index];
 
-        if(depth < entry.depth && entry.zobrist == zobrist) return;
+        if (depth < entry.depth && entry.zobrist == zobrist) return;
 
         entry.zobrist = zobrist;
         entry.depth = depth;
         entry.score = score;
         entry.flag = flag;
+        entry.bestMove = bestMove;
     }
 
-    public static int entradasAsignadas() {
-        int cont = 0;
-        for (Entry entry : transposition) {
-            if (entry.zobrist != 0) cont++;
-        }
-        return cont;
+    public static int bestMove(long zobrist) {
+        int index = (int) (zobrist % transposition.length);
+        return transposition[index].bestMove;
     }
 }

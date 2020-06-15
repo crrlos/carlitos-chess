@@ -83,7 +83,7 @@ public class Search {
             tab.takeBack(mov);
 
             if (eval >= beta) {
-                Transposition.setEntry(tab.getZobrist(), 0, eval, BETA);
+                Transposition.setEntry(tab.getZobrist(), 0, eval, BETA, 0);
                 return beta;
             }
             if (eval > alfa) {
@@ -92,7 +92,7 @@ public class Search {
             }
 
         }
-        Transposition.setEntry(tab.getZobrist(), 0, alfa, flag);
+        Transposition.setEntry(tab.getZobrist(), 0, alfa, flag, 0);
         return alfa;
     }
 
@@ -141,8 +141,7 @@ public class Search {
 
         if (depth < 3
                 && !isPv
-                && !inCheck)
-        {
+                && !inCheck) {
             int static_eval = evaluar(tab.miColor());
 
             int eval_margin = 120 * depth;
@@ -156,25 +155,25 @@ public class Search {
          **************************************************************************/
 
         if (!isPv
-                &&  !inCheck
+                && !inCheck
                 //&&  tt_move_index == -1
                 && allowNull
                 && depth <= 3) {
             int threshold = alfa - 500 - (depth - 1) * 60;
             if (evaluar(tab.miColor()) < threshold) {
-                int val = quiescent(0,alfa,beta,ply);
+                int val = quiescent(0, alfa, beta, ply);
                 if (val < threshold) return alfa;
             }
         } // end of razoring code
 
-        int[] fmargin = new int[]{ 0, 200, 300, 500 };
+        int[] fmargin = new int[]{0, 200, 300, 500};
 
         boolean f_prune = false;
         if (depth <= 3
-                &&  !isPv
-                &&  !inCheck
-                &&   Math.abs(alfa) < 9000
-                &&   evaluar(tab.miColor()) + fmargin[depth] <= alfa)
+                && !isPv
+                && !inCheck
+                && Math.abs(alfa) < 9000
+                && evaluar(tab.miColor()) + fmargin[depth] <= alfa)
             f_prune = true;
 
         var respuesta = generador.generarMovimientos(ply);
@@ -193,7 +192,7 @@ public class Search {
 
         int best = -INFINITO;
         int flag = ALFA;
-
+        int bestMove = -1;
         for (int i = 0; i < fin; i++) {
             var mov = movimientos[i];
 
@@ -218,10 +217,10 @@ public class Search {
             }
 
             if (f_prune
-                    &&   i > 0
-                    &&  mov.ponderacion < CAPTURE_MOVE_SORT
-                    &&  mov.promocion == 0
-                    &&  !tab.moveGivesCheck(mov))
+                    && i > 0
+                    && mov.ponderacion < CAPTURE_MOVE_SORT
+                    && mov.promocion == 0
+                    && !tab.moveGivesCheck(mov))
                 continue;
 
             tab.makeMove(mov);
@@ -241,18 +240,24 @@ public class Search {
             if (eval >= beta) {
                 establecerHistory(depth, mov);
                 establecerKiller(ply, mov);
-                Transposition.setEntry(tab.getZobrist(), depth, eval, BETA);
+                bestMove = mov.promocion << 12 | mov.inicio << 6 | mov.destino;
+                Transposition.setEntry(tab.getZobrist(), depth, eval, BETA, bestMove);
                 return beta;
             }
 
             if (eval > alfa) {
                 alfa = eval;
                 flag = EXACT;
+                bestMove = i;
                 actualizarPV(mov, ply);
             }
 
         }
-        Transposition.setEntry(tab.getZobrist(), depth, alfa, flag);
+        if (bestMove != -1) {
+            var mov = movimientos[bestMove];
+            bestMove = mov.promocion << 12 | mov.inicio << 6 | mov.destino;
+        }
+        Transposition.setEntry(tab.getZobrist(), depth, alfa, flag, bestMove);
         return alfa;
     }
 
@@ -365,10 +370,12 @@ public class Search {
             i++;
         }
 
-        System.out.printf("info depth %d score cp %d nodes %d  time %d pv %s\n", depth, alfa, nodesPerSecond,time, builder.toString());
+        System.out.printf("info depth %d score cp %d nodes %d  time %d pv %s\n", depth, alfa, nodesPerSecond, time, builder.toString());
     }
 
     public void establecerPuntuacion(Movimiento[] movimientos, int fin, int ply) {
+
+        int ttMove = Transposition.bestMove(tab.getZobrist());
 
         for (int i = 0; i < fin; i++) {
 
@@ -398,6 +405,11 @@ public class Search {
             // pv
             if ((pv[ply][ply] ^ mov) == 0) {
                 movimientos[i].ponderacion = PV_SORT_SCORE;
+            }
+
+            // tt best move
+            if(ttMove == mov){
+                movimientos[i].ponderacion = PV_SORT_SCORE + 10;
             }
         }
 
