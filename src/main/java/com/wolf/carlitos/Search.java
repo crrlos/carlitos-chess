@@ -344,6 +344,13 @@ public class Search {
         for (int i = 0; i < fin; i++) {
 
             var mov = movimientos[i];
+
+            if (depth > 9)
+                System.out.printf("info depth %d currmove %s currmovenumber %d\n",
+                        depth,
+                        Utilidades.convertirANotacion(mov),
+                        i +1);
+
             tab.makeMove(mov);
 
 
@@ -357,6 +364,8 @@ public class Search {
             }
 
             tab.takeBack(mov);
+
+
         }
         return alfa;
     }
@@ -408,7 +417,7 @@ public class Search {
             }
 
             // tt best move
-            if(ttMove == mov){
+            if (ttMove == mov) {
                 movimientos[i].ponderacion = PV_SORT_SCORE + 10;
             }
         }
