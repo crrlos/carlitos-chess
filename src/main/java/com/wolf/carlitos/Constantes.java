@@ -130,7 +130,7 @@ public class Constantes {
     public static final int CAPTURE_MOVE_SORT = 100_000;
 
 
-
+    public static final String INITIAL_POS = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
 
 }

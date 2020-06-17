@@ -18,33 +18,28 @@ import static com.wolf.carlitos.Pieza.valorPiezas;
 
 public class Search {
 
-    private final int[] tablero;
-
-    private final Tablero tab;
+    private final Posicion pos;
     private final Generador generador;
 
     private int nodes = 0;
 
-    private static final int[][][] history = new int[2][64][64];
+    private final int[][][] history = new int[2][64][64];
+    private final int[][] pv = new int[64][64];
+    private final int[][] killers = new int[64][2];
 
-    private static final int[][] pv = new int[64][64];
-
-    private static final int[][] killers = new int[64][2];
-
-    public Search(Tablero tablero) {
-        this.tablero = tablero.tablero;
-        this.tab = tablero;
-        this.generador = new Generador(tablero);
+    public Search(Posicion posicion) {
+        this.pos = posicion;
+        this.generador = new Generador(posicion);
     }
 
     private int quiescent(int depth, int alfa, int beta, int ply) {
 
-        int ttval = Transposition.checkEntry(tab.getZobrist(), 0, alfa, beta);
+        int ttval = Transposition.checkEntry(pos.getZobrist(), 0, alfa, beta);
         if (ttval != NOENTRY) return ttval;
 
         int flag = ALFA;
 
-        int eval = evaluar(tab.miColor());
+        int eval = evaluar(pos.miColor());
         int standPat = eval;
         if (eval >= beta) return beta;
 
@@ -68,20 +63,20 @@ public class Search {
 
             // delta pruning
             if (
-                    alfa >= standPat + valorPiezas[tablero[mov.destino]] + 200
-                            && tab.gameMaterial(tab.colorContrario()) - valorPiezas[tablero[mov.destino]] > ENDGAME_MATERIAL
-                            && !(tablero[mov.inicio] == PEON && (mov.destino <= H1 || mov.destino >= A8))
+                    alfa >= standPat + valorPiezas[pos.tablero[mov.destino]] + 200
+                            && pos.gameMaterial(pos.colorContrario()) - valorPiezas[pos.tablero[mov.destino]] > ENDGAME_MATERIAL
+                            && !(pos.tablero[mov.inicio] == PEON && (mov.destino <= H1 || mov.destino >= A8))
             )
                 continue;
 
-            tab.makeMove(mov);
+            pos.makeMove(mov);
 
             eval = -quiescent(depth - 1, -beta, -alfa, ply + 1);
 
-            tab.takeBack(mov);
+            pos.takeBack(mov);
 
             if (eval >= beta) {
-                Transposition.setEntry(tab.getZobrist(), 0, eval, BETA, 0);
+                Transposition.setEntry(pos.getZobrist(), 0, eval, BETA, 0);
                 return beta;
             }
             if (eval > alfa) {
@@ -90,7 +85,7 @@ public class Search {
             }
 
         }
-        Transposition.setEntry(tab.getZobrist(), 0, alfa, flag, 0);
+        Transposition.setEntry(pos.getZobrist(), 0, alfa, flag, 0);
         return alfa;
     }
 
@@ -102,15 +97,15 @@ public class Search {
 //        if (beta > mateValue - 1) beta = mateValue - 1;
 //        if (alfa >= beta) return alfa;
 
-        int ttval = Transposition.checkEntry(tab.getZobrist(), depth, alfa, beta);
+        int ttval = Transposition.checkEntry(pos.getZobrist(), depth, alfa, beta);
         if (ttval != NOENTRY) {
             if (!isPv || (ttval > alfa && ttval < beta)) return ttval;
         }
 
         if (depth == 0) return quiescent(depth, alfa, beta, ply);
 
-        boolean inCheck = tab.enJaque();
-        int color = tab.miColor();
+        boolean inCheck = pos.enJaque();
+        int color = pos.miColor();
 
         // CHECK EXTENSION
         if (inCheck) depth++;
@@ -121,17 +116,17 @@ public class Search {
                         && !inCheck
                         && !isPv
                         && allowNull
-                        && evaluar(tab.miColor()) > beta
-                        && tab.gameMaterial(tab.colorContrario()) >= ENDGAME_MATERIAL
+                        && evaluar(pos.miColor()) > beta
+                        && pos.gameMaterial(pos.colorContrario()) >= ENDGAME_MATERIAL
         ) {
             int R = 2;
             if (depth > 6) R = 3;
 
-            tab.doNull();
+            pos.doNull();
 
             int eval = -negaMax(depth - R - 1, -beta, -beta + 1, ply + 1, false, false);
 
-            tab.takeBackNull();
+            pos.takeBackNull();
 
             if (eval >= beta) {
                 return beta;
@@ -142,7 +137,7 @@ public class Search {
         if (depth < 3
                 && !isPv
                 && !inCheck) {
-            int static_eval = evaluar(tab.miColor());
+            int static_eval = evaluar(pos.miColor());
 
             int eval_margin = 120 * depth;
             if (static_eval - eval_margin >= beta)
@@ -155,7 +150,7 @@ public class Search {
                 && allowNull
                 && depth <= 3) {
             int threshold = alfa - 500 - (depth - 1) * 60;
-            if (evaluar(tab.miColor()) < threshold) {
+            if (evaluar(pos.miColor()) < threshold) {
                 int val = quiescent(0, alfa, beta, ply);
                 if (val < threshold) return alfa;
             }
@@ -169,7 +164,7 @@ public class Search {
                 && !isPv
                 && !inCheck
                 && Math.abs(alfa) < 9000
-                && evaluar(tab.miColor()) + fmargin[depth] <= alfa)
+                && evaluar(pos.miColor()) + fmargin[depth] <= alfa)
             fPrune = true;
 
         var respuesta = generador.generarMovimientos(ply);
@@ -182,7 +177,7 @@ public class Search {
 
 
         if (fin == 0) {
-            if (tab.enJaque()) return -MATE + ply;
+            if (pos.enJaque()) return -MATE + ply;
             else return AHOGADO;
         }
 
@@ -203,7 +198,7 @@ public class Search {
                             && !inCheck
                             && mov.ponderacion < CAPTURE_MOVE_SORT
                             && mov.promocion == 0
-                            && !tab.moveGivesCheck(mov)
+                            && !pos.moveGivesCheck(mov)
 
             ) {
                 reduction = true;
@@ -217,10 +212,10 @@ public class Search {
                     && i > 0
                     && mov.ponderacion < CAPTURE_MOVE_SORT
                     && mov.promocion == 0
-                    && !tab.moveGivesCheck(mov))
+                    && !pos.moveGivesCheck(mov))
                 continue;
 
-            tab.makeMove(mov);
+            pos.makeMove(mov);
             int eval;
 
             eval = pvSearch(newDepth, alfa, beta, ply, best);
@@ -232,13 +227,13 @@ public class Search {
             if (eval > best) best = eval;
 
 
-            tab.takeBack(mov);
+            pos.takeBack(mov);
 
             if (eval >= beta) {
                 establecerHistory(depth, color, mov);
                 establecerKiller(ply, mov);
                 bestMove = mov.promocion << 12 | mov.inicio << 6 | mov.destino;
-                Transposition.setEntry(tab.getZobrist(), depth, eval, BETA, bestMove);
+                Transposition.setEntry(pos.getZobrist(), depth, eval, BETA, bestMove);
                 return beta;
             }
 
@@ -254,7 +249,7 @@ public class Search {
             var mov = movimientos[bestMove];
             bestMove = mov.promocion << 12 | mov.inicio << 6 | mov.destino;
         }
-        Transposition.setEntry(tab.getZobrist(), depth, alfa, flag, bestMove);
+        Transposition.setEntry(pos.getZobrist(), depth, alfa, flag, bestMove);
         return alfa;
     }
 
@@ -326,7 +321,7 @@ public class Search {
 
     private void establecerHistory(int depth, int color, Movimiento mov) {
 
-        if (tablero[mov.destino] == NOPIEZA) {
+        if (pos.tablero[mov.destino] == NOPIEZA) {
             history[color][mov.inicio][mov.destino] += depth;
         }
     }
@@ -346,9 +341,9 @@ public class Search {
                 System.out.printf("info depth %d currmove %s currmovenumber %d\n",
                         depth,
                         Utilidades.convertirANotacion(mov),
-                        i +1);
+                        i + 1);
 
-            tab.makeMove(mov);
+            pos.makeMove(mov);
 
 
             int eval = pvSearch(depth, alfa, beta, ply, best);
@@ -360,7 +355,7 @@ public class Search {
                 actualizarPV(mov, ply);
             }
 
-            tab.takeBack(mov);
+            pos.takeBack(mov);
 
 
         }
@@ -381,8 +376,8 @@ public class Search {
 
     public void establecerPuntuacion(Movimiento[] movimientos, int fin, int ply) {
 
-        int ttMove = Transposition.bestMove(tab.getZobrist());
-        int color = tab.miColor();
+        int ttMove = Transposition.bestMove(pos.getZobrist());
+        int color = pos.miColor();
 
         for (int i = 0; i < fin; i++) {
 
@@ -398,9 +393,9 @@ public class Search {
             movimientos[i].ponderacion = ponderacion;
 
             //MVVLVA
-            if (tablero[destino] != NOPIEZA) {
+            if (pos.tablero[destino] != NOPIEZA) {
                 ponderacion = CAPTURE_MOVE_SORT +
-                        valorPiezas[REY] / valorPiezas[tablero[inicio]] + 10 * valorPiezas[tablero[destino]];
+                        valorPiezas[REY] / valorPiezas[pos.tablero[inicio]] + 10 * valorPiezas[pos.tablero[destino]];
                 movimientos[i].ponderacion = ponderacion;
             }
 

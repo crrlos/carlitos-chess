@@ -56,11 +56,11 @@ public class Generador {
         public int cantidadDeMovimientos;
     }
 
-    Generador(Tablero tablero) {
-        this.tab = tablero;
+    Generador(Posicion posicion) {
+        this.tab = posicion;
     }
 
-    private final Tablero tab;
+    private final Posicion tab;
     private boolean reyEnJaque;
     private boolean turnoBlanco;
     private int estado;

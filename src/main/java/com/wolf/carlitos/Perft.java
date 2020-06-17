@@ -5,13 +5,13 @@ import static com.wolf.carlitos.Utilidades.convertirANotacion;
 public class Perft {
 
     private final Generador generador;
-    private final Tablero tab;
+    private final Posicion tab;
 
     private int movimientosTotales;
     private int totalPorMovimiento;
 
-    Perft(Tablero tablero) {
-        this.tab = tablero;
+    Perft(Posicion posicion) {
+        this.tab = posicion;
         this.generador = new Generador(tab);
     }
 

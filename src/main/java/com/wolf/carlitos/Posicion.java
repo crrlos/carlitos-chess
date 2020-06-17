@@ -14,7 +14,7 @@ import static java.lang.Long.numberOfTrailingZeros;
 import static java.lang.Math.abs;
 import static com.wolf.carlitos.Zobrist.*;
 
-public class Tablero {
+public class Posicion {
 
     private static class StateStack {
         private final int[] estados;
@@ -80,8 +80,8 @@ public class Tablero {
     private final ZobristStack zobristKeys = new ZobristStack();
 
 
-    Tablero() {
-        setFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    Posicion() {
+        setFen(INITIAL_POS);
     }
 
     public boolean casillaAtacada(int posicion, int colorContrario) {
@@ -635,7 +635,7 @@ public class Tablero {
 
     }
 
-    public void setHistoria(String... movimientos) {
+    public void setHistory(String... movimientos) {
         for (var movimiento : movimientos) {
             makeMove(convertirAPosicion(movimiento));
         }
