@@ -221,6 +221,51 @@ public class Generador {
     }
 
     private void movimientosDeTorre(int posicion) {
+        movimientosRectas(posicion, TORRE);
+    }
+
+    private void movimientosDeAlfil(int posicion) {
+        movimientosDiagonales(posicion, ALFIL);
+    }
+
+
+    private void movimientosDeDama(int posicion) {
+        movimientosDiagonales(posicion, DAMA);
+        movimientosRectas(posicion, DAMA);
+    }
+
+    private void movimientosDeCaballo(int posicion) {
+
+        int miColor = turnoBlanco ? BLANCO : NEGRO;
+
+        long movimientosCaballo = ataqueCaballo[posicion] & ~(tab.piezasAmigas(miColor) | bitboard[colorContrario][REY]);
+
+        // check if pinned
+        remove(turnoBlanco, CABALLO, posicion);
+        boolean isPinned = tab.enJaque();
+        add(turnoBlanco, CABALLO, posicion);
+
+        if (isPinned)
+            for (long squares = movimientosCaballo; squares != 0; squares = remainder(squares)) {
+                int square = next(squares);
+                int mov = posicion << 6 | square;
+                if (movimientoValido(mov)) movimientos.add(mov);
+            }
+        else
+            for (long squares = movimientosCaballo; squares != 0; squares = remainder(squares)) {
+                int square = next(squares);
+                movimientos.add(posicion << 6 | square);
+            }
+
+    }
+
+    private void movimientosRectas(int posicion, int pieza) {
+
+        // check pinned
+        remove(turnoBlanco, pieza, posicion);
+        boolean isPinned = tab.enJaque();
+        add(turnoBlanco, pieza, posicion);
+
 
         long maskedBlockers = maskAtaqueTorre[posicion] & casillasOcupadas;
 
@@ -230,51 +275,29 @@ public class Generador {
 
         attackSet = attackSet & ~(tab.piezasAmigas(miColor) | bitboard[colorContrario][REY]);
 
-        for (long squares = attackSet; squares != 0; squares = remainder(squares)) {
-            int square = next(squares);
-
-            if (movimientoValido(posicion << 6 | square))
+        if (isPinned)
+            for (long squares = attackSet; squares != 0; squares = remainder(squares)) {
+                int square = next(squares);
+                int mov = posicion << 6 | square;
+                if (movimientoValido(mov)) movimientos.add(mov);
+            }
+        else
+            for (long squares = attackSet; squares != 0; squares = remainder(squares)) {
+                int square = next(squares);
                 movimientos.add(posicion << 6 | square);
-        }
-
-
-    }
-
-    private void movimientosDeDama(int posicion) {
-        movimientosDeAlfil(posicion);
-        movimientosDeTorre(posicion);
-    }
-
-    private void movimientosDeCaballo(int posicion) {
-
-        int miColor = turnoBlanco ? BLANCO : NEGRO;
-
-        long movimientosCaballo = ataqueCaballo[posicion] & ~(tab.piezasAmigas(miColor) | bitboard[colorContrario][REY]);
-
-        boolean validar = false;
-
-        // se quita el caballo de esta posición, si el rey no queda en jaque se omite la validación de los movimientos
-        remove(turnoBlanco, CABALLO, posicion);
-        if (tab.enJaque()) validar = true;
-        add(turnoBlanco, CABALLO, posicion);
-
-
-        for (long squares = movimientosCaballo; squares != 0; squares = remainder(squares)) {
-            int square = next(squares);
-
-            if (!validar) {
-                movimientos.add(posicion << 6 | square);
-                continue;
             }
 
-            if (movimientoValido(posicion << 6 | square))
-                movimientos.add(posicion << 6 | square);
-
-        }
 
     }
 
-    private void movimientosDeAlfil(int posicion) {
+    private void movimientosDiagonales(int posicion, int pieza) {
+
+        // check pinned
+        remove(turnoBlanco, pieza, posicion);
+
+        boolean isPinned = tab.enJaque();
+
+        add(turnoBlanco, pieza, posicion);
 
         long maskedBlockers = maskAtaqueAlfil[posicion] & casillasOcupadas;
 
@@ -284,12 +307,17 @@ public class Generador {
 
         attackSet = attackSet & ~(tab.piezasAmigas(miColor) | bitboard[colorContrario][REY]);
 
-        for (long squares = attackSet; squares != 0; squares = remainder(squares)) {
-            int square = next(squares);
-
-            if (movimientoValido(posicion << 6 | square))
+        if (isPinned)
+            for (long squares = attackSet; squares != 0; squares = remainder(squares)) {
+                int square = next(squares);
+                int mov = posicion << 6 | square;
+                if (movimientoValido(mov)) movimientos.add(mov);
+            }
+        else
+            for (long squares = attackSet; squares != 0; squares = remainder(squares)) {
+                int square = next(squares);
                 movimientos.add(posicion << 6 | square);
-        }
+            }
 
     }
 
