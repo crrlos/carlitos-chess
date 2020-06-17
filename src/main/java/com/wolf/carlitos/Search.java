@@ -404,15 +404,16 @@ public class Search {
                 movimientos[i].ponderacion = KILLER_SORT_SCORE;
             }
 
+            // tt best move
+            if (ttMove == mov) {
+                movimientos[i].ponderacion = PV_SORT_SCORE - 1000;
+            }
+
             // pv
             if ((pv[ply][ply] ^ mov) == 0) {
                 movimientos[i].ponderacion = PV_SORT_SCORE;
             }
 
-            // tt best move
-            if (ttMove == mov) {
-                movimientos[i].ponderacion = PV_SORT_SCORE + 10;
-            }
         }
 
     }
