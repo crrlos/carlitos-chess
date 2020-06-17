@@ -12,6 +12,7 @@ import static com.wolf.carlitos.Utilidades.convertirAPosicion;
 import static java.lang.Long.bitCount;
 import static java.lang.Long.numberOfTrailingZeros;
 import static java.lang.Math.abs;
+import static com.wolf.carlitos.Zobrist.*;
 
 public class Tablero {
 
@@ -78,44 +79,6 @@ public class Tablero {
     private final StateStack estados = new StateStack();
     private final ZobristStack zobristKeys = new ZobristStack();
 
-    // valores aleatorios para generar clave zobrist
-    public static long[][][] claveCasilla = new long[2][6][64];
-    public static long[] claveAlPaso = new long[16];
-    public static long[] claveEnroque = new long[4];
-    public static long claveLadoNegro;
-    public static int[] direccionAlPaso = new int[]{
-            0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0,
-            0, 1, 2, 3, 4, 5, 6, 7,
-            0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0,
-            8, 9, 10, 11, 12, 13, 14, 15
-    };
-
-    static {
-        int posicion = 0;
-        // llenar numeros aleatorios [color][pieza][casilla]
-        for (int i = 0; i < claveCasilla.length; i++) {
-            for (int j = 0; j < claveCasilla[i].length; j++) {
-                for (int k = 0; k < claveCasilla[i][j].length; k++) {
-                    claveCasilla[i][j][k] = ALEATORIOS[posicion++];
-                }
-            }
-        }
-        // llenar arreglo de aleatorios para casillas al paso
-        for (int i = 0; i < 16; i++) {
-            claveAlPaso[i] = ALEATORIOS[posicion++];
-        }
-        // llenar arreglo de aleatorios para enroques QKqk
-        for (int i = 0; i < 4; i++) {
-            claveEnroque[i] = ALEATORIOS[posicion++];
-        }
-
-        claveLadoNegro = ALEATORIOS[posicion];
-
-
-    }
-
 
     Tablero() {
         setFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
@@ -142,7 +105,6 @@ public class Tablero {
 
 
         if ((ataquePeon[colorContrario ^ 1][posicion] & bitboard[colorContrario][PEON]) != 0) return true;
-
 
         return (ataqueRey[posicion] & bitboard[colorContrario][REY]) != 0;
     }
@@ -580,12 +542,6 @@ public class Tablero {
         int posicionRey = numberOfTrailingZeros(bitboard[miColor()][REY]);
         return casillaAtacada(posicionRey, colorContrario());
     }
-
-    public boolean contrarioEnJaque() {
-        int posicionRey = numberOfTrailingZeros(bitboard[colorContrario()][REY]);
-        return casillaAtacada(posicionRey, miColor());
-    }
-
     public boolean alPaso(int destino) {
 
         if ((destino >= A3 && destino <= H3 && miColor() == NEGRO) || (destino >= A6 && destino <= H6 && miColor() == BLANCO))
