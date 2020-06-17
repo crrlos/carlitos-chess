@@ -269,7 +269,7 @@ public class Generador {
 
         long maskedBlockers = maskAtaqueTorre[posicion] & casillasOcupadas;
 
-        int index = (int) ((maskedBlockers * rookMagics[posicion]) >>> rook_shift[posicion]);
+        int index = (int) ((maskedBlockers * rookMagics[posicion]) >>> rookShift[posicion]);
 
         long attackSet = Ataque.ataqueTorre[posicion][index];
 
@@ -301,7 +301,7 @@ public class Generador {
 
         long maskedBlockers = maskAtaqueAlfil[posicion] & casillasOcupadas;
 
-        int index = (int) ((maskedBlockers * bishopMagics[posicion]) >>> bishop_shift[posicion]);
+        int index = (int) ((maskedBlockers * bishopMagics[posicion]) >>> bishopShift[posicion]);
 
         long attackSet = Ataque.ataqueAlfil[posicion][index];
 

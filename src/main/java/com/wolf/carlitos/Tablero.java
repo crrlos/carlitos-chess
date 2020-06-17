@@ -128,14 +128,14 @@ public class Tablero {
         /* ATAQUE TORRE/DAMA */
         long casillasOcupadas = casillasOcupadas();
         long piezasAtacadas = casillasOcupadas & maskAtaqueTorre[posicion];
-        int index = (int) ((piezasAtacadas * rookMagics[posicion]) >>> rook_shift[posicion]);
+        int index = (int) ((piezasAtacadas * rookMagics[posicion]) >>> rookShift[posicion]);
         long attackSet = Ataque.ataqueTorre[posicion][index];
         if ((attackSet & (bitboard[colorContrario][TORRE] | bitboard[colorContrario][DAMA])) != 0) return true;
         /* FIN ATAQUE TORRE/DAMA */
 
         /* ATAQUE ALFIL/DAMA */
         piezasAtacadas = casillasOcupadas & maskAtaqueAlfil[posicion];
-        index = (int) ((piezasAtacadas * bishopMagics[posicion]) >>> bishop_shift[posicion]);
+        index = (int) ((piezasAtacadas * bishopMagics[posicion]) >>> bishopShift[posicion]);
         attackSet = Ataque.ataqueAlfil[posicion][index];
         if ((attackSet & (bitboard[colorContrario][ALFIL] | bitboard[colorContrario][DAMA])) != 0) return true;
         /* FIN ATAQUE ALFIL/DAMA */

@@ -9,28 +9,28 @@ import static java.lang.Math.pow;
 
 public class Ataque {
 
-    static final int[] rook_shift = new int[]
-    {
-            52,53,53,53,53,53,53,52,
-            53,54,54,54,54,54,54,53,
-            53,54,54,54,54,54,54,53,
-            53,54,54,54,54,54,54,53,
-            53,54,54,54,54,54,54,53,
-            53,54,54,54,54,54,54,53,
-            53,54,54,54,54,54,54,53,
-            52,53,53,53,53,53,53,52
-    };
-    static final int[] bishop_shift = new int[]
-    {
-            58,59,59,59,59,59,59,58,
-            59,59,59,59,59,59,59,59,
-            59,59,57,57,57,57,59,59,
-            59,59,57,55,55,57,59,59,
-            59,59,57,55,55,57,59,59,
-            59,59,57,57,57,57,59,59,
-            59,59,59,59,59,59,59,59,
-            58,59,59,59,59,59,59,58
-    };
+    static final int[] rookShift = new int[]
+            {
+                    52, 53, 53, 53, 53, 53, 53, 52,
+                    53, 54, 54, 54, 54, 54, 54, 53,
+                    53, 54, 54, 54, 54, 54, 54, 53,
+                    53, 54, 54, 54, 54, 54, 54, 53,
+                    53, 54, 54, 54, 54, 54, 54, 53,
+                    53, 54, 54, 54, 54, 54, 54, 53,
+                    53, 54, 54, 54, 54, 54, 54, 53,
+                    52, 53, 53, 53, 53, 53, 53, 52
+            };
+    static final int[] bishopShift = new int[]
+            {
+                    58, 59, 59, 59, 59, 59, 59, 58,
+                    59, 59, 59, 59, 59, 59, 59, 59,
+                    59, 59, 57, 57, 57, 57, 59, 59,
+                    59, 59, 57, 55, 55, 57, 59, 59,
+                    59, 59, 57, 55, 55, 57, 59, 59,
+                    59, 59, 57, 57, 57, 57, 59, 59,
+                    59, 59, 59, 59, 59, 59, 59, 59,
+                    58, 59, 59, 59, 59, 59, 59, 58
+            };
     public static final long[] rookMagics = new long[]{
             0xa8002c000108020L, 0x0040001000200040L, 0x100200010090040L, 0x2480041000800801L, 0x280028004000800L,
             0x900410008040022L, 0x280020001001080L, 0x2880002041000080L, 0xa000800080400034L, 0x4808020004000L,
@@ -72,7 +72,8 @@ public class Ataque {
     public static final long[] maskAtaqueTorre = new long[64];
     public static final long[] maskAtaqueAlfil = new long[64];
 
-    static {
+    public static void init() {
+
         int[] piezas = new int[]{CABALLO, ALFIL, TORRE, REY};
 
         long[][] ataquesPieza = new long[][]{
@@ -81,7 +82,7 @@ public class Ataque {
 
         for (int j = 0; j < 64; j++) {
 
-            long[] ataques = new long[piezas.length + 2];
+            long[] ataques = new long[piezas.length + 2 /*white and black pawns*/];
 
             for (int i = 0; i < piezas.length; i++) {
                 for (int k = 0; k < offsetMailBox[piezas[i]].length; k++) {
@@ -117,10 +118,10 @@ public class Ataque {
             ataquePeon[NEGRO][j] = ataques[piezas.length + 1];
 
         }
-        iniciar();
+        fillRookBishopAttack();
     }
 
-    private static void iniciar() {
+    private static void fillRookBishopAttack() {
         for (int i = 0; i < 64; i++) {
             var attackMask = attackMask(i, TORRE);
             llenarTablaAtaque(attackMask, ataqueTorre[i], TORRE, i, rookMagics[i]);

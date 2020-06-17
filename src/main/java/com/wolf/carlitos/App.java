@@ -8,6 +8,8 @@ public class App {
 
     public static void main(String[] args) {
 
+        Ataque.init();
+
         var scanner = new Scanner(System.in);
         while (scanner.hasNext()) {
 
