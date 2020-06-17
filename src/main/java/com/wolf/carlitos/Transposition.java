@@ -11,9 +11,9 @@ public class Transposition {
         public int bestMove;
     }
 
-    private static final Entry[] transposition = new Entry[25_000_000];
+    private static final Entry[] transposition = new Entry[1_000_000];
 
-    static {
+    public static void init(){
         for (int i = 0; i < transposition.length; i++) {
             transposition[i] = new Entry();
         }
