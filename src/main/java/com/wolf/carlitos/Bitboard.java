@@ -6,26 +6,22 @@ import static java.lang.Long.numberOfTrailingZeros;
 
 public final class Bitboard {
 
-    private Bitboard() {
-    }
-
-    public static void  add(boolean esBlanco, int pieza, int posicion) {
+    public static void  add(boolean esBlanco, int pieza, int posicion, long[][] bitboard) {
         int color = esBlanco ? BLANCO : NEGRO;
-        long bitboard = Pieza.bitboard[color][pieza];
-        Pieza.bitboard[color][pieza] = bitboard | 1L << posicion;
+        long bPieza = bitboard[color][pieza];
+        bitboard[color][pieza] = bPieza | 1L << posicion;
     }
 
 
-    public static void remove(boolean esBlanco, int pieza, int posicion) {
+    public static void remove(boolean esBlanco, int pieza, int posicion, long[][] bitboard) {
         int color = esBlanco ? BLANCO : NEGRO;
-        long bitboard = Pieza.bitboard[color][pieza];
-        Pieza.bitboard[color][pieza] = bitboard & ~(1L << posicion);
+        long bPieza = bitboard[color][pieza];
+        bitboard[color][pieza] = bPieza & ~(1L << posicion);
     }
-    public static  void update(boolean esBlanco, int pieza, int inicio, int destino){
+    public static  void update(boolean esBlanco, int pieza, int inicio, int destino, long[][] bitboard){
         int color = esBlanco ? BLANCO : NEGRO;
-        long bitboard = Pieza.bitboard[color][pieza];
-        Pieza.bitboard[color][pieza] = (bitboard & ~(1L << inicio)) | 1L << destino;
-
+        long bPieza = bitboard[color][pieza];
+        bitboard[color][pieza] = (bPieza & ~(1L << inicio)) | 1L << destino;
     }
 
     public static int next(long bitboard) {

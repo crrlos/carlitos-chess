@@ -34,7 +34,7 @@ public class Search {
 
     private int quiescent(int depth, int alfa, int beta, int ply) {
 
-        int eval = evaluar(pos.miColor());
+        int eval = evaluar(pos);
         int standPat = eval;
         if (eval >= beta) return beta;
 
@@ -107,7 +107,7 @@ public class Search {
                         && !inCheck
                         && !isPv
                         && allowNull
-                        && evaluar(pos.miColor()) > beta
+                        && evaluar(pos) > beta
                         && pos.gameMaterial(pos.colorContrario()) >= ENDGAME_MATERIAL
         ) {
             int R = 2;
@@ -128,7 +128,7 @@ public class Search {
         if (depth < 3
                 && !isPv
                 && !inCheck) {
-            int static_eval = evaluar(pos.miColor());
+            int static_eval = evaluar(pos);
 
             int eval_margin = 120 * depth;
             if (static_eval - eval_margin >= beta)
@@ -141,7 +141,7 @@ public class Search {
                 && allowNull
                 && depth <= 3) {
             int threshold = alfa - 500 - (depth - 1) * 60;
-            if (evaluar(pos.miColor()) < threshold) {
+            if (evaluar(pos) < threshold) {
                 int val = quiescent(0, alfa, beta, ply);
                 if (val < threshold) return alfa;
             }
@@ -155,7 +155,7 @@ public class Search {
                 && !isPv
                 && !inCheck
                 && Math.abs(alfa) < 9000
-                && evaluar(pos.miColor()) + fmargin[depth] <= alfa)
+                && evaluar(pos) + fmargin[depth] <= alfa)
             fPrune = true;
 
         var respuesta = generador.generarMovimientos(ply);

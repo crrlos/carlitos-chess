@@ -78,6 +78,7 @@ public class Posicion {
     public int[] color = new int[64];
     private final StateStack estados = new StateStack();
     private final ZobristStack zobristKeys = new ZobristStack();
+    public  long[][] bitboard = new long[2][6];
 
 
     Posicion() {
@@ -122,7 +123,7 @@ public class Posicion {
 
             case MOVIMIENTO_NORMAL:
             case MOVIMIENTO_REY:
-                update(turnoBlanco, tablero[destino], destino, inicio);
+                update(turnoBlanco, tablero[destino], destino, inicio, bitboard);
                 tablero[inicio] = tablero[destino];
                 color[inicio] = color[destino];
                 break;
@@ -132,8 +133,8 @@ public class Posicion {
                 tablero[posicionPaso] = PEON;
                 color[posicionPaso] = esTurnoBlanco() ? NEGRO : BLANCO;
 
-                add(!esTurnoBlanco(), PEON, posicionPaso);
-                update(turnoBlanco, tablero[destino], destino, inicio);
+                add(!esTurnoBlanco(), PEON, posicionPaso, bitboard);
+                update(turnoBlanco, tablero[destino], destino, inicio, bitboard);
 
                 tablero[inicio] = tablero[destino];
                 color[inicio] = color[destino];
@@ -142,12 +143,12 @@ public class Posicion {
             case PROMOCION:
                 tablero[inicio] = PEON;
                 color[inicio] = turnoBlanco ? BLANCO : NEGRO;
-                remove(turnoBlanco, tablero[destino], destino);
-                add(turnoBlanco, tablero[inicio], inicio);
+                remove(turnoBlanco, tablero[destino], destino, bitboard);
+                add(turnoBlanco, tablero[inicio], inicio, bitboard);
                 break;
             case ENROQUE:
 
-                update(turnoBlanco, tablero[destino], destino, inicio);
+                update(turnoBlanco, tablero[destino], destino, inicio, bitboard);
 
                 tablero[inicio] = tablero[destino];
                 tablero[destino] = NOPIEZA;
@@ -156,7 +157,7 @@ public class Posicion {
 
                 if (destino == G1 || destino == G8) {
 
-                    update(turnoBlanco, TORRE, turnoBlanco ? F1 : F8, turnoBlanco ? H1 : H8);
+                    update(turnoBlanco, TORRE, turnoBlanco ? F1 : F8, turnoBlanco ? H1 : H8, bitboard);
 
                     tablero[turnoBlanco ? H1 : H8] = tablero[turnoBlanco ? F1 : F8];
                     tablero[turnoBlanco ? F1 : F8] = NOPIEZA;
@@ -166,7 +167,7 @@ public class Posicion {
 
                 } else if (destino == C1 || destino == C8) {
 
-                    update(turnoBlanco, TORRE, turnoBlanco ? D1 : D8, turnoBlanco ? A1 : A8);
+                    update(turnoBlanco, TORRE, turnoBlanco ? D1 : D8, turnoBlanco ? A1 : A8, bitboard);
 
                     tablero[turnoBlanco ? A1 : A8] = tablero[turnoBlanco ? D1 : D8];
                     tablero[turnoBlanco ? D1 : D8] = NOPIEZA;
@@ -181,7 +182,7 @@ public class Posicion {
 
         tablero[destino] = (estado >> POSICION_PIEZA_CAPTURADA & 0b111);
         if (tablero[destino] != NOPIEZA) {
-            add(!turnoBlanco, tablero[destino], destino);
+            add(!turnoBlanco, tablero[destino], destino, bitboard);
         }
 
         color[destino] = tablero[destino] == NOPIEZA ? NOCOLOR : esTurnoBlanco() ? NEGRO : BLANCO;
@@ -212,7 +213,7 @@ public class Posicion {
 
                 var posicionPeonAlPaso = destino + (esTurnoBlanco() ? -8 : 8);
 
-                remove(!esTurnoBlanco(), PEON, posicionPeonAlPaso);
+                remove(!esTurnoBlanco(), PEON, posicionPeonAlPaso, bitboard);
 
                 // aqui se remueve la pieza al paso
                 tablero[posicionPeonAlPaso] = NOPIEZA;
@@ -263,7 +264,7 @@ public class Posicion {
 
                     }
                     // remover pieza capturada
-                    remove(!esTurnoBlanco(), tablero[destino], destino);
+                    remove(!esTurnoBlanco(), tablero[destino], destino, bitboard);
                     zobrist ^= claveCasilla[colorContrario()][tablero[destino]][destino];
                 }
                 switch (movimiento.promocion) {
@@ -281,10 +282,10 @@ public class Posicion {
                         break;
                 }
                 // agregar pieza promovida
-                add(esTurnoBlanco(), tablero[destino], destino);
+                add(esTurnoBlanco(), tablero[destino], destino, bitboard);
                 zobrist ^= claveCasilla[miColor()][tablero[destino]][destino];
                 // remover el peon porque se  promovió
-                remove(esTurnoBlanco(), PEON, inicio);
+                remove(esTurnoBlanco(), PEON, inicio, bitboard);
                 zobrist ^= claveCasilla[miColor()][PEON][inicio];
 
 
@@ -314,7 +315,7 @@ public class Posicion {
                 }
                 estado = estado & MASK_LIMPIAR_AL_PASO | posicionPiezaAlPAso << POSICION_PIEZA_AL_PASO;
 
-                update(esTurnoBlanco(), PEON, inicio, destino);
+                update(esTurnoBlanco(), PEON, inicio, destino, bitboard);
 
                 // se mueve el peon
                 zobrist ^= claveCasilla[miColor()][PEON][inicio];
@@ -339,7 +340,7 @@ public class Posicion {
             if (abs(inicio - destino) == 2) {
                 if (color[inicio] == BLANCO) {
                     if (destino == G1) {
-                        update(esTurnoBlanco(), TORRE, H1, F1);
+                        update(esTurnoBlanco(), TORRE, H1, F1, bitboard);
                         // mover torre de h1 a f1
                         zobrist ^= claveCasilla[miColor()][TORRE][H1];
                         zobrist ^= claveCasilla[miColor()][TORRE][F1];
@@ -349,7 +350,7 @@ public class Posicion {
                         color[F1] = color[H1];
                         color[H1] = NOCOLOR;
                     } else {
-                        update(esTurnoBlanco(), TORRE, A1, D1);
+                        update(esTurnoBlanco(), TORRE, A1, D1, bitboard);
                         // mover torre de a1 a d1
                         zobrist ^= claveCasilla[miColor()][TORRE][A1];
                         zobrist ^= claveCasilla[miColor()][TORRE][D1];
@@ -360,7 +361,7 @@ public class Posicion {
                     }
                 } else {
                     if (destino == G8) {
-                        update(esTurnoBlanco(), TORRE, H8, F8);
+                        update(esTurnoBlanco(), TORRE, H8, F8, bitboard);
                         zobrist ^= claveCasilla[miColor()][TORRE][H8];
                         zobrist ^= claveCasilla[miColor()][TORRE][F8];
                         tablero[F8] = tablero[H8];
@@ -368,7 +369,7 @@ public class Posicion {
                         color[F8] = color[H8];
                         color[H8] = NOCOLOR;
                     } else {
-                        update(esTurnoBlanco(), TORRE, A8, D8);
+                        update(esTurnoBlanco(), TORRE, A8, D8, bitboard);
                         zobrist ^= claveCasilla[miColor()][TORRE][A8];
                         zobrist ^= claveCasilla[miColor()][TORRE][D8];
                         tablero[D8] = tablero[A8];
@@ -438,7 +439,7 @@ public class Posicion {
         estado = colocarValor(tablero[destino], POSICION_PIEZA_CAPTURADA, MASK_LIMPIAR_PIEZA_CAPTURADA, estado);
 
         if (tablero[destino] != NOPIEZA) {
-            remove(!esTurnoBlanco(), tablero[destino], destino);
+            remove(!esTurnoBlanco(), tablero[destino], destino, bitboard);
             zobrist ^= claveCasilla[colorContrario()][tablero[destino]][destino];
         }
 
@@ -473,7 +474,7 @@ public class Posicion {
             }
 
         }
-        update(esTurnoBlanco(), tablero[inicio], inicio, destino);
+        update(esTurnoBlanco(), tablero[inicio], inicio, destino, bitboard);
 
         zobrist ^= claveCasilla[miColor()][tablero[inicio]][inicio];
         zobrist ^= claveCasilla[miColor()][tablero[inicio]][destino];
@@ -650,63 +651,63 @@ public class Posicion {
             if (c == 'k') {
                 tablero[indexInicio] = REY;
                 color[indexInicio] = NEGRO;
-                add(false, REY, indexInicio);
+                add(false, REY, indexInicio, bitboard);
             }
             if (c == 'q') {
                 tablero[indexInicio] = DAMA;
                 color[indexInicio] = NEGRO;
-                add(false, DAMA, indexInicio);
+                add(false, DAMA, indexInicio, bitboard);
             }
             if (c == 'r') {
                 tablero[indexInicio] = TORRE;
                 color[indexInicio] = NEGRO;
-                add(false, TORRE, indexInicio);
+                add(false, TORRE, indexInicio, bitboard);
             }
             if (c == 'b') {
                 tablero[indexInicio] = ALFIL;
                 color[indexInicio] = NEGRO;
-                add(false, ALFIL, indexInicio);
+                add(false, ALFIL, indexInicio, bitboard);
             }
             if (c == 'n') {
                 tablero[indexInicio] = CABALLO;
                 color[indexInicio] = NEGRO;
-                add(false, CABALLO, indexInicio);
+                add(false, CABALLO, indexInicio, bitboard);
             }
             if (c == 'p') {
                 tablero[indexInicio] = PEON;
                 color[indexInicio] = NEGRO;
-                add(false, PEON, indexInicio);
+                add(false, PEON, indexInicio, bitboard);
             }
 
             if (c == 'K') {
                 tablero[indexInicio] = REY;
                 color[indexInicio] = BLANCO;
-                add(true, REY, indexInicio);
+                add(true, REY, indexInicio, bitboard);
             }
             if (c == 'Q') {
                 tablero[indexInicio] = DAMA;
                 color[indexInicio] = BLANCO;
-                add(true, DAMA, indexInicio);
+                add(true, DAMA, indexInicio, bitboard);
             }
             if (c == 'R') {
                 tablero[indexInicio] = TORRE;
                 color[indexInicio] = BLANCO;
-                add(true, TORRE, indexInicio);
+                add(true, TORRE, indexInicio, bitboard);
             }
             if (c == 'B') {
                 tablero[indexInicio] = ALFIL;
                 color[indexInicio] = BLANCO;
-                add(true, ALFIL, indexInicio);
+                add(true, ALFIL, indexInicio, bitboard);
             }
             if (c == 'N') {
                 tablero[indexInicio] = CABALLO;
                 color[indexInicio] = BLANCO;
-                add(true, CABALLO, indexInicio);
+                add(true, CABALLO, indexInicio, bitboard);
             }
             if (c == 'P') {
                 tablero[indexInicio] = PEON;
                 color[indexInicio] = BLANCO;
-                add(true, PEON, indexInicio);
+                add(true, PEON, indexInicio, bitboard);
             }
 
             if (Character.isDigit(c)) {
@@ -778,18 +779,18 @@ public class Posicion {
         int destPiece = tablero[mov.destino];
 
         if (destPiece != NOPIEZA)
-            remove(!esTurnoBlanco(), destPiece, mov.destino);
+            remove(!esTurnoBlanco(), destPiece, mov.destino, bitboard);
 
-        update(esTurnoBlanco(), tablero[mov.inicio], mov.inicio, mov.destino);
+        update(esTurnoBlanco(), tablero[mov.inicio], mov.inicio, mov.destino, bitboard);
 
         int kingPos = numberOfTrailingZeros(bitboard[colorContrario()][REY]);
 
         boolean isCheck = casillaAtacada(kingPos, miColor());
 
-        update(esTurnoBlanco(), tablero[mov.inicio], mov.destino, mov.inicio);
+        update(esTurnoBlanco(), tablero[mov.inicio], mov.destino, mov.inicio, bitboard);
 
         if (destPiece != NOPIEZA)
-            add(!esTurnoBlanco(), destPiece, mov.destino);
+            add(!esTurnoBlanco(), destPiece, mov.destino, bitboard);
 
         return isCheck;
 

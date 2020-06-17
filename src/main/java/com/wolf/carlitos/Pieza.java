@@ -25,6 +25,4 @@ public class Pieza {
             false, false, true, true, true, false
     };
 
-    public static long[][] bitboard = new long[2][6];
-
 }

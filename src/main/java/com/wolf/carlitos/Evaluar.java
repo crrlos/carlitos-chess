@@ -8,6 +8,9 @@ import static com.wolf.carlitos.Ponderaciones.*;
 import static java.lang.Long.bitCount;
 
 public class Evaluar {
+
+    private static long[][] bitboard;
+
     private static int evaluarCantidadPiezas(int bando) {
         int total = 0;
         for (int i = 0; i < bitboard[bando].length; i++) {
@@ -78,7 +81,10 @@ public class Evaluar {
         return bitboard[BLANCO][DAMA] > 0 && bitboard[BLANCO][TORRE] == 0 && bitboard[NEGRO][DAMA] > 0 && bitboard[NEGRO][TORRE] == 0;
     }
 
-    public static int evaluar(int color) {
+    public static int evaluar(Posicion pos) {
+        bitboard = pos.bitboard;
+        int color = pos.miColor();
+
         int valorPiezas = evaluarCantidadPiezas(color) - evaluarCantidadPiezas(color ^ 1);
         int valorPosicion = evaluarPosicionDePiezas(color) - evaluarPosicionDePiezas(color ^ 1);
         return valorPiezas + valorPosicion;
