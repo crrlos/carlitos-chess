@@ -1,21 +1,25 @@
 package com.wolf.carlitos;
 
+import static com.wolf.carlitos.Utilidades.convertirANotacion;
+
 public class Perft {
+
     private final Generador generador;
     private final Tablero tab;
-    private final Acumulador acumulador;
+
+    private int movimientosTotales;
+    private int totalPorMovimiento;
 
     Perft(Tablero tablero) {
         this.tab = tablero;
         this.generador = new Generador(tab);
-        this.acumulador = new Acumulador();
     }
 
     private void perftSearch(int deep, boolean reset) {
 
         if (deep == 0) {
-            acumulador.contador++;
-            acumulador.contadorPerft++;
+            movimientosTotales++;
+            totalPorMovimiento++;
             return;
         }
         var respuesta = generador.generarMovimientos(deep + 50);
@@ -34,8 +38,8 @@ public class Perft {
             tab.takeBack(mov);
 
             if (reset) {
-                System.out.println(Utilidades.convertirANotacion(mov) + " " + acumulador.contadorPerft);
-                acumulador.contadorPerft = 0;
+                System.out.printf("%s %d\n", convertirANotacion(mov), totalPorMovimiento);
+                totalPorMovimiento = 0;
             }
         }
     }
@@ -43,9 +47,8 @@ public class Perft {
     public void perft(int deep) {
         var tinicio = System.currentTimeMillis();
         perftSearch(deep, true);
-        System.out.println(acumulador.contador);
+        System.out.println(movimientosTotales);
 
-        var tfin = (System.currentTimeMillis() - tinicio) / 1000;
     }
 }
 
