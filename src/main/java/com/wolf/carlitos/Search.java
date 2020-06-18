@@ -24,7 +24,7 @@ public class Search {
     private int nodes = 0;
 
     private final int[][][] history = new int[2][64][64];
-    private final int[][] pv = new int[64][64];
+    private int[][] pv = new int[64][64];
     private final int[][] killers = new int[64][2];
 
     public Search(Posicion posicion) {
@@ -323,6 +323,7 @@ public class Search {
     }
 
     private int searchRoot(int depth, int ply, Movimiento[] movimientos, int fin, int alfa, int beta) {
+
         int best = -INFINITO;
         for (int i = 0; i < fin; i++) {
 
@@ -336,8 +337,9 @@ public class Search {
 
             pos.makeMove(mov);
 
-
             int eval = pvSearch(depth, alfa, beta, ply, best);
+
+            pos.takeBack(mov);
 
             if (eval > best) best = eval;
 
@@ -345,9 +347,6 @@ public class Search {
                 alfa = eval;
                 actualizarPV(mov, ply);
             }
-
-            pos.takeBack(mov);
-
 
         }
         return alfa;
